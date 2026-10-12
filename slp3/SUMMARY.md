@@ -1,49 +1,49 @@
 # 目录 · SUMMARY
 
-**Speech and Language Processing（第三版）** — Daniel Jurafsky & James H. Martin，2026 年 8 月版，646 页。
+**Speech and Language Processing（第三版）** — Daniel Jurafsky & James H. Martin，2026 年 8 月版，646 页 / 26 章。
 
-图例：✅ 已完成 · 🚧 进行中 · ⬜ 待翻译
+图例：✅ 已完成 · 🚧 进行中 · ⬜ 待翻译　　**进度：4 / 26 章**
 
-## 第一部分 · 大语言模型（Large Language Models，p9）
-
-| # | 章节 | 原书页 | 中文 |
-|---|---|---|---|
-| 1 | Introduction | 11 | ✅ [MD](zh/md/01-introduction.md) · [HTML](zh/html/01-introduction.html) · [对照HTML](zh/html/01-introduction.dual.html) · [PDF](zh/pdf/01-introduction-zh.pdf) · [对照PDF](zh/dual/01-introduction-dual.pdf) |
-| 2 | Words and Tokens | 41 | ⬜ |
-| 3 | N-gram Language Models | 76 | ⬜ |
-| 4 | Logistic Regression | 100 | ⬜ |
-| 5 | Embeddings | 135 | ⬜ |
-| 6 | Neural Networks | 159 | ⬜ |
-| 7 | Transformers and Pretraining | 185 | ⬜ |
-| 8 | Post-training | 217 | ⬜ |
-
-## 第二部分 · 高级 LLM 主题与工具（Advanced LLM Topics and Tools，p233）
+## 第一部分 · 大语言模型（Large Language Models）
 
 | # | 章节 | 原书页 | 中文 |
 |---|---|---|---|
-| 9 | Masked Language Models | 235 | ⬜ |
-| 10 | Interpretability | 251 | ⬜ |
-| 11 | Retrieval-based Models | 260 | ⬜ |
-| 12 | Agents | 283 | ⬜ |
-| 13 | Machine Translation | 284 | ⬜ |
-| 14 | RNNs and LSTMs | 310 | ⬜ |
-| 15 | Phonetics and Speech Feature Extraction | 336 | ⬜ |
-| 16 | Automatic Speech Recognition | 365 | ⬜ |
-| 17 | Text-to-Speech | 391 | ⬜ |
+| 1 | 引言 | 11 | ✅ [在线阅读](zh/html/01-introduction.html) · [对照](zh/html/01-introduction.dual.html) · [PDF](zh/pdf/01-introduction-zh.pdf) · [对照PDF](zh/dual/01-introduction-dual.pdf) · [MD](zh/md/01-introduction.md) |
+| 2 | 词与词元 | 41 | ✅ [在线阅读](zh/html/02-words-and-tokens.html) · [对照](zh/html/02-words-and-tokens.dual.html) · [PDF](zh/pdf/02-words-and-tokens-zh.pdf) · [对照PDF](zh/dual/02-words-and-tokens-dual.pdf) · [MD](zh/md/02-words-and-tokens.md) |
+| 3 | N-gram 语言模型 | 76 | ✅ [在线阅读](zh/html/03-ngram-language-models.html) · [对照](zh/html/03-ngram-language-models.dual.html) · [PDF](zh/pdf/03-ngram-language-models-zh.pdf) · [对照PDF](zh/dual/03-ngram-language-models-dual.pdf) · [MD](zh/md/03-ngram-language-models.md) |
+| 4 | 逻辑回归 | 100 | ✅ [在线阅读](zh/html/04-logistic-regression.html) · [对照](zh/html/04-logistic-regression.dual.html) · [PDF](zh/pdf/04-logistic-regression-zh.pdf) · [对照PDF](zh/dual/04-logistic-regression-dual.pdf) · [MD](zh/md/04-logistic-regression.md) |
+| 5 | 嵌入 | 135 | ⬜ 待翻译 |
+| 6 | 神经网络 | 159 | ⬜ 待翻译 |
+| 7 | Transformer 与预训练 | 185 | ⬜ 待翻译 |
+| 8 | 后训练 | 217 | ⬜ 待翻译 |
 
-## 第三部分 · 标注语言结构（Annotating Linguistic Structure，p405）
+## 第二部分 · 高级 LLM 主题与工具（Advanced LLM Topics and Tools）
 
 | # | 章节 | 原书页 | 中文 |
 |---|---|---|---|
-| 18 | Sequence Labeling for Parts of Speech and Named Entities | 408 | ⬜ |
-| 19 | Context-Free Grammars and Constituency Parsing | 433 | ⬜ |
-| 20 | Dependency Parsing | 457 | ⬜ |
-| 21 | Information Extraction: Relations, Events, and Time | 481 | ⬜ |
-| 22 | Semantic Role Labeling | 507 | ⬜ |
-| 23 | Lexicons for Sentiment, Affect, and Connotation | 527 | ⬜ |
-| 24 | Coreference Resolution and Entity Linking | 547 | ⬜ |
-| 25 | Discourse Coherence | 577 | ⬜ |
-| 26 | Conversation and its Structure | 599 | ⬜ |
+| 9 | 掩码语言模型 | 235 | ⬜ 待翻译 |
+| 10 | 可解释性 | 251 | ⬜ 待翻译 |
+| 11 | 基于检索的模型 | 260 | ⬜ 待翻译 |
+| 12 | 智能体 | 283 | ⬜ 待翻译 |
+| 13 | 机器翻译 | 284 | ⬜ 待翻译 |
+| 14 | RNN 与 LSTM | 310 | ⬜ 待翻译 |
+| 15 | 语音学与语音特征提取 | 336 | ⬜ 待翻译 |
+| 16 | 自动语音识别 | 365 | ⬜ 待翻译 |
+| 17 | 文本转语音 | 391 | ⬜ 待翻译 |
+
+## 第三部分 · 标注语言结构（Annotating Linguistic Structure）
+
+| # | 章节 | 原书页 | 中文 |
+|---|---|---|---|
+| 18 | 词性与命名实体的序列标注 | 408 | ⬜ 待翻译 |
+| 19 | 上下文无关文法与成分句法分析 | 433 | ⬜ 待翻译 |
+| 20 | 依存句法分析 | 457 | ⬜ 待翻译 |
+| 21 | 信息抽取：关系、事件与时间 | 481 | ⬜ 待翻译 |
+| 22 | 语义角色标注 | 507 | ⬜ 待翻译 |
+| 23 | 情感、态度与内涵词表 | 527 | ⬜ 待翻译 |
+| 24 | 共指消解与实体链接 | 547 | ⬜ 待翻译 |
+| 25 | 篇章连贯 | 577 | ⬜ 待翻译 |
+| 26 | 会话及其结构 | 599 | ⬜ 待翻译 |
 
 ## 附录
 
