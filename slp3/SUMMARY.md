@@ -2,14 +2,14 @@
 
 **Speech and Language Processing（第三版）** — Daniel Jurafsky & James H. Martin，2026 年 8 月版，646 页 / 26 章。
 
-图例：✅ 已完成 · 🚧 进行中 · ⬜ 待翻译　　**进度：1 / 26 章**
+图例：✅ 已完成 · 🚧 进行中 · ⬜ 待翻译　　**进度：2 / 26 章**
 
 ## 第一部分 · 大语言模型（Large Language Models）
 
 | # | 章节 | 原书页 | 中文 |
 |---|---|---|---|
 | 1 | 引言 | 11 | ✅ [在线阅读](zh/html/01-introduction.html) · [对照](zh/html/01-introduction.dual.html) · [PDF](zh/pdf/01-introduction-zh.pdf) · [对照PDF](zh/dual/01-introduction-dual.pdf) · [MD](zh/md/01-introduction.md) |
-| 2 | 词与词元 | 41 | ⬜ 待翻译 |
+| 2 | 词与词元 | 41 | ✅ [在线阅读](zh/html/02-words-and-tokens.html) · [对照](zh/html/02-words-and-tokens.dual.html) · [PDF](zh/pdf/02-words-and-tokens-zh.pdf) · [对照PDF](zh/dual/02-words-and-tokens-dual.pdf) · [MD](zh/md/02-words-and-tokens.md) |
 | 3 | N-gram 语言模型 | 76 | ⬜ 待翻译 |
 | 4 | 逻辑回归 | 100 | ⬜ 待翻译 |
 | 5 | 嵌入 | 135 | ⬜ 待翻译 |

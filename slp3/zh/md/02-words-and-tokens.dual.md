@@ -1,0 +1,2528 @@
+# 第 2 章 词与词元
+
+### 章
+
+> CHAPTER
+
+# 2 词与词元
+
+> 2 Words and Tokens
+
+> 用户：我需要一些帮助，这一点似乎很确定。
+>
+> *User: I need some help, that much seems certain.*
+
+> ELIZA：如果你得到一些帮助，那对你意味着什么
+>
+> *ELIZA: WHAT WOULD IT MEAN TO YOU IF YOU GOT SOME HELP*
+
+> 用户：也许我可以学着与我的母亲相处。
+>
+> *User: Perhaps I could learn to get along with my mother.*
+
+> ELIZA：多跟我讲讲你的家人
+>
+> *ELIZA: TELL ME MORE ABOUT YOUR FAMILY*
+
+> 用户：我的母亲照顾我。
+>
+> *User: My mother takes care of me.*
+
+> ELIZA：你家里还有谁照顾你
+>
+> *ELIZA: WHO ELSE IN YOUR FAMILY TAKES CARE OF YOU*
+
+> 用户：我的父亲。
+>
+> *User: My father.*
+
+> ELIZA：你的父亲
+>
+> *ELIZA: YOUR FATHER*
+
+> 用户：在某些方面你像我的父亲。
+>
+> *User: You are like my father in some ways.*
+
+Weizenbaum（1966）
+
+> Weizenbaum (1966)
+上面这段对话来自 ELIZA，一个早期的自然语言处理系统，
+
+> The dialogue above is from ELIZA, an early natural language processing system
+
+> `ELIZA`
+>
+> 释义：早期自然语言处理系统，用词上的模式匹配模仿罗杰斯式心理治疗师的回应，与用户进行有限的对话。
+
+它能通过模仿罗杰斯式心理治疗师的回应，与用户进行有限的对话（Weizenbaum, 1966）。ELIZA 是一个简单得令人惊讶的程序，它利用词上的模式匹配来识别诸如“我需要 X”这样的短语，并把词替换成合适的输出，如“如果你得到 X，那对你意味着什么？”。ELIZA 对人类对话的模仿，用现代标准衡量非常粗糙，却取得了惊人的成功：许多与 ELIZA 交互过的人开始相信它真的理解自己。因此，这项工作使研究者首次开始思考聊天机器人对其用户的影响（Weizenbaum, 1976）。
+
+> that could carry on a limited conversation with a user by imitating the responses of a Rogerian psychotherapist (Weizenbaum, 1966). ELIZA is a surprisingly simple program that uses pattern matching on words to recognize phrases like “I need X”and change the words into suitable outputs like “What would it mean to you if you got X?”. ELIZA’s mimicry of human conversation, while very crude by modern standards, was remarkably successful: many people who interacted with ELIZA came to believe that it really understood them. As a result, this work led researchers to first think about the impacts of chatbots on their users (Weizenbaum, 1976).
+
+当然，现代聊天机器人并不使用那种简单的基于模式的模仿，
+
+> Of course modern chatbots don’t use the simple pattern-based mimicry that
+这种模仿正是 ELIZA 首创的。然而，ELIZA 中对词所实现的基于模式的方法在今天依然有意义，其背景便是词元化，即从连续文本中切分或
+
+> ELIZA pioneered. Yet the pattern-based approach to words instantiated in ELIZA is still relevant today in the context of tokenization, the task of separating out or
+
+> `tokenization`（词元化）
+>
+> 释义：把连续文本切分成词、词元或词片段等独立单位的处理任务，是现代自然语言处理流水线的第一步。
+
+词元化出词和词片段的任务。词元化是现代自然语言处理的第一步，其中包含可追溯到 ELIZA 的基于模式的方法。
+
+> tokenizing words and word parts from running text. Tokenization, the first step in modern NLP, includes pattern-based approaches that date back to ELIZA.
+
+要理解词元化，我们首先需要问：什么是词？um 是一个词吗？
+
+> To understand tokenization we first need to ask: What is a word? Is um a word?
+
+那纽约又该怎么算？不同语言中词的性质是否相似？有些语言，比如越南语或粤语，词非常短，而另一些语言，比如土耳其语，词则非常长。我们还需要考虑如何从字符的角度表示词。我们将介绍 Unicode——表示字符的现代系统，以及 UTF-8 文本编码。我们还会介绍语素，即词中有意义的组成部分（比如 longer 一词中的语素 -er）。
+
+> What about New York? Is the nature of words similar across languages? Some languages, like Vietnamese or Cantonese, have very short words while others, like Turkish, have very long words. We also need to think about how to represent words in terms of characters. We’ll introduce Unicode, the modern system for representing characters, and the UTF-8 text encoding. And we’ll introduce the morpheme, the meaningful subpart of words (like the morpheme -er in the word longer).
+
+对文本进行词元化的标准做法，是用输入字符来引导我们。
+
+> The standard way to tokenize text is to use the input characters to guide us.
+
+因此，在理解了词可能有哪些组成部分之后，我们将介绍标准的字节对编码（BPE）算法，它能把输入文本自动切分
+
+> So once we understand the possible subparts of words, we’ll introduce the standard Byte-Pair Encoding (BPE) algorithm that automatically breaks up input text
+
+> `BPE`
+>
+> 释义：依据字符序列的简单统计，反复合并最频繁的相邻符号，从而自动切分文本并归纳出子词词表的算法。
+
+为词元。该算法利用字母序列的简单统计，归纳出一个由子词词元构成的词表。所有词元化系统还都依赖于正则
+
+> into tokens. This algorithm uses simple statistics of letter sequences to induce a vocabulary of subword tokens. All tokenization systems also depend on regular
+
+> `regular`（正则表达式）
+>
+> 释义：一种用于形式化描述和操作文本字符串的语言，是所有现代 NLP 系统中的重要工具。
+
+表达式作为一个处理步骤。正则表达式是一种用于形式化
+
+> expressions as a processing step. The regular expression is a language for formally
+
+> `expressions`（正则表达式）
+>
+> 释义：由普通字符与元字符构成的字符串模式，可匹配一整类字符串，常用于切分、过滤和抽取文本。
+
+规定和操作文本字符串的语言，是所有现代 NLP 系统中的重要工具。我们将介绍正则表达式，并给出它们的使用示例。
+
+> specifying and manipulating text strings, an important tool in all modern NLP systems. We’ll introduce regular expressions and show examples of their use.
+
+最后，我们将介绍一种称为编辑距离的度量，它衡量的是
+
+> Finally, we’ll introduce a metric called edit distance that measures how similar
+两个词或字符串有多相似，依据的是把一个字符串改成另一个字符串所需的编辑次数（插入、删除、替换）。只要我们需要比较两个词或字符串，编辑距离就在 NLP 中发挥作用，例如自动语音识别中至关重要的词错误率指标。
+
+> two words or strings are based on the number of edits (insertions, deletions, substitutions) it takes to change one string into the other. Edit distance plays a role in NLP whenever we need to compare two words or strings, for example in the crucial word error rate metric for automatic speech recognition.
+
+## 2.1 词
+
+> 2.1 Words
+
+下面这个句子中有多少个词？
+
+> How many words are in the following sentence?
+
+他们在池边野餐，然后仰躺在草地上，看着星星。
+
+> They picnicked by the pool, then lay back on the grass and looked at the stars.
+
+如果不把标点算作词，这个句子有 16 个词；如果
+
+> This sentence has 16 words if we don’t count punctuation as words, 18 if we
+把标点也算进去，则有 18 个词。我们是否把句号（“.”）、逗号（“,”）等当作词，取决于具体任务。标点对于找出事物之间的边界（逗号、句号、冒号）以及识别意义的某些方面（问号、感叹号、引号）至关重要。大语言模型通常把标点算作独立的词。
+
+> count punctuation. Whether we treat period (“.”), comma (“,”), and so on as words depends on the task. Punctuation is critical for finding boundaries of things (commas, periods, colons) and for identifying some aspects of meaning (question marks, exclamation marks, quotation marks). Large language models generally count punctuation as separate words.
+
+在定义词方面，口语还会带来其他麻烦。
+
+> Spoken language introduces other complications with regard to defining words.
+
+那么，下面这句来自口语会话的话语又该怎么算？（话语是
+
+> What about this utterance from a spoken conversation? (Utterance is the technical
+
+> `utterance`（话语）
+>
+> 释义：口语中实际说出的一段话，是句子在口语中的对应物。
+
+语言学中用来指句子的口语对应物的术语）。
+
+> linguistic term for the spoken correlate of a sentence).
+
+我 做 呃 主要——主要是商业数据处理
+
+> I do uh main- mainly business data processing
+这句话语包含两种不流畅现象。被截断的词 main- 被
+
+> This utterance has two kinds of disfluencies. The broken-off word main- is
+
+> `disfluency fragment`（不流畅片段）
+>
+> 释义：说话人中途改口而在半截处中断的残词，如例句中的 main-，转录时通常需要识别并单独处理。
+
+称为片段。像 uh 和 um 这样的词被称为填充词或填充停顿。我们
+
+> called a fragment. Words like uh and um are called fillers or filled pauses. Should
+应当把它们视为词吗？这同样取决于具体应用。如果我们
+
+> we consider these to be words? Again, it depends on the application. If we are
+
+> `filled pause`（填充停顿）
+>
+> 释义：说话人犹豫或组织语言时发出的 uh、um 一类无词汇意义的声音，在语音识别中有时按普通词处理。
+
+构建语音转写系统，我们可能最终想要把不流畅现象剔除掉。但有时我们也会保留不流畅现象。像 uh 或 um 这样的不流畅现象其实有助于语音识别预测下一个词，因为它们可能提示说话人正在重新开始一个小句或一个想法，因此在语音识别中它们被当作普通词处理。由于不同的人使用不同的不流畅现象，它们也可以成为说话人识别的线索。事实上，Clark 和 Fox Tree（2002）表明，uh 和 um 在英语中具有不同的含义。
+
+> building a speech transcription system, we might want to eventually strip out the disfluencies. But we also sometimes keep disfluencies around. Disfluencies like uh or um are actually helpful in speech recognition in predicting the upcoming word, because they may signal that the speaker is restarting the clause or idea, and so for speech recognition they are treated as regular words. Because different people use different disfluencies they can also be a cue to speaker identification. In fact Clark and Fox Tree (2002) showed that uh and um have different meanings in English.
+
+你认为它们分别是什么？
+
+> What do you think they are?
+
+也许最重要的是，在思考什么是词时，我们需要区分
+
+> Perhaps most important, in thinking about what is a word, we need to distinguish
+谈论词的两种方式，这在全书中都会很有用。让我们看一个句子。如果忽略标点，这个句子有 16 个词，但只有 14 个不同的词（因为 the 出现了 3 次）。
+
+> two ways of talking about words that will be useful throughout the book. Let’s consider a sentence. If we ignore punctuation, this sentence has 16 words, but only 14 unique words (because the occurs 3 times).
+
+他们在水池边野餐，然后仰面躺在草地上，望着星星。
+
+> They picnicked by the pool, then lay back on the grass and looked at the stars.
+
+我们把语料库中不同词的集合称为词类型。所以上面那个句子
+
+> We call the set of unique words in a corpus the word types. So the sentence above
+
+> `word type`（词类型）
+>
+> 释义：语料库中彼此不同的词构成的集合里的成员，同一词重复出现只计一次，如例句中 16 个词只对应 14 个词类型。
+
+有 14 个词类型；如果整个语言的词表（该语言中可能出现的词的集合）为 V，那么类型的数量就是词表大小 |V|。我们把连续出现的词的数量 N 称为词例，所以上例中是 16。1
+
+> has 14 word types, and if the vocabulary of a whole language (the set of possible words in the language) is V, the number of types is the vocabulary size |V|. We call word instances the number N of running words, so 16 in the example above.1
+
+> `word instance`（词例）
+>
+> 释义：文本中词每出现一次就计一个的计数单位，同一词重复出现分别计数，如上述 16 个词即 16 个词例。
+
+我们仍有需要决定的问题！例如，我们是否应该把首字母大写的
+
+> We still have decisions to make! For example, should we consider a capitalized
+字符串（如 They）和不带大写的字符串（如 they）视为同一个词类型？
+
+> string (like They) and one that is uncapitalized (like they) to be the same word type?
+
+答案是这取决于具体任务！在一些不太关心书写格式的任务中，They 和 they 可能会被合并为同一个类型；而在另一些任务中，大小写是有用的特征，会被保留。有时我们会同时保留某个 NLP 模型的两个版本，一个有大小写，一个没有大小写。
+
+> The answer is that it depends on the task! They and they might be lumped together as the same type in some tasks where we care less about the formatting, while for other tasks, capitalization is a useful feature and is retained. Sometimes we keep around two versions of a particular NLP model, one with capitalization and one without capitalization.
+
+到目前为止我们谈论的都是正字法词：基于我们的
+
+> So far we have been talking about orthographic words: words based on our
+英语书写系统的词。但定义词还有许多其他可能的方式。
+
+> English writing system. But there are many other possible ways to define words.
+
+> 在较早的传统中，而且偶尔至今仍然如此，你可能会看到把词的实例称为词例，但
+>
+> *In earlier tradition, and occasionally still, you might see word instances referred to as word tokens, but*
+
+> 语料库 类型数 = |V| 实例数 = N Shakespeare 2.9 万 88.4 万 Brown 语料库 3.8 万 100 万 Switchboard 电话对话 2 万 240 万 COCA 200 万 4.4 亿 Google n-grams 1300 万 1 万亿
+>
+> *Corpus Types = |V| Instances = N Shakespeare 29 thousand 884 thousand Brown corpus 38 thousand 1 million Switchboard telephone conversations 20 thousand 2.4 million COCA 2 million 440 million Google n-grams 13 million 1 trillion*
+
+*图 2.1 一些英语语料库的词形类型数与实例数的大致数量。其中最大的 Google n-grams 语料库包含 1300 万个类型，但这一计数只包括出现 40 次及以上的类型，因此真实数量要大得多。*
+*Figure 2.1 Rough numbers of wordform types and instances for some English language corpora. The largest, the Google n-grams corpus, contains 13 million types, but this count only includes types appearing 40 or more times, so the true number would be much larger.*
+
+例如，虽然从正字法上看 I’m 是一个词，但从语法上看它起两个词的作用：主语代词 I 和动词 ’m，即 am 的缩写。
+
+> For example, while orthographically I’m is one word, grammatically it functions as two words: the subject pronoun I and the verb ’m, short for am.
+
+一旦开始考虑其他语言，这些区分就变得更难做出。例如，像汉语、日语和泰语这类语言的书写系统根本没有正字法意义上的词！也就是说，它们不使用空格来标记可能的词边界。以汉语为例，词由字符（汉语中称为汉字）构成。每个字符通常表示一个
+
+> The distinctions get even harder to make once we start to think about other languages. For example the writing systems of languages like Chinese, Japanese, and Thai simply don’t have orthographic words at all! That is, they don’t use spaces to mark potential word-boundaries. In Chinese, for example, words are composed of characters (called hanzi in Chinese). Each character generally represents a single
+
+> `hanzi`（汉字）
+>
+> 释义：汉语书写系统的基本单位，每个汉字通常对应一个语素，并且以一个音节读出。
+
+意义单位（称为语素，下文将介绍），并且可以读作一个音节。词的平均长度大致在 1.5 到 1.9 个字符之间，具体取决于你如何度量。但由于汉语没有正字法意义上的词，判断什么算作汉语中的一个词很复杂。例如，考虑下面这个句子：
+
+> unit of meaning (called a morpheme, introduced below) and is pronounceable as a single syllable. Words are roughly between 1.5 and 1.9 characters long on average, depending on how you measure. But since Chinese has no orthographic words, deciding what counts as a word in Chinese is complex. For example, consider the following sentence:
+
+(2.1) 姚明进入总决赛 y´ao m´ıng j`ın r`u zˇong ju´e s`ai
+“Yao Ming reaches the finals”（姚明进入总决赛）
+
+> “Yao Ming reaches the finals”
+正如 Chen et al. (2017b) 所指出的，这可以看作 3 个词（这种词的界定称为“Chinese Treebank”定义，其中汉语人名（姓后接名）被当作一个词）：
+
+> As Chen et al. (2017b) point out, this could be treated as 3 words (a definition of words called the ‘Chinese Treebank’ definition, in which Chinese names (family name followed by personal names) are treated as a single word):
+
+(2.2) 姚明 进入 总决赛
+YaoMing reaches finals（姚明 进入 总决赛）
+
+> YaoMing reaches finals
+但同一个句子也可以看作 5 个词（“北京大学”标准），其中人名被拆分为各自独立的单位，并且一些形容词作为单独的词出现：
+
+> But the same sentence could be treated as 5 words (‘Peking University’ standard), in which names are separated into their own units and some adjectives appear as distinct words:
+
+(2.3) 姚 明 进入 总 决赛
+Yao Ming reaches overall finals（姚 明 进入 总 决赛）
+
+> Yao Ming reaches overall finals
+最后，在汉语中也可以完全忽略词，直接以字符作为基本元素，把句子视为 7 个字符的序列；这种做法对汉语相当有效，因为对大多数应用而言，字符处于合理的语义层级 (Li et al., 2019)：
+
+> Finally, it is possible in Chinese simply to ignore words altogether and use characters as the basic elements, treating the sentence as a series of 7 characters, which works pretty well for Chinese since characters are at a reasonable semantic level for most applications (Li et al., 2019):
+
+(2.4) 姚 明 进 入 总 决 赛
+Yao Ming enter enter overall decision game（姚 明 进 入 总 决 赛）
+
+> Yao Ming enter enter overall decision game
+但这一方法对日语和泰语并不适用，因为在这两种语言中，单个字符作为单位太小了。
+
+> But that method doesn’t work for Japanese and Thai, where the individual character is too small a unit.
+
+这些关于词的界定的问题，使得很难把词作为
+
+> These issues with defining words make it hard to use words as the basis for
+在跨语言的 NLP 中对文本进行词元化。
+
+> tokenizing text in NLP across languages.
+
+但词还有另一个问题：它们的数量实在太多了！！！
+
+> But there’s another problem with words. There are too many of them!!! How
+
+英语里究竟有多少个词？当我们谈论一门语言中词的数量时，通常指的是词类型。图 2.1 给出了从一些英语语料库中统计出的类型数与实例数的大致数值。
+
+> many words are there in English? When we speak about the number of words in the language, we are generally referring to word types. Fig. 2.1 shows the rough numbers of types and instances computed from some English corpora.
+
+你会注意到，我们考察的语料库越大，发现的词类型就
+
+> You will notice that the larger the corpora we look at, the more word types we
+越多！这说明“一共有多少个词”并没有一个明确的答案；随着我们看到的数据增多，这个答案会不断变大！我们可以从数学上看到这一事实，因为类型数 |V| 与实例数 N 之间的关系被称为 Herdan 定律（Herdan, 1960）或 Heaps 定律（Heaps, 1978），其名称取自
+
+> find! That suggests that there is not a clear answer to how many words there are; the answer keeps growing as we see more data! We can see this fact mathematically because the relationship between the number of types |V| and number of instances N is called Herdan’s Law (Herdan, 1960) or Heaps’ Law (Heaps, 1978) after its
+
+> `Herdan’s Law Heaps’ Law`（Herdan 定律 / Heaps 定律）
+>
+> 释义：刻画词类型数与实例数关系的经验规律，形式为 |V| = kN^β；语料越大，新出现的词类型越多。
+
+其发现者（分别属于语言学界和信息检索界）。该定律见
+
+> discoverers (in linguistics and information retrieval respectively). It is shown in
+式 2.5，其中 k 和 β 为正的常数，且 0 < β < 1。
+
+> Eq. 2.5, where k and β are positive constants, and 0 < β < 1.
+
+|V| = kNβ (2.5)
+β 的取值取决于语料库规模与体裁；报告中常见 0.44 到 0.56 甚至更高的数值。粗略地说，一段文本的词表规模增长速度略快于其词数长度的平方根。
+
+> The value of β depends on the corpus size and the genre; numbers from 0.44 to 0.56 or even higher have often been reported. Roughly we can say that the vocabulary size for a text goes up a little faster than the square root of its length in words.
+
+该定律还有一些变体，它们刻画的是这样一个事实：我们可以区分
+
+> There are also variants of the law, which capture the fact that we can distinguish
+大致两类词。一类是功能词，即像
+
+> roughly two classes of words. One is function words, the grammatical words like
+
+> `function words`（功能词）
+>
+> 释义：承担语法功能的词，如英语的 a、of，数量相对固定，通常不会随语料增大而无限增长。
+
+英语的 a 和 of 这样的语法词，它们的数量往往不会无限增长（一门语言中这类词通常维持固定的数量）。另一类是内容词：名词、形容词和动词，它们
+
+> English a and of, that tend not to grow indefinitely (a language tends to have a fixed number of these). The other is content words: nouns, adjectives and verbs that tend
+
+> `content words`（内容词）
+>
+> 释义：承载人、地点、事件等具体意义的实词，如名词、形容词和动词，其数量会随语料增大而持续增长。
+
+往往含有关于人、地点和事件的意义。名词，尤其是像专名（names）和科技术语这类特定名词，确实会无限增长。因此，对功能词与内容词这一差异敏感的模型，在语料库中所有词都还在出现的起始部分使用一个 β 值，而在之后只有内容词仍在出现的阶段使用第二个 β 值。
+
+> to have meanings about people and places and events. Nouns, and especially particular nouns like names and technical terms do tend to grow indefinitely. So models that are sensitive to this difference between function words and content words have one value of β for the initial part of the corpus where all words are still appearing, and then a second β afterwards for when only the content words are still appearing.
+
+图 2.2 给出了 Tria 等（2018）的一个例子，展示了在 Gutenberg 图书语料库上计算的 Heaps 定律的两个 β 值（在其图中称为 γ）。
+
+> Fig. 2.2 shows an example from Tria et al. (2018) showing two values of β (calledγ in their figure) for Heaps law computed on the Gutenberg corpus of books.
+
+![](images/02-words-and-tokens/fig_p4_0.png)
+
+*图 2.2 粗蓝线表示词表规模 |V|（在其图中称为 D）随文本长度（其 w）变化的函数，计算于公开图书构成的 Gutenberg 语料库。注意在语料库的开头，常见词与功能词都会出现，语料库规模与词表规模之间的关系大致是线性的（绿线，γ = 1）。*
+*Figure 2.2 The thick blue line shows Vocabulary size |V| (called D in their figure) as a function of text length (their w), computed on the Gutenberg corpus of publicly available books. Note that at the beginning of the corpus, we see both common and function words and the relationship between corpus size and vocabulary is roughly linear (green line, γ = 1).*
+
+> 之后，在功能词基本都已出现以后，新词的数量增长放缓，更接近语料库规模的平方根。图取自 Tria 等（2018）。
+>
+> *Later, after the function words have mainly appeared, the number of new words slows down and is closer to the square root of the corpus size. Figure from Tria et al. (2018).*
+
+词会无止境地增长这一事实，给任何计算
+
+> The fact that words grow without end leads to a problem for any computational
+模型。无论我们的词表有多大，都不可能有一个能涵盖所有可能出现的词的词表！这意味着我们的计算模型会不断遇到未知词：即此前从未见过的词。
+
+> model. No matter how big our vocabulary, we will never have a vocabulary that captures all the possible words that might occur! That means that our computational model will constantly see unknown words: words that it has never seen before.
+
+这对机器学习模型来说是一个巨大的问题。
+
+> This is a huge problem for machine learning models.
+
+由于这两个问题（第一，许多语言没有正字法意义上的词，而事后定义它们颇具挑战；第二，词的数量无界增长），语言模型和其他 NLP 模型往往不把词作为处理单位。相反，它们使用更小的单位——子词，子词可以重新组合，用来建模模型此前从未见过的新词。要讨论子词的定义，我们首先需要谈论比词更小的单位：语素和字符。
+
+> Because of these two problems (first, that many languages don’t have orthographic words, and defining them post-hoc is challenging and second, that the number of words grows without bound), language models and other NLP models don’t tend to use words as their unit of processing. Instead, they use smaller units called subwords that can be recombined to model new words that our model has never seen before. To think about defining subwords, we first need to talk about units that are smaller than words; morphemes and characters.
+
+## 2.2 语素：词的组成部分
+
+> 2.2 Morphemes: Parts of Words
+
+词是有组成部分的。在字符层面上，这一点显而易见。单词 cats 由四个字符组成，即 ‘c’、‘a’、‘t’、‘s’。但在更微妙的层面上同样如此：词有一些组成部分，它们本身具有连贯的意义。这些组成部分称为语素，对语素的研究称为形态学。一个
+
+> Words have parts. At the level of characters, this is obvious. The word cats is composed of four characters, ‘c’, ‘a’, ‘t’, ‘s’. But this is also true at a more subtle level: words have components that themselves have coherent meanings. These components are called morphemes, and the study of morphemes is called morphology. A
+
+> `morphology morpheme`（形态学；语素）
+>
+> 释义：语素是语言中最小的能承载意义的单位，形态学则研究词的内部构成方式与语素组合规律。
+
+语素是语言中最小的能承载意义的单位。因此，举例来说，
+
+> morpheme is a minimal meaning-bearing unit in a language. So, for example, the
+单词 fox 由一个语素组成（即语素 fox），而单词 cats 由两个语素组成：语素 cat 和表示复数的语素 -s。
+
+> word fox consists of one morpheme (the morpheme fox) while the word cats consists of two: the morpheme cat and the morpheme -s that indicates plural.
+
+下面是一个用连字符切分为语素的英语句子：
+
+> Here’s a sentence in English segmented into morphemes with hyphens:
+
+(2.6) Doc work-ed care-ful-ly wash-ing the glass-es
+正如我们上面提到的，在中文里，书写系统恰好是
+
+> As we mentioned above, in Chinese, conveniently, the writing system is set up
+按每个字主要对应一个语素的方式设置的。下面是一个汉语句子，每个语素字都附有意义注释，随后是整句译文：
+
+> so that each character mainly describes a morpheme. Here’s a sentence in Mandarin Chinese with each morpheme character glossed, followed by the translation:
+
+(2.7) 梅 干 菜 用 清 水 泡 软 ， 捞 出 后 ， 沥 干
+plum dry vegetable use clear water soak soft , remove out after , drip dry
+切 碎chop fragment
+把腌菜用水浸泡至软，捞出，沥干，并切碎
+
+> Soak the preserved vegetable in water until soft, remove, drain, and chop
+我们通常把语素区分为两大类：词根——词的核心
+
+> We generally distinguish two broad classes of morphemes: roots—the central
+
+> `root`（词根）
+>
+> 释义：词中承载主要意义的核心语素，可独立成词，如 worked 中的 work、glasses 中的 glass。
+
+语素，提供主要意义——以及词缀——添加各种“附加”意义。在上面的英语例子中，对于单词 worked，work 是词根，-ed 是词缀；同理，对于 glasses，glass 是词根，-es 是词缀。
+
+> morpheme of the word, supplying the main meaning—and affixes—adding “additional” meanings of various kinds. In the English example above, for the word worked, work is a root and -ed is an affix; similarly for glasses, glass is a root and-es an affix.
+
+> `affix`（词缀）
+>
+> 释义：附着在词根上、增添各类附加意义的语素，如表示过去时的 -ed 和表示复数的 -es。
+
+词缀本身分为两类，更准确地说，是介于二者之间的一个连续统——
+
+> Affixes themselves fall into two classes, or more correctly a continuum between
+
+> `inflectional morphemes`（屈折语素）
+>
+> 释义：主要承担句法功能（如标记一致、复数、时态）的语法语素，使用上能产、常为强制，意义可预测。
+
+两极。位于一端的屈折语素是一类语法语素，它们
+
+> two poles. At one end, inflectional morphemes are grammatical morphemes that
+往往起句法作用，比如标记一致关系。例如，英语用屈折语素 -s（或 -es）在名词上标记复数，用屈折语素 -ed 在动词上标记过去时。屈折语素往往具有能产性，且常常是强制性的，其意义也往往可以预测。
+
+> tend to play a syntactic role, such as marking agreement. For example, English has the inflectional morpheme -s (or -es) for marking the plural on nouns and the inflectional morpheme -ed for marking the past tense on verbs. Inflectional morphemes tend to be productive and often obligatory and their meanings tend to be predictable.
+
+> `derivational morphemes`（派生语素）
+>
+> 释义：通常只适用于特定子类词、与词根结合后常改变语法类别，且意义往往难以精确预测的语素。
+
+派生语素在适用范围和意义上都更具特异性。
+
+> Derivational morphemes are more idiosyncratic in their application and meaning.
+
+它们通常只适用于某一特定子类别的词，并产生一个与词根语法类别不同的词，其意义往往难以精确预测。
+
+> Usually they apply only to a specific subclass of words and result in a word of a different grammatical class than the root, often with a meaning hard to predict exactly.
+
+在上面的例子中，单词 care（名词）可以与派生词缀 -ful 结合，产生形容词（careful），再与另一个派生词缀 -ly 结合，得到副词（carefully）。
+
+> In the example above, the word care (a noun) can be combined with the derivational affix -ful to produce an adjective (careful), and another derivational affix -ly to result in an adverb (carefully).
+
+还有另一类语素：附着词。附着词是一种语素，它在句法上
+
+> There is another class of morphemes: clitics. A clitic is a morpheme that acts
+
+> `clitic`（附着词）
+>
+> 释义：句法作用像词，但形式缩减并（语音上、有时正字法上）依附于另一个词，如英语 I’ve 中的 ’ve。
+
+像词一样起作用，但形式已缩减，并（在语音上，有时还在正字法上）依附于另一个词。例如，英语单词 I’ve 中的语素 ’ve 就是附着词；它具有单词 have 的语法意义，但形式上不能单独出现（句子中不能只出现一个“’ve”）。英语短语 the teacher’s book 中的所有格语素 ’s 也是附着词。法语单词 l’op´era 中的定冠词 l’ 是附着词，阿拉伯语中表示 by/with 的介词 b 和表示 and 的连词 w 也是如此。
+
+> syntactically like a word but is reduced in form and attached (phonologically and sometimes orthographically) to another word. For example the English morpheme ’ve in the word I’ve is a clitic; it has the grammatical meaning of the word have, but in form it cannot appear alone (you can’t just have “’ve” alone in a sentence). The English possessive morpheme ’s in the phrase the teacher’s book is a clitic. French definite article l’ in the word l’op´era is a clitic, as are prepositions in Arabic like b‘by/with’ and conjunctions like w ‘and’.
+
+研究各语言的形态如何不同，即词如何
+
+> The study of how languages vary in their morphology, i.e., how words break
+
+> `morphological typology`（形态类型学）
+>
+> 释义：按语素如何组成词以及每个词的语素数量，对各语言的形态进行分类比较的研究。
+
+拆分成各个组成部分，称为形态类型学。尽管各语言的形态可以在许多维度上存在差异，但有两个维度对计算词元化尤为相关。
+
+> up into their parts, is called morphological typology. While morphologies of languages can differ along many dimensions, two dimensions are particularly relevant for computational word tokenization.
+
+第一个维度是每个词的语素数量。在某些语言中，
+
+> The first dimension is the number of morphemes per word. In some languages,
+如越南语，程度稍轻的还有粤语，平均每个词只略多于一个语素。我们把处于这一端的语言称为孤立语或分析语
+
+> like Vietnamese and to a lesser extent Cantonese, each word on average has just over one morpheme. We call languages at this end of the scale isolating or analytic
+
+> `isolating`（孤立语）
+>
+> 释义：平均每个词只含一个语素、几乎没有屈折变化的一类语言，如越南语和粤语。
+
+语言。例如，下面这个粤语句子中的每个词都只有一个语素（以及一个音节）：
+
+> languages. For example each word in the following Cantonese sentence has one morpheme (and one syllable):
+
+(2.8) keoi5 waa6 cyun4 gwok3 zeoi3 daai6 gaan1 uk1 hai6 ni1 gaan1
+他 说 整个 国家 最 大 建筑 房子 是 这 建筑“他说这个国家里最大的房子就是这一座”
+
+> he say entire country most big building house is this building“He said the biggest house in the country was this one”
+
+另一种情形是，在像科里亚克语这样的语言中——这是俄罗斯堪察加半岛北部使用的一种楚科奇-堪察加语系语言——单个词可能包含非常多的语素，相当于英语中的一整句话（Arkadiev, 2020; Kurebito, 2017）。我们把这类语言称为综合语，而处于该连续统最
+
+> Alternatively, in languages like Koryak, a Chukotko-Kamchatkan language spoken in the northern part of the Kamchatka peninsula in Russia, a single word may have very many morphemes, corresponding to a whole sentence in English (Arkadiev, 2020; Kurebito, 2017). We call such languages synthetic languages, and the very
+
+> `synthetic`（综合的）
+>
+> 释义：单个词可由大量语素构成，其内容常相当于英语的一整句，处在语素与词比例连续统的高端。
+
+末端的是多式综合语。
+
+> end of the scale polysynthetic languages.
+
+> `polysynthetic`（多式综合的）
+>
+> 释义：语素与词的比例达到极端的语言，一整句的信息几乎全部由动词的复杂词形承载。
+
+(2.9) t-@-nk’e-mejN-@-jetem@-nni-k
+1SG.S-E-midnight-big-E-yurt.cover-E-sew-1SG.S[PFV]“我在半夜里缝制了很多帐篷毡盖。”
+
+> 1SG.S-E-midnight-big-E-yurt.cover-E-sew-1SG.S[PFV]“I sewed a lot of yurt covers in the middle of a night.”
+
+（科里亚克语，楚科奇-堪察加语系，俄罗斯；Kurebito (2017, 844)）
+
+> (Koryak, Chukotko-Kamchatkan, Russia; Kurebito (2017, 844))
+图 2.3 展示了若干语言中每个词所含语素数量的一项早期计算，
+
+> Fig. 2.3 shows an early computation of morphemes per words on a few languages
+由语言类型学家 Joseph Greenberg（1960）给出。
+
+> by the linguistic typologist Joseph Greenberg (1960).
+
+![](images/02-words-and-tokens/fig_p6_0.png)
+
+*图 2.3 Joseph Greenberg（1960）对每个词所含语素数量的早期估计。*
+*Figure 2.3 An early estimate of morphemes per word by Joseph Greenberg (1960).*
+
+第二个维度是语素可被切分的容易程度，
+
+> The second dimension is the degree to which morphemes are easily segmentable,
+其范围从像土耳其语这样的黏着语——其中语素具有相对清晰的分界——到像俄语这样的融合语，其中单个词缀
+
+> ranging from agglutinative languages like Turkish, in which morphemes have relatively clean boundaries, to fusion languages like Russian, in which a single affix
+
+> `agglutinative fusion`（黏着 / 融合）
+>
+> 释义：按语素边界的清晰程度划分的两类语言：一类语素分界整齐，另一类则让单个词缀同时承载多种语法范畴。
+
+可能把多个语素合并在一起，例如单词 stolom 中的 -om（table-SG-INSTR-DECL1），它把工具格、单数和第一变格法这些不同的形态范畴融合起来。
+
+> may conflate multiple morphemes, like -om in the word stolom (table-SG-INSTR-DECL1), which fuses the distinct morphological categories instrumental, singular, and first declension.
+
+She reads the article 中英语的 -s 后缀就是融合的一个例子，因为该
+
+> The English -s suffix in She reads the article is an example of fusion, since the
+后缀既表示第三人称单数，也表示现在时，而且无法把这两层意义分派给 -s 的不同部分。
+
+> suffix means both third person singular but also means present tense, and there’s no way to divide up the meaning to different parts of the -s.
+
+尽管我们一直较为宽泛地谈论这些性质（分析性、多式综合性、
+
+> Although we have loosely talked about these properties (analytic, polysynthetic,
+融合性、黏着性），仿佛它们就是语言本身的属性，但实际上语言可以使用不同的形态系统，因此更准确的说法是把它们视为一般倾向。
+
+> fusional, agglutinative) as if they are properties of languages, in fact languages can make use of different morphological systems so it would be more accurate to talk about these as general tendencies.
+
+尽管如此，语素可能难以定义，而且许多语言
+
+> Nonetheless, the fact morphemes can be hard to define, and that many languages
+可能含有不易切分成若干片段的复杂语素，这一事实使得把语素用作跨语言词元化的标准变得非常困难。
+
+> can have complex morphemes that aren’t easy to break up into pieces makes it very difficult to use morphemes as a standard for tokenization cross-lingually.
+
+## 2.3 Unicode
+
+词元化还可以考虑的另一种做法是以单个字符为单位。那么，我们又该如何表示跨语言、跨书写系统的字符呢？
+
+> Another option we could consider for tokenization is the level of the individual character. How do we even represent characters across languages and writing systems?
+
+Unicode 标准是一种表示文本的方法，可用于表示由任何字符写成的文本
+
+> The Unicode standard is a method for representing text written using any character
+
+> `Unicode`
+>
+> 释义：一种通用字符编码标准，为世界各种书写系统的每个字符分配唯一码点，使跨语言文本得以统一表示。
+
+无论这些语言使用何种文字（包括苏美尔楔形文字这类死语言，以及克林贡语这类人造语言）。
+
+> in any script of the languages of the world (including dead languages like Sumerian cuneiform, and invented languages like Klingon).
+
+我们先简要回顾一下 Unicode 中一个专用于英语的子集的历史
+
+> Let’s start with a brief historical note about an English-specific subset of Unicode
+（在 Unicode 中技术上的名称是“基本拉丁文”，通常则被称为 ASCII）。
+
+> (technically called ‘Basic Latin’ in Unicode, and commonly referred to as ASCII).
+
+从 20 世纪 60 年代开始，用于书写英语的拉丁字符（就像本句中用到的这些）是用一种名为 ASCII 的编码来表示的（American Standard
+
+> Starting in the 1960s, the Latin characters used to write English (like the ones used in this sentence), were represented with a code called ASCII (American Standard
+
+> `ASCII`
+>
+> 释义：20 世纪 60 年代起用于表示英语拉丁字符的单字节编码，只使用 128 个码点，字节的高位恒为 0。
+
+Code for Information Interchange，即美国信息交换标准代码）。ASCII 用单个字节表示每个字符。一个字节可以表示 256 个不同的字符，但 ASCII 只使用了其中 128 个；ASCII 字节的高位始终置为 0。（实际上它只用了其中 95 个，其余是控制码，供一种名为电传打字机的过时机器使用）。
+
+> Code for Information Interchange). ASCII represented each character with a single byte. A byte can represent 256 different characters, but ASCII only used 128 of them; the high-order bit of ASCII bytes is always set to 0. (Actually it only used 95 of them and the rest were control codes for an obsolete machine called a teletype).
+
+下面给出几个 ASCII 字符及其十六进制和十进制表示：
+
+> Here’s a few ASCII characters with their representation in hex and decimal:
+
+字符 十六进制 十进制 字符 十六进制 十进制 字符 十六进制 十进制 字符 十六进制 十进制
+
+> Ch Hex Dec Ch Hex Dec Ch Hex Dec Ch Hex Dec
+
+| 字符<br>Ch | 十六进制<br>Hex | 十进制<br>Dec | 字符<br>Ch | 十六进制<br>Hex | 十进制<br>Dec |  | 字符<br>Ch | 十六进制<br>Hex | 十进制<br>Dec | 字符<br>Ch | 十六进制<br>Hex | 十进制<br>Dec |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| < | 3C | 60 | @ | 40 | 64 | ... | \ | 5C | 92 | ‘ | 60 | 96 |
+| = | 3D | 61 | A | 41 | 65 | ... | ] | 5D | 93 | a | 61 | 97 |
+| > | 3E | 62 | B | 42 | 66 | ... | ˆ | 5E | 94 | b | 62 | 98 |
+| ? | 3F | 63 | C | 43 | 67 | ... | _ | 5F | 95 | c | 63 | 99 |
+| 图 2.4<br>Figure 2.4 |  | 若干英语字母的部分 ASCII 编码，编码同时以十六进制和十进制<br>Some selected ASCII codes for some English letters, with the codes shown bot |  |  |  |  |  |  |  |  |  |  |
+
+*图 2.4 若干英语字母的部分 ASCII 编码，编码同时以十六进制和十进制给出。*
+*Figure 2.4 Some selected ASCII codes for some English letters, with the codes shown both in hexadecimal and decimal.*
+
+但 ASCII 当然是不够的，因为世界各种书写系统中还有大量其他字符
+
+> But ASCII is of course insufficient since there are lots of other characters in the
+！即使对于使用拉丁字符的文字，字符数量也远多于 ASCII 中的 95 个。例如，下面这个西班牙语短语（意思是“先生，桑丘答道”）就有两个非 ASCII 字符：˜n 和 ´o：
+
+> world’s writing systems! Even for scripts that use Latin characters, there are many more than the 95 in ASCII. For example, this Spanish phrase (meaning “Sir, replied Sancho”) has two non-ASCII characters, ˜n and ´o:
+
+(2.10) —Se˜nor —respondi´o Sancho—
+而且许多语言根本不基于拉丁字符！天城文
+
+> And lots of languages aren’t based on Latin characters at all! The Devanagari
+
+> `Devanagari`（天城文）
+>
+> 释义：用于印地语、马拉地语、梵语等 120 种语言的书写系统，字形与拉丁字母完全不同，需由 Unicode 单独编码。
+
+文字被 120 种语言使用（包括印地语、马拉地语、尼泊尔语、信德语和梵语）。下面是《世界人权宣言》印地语文本中的一个天城文示例：
+
+> script is used for 120 languages (including Hindi, Marathi, Nepali, Sindhi, and Sanskrit). Here’s a Devanagari example from the Hindi text of the Universal Declaration of Human Rights:
+
+![](images/02-words-and-tokens/img_169.png)
+
+Unicode 中大约有 10 万个汉字（包括中文、日文、韩文和越南文所使用的重叠与不重叠变体，这些变体合称 CJKV）。
+
+> Chinese has about 100,000 Chinese characters in Unicode (including overlapping and non-overlapping variants used in Chinese, Japanese, Korean, and Vietnamese, collectively referred to as CJKV).
+
+总而言之，Unicode 16.0 支持超过 15 万个字符和 168 种不同的文字系统。尽管世界上还有许多文字系统尚未被加入 Unicode，但其中已有的实在太多了，既有现代语言使用的文字系统（中文、阿拉伯文、印地文、切罗基文、埃塞俄比亚文、高棉文、N’Ko、土耳其文、西班牙文），也有古代语言的文字系统（楔形文字、乌加里特文、埃及圣书体、巴列维文），还有数学符号、表情符号、货币符号等等。
+
+> All in all there are more than 150,000 characters and 168 different scripts supported in Unicode 16.0. Even though many scripts from around the world have yet to be added to Unicode, there are so many there, from scripts used by modern languages (Chinese, Arabic, Hindi, Cherokee, Ethiopic, Khmer, N’Ko, Turkish, Spanish) to scripts of ancient languages (Cuneiform, Ugaritic, Egyptian Hieroglyph, Pahlavi), as well as mathematical symbols, emojis, currency symbols, and more.
+
+### 2.3.1 码点
+
+> 2.3.1 Code Points
+
+它是如何工作的？Unicode 为其中每一个字符都分配了一个唯一的 id，称为码点
+
+> How does it work? Unicode assigns a unique id, called a code point, for each one
+
+> `code point`（码点）
+>
+> 释义：Unicode 为每个字符分配的抽象唯一编号，传统上以十六进制书写，如字母 a 对应 U+0061。
+
+也就是这 15 万个字符中的每一个。
+
+> of these 150,000 characters.
+
+码点是字符的抽象表示，而每个码点
+
+> The code point is an abstract representation of the character, and each code point
+都用一个数字来表示，传统上写作十六进制，从数字 0 一直到 0x10FFFF（即十进制的 1,114,111）。拥有一百多万个码点意味着有充足的空间容纳新字符。传统上用前缀“U+”来表示这些码点（它的意思只是“下面是一个码点的 Unicode 十六进制表示”）。所以字符 a 的码点是 U+0061，与 0x0061 相同。（注意，Unicode 的设计目标是向后兼容 ASCII，也就是说前 128 个码点，包括 a 的编码，都与 ASCII 完全相同。）下面是一些码点示例；其中一部分（但不是全部）带有说明：
+
+> is represented by a number, traditionally written in hexadecimal, from number 0 through 0x10FFFF (which is 1,114,111 decimal). Having over a million code points means there is a lot of room for new characters. It is traditional to represent these code points with the prefix “U+” (which just means “the following is a Unicode hex representation of a code point”). So the code point for the character a is U+0061 which is the same as 0x0061. (Note that Unicode was designed to be backwards compatible with ASCII, which means that the first 128 code points, including the code for a, are identical with ASCII.) Here are some sample code points; some (but not all) come with descriptions:
+
+| U+0061 | a | 拉丁小写字母 A<br>LATIN SMALL LETTER A |
+| --- | --- | --- |
+| U+0062 | b | 拉丁小写字母 B<br>LATIN SMALL LETTER B |
+| U+0063 | c | 拉丁小写字母 C<br>LATIN SMALL LETTER C |
+| U+00F9 | `u | 带重音符的拉丁小写字母 U<br>LATIN SMALL LETTER U WITH GRAVE |
+| U+00FA | ´u | 带锐音符的拉丁小写字母 U<br>LATIN SMALL LETTER U WITH ACUTE |
+| U+00FB | ˆu | 带扬抑符的拉丁小写字母 U<br>LATIN SMALL LETTER U WITH CIRCUMFLEX |
+| U+00FC | ¨u | 带分音符的拉丁小写字母 U<br>LATIN SMALL LETTER U WITH DIAERESIS |
+| U+8FDB | 进 |  |
+| U+8FDC | 远 |  |
+| U+8FDD | 违 |  |
+| U+8FDE | 连 |  |
+| U+1F600 |  | 咧嘴笑的脸<br>GRINNING FACE |
+| U+1F00E | 🀎 | 麻将牌八万<br>MAHJONG TILE EIGHT OF CHARACTERS |
+
+![](images/02-words-and-tokens/img_208.png)
+
+### U+1F00E 🀎
+
+注意，码点并不指定字形，也就是字符的视觉表示
+
+> Note that a code point does not specify the glyph, the visual representation of
+
+> `glyph`（字形）
+>
+> 释义：字符在具体字体中呈现的视觉形状，同一码点可以有多种不同写法。
+
+![](images/02-words-and-tokens/img_208.png)
+
+字形存放在字体之中。码点 U+0061 是 a 的抽象表示。视觉表示可以有无限多种，例如 Times Roman（a）或 Courier（a）等不同字体，又或者粗体（a）、斜体（a）等不同字型样式。但它们全都是由同一个码点 U+0061 表示的。
+
+> a character. Glyphs are stored in typefaces. The code point U+0061 is an abstract representation of a. There can be an indefinite number of visual representations, for example in different typefaces like Times Roman (a) or Courier (a), or different font styles like boldface (a) or italic (a). But all of them are represented by the same code point U+0061.
+
+### 2.3.2 UTF-8 编码
+
+> 2.3.2 UTF-8 Encoding
+
+虽然码点（那个唯一 id）是字符在 Unicode 中的抽象表示，但我们并不会直接把那个 id 塞进文本文件。
+
+> While the code point (the unique id) is the abstract Unicode representation of the character, we don’t just stick that id in a text file.
+
+相反，每当需要在文本字符串中表示某个字符时，我们写出的是该字符的一种
+
+> Instead, whenever we need to represent a character in a text string, we write an
+编码。可能的编码方法有很多种，但
+
+> encoding of the character. There are many different possible encoding methods, but
+
+> `encoding`（编码）
+>
+> 释义：把码点写成字节序列以存入文本的具体方法，其中 UTF-8 使用最为广泛。
+
+名为 UTF-8 的编码方法是最常见的（例如几乎整个互联网都采用 UTF-8 编码）。
+
+> the encoding method called UTF-8 is by far the most frequent (for example almost the entire web is encoded in UTF-8).
+
+下面来谈谈编码。单词 hello 的 Unicode 表示由以下 5 个码点组成的序列构成：
+
+> Let’s talk about encodings. The Unicode representation of the word hello consists of the following sequence of 5 code points:
+
+U+0068 U+0065 U+006C U+006C U+006F
+我们可以设想一种非常简单的编码方法：只需把码点 id 写进
+
+> We can imagine a very simple encoding method: just write the code point id in
+一个文件。由于字符超过 100 万个，16 位（2 字节）并不够用，所以我们需要用 4 字节（32 位）来容纳表示 110 万个字符所需的 21 位。（我们其实可以用 3 字节装下，但以 3 的倍数来划分字节很不方便。）
+
+> a file. Since there are more than 1 million characters, 16 bits (2 bytes) isn’t enough, so we’ll need to use 4 bytes (32 bit) to capture the 21 bits we need to represent 1.1 million characters. (We could fit it in 3 bytes but it’s inconvenient to use multiples of 3 for bytes.)
+采用这种 4 字节表示法，单词 hello 会被编码为下面这组字节：
+
+> With this 4-byte representation the word hello would be encoded as the following set of bytes:
+
+00 00 00 68 00 00 00 65 00 00 00 6C 00 00 00 6C 00 00 00 6F
+但我们并不使用这种编码（严格说来它称为 UTF-32），因为它
+
+> But we don’t use this encoding (which is technically called UTF-32) because it
+会使每个文件都比用 ASCII 时长出 4 倍，让文件变得极大且充斥零字节。此外这些零还会带来另一个问题：事实证明，出现任何全零的字节都会破坏向后兼容性，因为历史上基于 ASCII 的系统把 0 字节用作字符串结束标记。
+
+> makes every file 4 times longer than it would have been in ASCII, making files really big and full of zeros. Also those zeros cause another problem: it turns out that having any byte that is completely zero messes things up for backwards compatibility for ASCII-based systems that historically used a 0 byte as an end-of-string marker.
+
+相反，最常见的编码标准是 UTF-8（Unicode Transformation Format 8），它让一些字符用较少的字节、另一些字符用较多的字节来表示，从而高效地表示字符（平均使用更少的字节）。
+
+> Instead, the most common encoding standard is UTF-8 (Unicode Transformation Format 8), which represents characters efficiently (using fewer bytes on average) by writing some characters using fewer bytes and some using more bytes.
+
+> `UTF-8`
+>
+> 释义：Unicode 最常用的变长编码标准：前 128 个码点与 ASCII 相同，各占 1 字节，其余码点用 2 至 4 字节表示。
+
+> `variable-length encoding`（变长编码）
+>
+> 释义：不同字符所占字节数并不固定的编码方式，如 UTF-8 中常用字符占 1 字节，其他字符占 2 至 4 字节。
+
+因此 UTF-8 是一种变长编码。
+
+> UTF-8 is thus a variable-length encoding.
+
+对于某些字符（前 128 个码点，即 ASCII 字符集），
+
+> For some characters (the first 128 code points, i.e. the set of ASCII characters),
+UTF-8 把它们编码为单个字节，所以 hello 的 UTF-8 编码是：
+
+> UTF-8 encodes them as a single byte, so the UTF-8 encoding of hello is :
+
+68 65 6C 6C 6F
+这恰好意味着用 ASCII 编码的文件同时也是合法的 UTF-8 编码！
+
+> This conveniently means that files encoded in ASCII are also valid UTF-8 encodings!
+
+但 UTF-8 是一种变长编码，这意味着大于等于 128 的码点会被
+
+> But UTF-8 is a variable length encoding, meaning that code points ≥128 are
+编码为两个、三个或四个字节的序列。这些字节的取值都在 128 到 255 之间，因此不会与 ASCII 混淆；而且每个字节都用开头几位表明自己属于 2 字节、3 字节还是 4 字节编码。
+
+> encoded as a sequence of two, three, or four bytes. Each of these bytes are between 128 and 255, so they won’t be confused with ASCII, and each byte indicates in the first few bits whether it’s a 2-byte, 3-byte, or 4-byte encoding.
+
+| 码点<br>Code Points |  |  | UTF-8 编码<br>UTF-8 Encoding |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| 起始 - 结束<br>From - To |  | 位值<br>Bit Value | 字节 1<br>Byte 1 | 字节 2<br>Byte 2 | 字节 3<br>Byte 3 | 字节 4<br>Byte 4 |
+| U+0000-U+007F |  | 0xxxxxxx | 0xxxxxxx |  |  |  |
+| U+0080-U+07FF |  | 00000yyy yyxxxxxx | 110yyyyy | 10xxxxxx |  |  |
+| U+0800-U+FFFF |  | zzzzyyyy yyxxxxxx | 1110zzzz | 10yyyyyy | 10xxxxxx |  |
+| U+010000-U+10FFFF |  | 000uuuuu zzzzyyyy yyxxxxxx | 11110uuu | 10uuzzzz | 10yyyyyy | 10xxxxxx |
+| 图 2.5<br>Figure 2.5 | 从 Unicode 码点到变长 UTF-8 编码的映射。对于给定的码点<br>Mapping from Unicode code point to the variable length UTF-8 encoding. For a given code point |  |  |  |  |  |
+
+> U+0800-U+FFFF zzzzyyyy yyxxxxxx 1110zzzz 10yyyyyy 10xxxxxx U+010000-U+10FFFF 000uuuuu zzzzyyyy yyxxxxxx 11110uuu 10uuzzzz 10yyyyyy 10xxxxxx
+
+> 在起始-结束范围内，第 2 列的位值被装入 1、2、3 或 4 个字节。图改编自 Unicode 16.0 核心规范第 3 章表 3-6。
+>
+> *in the From-To range, the bit value in column 2 is packed into 1, 2, 3, or 4 bytes. Figure adapted from Unicode 16.0 Core Spec Chapter 3 Table 3-6.*
+
+图 2.5 展示了这种映射是如何发生的。例如，这些规则说明了
+
+> Fig. 2.5 shows how this mapping occurs. For example these rules explain what
+该如何处理字符 ˜n，它的码点是 U+00F1。我们查看第二行，因为 U+00F1 位于 U+0080 和 U+07FF 之间。然后我们取出与 U+00F1 对应的位序列，把它映射到第二列中的 y 和 x 值上。在这里它看起来像 00000000 11110001（其中蓝色表示序列 yyyyy，红色表示序列 xxxxxx）。最后，表格右侧展示了这个位序列如何被编码成两字节的位序列 11000011 10110001，它对应 0xC3B1。作为这些规则的结果，前 127 个字符（ASCII）映射为一个字节，欧洲、中东和非洲文字中大多数其余字符映射为两个字节，大多数中文、日文和韩文字符映射为三个字节，而更罕见的 CJKV 字符、emoji 以及一些符号映射为 4 个字节。
+
+> to do with the character ˜n, which has code point U+00F1. We look on the second row because U+00F1 is between U+0080 and U+07FF. Then we take the bit sequence corresponding to U+00F1, and map it into the y and x values in the second column. In this case it looks like 00000000 11110001, (where blue indicates the sequence yyyyy and red the sequence xxxxxx). Finally, the right side of the table shows how this bit sequence is encoded into the two-byte bit sequence 11000011 10110001, which corresponds to 0xC3B1. As a result of these rules, the first 127 characters (ASCII) are mapped to one byte, most remaining characters in European, Middle Eastern, and African scripts map to two bytes, most Chinese, Japanese, and Korean characters map to three bytes, and rarer CJKV characters and emojis and some symbols map to 4 bytes.
+
+UTF-8 有许多优点。它相对高效，对于
+
+> UTF-8 has a number of advantages. It’s relatively efficient, using fewer bytes for
+常见字符使用的字节更少，它不使用零字节（除非是字面表示 NULL 字符，即 U+0000），它与 ASCII 向后兼容，并且它是自同步的，这意味着如果文件损坏了，总是可以通过向左或向右移动至多 3 个字节来找到下一个或前一个字符的起始位置。
+
+> commonly-encountered characters, it doesn’t use zero bytes (except when literally representing the NULL character which is U+0000), it’s backwards compatible with ASCII, and it’s self-synchronizing, meaning that if a file is corrupted, it’s always possible to find the start of the next or prior character just by moving up to 3 bytes left or right.
+
+Unicode 与 Python：从 Python 3 开始，所有 Python 字符串在内部都以 Unicode 存储，每个字符串是一个 Unicode 码点序列。因此字符串函数和正则表达式都原生地作用于码点。例如，像字符串的 len() 这样的函数返回的是它以字符计的长度，也就是码点数，而不是以字节计的长度。
+
+> Unicode and Python: Starting with Python 3, all Python strings are stored internally as Unicode, each string a sequence of Unicode code points. Thus string functions and regular expressions all apply natively to code points. For example, functions like len() of a string return its length in characters, i.e., code points, not its length in bytes.
+
+不过，在从文件读取或向文件写入时，码点需要被编码
+
+> When reading or writing from a file, however, the code points need to be encoded
+并使用像 UTF-8 这样的方法来解码。也就是说，每个文件都以某种编码方式编码。如果它不是 UTF-8，那就是像 ASCII 或 Latin-1（iso 8859 1）这样的较旧编码方法。不存在没有编码的文本文件。在 Python 中，打开文件进行读取和写入时会指定编码方法。
+
+> and decoded using a method like UTF-8. That is, every file is encoded in some encoding. If it’s not UTF-8, it’s an older encoding method like ASCII or Latin-1(iso 8859 1). There is no such thing as a text file without an encoding. The encoding method is specified in Python when opening a file for reading and writing.
+
+## 2.4 子词词元化：字节对编码
+
+> 2.4 Subword Tokenization: Byte-Pair Encoding
+
+词元化是自然语言处理的第一阶段，是把连续不断的输入文本切分为词元的过程。
+
+> Tokenization, the first stage of natural language processing, is the process of segmenting the running input text into tokens.
+
+> `tokenization tokens`（词元化；词元）
+>
+> 释义：把连续输入文本切分为词元的处理过程，切分所得的单位即词元，是自然语言处理流程的第一步。
+
+我们已经见过三种词元的候选单位：词、语素和字符。但
+
+> We’ve seen three candidates for tokens: words, morphemes and characters. But
+它们各自作为单位都有问题。词和语素似乎大致处于适合 NLP 处理的层级，因为它们往往具有一致的含义，但很难给出形式化的定义。字符的定义更清晰，但作为词元的单位似乎太小。
+
+> each has problems as a unit. Words and morphemes seem approximately at the right level for NLP processing, since they tend to have consistent meanings, but they are challenging to define formally. Characters are clearer to define, but seem too small a unit to choose for tokens.
+
+本节介绍我们在 NLP 实践中的做法：使用数据驱动的
+
+> In this section we introduce what we do in practice for NLP: use a data-driven
+方法来定义词元，这样得到的单位通常与语素或词的大小相当，但偶尔也会用到小至字符的单位。
+
+> approach to define tokens that will generally result in units about the size of morphemes or words, but occasionally use units as small as characters.
+
+为什么要对输入做词元化？一个原因是，把输入转换为确定的
+
+> Why tokenize the input? One reason is that converting an input to a deterministic
+固定单位集合，意味着不同的算法和系统能够在简单问题上取得一致。例如：这段文本有多长？（它包含多少个单位？）或者：don’t 或 New York 是一个词元还是两个词元？因此，标准化对于 NLP 实验的可复现性至关重要，本书介绍的许多算法（如用于语言模型的困惑度指标）都假定所有文本都有固定的词元化结果。
+
+> fixed set of units means that different algorithms and systems can agree on simple questions. For example, How long is this text? (How many units are in it?). Or: Is don’t or New York one token or two? Standardizing is thus essential for replicability in NLP experiments, and many algorithms that we introduce in this book(like the perplexity metric for language models) assume that all texts have a fixed tokenization.
+
+为语素和字母等更小单位也保留词元的词元化算法
+
+> Tokenization algorithms that include smaller tokens for morphemes and letters
+也消除了未登录词的问题。什么是未登录词？正如我们将在下一章看到的，NLP 算法常常从一个语料库（训练语料库）中学习关于语言的一些事实，然后用这些事实对另一个测试语料库及其语言做出判断。因此，如果我们的训练语料库包含 low、new 和 newer 这些词，却不包含 lower，那么当 lower 这个词出现在测试语料库中时，我们的系统就不知道该怎么处理它。
+
+> also eliminate the problem of unknown words. What are these? As we will see in the next chapter, NLP algorithms often learn some facts about language from one corpus (a training corpus) and then use these facts to make decisions about a separate test corpus and its language. Thus if our training corpus contains, say the words low, new, and newer, but not lower, then if the word lower appears in our test corpus, our system will not know what to do with it.
+
+为了解决这个未登录词问题，现代词元化器会自动归纳出词元集合，其中包含比词更小的词元，称为子词。子词可以是任意的子串，也可以是像语素 -est 或 -er 这样承载意义的单位。在现代词元化方案中，许多词元是词，但另一些词元是频繁出现的语素或其他子词，如 -er。
+
+> To deal with this unknown word problem, modern tokenizers automatically induce sets of tokens that include tokens smaller than words, called subwords. Sub- words can be arbitrary substrings, or they can be meaning-bearing units like the morphemes -est or -er. In modern tokenization schemes, many tokens are words, but other tokens are frequently occurring morphemes or other subwords like -er.
+
+这样，每个未出现过的词都可以用某个已知子词单位的序列来表示。例如，如果我们恰好从未见过 lower 这个词，那么当它出现时，我们可以把它成功切分为我们已经见过的 low 和 er。
+
+> Every unseen word can thus be represented by some sequence of known subword units. For example, if we had happened not to ever see the word lower, when it appears we could segment it successfully into low and er which we had already seen.
+
+在最坏的情况下，一个非常罕见的词（也许像 GRPO 这样的缩写词）在必要时会被词元化为单个字母的序列。
+
+> In the worst case, a really unusual word (perhaps an acronym like GRPO) could be tokenized as a sequence of individual letters if necessary.
+
+现代语言模型中广泛使用两种词元化算法：字节对编码（BPE）（Sennrich et al., 2016）和一元语言建模（unigram language modeling, ULM）（Kudo, 2018）。2 本节我们介绍字节对编码，即 BPE
+
+> Two tokenization algorithms are widely used in modern language models: bytepair encoding (BPE) (Sennrich et al., 2016), and unigram language modeling(ULM) (Kudo, 2018).2 In this section we introduce the byte-pair encoding or BPE
+
+> `BPE`（字节对编码（BPE））
+>
+> 释义：一种从字符出发、反复合并语料中最频繁相邻词元以生成子词词表的词元化算法。
+
+算法（Sennrich et al., 2016; Gage, 1994）；见图 2.6。
+
+> algorithm (Sennrich et al., 2016; Gage, 1994); see Fig. 2.6.
+
+与大多数词元化方案一样，BPE 算法包含两部分：一个训练
+
+> Like most tokenization schemes, the BPE algorithm has two parts: a training
+阶段，以及编码器阶段。一般来说，在词元训练阶段，词元化器接受一个原始训练语料库（通常已大致预先切分为词，例如按空白字符切分），并归纳出一个词表，即一组词元。随后在编码阶段，词元化器接受一个原始测试句子，把它编码为训练中所学词表里的词元。
+
+> phase, and the encoder phase. In general in the token training phase the tokenizer takes a raw training corpus (usually roughly pre-separated into words, for example by whitespace) and induces a vocabulary, a set of tokens. Then in the encoding phase the tokenizer takes a raw test sentence and encodes it into the tokens in the vocabulary that were learned in training.
+
+### 2.4.1 BPE 训练
+
+> 2.4.1 BPE training
+
+BPE 训练算法迭代地合并频繁相邻的词元，从而生成越来越长的词元。该算法从一个仅由所有单个字符组成的词表开始。然后它检查训练语料库，找出最频繁相邻的两个字符。设想我们的原始语料库长度为 10 个字符，使用的词表包含 5 个字符 {A, B, C, D, E}：
+
+> The BPE training algorithm iteratively merges frequent neighboring tokens to create longer and longer tokens. The algorithm begins with a vocabulary that is just the set of all individual characters. It then examines the training corpus, and finds the two characters that are most frequently adjacent. Imagine our original corpus is 10 characters long, using a vocabulary of 5 characters, {A, B, C, D, E}:
+
+A B D C A B E C A B
+出现最频繁的相邻字符对是“A B”，于是我们合并它们，
+
+> The most frequent neighboring pair of characters is “A B” so we merge those,
+向词表中加入一个新的合并词元‘AB’，并把语料库中每一处相邻的‘A’‘B’替换为新的‘AB’：
+
+> add a new merged token ‘AB’ to the vocabulary, and replace every adjacent ‘A’ ‘B’in the corpus with the new ‘AB’:
+
+AB D C AB E C AB
+现在我们有一个包含 6 个可能词元的词表 {A, B, C, D, E, AB}，而
+
+> Now we have a vocabulary of 6 possible tokens {A, B, C, D, E, AB}, and the
+语料库的长度为 7。现在最频繁的词元对是“C AB”，于是我们合并它们，得到一个包含 7 个词元的词表 {A, B, C, D, E, AB, CAB}，而语料库的长度为 5。
+
+> corpus has length 7. And now the most frequent pair of tokens is “C AB”, so we merge those, leading to a vocabulary with 7 tokens {A, B, C, D, E, AB, CAB}, and the corpus has length 5.
+
+AB D CAB E CAB
+算法继续计数并合并，生成越来越长的
+
+> The algorithm continues to count and merge, creating new longer and longer
+字符串，直到完成 k 次合并、产生 k 个新词元；因此 k 是该算法的一个参数。得到的词表由原始字符集合加上 k 个新符号组成。这就是该算法的核心。
+
+> character strings, until k merges have been done creating k novel tokens; k is thus a parameter of the algorithm. The resulting vocabulary consists of the original set of characters plus k new symbols. That’s the core of the algorithm.
+
+唯一额外的复杂之处在于，实践中算法并非运行在
+
+> The only additional complication is that in practice, instead of running on the
+原始字符序列上，而通常只在词内部运行。也就是说，算法不跨词边界合并。为此，输入语料库往往先按空白字符和标点切分（使用我们在本章后面定义的正则表达式）。这样就得到一组起始字符串，每个字符串对应一个词的字符，（空白字符通常附着在词的开头），同时还得到各词的计数。随后，尽管计数来自语料库，合并却只允许在字符串内部进行。
+
+> raw sequence of characters, the algorithm is usually run only inside words. That is, the algorithm does not merge across word boundaries. To do this, the input corpus is often first separated at white space and punctuation (using the regular expressions that we define later in the chapter). This gives a starting set of strings, each corresponding to the characters of a word, (with the white space usually attached to the start of the word), together with the counts of the words. Then while counts come from a corpus, merges are only allowed within the strings.
+
+让我们看看完整的算法如何在这个微小的合成语料库上运作，其中
+
+> Let’s see how the full algorithm thus works on this tiny synthetic corpus, where
+我们已显式标出了单词之间的空格：3
+
+> we’ve explicitly marked the spaces between words:3
+(2.11) set new new renew reset renew
+首先，我们把语料库切分为单词，连同前导空白一起，
+
+> First, we’ll break up the corpus into words, with leading whitespace, together
+并统计它们的频次；不允许任何合并越过这些单词边界。
+
+> with their counts; no merges will be allowed to go beyond these word boundaries.
+
+结果如下面的 4 个单词列表和由 7 个字符构成的初始词表所示：
+
+> The result looks like the following list of 4 words and a starting vocabulary of 7 characters:
+
+语料库 词表 2 n e w , e, n, r, s, t, w 2 r e n e w 1 s e t 1 r e s e t
+
+> corpus vocabulary 2 n e w , e, n, r, s, t, w 2 r e n e w 1 s e t 1 r e s e t
+BPE 训练算法首先统计所有相邻符号对：出现
+
+> The BPE training algorithm first counts all pairs of adjacent symbols: the most
+最频繁的是符号对 n e，因为它在 new（频次为 2）和 renew（频次为 2）中出现，总计出现 4 次。随后我们合并这些符号，把 ne 视为一个符号，再重新统计：
+
+> frequent is the pair n e because it occurs in new (frequency of 2) and renew (frequency of 2) for a total of 4 occurrences. We then merge these symbols, treating ne as one symbol, and count again:
+
+语料库 词表 2 ne w , e, n, r, s, t, w, ne 2 r e ne w 1 s e t 1 r e s e t
+
+> corpus vocabulary 2 ne w , e, n, r, s, t, w, ne 2 r e ne w 1 s e t 1 r e s e t
+现在最频繁的符号对是 ne w（总计 4 次），我们将其合并。
+
+> Now the most frequent pair is ne w (total count=4), which we merge.
+
+语料库 词表 2 new , e, n, r, s, t, w, ne, new 2 r e new 1 s e t 1 r e s e t
+
+> corpus vocabulary 2 new , e, n, r, s, t, w, ne, new 2 r e new 1 s e t 1 r e s e t
+接下来 r（总计出现 3 次）被合并为 r，随后 r e（总计 3 次）被合并为 re。该系统实质上归纳出存在一个词首前缀 re-：
+
+> Next r (total count of 3) gets merged to r, and then r e (total count 3) gets merged to re. The system has essentially induced that there is a word-initial prefix re-:
+
+语料库 词表 2 new , e, n, r, s, t, w, ne, new, r, re 2 re new 1 s e t 1 re s e t
+
+> corpus vocabulary 2 new , e, n, r, s, t, w, ne, new, r, re 2 re new 1 s e t 1 re s e t
+如果继续下去，接下来的合并为：
+
+> If we continue, the next merges are:
+
+> 合并 当前词表( , new) , e, n, r, s, t, w, ne, new, r, re, new
+>
+> *merge current vocabulary( , new) , e, n, r, s, t, w, ne, new, r, re, new*
+
+> ( re, new) , e, n, r, s, t, w, ne, new, r, re, new, renew
+
+> (s, e) , e, n, r, s, t, w, ne, new, r, re, new, renew, se
+
+> (se, t) , e, n, r, s, t, w, ne, new, r, re, new, renew, se, set
+
+![](images/02-words-and-tokens/fig_p13_0.png)
+
+*图 2.6 BPE 算法的训练部分：把语料库拆分为单个字符或字节，并通过迭代合并词元来学得一个词表。图改编自 Bostrom and Durrett (2020)。*
+*Figure 2.6 The training part of the BPE algorithm for taking a corpus broken up into individual characters or bytes, and learning a vocabulary by iteratively merging tokens. Figure adapted from Bostrom and Durrett (2020).*
+
+### 2.4.2 BPE 编码器
+
+> 2.4.2 BPE encoder
+
+一旦学好了词表，就用 BPE 编码器对测试句子进行词元化。编码器只是在测试数据上执行我们从训练数据中学到的那些合并。它按我们学到它们的顺序执行这些合并（即贪心地执行，也就是从训练数据中出现最频繁的开始）。测试数据中的频率不起作用，起作用的只是训练数据中的频率。于是我们先把每个测试句子的词切分为字符。然后应用第一条规则：把测试语料库中每一处 n e 都替换为 ne，接着应用第二条规则：把测试语料库中每一处 ne w 都替换为 new，依此类推。到最后，许多合并当然只是重建了训练集中的词。但这些合并也产生了对语素的认知，例如 re- 前缀（它可能出现在 revisit 或 rearrange 这类也许未曾见过的组合中），或者不带起始空格的语素 new（因而是词内部的），后者可能出现在句子开头，也可能出现在训练中未曾见过的词如 anew 中。
+
+> Once we’ve learned our vocabulary, the BPE encoder is used to tokenize a test sentence. The encoder just runs on the test data the merges we have learned from the training data. It runs them in the order we learned them (i.e., greedily, meaning starting from the most frequent in the training data). The frequencies in the test data don’t play a role, just the frequencies in the training data. So first we segment each test sentence word into characters. Then we apply the first rule: replace every instance of n e in the test corpus with ne, and then the second rule: replace every instance of ne w in the test corpus with new, and so on. By the end of course many of the merges simply recreated words in the training set. But the merges also created knowledge of morphemes like the re- prefix (that might appear in perhaps unseen combinations like revisit or rearrange), or the morpheme new without an initial space (hence word-internal) that might appear at the start of sentences or in words unseen in training like anew.
+
+当然，在实际环境中，BPE 会在一个非常
+
+> Of course in real settings BPE is run with tens of thousands of merges on a very
+大的输入语料库上执行数万次合并，从而得到 50,000、100,000 甚至 200,000 个词元的词表规模。其结果是大多数词都能用单个词元表示，只有较罕见的词（以及未知词）才不得不用多个词元表示。
+
+> large input corpus, to produce vocabulary sizes of 50,000, 100,000, or even 200,000 tokens. The result is that most words can be represented as single tokens, and only the rarer words (and unknown words) will have to be represented by multiple tokens.
+
+至少对英语是这样。对于多语言系统，词元可能以英语为主，留给其他语言的词元更少，我们将在下文讨论这一点。
+
+> At least for English. For multilingual systems, the tokens can be dominated by English, leaving fewer tokens for other languages, as we’ll discuss below.
+
+### 2.4.3 BPE 的实践
+
+> 2.4.3 BPE in practice
+
+上面的例子只展示了从 ASCII 字节序列进行简单的 BPE 学习。那么 BPE 如何处理 Unicode 输入呢？我们通常对 UTF-8 编码文本的单个字节运行 BPE。也就是说，我们把文本的 Unicode 表示视为一系列码点，用 UTF-8 将其编码为字节，并把每一个这样的字节都当作 BPE 的输入。因此 BPE 很可能首先是重新发现了 UTF-8 用来编码各种码点的 2 字节序列和常见的 3 字节序列。同样，只在预先切分好的词内部运行 BPE 有助于避免问题。
+
+> The example above just showed simple BPE learning from sequences of ASCII bytes. How does BPE work with Unicode input? We normally run BPE on the individual bytes of UTF-8-encoded text. That is, we take a Unicode representation of text as a series of code points, encode it in bytes using UTF-8, and we treat each of these individual bytes as the input to BPE. Thus BPE likely begins by rediscovering the 2-byte and common 3-byte sequences that UTF-8 uses to encode various code points. Again, running BPE only inside presegmented words helps avoid problems.
+
+由于一个字节只有 256 种可能的取值，因此不会出现未知词元，尽管 BPE 有可能学到一些跨越字符边界的非法 UTF-8 序列。这些序列非常罕见，可以用一个过滤器消除。
+
+> Because there are only 256 possible values of a byte, there will be no unknown tokens, although it’s possible that BPE will learn some illegal UTF-8 sequences across character boundaries. These will be very rare, and can be eliminated with a filter.
+
+让我们看一些 BPE 词元化器工业应用的例子，它被用于
+
+> Let’s see some examples of the industrial application of the BPE tokenizer used
+像 OpenAI GPT-4o 这样的大型系统。该词元化器有 200K 个词元，这是相对较大的数量。我们可以使用 Tat Dat Duong 的 Tiktokenizer 可视化工具（https://tiktokenizer.vercel.app/）查看给定句子中的词元数量。例如，下面是我们编造的一个无意义句子的词元化结果；该可视化工具用中心点表示空格：
+
+> in large systems like OpenAI GPT-4o. This tokenizer has 200K tokens, which is a comparatively large number. We can use Tat Dat Duong’s Tiktokenizer visualizer (https://tiktokenizer.vercel.app/) to see the number of tokens in a given sentence. For example here’s the tokenization of a nonsense sentence we made up; the visualizer uses a center dot to indicate a space:
+
+![](images/02-words-and-tokens/img_228.png)
+
+该可视化用颜色把各个词区分开来，但词元化器真正的输出当然只是一个由唯一词元 id 组成的序列。（如果你感兴趣，它们就是下面这 13 个词元：11865, 8923, 11, 31211, 6177, 23919, 885, 220, 19427, 7633, 18887, 147065, 0）
+
+> The visualization shows colors to separate out words, but of course the true output of the tokenizer is simply a sequence of unique token ids. (In case you’re interested, they were the following 13 tokens: 11865, 8923, 11, 31211, 6177, 23919, 885, 220, 19427, 7633, 18887, 147065, 0)
+注意，大多数词本身就是单独的词元，通常还包含前导空格。
+
+> Notice that most words are their own token, usually including the leading space.
+
+像 ’s 这样的附着词出现在 Jane 这类专有名词上时会被切分出来，但在 she’s 这类高频词中却被算作词的一部分。数字往往被切分成每 3 位一组。还有些词（如 anyhow）在句首大写出现时（切分为 Any 和 how 两个词元）与在空格之后小写出现时（一个词元 anyhow）的切分方式不同。
+
+> Clitics like ’s are segmented off when they appear on proper nouns like Jane, but are counted as part of a word for frequent words like she’s. Numbers tend to be segmented into chunks of 3 digits. And some words (like anyhow) are segmented differently if they appear capitalized sentence-initially (two tokens, Any and how), than if they appear after a space, lower case (one token anyhow).
+
+其中一些现象与预处理步骤有关。正如我们上文简要提到的，
+
+> Some of these are related to preprocessing steps. As we mentioned briefly above,
+语言模型通常在预词元化阶段生成词元，该阶段首先用正则表达式切分输入，例如在空格和标点处断开输入、剥离附着词，并把数字拆成数字串。我们将在 2.6 节看到如何使用正则表达式。
+
+> language models usually create their tokens in a pretokenization stage that first segments the input using regular expressions, for example breaking the input at spaces and punctuation, stripping off clitics, and breaking numbers into sets of digits. We’ll see how to use regular expressions in Section 2.6.
+
+> `pretokenization`（预词元化）
+>
+> 释义：运行 BPE 等算法之前，先用正则表达式按空格、标点切分输入并剥离附着词的预处理步骤，以避免跨词合并带来的问题。
+
+可以改变这种预词元化方式，让 BPE 词元跨越多个
+
+> It’s possible to change this pretokenization to allow BPE tokens to span multiple
+词。例如 SuperBPE（Liu et al., 2025）和 BoundlessBPE（Schmidt
+
+> words. For example the SuperBPE (Liu et al., 2025) and BoundlessBPE (Schmidt
+
+> `SuperBPE`
+>
+> 释义：一种词元化算法：先强制预词元化以得到常规 BPE 子词词元，再允许跨空格与标点的合并，从而获得更高效的大词表。
+
+et al., 2025）算法首先通过强制预词元化生成常规的 BPE 子词词元。随后它们运行第二阶段 BPE，允许跨空格和标点进行合并。其结果是得到一大批可能更高效的词元（图 2.7）。
+
+> et al., 2025) algorithms first induce regular BPE subword tokens by enforcing pretokenization. They then run a second stage of BPE allowing merges across spaces and punctuation. The result is a large set of tokens that can be more efficient (Fig. 2.7).
+
+> `BoundlessBPE`
+>
+> 释义：一种词元化算法：在常规 BPE 子词词元的基础上再做第二阶段合并，允许跨越空格与标点，从而得到更高效的词元。
+
+![](images/02-words-and-tokens/fig_p14_0.png)
+
+*图 2.7 SuperBPE 算法通过允许跨空格的第二阶段合并来生成更大的词元。图引自 Liu et al. (2025)。*
+*Figure 2.7 The SuperBPE algorithm creating larger tokens by allowing a second stage of merging across spaces. Figure from Liu et al. (2025).*
+
+实际用于大语言模型的词元化器有许多是多语言的，即在多种语言上训练而成。但由于大语言模型的训练数据绝大部分是英文文本，这些多语言 BPE 词元化器往往把大部分词元用于英文，留给其他语言的词元较少。结果就是它们对英文的词元化效果更好，而其他语言的词往往被切分成更短的词元。例如，让我们来看一个来自大蕉食谱的西班牙语句子以及它的英文翻译。
+
+> Many of the tokenizers used in practice for large language models are multilingual, trained on many languages. But because the training data for large language models is vastly dominated by English text, these multilingual BPE tokenizers tend to use most of the tokens for English, leaving fewer of them for other languages. The result is that they do a better job of tokenizing English, and the other languages tend to get their words split up into shorter tokens. For example let’s look at a Spanish sentence from a recipe for plantains, together with an English translation.
+
+英文版本有 19 个词元，14 个词中有 13 个各作为一个词元，只有
+
+> The English version has 19 tokens, with 13 of the 14 words as tokens, and only
+nutmeg 被拆成 2 个词元（此外还有 3 个逗号和句末的句号）。
+
+> nutmeg split into 2 tokens (plus 3 commas and the final period).
+
+![](images/02-words-and-tokens/img_232.png)
+
+相比之下，西班牙语原文的 16 个词被编码成了 33 个词元，
+
+> By contrast, the original 16 words in Spanish have been encoded into 33 tokens,
+数量大得多。注意许多基本词都被拆成了碎片。
+
+> a much larger number. Notice that many basic words have been broken into pieces.
+
+例如 hondo（“深”）被切分成 h 和 ondo。jugo（“汁”）、nuez（“坚果”）和 jengibre（“姜”）也是如此）：
+
+> For example hondo, ‘deep’, has been segmented into h and ondo. Similarly for jugo, ‘juice’, nuez, ‘nut’ and jengibre ‘ginger’):
+
+![](images/02-words-and-tokens/img_234.png)
+
+西班牙语并不是低资源语言；这种过度切分在资源更少的语言中可能更加
+
+> Spanish is not a low-resource language; this oversegmenting can be even more
+严重，常常细到单个字符。切分成这些极小的词元会给该语言的下游处理带来各种问题。等我们在第 7 章介绍 transformer 模型之后就会更清楚，这种碎片化会导致意义表示不佳、需要更长的上下文，以及模型训练成本更高（Rust et al., 2021; Ahia et al., 2023）。
+
+> serious in lower resource languages, often down to individual characters. Oversegmenting into these tiny tokens can cause various problems for the downstream processing of the language. As will become more clear once we introduce transformer models in Chapter 7, such fragmentation can lead to poor representations of meaning, the need for longer contexts, and higher costs to train models (Rust et al., 2021; Ahia et al., 2023).
+
+## 2.5 语料库
+
+> 2.5 Corpora
+
+词不会凭空出现。我们研究的任何一段具体文本，都是由一个或多个特定的说话人或写作者，在特定的时间、特定的地点，为特定的用途，用某种特定语言的某种特定方言产生的。
+
+> Words don’t appear out of nowhere. Any particular piece of text that we study is produced by one or more specific speakers or writers, in a specific dialect of a specific language, at a specific time, in a specific place, for a specific function.
+
+也许最重要的变异维度是语言。NLP 算法在能够适用于多种语言时才最有用。根据在线 Ethnologue 目录，在撰写本书时世界上有 7097 种语言（Simons and Fennig, 2018）。在不止一种语言上测试算法很重要，尤其是在具有不同特性的语言上测试；相比之下，当前一个不幸的趋势是 NLP 算法只针对英文开发和测试（Bender, 2019）。即使算法的开发超出了英文，也往往只面向大型工业化国家的官方语言（中文、西班牙语、日语、德语等），但我们不希望把工具局限在这少数几种语言上。此外，大多数语言还拥有多种变体，常常在不同地区使用或由不同社会群体使用。因此，例如，如果我们要处理的文本使用了非裔美国人英语（AAE）或非洲
+
+> Perhaps the most important dimension of variation is the language. NLP algorithms are most useful when they apply across many languages. The world has 7097 languages at the time of this writing, according to the online Ethnologue catalog(Simons and Fennig, 2018). It is important to test algorithms on more than one language, and particularly on languages with different properties; by contrast there is an unfortunate current tendency for NLP algorithms to be developed or tested just on English (Bender, 2019). Even when algorithms are developed beyond English, they tend to be developed for the official languages of large industrialized nations (Chinese, Spanish, Japanese, German etc.), but we don’t want to limit tools to just these few languages. Furthermore, most languages also have multiple varieties, often spoken in different regions or by different social groups. Thus, for example, if we’re processing text that uses features of African American English (AAE) or African
+
+> `AAE`（非裔美国人英语）
+>
+> 释义：非裔美国人社区广泛使用的英语变体，其特有的构词与拼写会影响词元切分。
+
+裔美国人白话英语（AAVE）——非裔美国人社区中数百万人可能使用的英语变体（King 2020）——的特征时，我们就必须使用能够处理这些变体特征的 NLP 工具。Twitter 帖子可能使用非裔美国人英语使用者常用的特征，例如 iont 这类结构（在主流美国英语（MAE）中意为 I don’t），或者 talmbout 对应于
+
+> American Vernacular English (AAVE)—the variations of English that can be used by millions of people in African American communities (King 2020)—we must use NLP tools that function with features of those varieties. Twitter posts might use features often used by speakers of African American English, such as constructions like iont (I don’t in Mainstream American English (MAE)), or talmbout corresponding
+
+> `MAE`（主流美国英语）
+>
+> 释义：在美国被广泛使用的标准英语变体，本书用它作为与少数族裔语言变体对比的基准。
+
+MAE 中的 talking about，这两个例子都会影响词切分（Blodgett et al. 2016, Jones 2015）。
+
+> to MAE talking about, both examples that influence word segmentation (Blodgett et al. 2016, Jones 2015).
+
+说话人或写作者在单个话语中使用多种语言也相当常见，这一现象称为语码转换。语码转换极其
+
+> It’s also quite common for speakers or writers to use multiple languages in a single utterance, a phenomenon called code switching. Code switching is enormously
+
+> `code switching`（语码转换）
+>
+> 释义：在同一话语或文本中交替使用两种及以上语言或语言变体的现象。
+
+在世界各地普遍存在；下面是一些例子，展示西班牙语和（转写的）印地语与英语的语码转换（Solorio et al. 2014, Jurgens et al. 2017）：
+
+> common across the world; here are examples showing Spanish and (transliterated) Hindi code switching with English (Solorio et al. 2014, Jurgens et al. 2017):
+
+(2.12) Por primera vez veo a @username actually being hateful! it was beautiful:)
+[第一次看到 @username 竟然真的如此充满恶意！这太美妙了:)]
+
+> [For the first time I get to see @username actually being hateful! it was beautiful:) ]
+(2.13) dost tha or ra- hega ... dont wory ... but dherya rakhe
+[“他曾是朋友，也将始终是朋友……别担心……但要有信念”]
+
+> [“he was and will remain a friend ... don’t worry ... but have faith”]
+本章我们关注的是文本（第 15 章将转向语音），但需要注意的是，许多语言主要是口头的，甚至是完全口头的。这些语言的使用者往往以一种特定的方式处于双言状态：他们使用一种口头白话来进行
+
+> We are focusing on text in this chapter (we’ll turn to speech in Chapter 15), but it’s important to note that many languages are primarily or exclusively oral. Speakers of these languages are often diglossic in a particular way, using an oral vernacular for
+
+> `vernacular vehicular`（白话；通行语）
+>
+> 释义：白话指用于家庭或本地日常交流的口头语言变体；通行语则是跨越不同语言群体、用于参与更大范围经济与社会交往的语言，通常有书面形式。
+
+家庭或本地交流，并使用另一种通行语，后者很可能
+
+> family or local communication and another vehicular language, which is likely to
+具有书面形式，用于参与更大范围的经济、社会或民族国家的事务（Bird, 2020）。
+
+> have a written form, for participating in the larger economy or society or nation-state(Bird, 2020).
+
+另一个变异维度是体裁。我们的算法必须处理的文本可能来自新闻电讯、虚构或非虚构书籍、科学论文、Wikipedia 或宗教文本。它也可能来自口语体裁，如电话交谈、商务会议、警察随身摄像头、医疗问诊，或电视节目与电影的转写文本。它还可能来自工作场景，如医生笔记、法律文本，或议会与国会的议事记录。
+
+> Another dimension of variation is the genre. The text that our algorithms must process might come from newswire, fiction or non-fiction books, scientific articles, Wikipedia, or religious texts. It might come from spoken genres like telephone conversations, business meetings, police body-worn cameras, medical interviews, or transcripts of television shows or movies. It might come from work situations like doctors’ notes, legal text, or parliamentary or congressional proceedings.
+
+文本还反映了作者（或说话者）的人口学特征：其
+
+> Text also reflects the demographic characteristics of the writer (or speaker): their
+年龄、性别、种族、社会经济阶层都会影响我们所处理文本的语言属性。
+
+> age, gender, race, socioeconomic class can all influence the linguistic properties of the text we are processing.
+
+最后，时间也很重要。语言会随时间而变化，而对某些语言，我们拥有来自不同历史时期的优质文本语料库。
+
+> And finally, time matters too. Language changes over time, and for some languages we have good corpora of texts from different historical periods.
+
+由于语言总是处于特定情境之中，在基于语料库开发语言处理的计算模型时，重要的是考虑语言是谁产生的、在什么情境下产生的、出于什么目的。数据集的使用者如何才能了解所有这些细节？最好的办法是由语料库创建者为每个语料库编写一份数据说明书（Gebru
+
+> Because language is so situated, when developing computational models for language processing from a corpus, it’s important to consider who produced the language, in what context, for what purpose. How can a user of a dataset know all these details? The best way is for the corpus creator to build a datasheet (Gebru
+
+> `datasheet`（数据说明书）
+>
+> 释义：随语料库一同发布的文档，说明其收集动机与资助方、产生的情境、语言变体、说话者人口学特征以及收集与抽样过程。
+
+et al., 2020）或数据声明（Bender et al., 2021a）。数据说明书会指明数据集的如下属性：
+
+> et al., 2020) or data statement (Bender et al., 2021a) for each corpus. A datasheet specifies properties of a dataset like:
+
+动机：语料库为何被收集、由谁收集、由谁资助？
+
+> Motivation: Why was the corpus collected, by whom, and who funded it?
+
+情境：文本是在何时、何种情境下被书写或说出的？例如，
+
+> Situation: When and in what situation was the text written/spoken? For example,
+是否存在某项任务？这些语言原本是口头会话、经过编辑的文本、社交媒体交流，还是独白或对话？
+
+> was there a task? Was the language originally spoken conversation, edited text, social media communication, monologue vs. dialogue?
+
+语言变体：语料库使用的是哪种语言（包括方言或地区变体）？
+
+> Language variety: What language (including dialect/region) was the corpus in?
+
+说话者人口学特征：例如，文本作者的年龄或性别是什么？
+
+> Speaker demographics: What was, e.g., the age or gender of the text’s authors?
+
+收集过程：数据规模有多大？如果它是子样本，又是如何抽样的？
+
+> Collection process: How big is the data? If it is a subsample how was it sampled?
+
+数据收集是否征得了同意？数据是如何预处理的，有哪些可用的元数据？
+
+> Was the data collected with consent? How was the data pre-processed, and what metadata is available?
+
+标注过程：标注内容是什么，标注者的人口统计特征是
+
+> Annotation process: What are the annotations, what are the demographics of the
+怎样的，他们接受过怎样的培训，数据是如何标注的？
+
+> annotators, how were they trained, how was the data annotated?
+
+分发：是否存在版权或其他知识产权方面的限制？
+
+> Distribution: Are there copyright or other intellectual property restrictions?
+
+## 2.6 正则表达式
+
+> 2.6 Regular Expressions
+
+计算机科学中用于文本处理的最有用工具之一就是正则
+
+> One of the most useful tools for text processing in computer science is the regular
+
+> `regular expression`（正则表达式）
+>
+> 释义：一种刻画字符串集合的代数记号语言，可用于在文本中搜索模式并指定替换方式，也是预词元化的常用工具。
+
+表达式（或称 regex），一种用于描述文本字符串的语言。正则表达式被用于
+
+> expression (or regex), a language for specifying text strings. Regexes are used in
+每一种计算机语言、像 Unix grep 这样的文本处理工具，以及 vim 或 Emacs 之类的编辑器。它们在 BPE 等词元化算法的预词元化步骤中也起着重要作用。形式上，正则表达式是一种刻画字符串集合的代数记号。在实际使用中，我们可以用正则表达式在文本中搜索某个字符串，并指定如何修改该字符串，这两点对词元化都至关重要。
+
+> every computer language, in text processing tools like Unix grep, and in editors like vim or Emacs. And they play an important role in the pre-tokenization step for tokenization algorithms like BPE. Formally, a regular expression is an algebraic notation for characterizing a set of strings. Practically, we can use a regex to search for a string in a text and to specify how to change the string, both of which are key to tokenization.
+
+我们用正则表达式在字符串中搜索某个模式，这个字符串可以是
+
+> We use regular expressions to search for a pattern in a string which can be a
+
+> `string`（字符串）
+>
+> 释义：正则表达式搜索时作用的目标序列，可以是单行文本，也可以是更长的文本，匹配时返回其中第一个命中的片段。
+
+单行文本，也可以是更长的文本。例如，Python 函数
+
+> single line or a longer text. For example, the Python function
+re.search(pattern,string)
+会扫描该字符串，并返回其中第一个与该模式匹配的结果。在接下来的示例中，我们通常会标出与正则表达式精确匹配的字符串，并且只显示第一个匹配项。我们将使用 Python 语法，把正则表达式写成原始字符串（带 Python 的 raw 前缀 r，用双引号括起：r"regex"）。原始字符串这一说法意味着，例如反斜杠被当作字面字符处理，这会影响正则表达式的写法，我们稍后会讨论这一点。
+
+> scans through the string and returns the first match inside it for the pattern. In the following examples we generally highlight the exact string that matches the regular expression and show only the first match. We’ll use Python syntax, expressing the regex as a raw string (with the Python raw prefix r, delimited by double quotes: r"regex"). The term raw strings means for example that backslashes are treated as literal characters, which can affect how regular expressions are written, as we will discuss later.
+
+正则表达式有若干不同的变体，因此使用在线的正则表达式测试器
+
+> Regular expressions come in different variants, so using an online regex tester
+有助于确认你的正则表达式确实在做你认为它在做的事。
+
+> can help make sure your regex does what you think it’s doing.
+
+### 2.6.1 字符析取：方括号
+
+> 2.6.1 Character Disjunction: The Square Bracket
+
+最简单的一类正则表达式就是由简单字符构成的序列。模式 r"Buttercup" 可以匹配任意字符串中的子串 Buttercup（例如字符串 I’m called little Buttercup）。但很多时候我们需要使用特殊字符。
+
+> The simplest kind of regular expression is a sequence of simple characters. The pattern r"Buttercup" matches the substring Buttercup in any string (like the string I’m called little Buttercup). But often we need to use special characters.
+
+例如，我们可能想匹配某个字符，也可能想匹配另一个字符。举例来说，正则表达式通常是区分大小写的：r"s" 匹配小写 s
+
+> For example, we might want to match either some character or another. For example, regular expressions are generally case sensitive: r"s" matches a lower case s
+
+> `character disjunction`（字符析取）
+>
+> 释义：用方括号列出若干可相互替代的字符，表示匹配其中任意一个，例如同时匹配小写 s 与大写 S。
+
+但不能匹配大写 S。要同时匹配 s 和 S，我们可以使用字符析取
+
+> but not an upper case S. To match both s and S we can use the character disjunction
+运算符，即方括号 [ 和 ]。方括号内的字符串指定了要匹配的一批字符的析取。例如，图 2.8 表明模式 r"[mM]" 匹配含有 m 或 M 的模式。
+
+> operator, the square brackets [ and ]. The string of characters inside the brackets specifies a disjunction of characters to match. For example, Fig. 2.8 shows that the pattern r"[mM]" matches patterns containing either m or M.
+
+> 模式 匹配 字符串 r"[mM]ary" Mary 或 mary “Mary Ann stopped by Mona’s”r"[abc]" ‘a’、‘b’或‘c’ “In uomini, in soldati”r"[1234567890]" 任意一个数字 “plenty of 7 to 5”
+>
+> *Pattern Match String r"[mM]ary" Mary or mary “Mary Ann stopped by Mona’s”r"[abc]" ‘a’, ‘b’, or ‘c’ “In uomini, in soldati”r"[1234567890]" any one digit “plenty of 7 to 5”*
+
+*图 2.8 使用方括号 [] 指定字符的析取。*
+*Figure 2.8 The use of the brackets [] to specify a disjunction of characters.*
+
+正则表达式 r"[1234567890]" 指定任意单个数字。这会
+
+> The regular expression r"[1234567890]" specifies any single digit. This can
+变得很笨拙（想象一下输入 r"[ABCDEFGHIJKLMNOPQRSTUVWXYZ]" 来表示一个大写字母），因此方括号还可以与连字符（-）一起使用，以指定某个范围内任意一个字符。模式 r"[2-5]" 指定字符 2、3、
+
+> get awkward (imagine typing r"[ABCDEFGHIJKLMNOPQRSTUVWXYZ]" to mean an uppercase letter) so the brackets can also be used with a dash (-) to specify any one character in a range. The pattern r"[2-5]" specifies any one of the characters 2, 3,
+
+> `range`（范围）
+>
+> 释义：正则表达式中用连字符表示的一组连续字符，如 [2-5] 匹配 2 到 5 中任意一个字符。
+
+4 或 5 中的任意一个。模式 r"[b-g]" 指定字符 b、c、d、e、f 或 g 中的一个。图 2.9 给出了另外一些示例。
+
+> 4, or 5. The pattern r"[b-g]" specifies one of the characters b, c, d, e, f, or g. Some other examples are shown in Fig. 2.9.
+
+> 正则表达式 匹配 示例 被匹配的模式 r"[A-Z]" 一个大写字母 “we should call it ‘Drenched Blossoms’ ”r"[a-z]" 一个小写字母 “my beans were impatient to be hoed!”r"[0-9]" 单个数字 “Chapter 1: Down the Rabbit Hole”
+>
+> *Regex Match Example Patterns Matched r"[A-Z]" an upper case letter “we should call it ‘Drenched Blossoms’ ”r"[a-z]" a lower case letter “my beans were impatient to be hoed!”r"[0-9]" a single digit “Chapter 1: Down the Rabbit Hole”*
+
+*图 2.9 使用方括号 [] 加上连字符 - 指定范围。*
+*Figure 2.9 The use of the brackets [] plus the dash - to specify a range.*
+
+方括号还可以用来指定单个字符不能
+
+> The square brackets can also be used to specify what a single character cannot
+是什么，方法是使用脱字符 ˆ。如果脱字符 ˆ 是左方括号 [ 之后的第一个符号，得到的模式就被否定。例如，模式 r"[ˆa]" 匹配除 a 以外的任意单个字符（包括特殊字符）。这一点仅当脱字符是左方括号后的第一个符号时才成立。如果它出现在其他任何位置，通常就表示一个脱字符；图 2.10 给出了一些示例。
+
+> be, by use of the caret ˆ. If the caret ˆ is the first symbol after the open square bracket[, the resulting pattern is negated. For example, the pattern r"[ˆa]" matches any single character (including special characters) except a. This is only true when the caret is the first symbol after the open square bracket. If it occurs anywhere else, it usually stands for a caret; Fig. 2.10 shows some examples.
+
+> 正则表达式 匹配（单个字符） 示例 被匹配的模式 r"[ˆA-Z]" 不是大写字母 “Oyfn pripetchik”r"[ˆSs]" 既不是 ‘S’ 也不是 ‘s’ “I have no exquisite reason for’t”r"[ˆ.]" 不是句点 “our resident Djinn”r"[eˆ]" ‘e’ 或 ‘ˆ’ “look up ˆ now”r"aˆb" 模式 ‘aˆb’ “look up aˆb now”
+>
+> *Regex Match (single characters) Example Patterns Matched r"[ˆA-Z]" not an upper case letter “Oyfn pripetchik”r"[ˆSs]" neither ‘S’ nor ‘s’ “I have no exquisite reason for’t”r"[ˆ.]" not a period “our resident Djinn”r"[eˆ]" either ‘e’ or ‘ˆ’ “look up ˆ now”r"aˆb" the pattern ‘aˆb’ “look up aˆb now”*
+
+*图 2.10 脱字符 ˆ 用于否定，或仅表示 ˆ。关于用反斜杠转义句点，见下文。*
+*Figure 2.10 The caret ˆ for negation or just to mean ˆ. See below re: the backslash for escaping the period.*
+
+### 2.6.2 计数、可选性与通配符
+
+> 2.6.2 Counting, Optionality, and Wildcards
+
+我们如何表示可选元素，比如当我们想同时匹配 koala 和 koalas 时那个可选的 s？我们不能使用方括号，因为方括号允许我们说“s 或 S”，却不允许我们说“s 或什么也没有”。为此我们使用问号 r"?"，它表示“前面的字符或什么也没有”。因此 r"colou?r" 同时匹配 color 和 colour，而 r"koalas?" 匹配 koala 或 koalas。
+
+> How can we talk about optional elements, like an optional s if we want to match both koala and koalas? We can’t use the square brackets, because while they allow us to say “s or S”, they don’t allow us to say “s or nothing”. For this we use the question mark r"?", which means “the preceding character or nothing”. So r"colou?r" matches both color and colour, and r"koalas?" matches koala or koalas.
+
+还有另一种方式来表示可能出现也可能不出现的元素。考虑一下
+
+> There’s another way to talk about elements that may or may not occur. Consider
+某种羊的语言，它由如下所示的字符串构成：
+
+> the language of certain sheep, which consists of strings that look like the following:
+
+baa! baaa! baaaa!...
+
+这种羊的语言由这样的字符串组成：一个 b，后面跟着至少两个（并且
+
+> This sheep language consists of strings with a b, followed by at least two (and
+任意多个）a，后面跟一个感叹号。为了表示这种语言，我们将使用一个很有用的运算符，它写作星号，即 *，称为 Kleene*（通常读作“cleany star”）。Kleene 星号的意思是“紧邻的前一个字符或正则表达式出现零次或多次”。因此 r"a*" 表示“由零个或多个 a 组成的任意字符串”。
+
+> arbitrarily more) a’s, followed by an exclamation point. To represent this language, we’ll use a useful operator that is represented by the asterisk or *, called the Kleene* (generally pronounced “cleany star”). The Kleene star means “zero or more occurrences of the immediately previous character or regular expression”. So r"a*" means “any string of zero or more as”.
+
+> `Kleene *`（Kleene 星号（*））
+>
+> 释义：正则表达式运算符 *，表示紧邻其前的字符或子表达式可以出现零次或多次，例如 r"a*" 可匹配空串或任意多个 a。
+
+r"ba*" 能表示绵羊语言吗？它能正确匹配 ba 或
+
+> Could r"ba*" represent the sheep language? It will correctly match ba or
+baaaaaa，但这里有个问题！它也会匹配不含 a 的 b，或者只含一个 a 的 ba
+
+> baaaaaa, but there’s a problem! It will also match b, with no a, or ba with only one
+
+- 这是因为 Kleene 星号表示“零次或多次出现”。对绵羊语言来说，我们需要的其实是 r"baaa*"，即 b 后面跟 aa，再跟零个或多个额外的 a。更复杂的模式也可以重复。所以 r"[ab]*" 表示“零个或多个 a 或 b”（而不是“零个或多个右方括号”）。它将匹配像 aaaa、ababab 或 bbbb 这样的字符串，也能匹配空字符串。要指定一个整数（一串数字），我们可以用 r"[0-9][0-9]*"。（为什么不能直接用 r"[0-9]*" 呢？）
+
+> That’s because Kleene star means “zero or more occurrences”. Instead, for the sheep language we’ll want r"baaa*", meaning b followed by aa followed by zero or more additional as. More complex patterns can also be repeated. So r"[ab]*" means “zero or more a’s or b’s” (not “zero or more right square brackets”). This will match strings like aaaa or ababab or bbbb, as well as the empty string. For specifying an integer (a string of digits) we can use r"[0-9][0-9]*". (Why isn’t it just r"[0-9]*"?)
+
+还有一种稍短的写法可以指定某个字符“至少出现一次”，那就是
+
+> There is a slightly shorter way to specify “at least one” of some character: the
+Kleene 加号，它表示“紧邻的前一个
+
+> Kleene +, which means “one or more occurrences of the immediately preceding
+
+> `Kleene +`（Kleene 加号（+））
+>
+> 释义：正则表达式运算符 +，表示紧邻其前的字符或子表达式至少出现一次，例如 r"[0-9]+" 可匹配一串数字。
+
+字符或正则表达式出现一次或多次”。因此 r"[0-9]+" 是指定“一串数字”的常规写法，我们也可以把绵羊语言写成 r"baa+!"。
+
+> character or regular expression”. So r"[0-9]+" is the normal way to specify “a sequence of digits”, and we could also specify the sheep language as r"baa+!".
+
+除了 Kleene 星号和 Kleene 加号，我们还可以把显式的数字放在花括号中用作计数器。运算符 r"{3}" 表示“前一个字符或表达式恰好出现 3 次”。因此 r"ax{10}z" 会匹配 a 后面跟恰好 10 个 x、再跟 z。
+
+> Besides the Kleene * and Kleene + we can also use explicit numbers as counters, by enclosing them in curly brackets. The operator r"{3}" means “exactly 3 occurrences of the previous character or expression”. So r"ax{10}z" will match a followed by exactly 10 x’s followed by z.
+
+一个重要的特殊字符是句点（r"."），它是一个通配符表达式，
+
+> An important special character is the period (r"."), a wildcard expression that
+
+> `period`（句点（.））
+>
+> 释义：正则表达式中的通配符 .，可匹配除换行符以外的任意单个字符，常与星号连用表示任意字符串。
+
+匹配任意单个字符（换行符除外）。
+
+> matches any single character (except a newline).
+
+通配符常与 Kleene 星号一起使用，表示“任意字符串
+
+> The wildcard is often used together with the Kleene star to mean “any string
+（由字符组成）”。例如，假设我们想找出某个特定单词（比如 rose）出现两次的任意一行。我们可以用正则表达式 r"rose.*rose" 来指定，它表示两个 rose，中间隔着由零个或多个（任意种类的）字符组成的序列。图 2.11 对此做了总结。
+
+> of characters”. For example, suppose we want to find any line in which a particular word, for example, rose, appears twice. We can specify this with the regular expression r"rose.*rose", meaning two roses, with a sequence of zero or more characters (of any kind) between them. Fig. 2.11 summarizes.
+
+### 2.6.3 锚点与边界
+
+> 2.6.3 Anchors and Boundaries
+
+锚点是一类特殊字符，它们把正则表达式锚定到字符串中的特定位置
+
+> Anchors are special characters that anchor regular expressions to particular places
+
+> `anchors`（锚点）
+>
+> 释义：用于把匹配限定在行首、行尾或词边界等特定位置的正则表达式符号，最常用的是 ˆ 和 $。
+
+。最常见的锚点是脱字符 ˆ 和美元符号 $。脱字符 ˆ 匹配行的开头。模式 r"ˆThe" 只在行首匹配单词 The。因此，脱字符 ˆ 有三种用途：匹配行的开头、在方括号内表示否定，以及仅表示脱字符本身。（
+
+> in a string. The most common anchors are the caret ˆ and the dollar sign $. The caret ˆ matches the start of a line. The pattern r"ˆThe" matches the word The only at the start of a line. Thus, the caret ˆ has three uses: to match the start of a line, to indicate a negation inside of square brackets, and just to mean a caret. (What are
+
+> Regex 匹配 * 前一个字符或表达式出现零次或多次 + 前一个字符或表达式出现一次或多次 ? 前一个字符或表达式出现零次或一次 {n} 前一个字符或表达式恰好出现 n 次 . 任意单个字符 .* 由零个或多个字符组成的任意字符串
+>
+> *Regex Match* zero or more occurrences of the previous char or expression+ one or more occurrences of the previous char or expression? zero or one occurrence of the previous char or expression{n} exactly n occurrences of the previous char or expression. any single char.* any string of zero or more chars*
+
+*图 2.11 计数与通配符。*
+*Figure 2.11 Counting and wildcards.*
+
+那些让系统得以知道某个插入符应当具有哪种功能的上下文？）美元符号 $ 匹配行的末尾。因此模式 ␣$ 是匹配行末空格的有用模式，而 r"ˆThe dog\.$" 匹配只包含短语 The dog. 且以句点结尾的一行。
+
+> the contexts that allow the system to know which function a given caret is supposed to have?) The dollar sign $ matches the end of a line. So the pattern ␣$ is a useful pattern for matching a space at the end of a line, and r"ˆThe dog\.$" matches a line that contains only the phrase The dog. with a final period.
+
+请注意，在上一个例子中我们必须使用反斜杠，因为我们希望
+
+> Note that we have to use the backslash in the prior example since we want
+这里的 . 表示“句点”而不是通配符。相比之下，正则表达式 r"ˆThe dog.$" 会匹配 The dog.，但也会匹配 The dog! 和 The dogo。正如下文将要讨论的，我们目前定义的所有特殊字符（* + ? . []）在按字面意义使用时都需要加反斜杠。
+
+> the . to mean “period” and not the wildcard. By contrast, the regular expression r"ˆThe dog.$" would match The dog. but also The dog! and The dogo. As we’ll discuss below, all the special characters we’ve defined so far (* + ? . []) need to be backslashed when we mean to use them literally.
+
+> 正则表达式 匹配ˆ 行的开头$ 行的末尾\b 词边界\B 非词边界
+>
+> *Regex Matchˆ start of line$ end of line\b word boundary\B non-word boundary*
+
+*图 2.12 正则表达式中的锚点。*
+*Figure 2.12 Anchors in regular expressions.*
+
+还有其他锚点：\b 匹配词边界，而 \B 匹配非
+
+> There are other anchors: \b matches a word boundary, and \B matches a non
+词边界。因此，r"\bthe\b" 匹配单词 the，但不匹配单词 other。
+
+> word-boundary. Thus, r"\bthe\b" matches the word the but not the word other.
+
+就正则表达式而言，“词”被定义（依据编程语言中的词）为数字、下划线或字母组成的序列。因此 r"\b99\b" 会匹配 There are 99 bottles of beer on the wall 中的字符串 99（因为 99 前面是空格），但不会匹配 There are 299 bottles of beer on the wall 中的 99（因为 99 前面是数字）。不过它会匹配 $99 中的 99（因为 99 前面是美元符号（$），而它不是数字、下划线或字母）。
+
+> A “word” for the purposes of a regex is defined (based on words in programming languages) as a sequence of digits, underscores, or letters. Thus r"\b99\b" will match the string 99 in There are 99 bottles of beer on the wall (because 99 follows a space) but not 99 in There are 299 bottles of beer on the wall (since 99 follows a number). But it will match 99 in $99 (since 99 follows a dollar sign ($), which is not a digit, underscore, or letter).
+
+请注意，所有这些锚点和边界运算符在技术上都匹配空
+
+> Note that all these anchors and boundary operators technically match the empty
+字符串，这意味着它们不会消耗字符串中的任何字符。模式 r"ˆThe" 中的插入符匹配 "The" 的开头，但实际上并不会越过第一个字符 T。而模式 r"the\b the" 匹配 the the；\b 知道空格是一个边界，但它匹配的是紧挨空格之前的空字符串，而不是空格本身，因此空格字符仍可供匹配。
+
+> string, meaning that they don’t eat up any characters of the string. The caret in the pattern r"ˆThe" matches the start of "The" but doesn’t actually advance over the first character T. And the pattern r"the\b the" matches the the; the \b is aware of the fact that the space is a boundary, but it matches the empty string right before the space, not the space, so that the space character is available to be matched.
+
+### 2.6.4 析取、分组与优先级
+
+> 2.6.4 Disjunction, Grouping, and Precedence
+
+假设我们需要搜索关于宠物的文本；也许我们尤其对猫和狗感兴趣。在这种情况下，我们可能想搜索字符串 cat 或字符串 dog。由于我们不能用方括号来搜索“cat 或 dog”（为什么 r"[catdog]" 达不到正确效果呢？），我们需要一个新的运算符，即析取运算符，也叫竖线符号 |。模式 r"cat|dog"
+
+> Suppose we need to search for texts about pets; perhaps we are particularly interested in cats and dogs. In such a case, we might want to search for either the string cat or the string dog. Since we can’t use the square brackets to search for “cat or dog” (why wouldn’t r"[catdog]" do the right thing?), we need a new operator, the disjunction operator, also called the pipe symbol |. The pattern r"cat|dog"
+
+> `disjunction`（析取）
+>
+> 释义：正则表达式中用竖线 | 表示的选择关系，匹配其两侧模式中的任意一个。
+
+匹配字符串 cat 或字符串 dog。
+
+> matches either the string cat or the string dog.
+
+有时我们需要在更长的序列中间使用这个析取运算符。例如，假设我想搜索对宠物鱼的提及。我怎样才能同时指定 guppy 和 guppies？我们不能简单地说 r"guppy|ies"，因为那样只会匹配字符串 guppy 和 ies。这是因为像 guppy 这样的序列优先于析取运算符 |。为了让析取
+
+> Sometimes we need to use this disjunction operator in the midst of a larger sequence. For example, suppose I want to search for mentions of pet fish. How can I specify both guppy and guppies? We cannot simply say r"guppy|ies", because that would match only the strings guppy and ies. This is because sequences like guppy take precedence over the disjunction operator |. To make the disjunction
+
+> `precedence`（优先级）
+>
+> 释义：运算符结合的先后次序，序列连接先于析取 | 生效，故需用括号改变默认结合方式。
+
+运算符只作用于某个特定模式，我们需要使用圆括号运算符 ( 和 )。把模式括在圆括号中，对于相邻的运算符（如竖线 | 和 Kleene*）而言，它就相当于单个字符。因此模式 r"gupp(y|ies)" 表示我们只让析取作用于后缀 y 和 ies。
+
+> operator apply only to a specific pattern, we need to use the parenthesis operators (and ). Enclosing a pattern in parentheses makes it act like a single character for the purposes of neighboring operators like the pipe | and the Kleene*. So the pattern r"gupp(y|ies)" would specify that we meant the disjunction only to apply to the suffixes y and ies.
+
+当我们使用像
+
+> The parenthesis operator ( is also useful when we are using counters like the
+Kleene* 这样的计数器时，圆括号运算符 ( 也很有用。与 | 运算符不同，Kleene* 运算符默认只作用于单个字符，而不是整个序列。假设我们想匹配某个字符串的重复出现。也许我们有一行，其中是 Column 1 Column 2 Column 3 形式的列标签。表达式 r"Column␣[0-9]+␣*" 并不会匹配我们想要的任意多个 Column；相反，它会匹配一个 Column 后面跟着任意多个空格！这里的星号只作用于它前面的空格 ␣，而不是整个序列。借助圆括号，我们可以写出表达式 r"(Column␣[0-9]+␣+)*"，以匹配单词 Column 后面跟一个数字和若干空格，整个模式重复零次或多次。
+
+> Kleene*. Unlike the | operator, the Kleene* operator applies by default only to a single character, not to a whole sequence. Suppose we want to match repeated instances of a string. Perhaps we have a line that has column labels of the form Column 1 Column 2 Column 3. The expression r"Column␣[0-9]+␣*" will not match our intended meaning of any number of Columns; instead, it will match a single instance of Column followed by any number of spaces! The star here applies only to the space ␣that precedes it, not to the whole sequence. With the parentheses, we could write the expression r"(Column␣[0-9]+␣+)*" to match the word Column, followed by a number and spaces, the whole pattern repeated zero or more times.
+
+一个运算符可能优先于另一个运算符，从而需要我们
+
+> This idea that one operator may take precedence over another, requiring us to
+有时用括号来明确我们想表达的意思，这一思想由正则表达式的运算符
+
+> sometimes use parentheses to specify what we mean, is formalized by the operator
+
+> `operator precedence`（运算符优先级）
+>
+> 释义：规定正则表达式中各运算符结合的先后次序：括号最高，其后依次是计数符、序列与锚点、析取。
+
+优先级层级体系加以形式化。下表给出了运算符
+
+> precedence hierarchy for regular expressions. The following table gives the order
+优先级的次序，从最高优先级到最低优先级。
+
+> of operator precedence, from highest precedence to lowest precedence.
+
+| 括号<br>Parenthesis | () |
+| --- | --- |
+| 计数符<br>Counters | * + ? {} |
+| 序列与锚点<br>Sequences and anchors | the ˆmy end$ |
+| 析取<br>Disjunction | \| |
+
+因此，由于计数符的优先级高于序列，
+
+> Thus, because counters have a higher precedence than sequences,
+r"the*" 匹配 theeeee 但不匹配 thethe。由于序列的优先级高于析取，r"the|any" 匹配 the 或 any，但不匹配 thany 或 theny。
+
+> r"the*" matches theeeee but not thethe. Because sequences have a higher precedence than disjunction, r"the|any" matches the or any but not thany or theny.
+
+模式还可能在另一个方面产生歧义。考虑表达式 r"[a-z]*"
+
+> Patterns can be ambiguous in another way. Consider the expression r"[a-z]*"
+
+在与文本 once upon a time 匹配时，由于 r"[a-z]*" 匹配零个或多个字母，这个表达式可以什么都不匹配，也可以只匹配第一个字母 o、on、onc 或 once。在这些情况下，正则表达式总是匹配它能匹配的最长字符串；我们说模式是贪婪的，会扩展以覆盖字符串中尽可能多的部分。
+
+> when matching against the text once upon a time. Since r"[a-z]*" matches zero or more letters, this expression could match nothing, or just the first letter o, on, onc, or once. In these cases regular expressions always match the largest string they can; we say that patterns are greedy, expanding to cover as much of a string as they can.
+
+> `greedy`（贪婪）
+>
+> 释义：指量词默认尽可能多地匹配字符，使整个模式覆盖字符串中最长的可行部分。
+
+不过，也有办法强制进行非贪婪匹配，这要用到 ? 限定符的另一种含义。运算符 *? 是克莱尼星号，它匹配的文本尽可能
+
+> There are, however, ways to enforce non-greedy matching, using another meaning of the ? qualifier. The operator *? is a Kleene star that matches as little text as
+
+> `non-greedy *?`（非贪婪 *?）
+>
+> 释义：在星号后加 ? 后改为尽量少地匹配，一旦后续模式能够成立便立即停止扩展。
+
+少。运算符 +? 是克莱尼加号，它匹配的文本尽可能少。
+
+> possible. The operator +? is a Kleene plus that matches as little text as possible.
+
+> `+?`（非贪婪 +?）
+>
+> 释义：克莱尼加号的非贪婪形式，只重复满足匹配所需的最少次数，避免多匹配文本。
+
+### 2.6.5 一个简单的例子
+
+> 2.6.5 A Simple Example
+
+假设我们想写一个正则表达式来查找英语冠词 the 出现的各种情况。一个简单（但不正确）的模式可能是：
+
+> Suppose we wanted to write a regex to find cases of the English article the. A simple(but incorrect) pattern might be:
+
+r"the" (2.14)
+一个问题在于，当这个词位于句子开头因而被大写时（即 The），这个模式会漏掉它。这可能促使我们写出下面这个模式：
+
+> One problem is that this pattern will miss the word when it begins a sentence and hence is capitalized (i.e., The). This might lead us to the following pattern:
+
+r"[tT]he" 但我们仍然会过度泛化，错误地返回把 the 嵌在其他词中（例如 other 或 there）的文本。因此我们需要规定要的是两侧都有词边界的情形：
+
+> r"[tT]he" But we will still overgeneralize, incorrectly returning texts with the embedded in other words (e.g., other or there). So we need to specify that we want instances with a word boundary on both sides:
+
+r"\b[tT]he\b" (2.16)
+我们刚刚走过的这个简单过程，其基础是修正两类错误：
+
+> The simple process we just went through was based on fixing two kinds of errors:
+
+假阳性，即我们错误匹配到的字符串，如 other 或 there；以及假
+
+> false positives, strings that we incorrectly matched like other or there, and false
+
+> `false positives false negatives`（假阳性与假阴性）
+>
+> 释义：匹配器把不该命中的字符串判为命中是假阳性，漏掉应当命中的字符串是假阴性。
+
+阴性，即我们错误漏掉的字符串，如 The。处理这两类
+
+> negatives, strings that we incorrectly missed, like The. Addressing these two kinds
+错误在语言处理中会反复出现。因此，降低一个应用的总体错误率涉及两种相互对抗的努力：
+
+> of errors comes up again and again in language processing. Reducing the overall error rate for an application thus involves two antagonistic efforts:
+
+- 提高精确率（最小化假阳性）
+- 提高召回率（最小化假阴性）
+
+> Increasing precision (minimizing false positives)
+> Increasing recall (minimizing false negatives)
+
+第 4 章我们会带着更精确的定义再来讨论精确率和召回率。
+
+> We’ll come back to precision and recall with more precise definitions in Chapter 4.
+
+### 2.6.6 更多运算符
+
+> 2.6.6 More Operators
+
+图 2.13 给出了常用范围的一些实用别名：
+
+> Figure 2.13 shows some useful aliases for common ranges:
+
+> Regex 展开 匹配 首个匹配示例\d [0-9] 任意数字 Party␣of␣5\D [ˆ0-9] 任意非数字 Blue␣moon\w [a-zA-Z0-9_] 任意字母数字或下划线 Daiyu\W [ˆ\w] 非字母数字字符 !!!!\s [␣\r\t\n\f] 空白（空格、制表符） in Concord\S [ˆ\s] 非空白字符 in␣Concord
+>
+> *Regex Expansion Match First Matches\d [0-9] any digit Party␣of␣5\D [ˆ0-9] any non-digit Blue␣moon\w [a-zA-Z0-9_] any alphanumeric/underscore Daiyu\W [ˆ\w] a non-alphanumeric !!!!\s [␣\r\t\n\f] whitespace (space, tab) in Concord\S [ˆ\s] Non-whitespace in␣Concord*
+
+*图 2.13 常用字符集的别名。*
+*Figure 2.13 Aliases for common sets of characters.*
+
+最后，某些特殊字符要用基于
+
+> Finally, certain special characters are referred to by special notation based on the
+反斜杠（\）的特殊记法来表示（见图 2.14）。其中最常见的是换行符
+
+> backslash (\) (see Fig. 2.14). The most common of these are the newline character
+
+> `newline`（换行符）
+>
+> 释义：标记一行文本结束的控制字符，在正则表达式中以转义序列 \n 表示。
+
+\n 和制表符 \t。
+
+> \n and the tab character \t.
+
+当我们想表示本身就很特殊的字符（如 .、*、-、[ 和
+
+> How do we refer to characters that are special themselves (like ., *, -, [, and
+\)）的字面含义，而不是它们的特殊用法时，该怎么表示呢？也就是说，如果我们要匹配一个句点、一个星号，或者一个方括号、圆括号呢？要得到特殊字符的字面含义，需要在它们前面加上反斜杠，即 r"\."、r"\*"、r"\[" 和 r"\\"。
+
+> \) when we mean them literally, not in their special usage? That is, if we are trying to match a period, or a star, or a bracket or paren? To get the literal meaning of a special character, we need to precede them with a backslash, (i.e., r"\.", r"\*", r"\[", and r"\\").
+
+> Regex 匹配 首个匹配的模式\* 星号 “*” “K*A*P*L*A*N”\. 句点 “.” “Dr. Livingstone, I presume”\? 问号 “Why don’t they come and lend a hand?”\n 换行符\t 制表符
+>
+> *Regex Match First Patterns Matched\* an asterisk “*” “K*A*P*L*A*N”\. a period “.” “Dr. Livingstone, I presume”\? a question mark “Why don’t they come and lend a hand?”\n a newline\t a tab*
+
+*图 2.14 一些需要（通过反斜杠）转义的字符。*
+*Figure 2.14 Some characters that need to be escaped (via backslash).*
+
+### 2.6.7 替换与捕获组
+
+> 2.6.7 Substitutions and Capture Groups
+
+正则表达式的一个重要用途是替换，即用一个字符串替换另一个字符串。正则表达式可以帮助我们同时指定要被替换的字符串以及替换后的内容。在 Python 中我们使用函数 re.sub()（其他语言和环境中也有类似的函数）。
+
+> An important use of regular expressions is in substitutions, where we want to replace one string with another. Regular expression can help us specify the string to be replaced as well as the replacement. In Python we use the function re.sub()(similar functions exist in other languages and environments).
+
+re.sub(pattern, repl, string) 接受三个参数：一个要搜索的模式，一个
+
+> re.sub(pattern, repl, string) takes three arguments: a pattern to search for, a
+用于替换它的替换内容，以及要在其中进行搜索和替换的字符串。
+
+> replacement to replace it with, and a string in which to do the search and replacing.
+
+例如，我们可以把 string 中每一处 cherry 都改成 apricot：
+
+> We could for example change every instance of cherry to apricot in string:
+
+re.sub(r"cherry", r"apricot", string)
+或者我们可以把某个特定名字的所有实例都转换为大写：
+
+> Or we could convert to upper case all the instances of a particular name:
+
+re.sub(r"janet", r"Janet", string)
+然而更常见的情况是，替换会以更复杂的方式依赖于
+
+> More often, however, the substitution depends in a more complex way on the
+匹配到模式的字符串。例如，假设我们有一个文档，其中所有日期都采用美国格式（mm/dd/yyyy），而我们想把它们改成欧盟及许多其他地区使用的格式：（dd-mm-yyyy）。模式 r"\d{2}/\d{2}/\d{4}" 可以匹配一个日期。但我们如何在替换中指定想要交换日期和月份的值呢？
+
+> string that matched the pattern. For example, suppose we have a document in which all the dates are in US format (mm/dd/yyyy) and we want to change them into the format used in the EU and many other regions: (dd-mm-yyyy). The pattern r"\d{2}/\d{2}/\d{4}" will match a date. But how do we specify in the replacement that we want to swap the date and month values?
+
+正则表达式中用于此目的的工具是捕获组。捕获组
+
+> The tool in regular expression for this is the capture group. A capture group
+
+> `capture group`（捕获组）
+>
+> 释义：正则表达式中用圆括号把匹配到的子串存入编号分组，以便在替换时按分组编号引用其内容。
+
+使用圆括号来捕获（存储）我们在搜索中匹配到的值，这样就能在替换中复用它们。我们把一对圆括号放在模式中想要捕获的部分两侧，它就会被存入一个编号分组（分组从左到右编号）。然后在 repl 中，我们用一个编号指令引用回该分组。
+
+> uses parentheses to capture (store) the values that we matched in the search, so we can reuse them in the replacement. We put a set of parentheses around the part of the pattern we want to capture, and it will get stored in a numbered group (groups are numbered from left to right). Then in the repl, we refer back to that group with a number command.
+
+考虑下面的表达式：
+
+> Consider the following expression:
+
+re.sub(r"(\d{2})/(\d{2})/(\d{4})", r"\2-\1-\3", string)
+我们在两位月份数字、两位日期数字
+
+> We’ve put parentheses ( and ) around the two month digits, the two day digits,
+和四位年份数字两侧加上了圆括号 ( 和 )，从而把前 2 位数字存入分组 1，把接下来 2 位数字存入分组 2，把最后的数字存入分组 3。然后在 repl 字符串中，我们用编号操作符 \1、\2 和 \3 引用回第一、第二和第三个寄存器。结果会把一个这样的字符串
+
+> and the four year digits, thus storing the first 2 digits in group 1, the second 2 digits in group 2, and the final digits in group 3. Then in the repl string, we use number operators \1, \2, and \3, to refer back to the first, second, and third registers. The result would take a string like
+日期是 10/15/2011
+
+> The date is 10/15/2011
+转换为
+
+> and convert it to
+日期是 15-10-2011
+
+> The date is 15-10-2011
+即使不做替换，捕获组也很有用。例如
+
+> Capture groups can be useful even if we are not doing substitutions. For example
+我们可以用它们来查找重复，这是文本处理中经常需要的操作。例如，要在字符串中查找重复出现的词，可以使用下面这个模式：它先查找一个词，把它捕获到一个组中，然后在空白之后回头引用它：
+
+> we can use them to find repetitions, something we often need in text processing. For example, to find a repeated word in a string, we can use this pattern which searches for a word, captures it in a group, and then refers back to it after whitespace:
+
+r"\b([A-Za-z]+)\s+\1\b"
+
+因此圆括号在正则表达式中具有双重功能：它们用于
+
+> Parentheses thus have a double function in regular expressions; they are used to
+把各项组合起来，以指定运算符的适用顺序；它们也用于捕获匹配结果。有时我们需要圆括号只是为了分组，而并不
+
+> group terms for specifying the order in which operators should apply, and they are used to capture the match. Occasionally we need parentheses for grouping, but don’t
+
+> `non-capturing group`（非捕获组）
+>
+> 释义：正则中用 (?: … ) 指定的括号，只起分组作用而不分配组号，因此不会被提取或反向引用。
+
+想捕获所得到的模式。这时我们使用非捕获组，
+
+> want to capture the resulting pattern. In that case we use a non-capturing group,
+它的指定方式是在左圆括号之后加上特殊指令 ?:，形式为 (?: pattern )。当我们只想捕获一个很长或很复杂的模式中的某一部分时，通常就会使用非捕获组。比如我们可能要匹配一串由空格分隔的日期 (\d\d/\d\d/\d\d\d\d)，并且只提取第 15 个。我们需要使用圆括号，以便对前 14 个施加计数运算符，但又不想存储所有这些无用的信息。下面这个模式只在组 1 中存储第 15 个日期：
+
+> which is specified by putting the special commands ?: after the open parenthesis, in the form (?: pattern ). Non-capture groups are usually used when we are trying to capture only part of a long or complex pattern. Perhaps we are matching a sequence of dates (\d\d/\d\d/\d\d\d\d) separated by spaces and we want to extract only the 15th one. We need to use parentheses in order to use the counting operator on the first 14, but we don’t want to store all the useless information. The following pattern only stores the 15th date in group 1:
+
+r"(?:\d\d/\d\d/\d\d\d\d\s+){14}(\d\d/\d\d/\d\d\d\d)" 替换和捕获组对于实现 ELIZA（Weizenbaum, 1966）这类具有历史意义的聊天机器人也很有用。回想一下，ELIZA 通过进行如下对话来模拟一位罗杰斯学派的心理学家：
+
+> r"(?:\d\d/\d\d/\d\d\d\d\s+){14}(\d\d/\d\d/\d\d\d\d)" Substitutions and capture groups are also useful for implementing historically important chatbots like ELIZA (Weizenbaum, 1966). Recall that ELIZA simulates a Rogerian psychologist by carrying on conversations like the following:
+
+> 用户2：他们总是为这样那样的事烦我们。
+>
+> *User2: They’re always bugging us about something or other.*
+
+> ELIZA2：你能想出一个具体的例子吗 用户3：嗯，是我男朋友让我来这儿的。 ELIZA3：你男朋友让你来这儿的 用户4：他说我大部分时间都很抑郁。 ELIZA4：听说你抑郁，我很遗憾
+>
+> *ELIZA2: CAN YOU THINK OF A SPECIFIC EXAMPLE User3: Well, my boyfriend made me come here. ELIZA3: YOUR BOYFRIEND MADE YOU COME HERE User4: He says I’m depressed much of the time. ELIZA4: I AM SORRY TO HEAR YOU ARE DEPRESSED*
+
+ELIZA 的工作方式是使用一系列或一串级联的正则替换，其中每一个替换
+
+> ELIZA works by having a series or cascade of regex substitutions each of which
+匹配并修改输入行的某一部分。输入被转换为大写之后，替换会把所有出现的 MY 改为 YOUR，把 I’M 改为 YOU ARE，等等。
+
+> matches and changes some part of the input lines. After the input is uppercased, substitutions change all instances of MY to YOUR, and I’M to YOU ARE, and so on.
+
+这样一来，当 ELIZA 复述用户话语的一部分时，看起来就是在正确地指称用户。下一组替换匹配并替换输入中的其他模式，把输入变成完整的回应。下面是一些例子：
+
+> That way when ELIZA repeats back part of the user utterance, it will seem to be referring correctly to the user. The next set of substitutions matches and replaces other patterns in the input, turning the input into a complete response. Here are some examples:
+
+re.sub(r".* YOU ARE (DEPRESSED|SAD) .*",r"I AM SORRY TO HEAR YOU ARE \1",input) re.sub(r".* ALWAYS .*",r"CAN YOU THINK OF A SPECIFIC EXAMPLE",input)
+
+### 2.6.8 前瞻断言
+
+> 2.6.8 Lookahead Assertions
+
+最后，有时我们需要预测未来：在文本中向前查看某个模式是否匹配，但暂时不推进我们始终用来记录当前所在位置的指针，这样如果该模式出现，我们就可以处理它，而如果没有出现，我们也可以改去检查别的东西。
+
+> Finally, there will be times when we need to predict the future: look ahead in the text to see if some pattern matches, but not yet advance the pointer we always keep to where we are in the text, so that we can then deal with the pattern if it occurs, but if it doesn’t we can check for something else instead.
+
+这些前瞻断言沿用了上一节中非捕获组所用的 (? 语法。运算符 (?= pattern) 在 pattern 出现时为真，但它是零宽的，也就是说匹配指针不会前进，正如我们所见
+
+> These lookahead assertions make use of the (? syntax that we saw in the previous section for non-capture groups. The operator (?= pattern) is true if pattern occurs, but is zero-width, i.e. the match pointer doesn’t advance, just as we saw
+
+> `lookahead`（前瞻）
+>
+> 释义：正则中的零宽断言，在当前位置向右试探后面文本是否匹配某模式，只影响成败，不消耗字符。
+
+> `zero-width`（零宽）
+>
+> 释义：指匹配不消耗任何字符，指针停在原处；前瞻等断言和行首行尾锚点都属于此类。
+
+并与 \b 之类的锚点和边界标记配合使用。运算符 (?! pattern) 只在某个模式不匹配时才返回真，但它同样是零宽度的，不会推进指针。当我们解析某个复杂模式、却想排除某种特殊情况时，常常会用到否定前瞻。例如，假设我们想捕获行上的第一个词，但前提是它不以字母 T 开头。我们可以用否定前瞻来实现这一点：
+
+> with anchors and boundary markers like \b. The operator (?! pattern) only returns true if a pattern does not match, but again is zero-width and doesn’t advance the pointer. Negative lookahead is commonly used when we are parsing some complex pattern but want to rule out a special case. For example suppose we want to capture the first word on the line, but only if it doesn’t start with the letter T. We can use negative lookahead to do this:
+
+r"ˆ(?![tT])(\w+)\b" (2.18)
+第一个否定前瞻说明该行不能以 t 或 T 开头，但它匹配的是空字符串，并不移动匹配指针。随后捕获组捕获第一个词。
+
+> The first negative lookahead says that the line must not start with a t or T, but matches the empty string, not moving the match pointer. Then the capture group captures the first word.
+
+### 2.6.9 用于 BPE 预词元化的正则表达式
+
+> 2.6.9 Regular Expressions for BPE pre-tokenization
+
+我们在第 2.4 节中介绍过，在对
+
+> We described in Section 2.4 how before we run a BPE tokenization algorithm on
+语料库运行 BPE 词元化算法之前，我们首先要进行预词元化，大致按空白字符把语料库切分开。然后 BPE 词元化算法在词内部的字符序列之上逐步构建词元，不会跨越词边界进行词元化。
+
+> a corpus we first pre-tokenize, splitting the corpus roughly by whitespace. Then the BPE tokenization algorithm builds up tokens from sequences of characters inside words and doesn’t tokenize across word boundaries.
+
+下面这个正则表达式就用于完成这种预词元化，它被一个
+
+> Here’s the regular expression used to do this pretokenization that is used for one
+颇具影响力的语言模型——GPT-2 语言模型（Radford et al., 2019）所采用：
+
+> influential language model, the GPT-2 language model (Radford et al., 2019):
+
+> >>> import regex as re
+
+> >>> pat = re.compile(
+
+> ... # Contractions: ’t and ’m are tokens
+
+> ... r"’s|’t|’re|’ve|’m|’ll|’d|"
+
+> ... # Words: sequence of Unicode letters (after optional space)
+
+> ... r" ?\p{L}+|"
+
+> ... #Number: sequence of digits (after optional space)
+
+> ... r" ?\p{N}+|"
+
+> ... # Punctuation: sequence of non-alphanumeric/non-space
+
+> ... #(after optional space)
+
+> ... r" ?[ˆ\s\p{L}\p{N}]+|"
+
+> ... # whitespace
+
+> ... r"\s+(?!\S)|\s+"
+
+> ... )
+
+> >>> text = "We’re 350 dogs! Um, lunch?"
+
+> >>> print(pat.findall(text))
+
+> [’We’, "’re", ’ 350’, ’ dogs’, ’!’, ’ Um’, ’,’, ’ lunch’, ’?’]
+
+> >>>
+
+*图 2.15 GPT-2 预词元化器的正则表达式，用于在运行 BPE 算法之前（大致）按空白切分。*
+*Figure 2.15 The GPT-2 pre-tokenizer regular expression, used to split (roughly) on whitespace before running the BPE algorithm.*
+
+> r"’s|’t|’re|’ve|’m|’ll|’d| ?\p{L}+| ?\p{N}+| ?[ˆ\s\p{L}\p{N}]+|\s+(?!\S)|\s+"
+
+这是一个相当复杂的正则表达式，并且还用到了若干高级的
+
+> This is quite a complex regular expression, and also makes use of some advanced
+与 Unicode 相关的特性，这些我们尚未介绍。这些特性来自一个流行的外部 Python 3 库 regex（它比 Python 3 内置的库 re 更强大）。
+
+> Unicode-related features we haven’t described yet. These features are part of a popular external Python 3 library called regex (which is more powerful than the internal Python 3 library called re).
+
+例如，regex 库有特殊的 \p 和 \P 运算符，可以匹配
+
+> For example the regex library has special \p and \P operators that can match
+当前字符是否具有特定的 Unicode 码点属性。例如 \p{L} 匹配任意 Unicode 字母，\P{L} 匹配任意非字母，\p{N} 匹配任意数字，\P{N} 匹配任意非数字。
+
+> if the current character has particular Unicode codepoint properties. For example\p{L} matches any Unicode letter, \P{L} matches any non-letter, \p{N} matches any number, and \P{N} matches any non-number.
+
+图 2.15 更清晰地标注了这个正则表达式，并展示了
+
+> Fig. 2.15 annotates the regular expression more clearly, and also shows the
+在句子 We’re 350 dogs! Um, lunch? 上运行 GPT-2 词元化器所得到的输出。
+
+> output of running the GPT-2 tokenizer on the sentence We’re 350 dogs! Um, lunch?.
+
+注意，词元化器把 We’re 切分为 We 和 ’re，标点被
+
+> Note that the tokenizer splits We’re into We and ’re, that punctuation is split
+从 dogs 和 lunch 上切分下来，并且有些词元（如 dogs）以空格开头，而另一些（如 We 和 !）则不然。
+
+> off from dogs and lunch, and that some tokens like dogs start with a space, and others like We and ! do not.
+
+## 2.7 用于词元化的简单 Unix 工具
+
+> 2.7 Simple Unix Tools for Word Tokenization
+
+对于英语，可以在一条 Unix 命令行中完成简单的朴素词元化和词频统计。正如 Church（1994）所指出的，当我们需要快速获取某个文本语料库的信息时，这很有用。我们会用到几个 Unix 命令：tr，用于系统地替换输入中的特定字符；sort，按字母顺序对输入行排序；以及 uniq，合并并统计相邻的相同行。
+
+> For English it is possible to do simple naive word tokenization and frequency computation in a single Unix command-line. As Church (1994) points out, this can be useful when we need quick information about a text corpus. We’ll make use of some Unix commands: tr, used to systematically change particular characters in the input; sort, which sorts input lines in alphabetical order; and uniq, which collapses and counts adjacent identical lines.
+
+例如，我们从单个文件 sh.txt 中莎士比亚作品的“完整词语”开始。我们可以用 tr 对词语进行词元化，把每一段非字母字符序列都替换为换行符（’A-Za-z’ 表示字母，-c 选项取补集（即从字母变为非字母），因此二者合起来就选中了每一个非字母字符，由 tr 将其替换为换行符。-s（“squeeze”，挤压）选项用于把多次连续替换的结果合并为单个输出，因此一连串相邻的非字母字符都会被“挤压”成一个换行符）：
+
+> For example let’s begin with the ‘complete words’ of Shakespeare in one file, sh.txt. We can use tr to tokenize the words by changing every sequence of non-alphabetic characters to a newline (’A-Za-z’ means alphabetic and the -c option complements (hence from alphabetic to non-alphabetic), so together this selects every non-alphabetic character, which the tr changes into a newline. The-s (‘squeeze’) option is used to replace the result of multiple consecutive changes into a single output, so a series of non-alphabetic characters in a row would all be‘squeezed’ into a single newline):
+
+tr -sc ’A-Za-z’ ’\n’ < sh.txt
+该命令的输出为：
+
+> The output of this command will be:
+
+十四行诗集 威廉·莎士比亚 从最美的生灵……
+
+> THE SONNETS by William Shakespeare From fairest creatures...
+
+既然每行只有一个词，我们就可以对这些行排序，并把它们传给 uniq
+
+> Now that there is one word per line, we can sort the lines, and pass them to uniq
+-c 选项会合并并统计它们：
+
+> -c which will collapse and count them:
+
+tr -sc ’A-Za-z’ ’\n’ < sh.txt | sort | uniq -c
+输出如下：
+
+> with the following output:
+
+1945 A 72 AARON 19 ABBESS 25 Aaron 6 Abate 1 Abates...
+
+或者，我们也可以把所有大写字母合并为小写字母：
+
+> Alternatively, we can collapse all the upper case to lower case:
+
+tr -sc ’A-Za-z’ ’\n’ < sh.txt | tr A-Z a-z | sort | uniq -c
+其输出为
+
+> whose output is
+14725 a 97 aaron 1 abaissiez 10 abandon 2 abandoned 2 abase 1 abash 14 abate...
+
+现在我们可以再次排序，找出高频词。sort 的 -n 选项表示
+
+> Now we can sort again to find the frequent words. The -n option to sort means
+按数值而非按字母排序，-r 选项表示按相反顺序（从高到低）排序：
+
+> to sort numerically rather than alphabetically, and the -r option means to sort in reverse order (highest-to-lowest):
+
+结果表明，与任何其他语料库一样，莎士比亚作品中最常见的词是
+
+> The results show that the most frequent words in Shakespeare, as in any other
+像冠词、代词、介词这样的短虚词：
+
+> corpus, are the short function words like articles, pronouns, prepositions:
+
+27378 the 26084 and 22538 i 19771 to 17481 of 14725 a 13826 you
+……
+
+> ...
+
+这类 Unix 工具在快速构建词频统计时非常方便
+
+> Unix tools of this sort can be very handy in building quick word count statistics
+适用于任何英语语料库。对于更复杂的情况，我们通常会转而使用上文讨论过的更精细的词元化算法。
+
+> for any corpus in English. For anything more complex, we generally turn to the more sophisticated tokenization algorithms we’ve discussed above.
+
+## 2.8 基于规则的词元化
+
+> 2.8 Rule-based Tokenization
+
+虽然像 BPE 这样基于数据的词元化是最常见的词元化方式，但也有一些情形我们希望把词元限制为词而不是子词。如果我们为英语运行句法分析算法、而分析器可能需要语法词作为输入，这种做法可能就有用。或者，对于任何我们已经对想研究的词元有某种先验定义的语言学应用，它也可能有用。又或者，对于把正字法词作为有用研究领域的社会科学应用，它也可能有用。
+
+> While data-based tokenization like BPE is the most common way of doing tokenization, there are also situations where we want to constrain our tokens to be words and not subwords. This might be useful if we are running parsing algorithms for English where the parser might need grammatical words as input. Or it can be useful for any linguistic application where we have some a priori definition of the token that we are interested in studying. Or it can be useful for social science applications where orthographic words are useful domains of study.
+
+在基于规则的词元化中，我们预先定义一个标准，并实现规则来实现那种词元化。下面我们以英语的词语词元化为例来探讨。
+
+> In rule-based tokenization, we pre-define a standard and implement rules to implement that kind of tokenization. Let’s explore this for English word tokenization.
+
+对英语我们有一些期望。我们通常希望把标点切分出来
+
+> We have some desiderata for English. We often want to break off punctuation
+作为独立的词元；逗号对分析器来说是有用的信息，句点则有助于标示句子边界。但我们通常希望保留出现在词内部的标点，例如 m.p.h.、Ph.D.、AT&T 和 cap’n 这类例子。特殊字符和数字需要在价格（$45.55）和日期（01/02/06）中保留；我们不想把那个价格切分成 “45” 和 “55” 两个独立词元。此外还有 URL（https://www.stanford.edu）、Twitter 话题标签（#nlproc）或电子邮件地址（someone@cs.colorado.edu）。
+
+> as a separate token; commas are a useful piece of information for parsers, and periods help indicate sentence boundaries. But we’ll often want to keep the punctuation that occurs word internally, in examples like m.p.h., Ph.D., AT&T, and cap’n. Special characters and numbers will need to be kept in prices ($45.55) and dates (01/02/06); we don’t want to segment that price into separate tokens of “45”and “55”. And there are URLs (https://www.stanford.edu), Twitter hashtags(#nlproc), or email addresses (someone@cs.colorado.edu).
+
+数字表达会带来一些麻烦；除了出现在词
+
+> Number expressions introduce complications; in addition to appearing at word
+边界处之外，在英语中逗号还出现在数字内部，每三位数字一个：555,500.50。
+
+> boundaries, commas appear inside numbers in English, every three digits: 555,500.50.
+
+词元化因语言而异；例如西班牙语、法语和德语等语言用逗号标示小数点，而在英语使用逗号的地方使用空格（有时是句点），例如 555 500,50。
+
+> Tokenization differs by language; languages like Spanish, French, and German, for example, use a comma to mark the decimal point, and spaces (or sometimes periods) where English puts commas, for example, 555 500,50.
+
+基于规则的词元化器还可以用来展开那些由撇号标记的附着词缩写，
+
+> A rule-based tokenizer can also be used to expand clitic contractions that are
+
+> `clitic`（附着词）
+>
+> 释义：不能独立成词、必须依附于另一个词才能出现的语言成分，如英语中的 n’t、法语代词 j’ai 中的 j’。
+
+把 what’re 转换成 what are 两个词元，把 we’re 转换成 we are。附着词是词的一部分，不能独立存在，只能附着在另一个词上时才会出现。这类缩合形式也出现在其他拼音文字语言中，包括法语代词（j’ai）和冠词（l’homme）。
+
+> marked by apostrophes, converting what’re to the two tokens what are, and we’re to we are. A clitic is a part of a word that can’t stand on its own, and can only occur when it is attached to another word. Such contractions occur in other alphabetic languages, including French pronouns (j’ai) and articles (l’homme).
+
+视应用而定，词元化算法也可能把 New York 或 rock ’n’ roll 这类多词表达当作单个词元来处理，这就需要某种多词表达词典。因此，基于规则的词元化与命名实体识别——即检测人名、日期和机构的任务——密切相关（第 18 章）。
+
+> Depending on the application, tokenization algorithms may also tokenize multiword expressions like New York or rock ’n’ roll as a single token, which requires a multiword expression dictionary of some sort. Rule-based tokenization is thus intimately tied up with named entity recognition, the task of detecting names, dates, and organizations (Chapter 18).
+
+一种常用的词元化标准称为 Penn Treebank 词元化标准，用于由语言数据联盟（Lin-
+
+> One commonly used tokenization standard is known as the Penn Treebank tokenization standard, used for the parsed corpora (treebanks) released by the Lin-
+
+> `Penn Treebank tokenization`（Penn Treebank 词元化）
+>
+> 释义：一种基于规则的英语词元化标准，把附着词和所有标点切分出来，并保留连字符词，常用于树库语料。
+
+guistic Data Consortium，LDC）发布的、已作句法分析的语料库（树库），LDC 是许多有用数据集的来源。该标准把附着词切分出来（doesn’t 变成 does 加 n’t），把带连字符的词保持在一起，并把所有标点切分出来（为了节省空间，我们在词元之间显示可见的空格‘ ’，尽管更常见的输出是换行）：
+
+> guistic Data Consortium (LDC), the source of many useful datasets. This standard separates out clitics (doesn’t becomes does plus n’t), keeps hyphenated words together, and separates out all punctuation (to save space we’re showing visible spaces‘ ’ between tokens, although newlines are a more common output):
+
+输入："The San Francisco-based restaurant," they said,
+
+> Input: "The San Francisco-based restaurant," they said,
+"doesn’t charge $10".
+
+输出：" The San Francisco-based restaurant , " they said ,
+
+> Output: " The San Francisco-based restaurant , " they said ,
+" does n’t charge $ 10 " .
+
+在实践中，由于词元化先于任何其他语言处理运行，它
+
+> In practice, since tokenization is run before any other language processing, it
+必须非常快。对于基于规则的词语词元化，我们通常使用基于正则表达式的确定性算法，这些正则表达式会被编译成高效的有限状态自动机。例如，图 2.16 展示了一个基本正则表达式，它可以配合基于 Python 的自然语言工具包（NLTK）中的 nltk.regexp tokenize 函数对英语进行词元化（Bird et al. 2009; https://www.nltk.org）。
+
+> needs to be very fast. For rule-based word tokenization we generally use deterministic algorithms based on regular expressions compiled into efficient finite state automata. For example, Fig. 2.16 shows a basic regular expression that can be used to tokenize English with the nltk.regexp tokenize function of the Python-based Natural Language Toolkit (NLTK) (Bird et al. 2009; https://www.nltk.org).
+
+> >>> text = ’That U.S.A. poster-print costs $12.40...’
+
+> >>> pattern = r’’’(?x) # set flag to allow verbose regexps
+
+> ... (?:[A-Z]\.)+ # abbreviations, e.g. U.S.A.
+
+> ... | \w+(?:-\w+)* # words with optional internal hyphens
+
+> ... | \$?\d+(?:\.\d+)?%? # currency, percentages, e.g. $12.40, 82%
+
+> ... | \.\.\. # ellipsis
+
+> ... | [][.,;"’?():_‘-] # these are separate tokens; includes ], [
+
+> ... ’’’
+
+> >>> nltk.regexp_tokenize(text, pattern)
+
+> [’That’, ’U.S.A.’, ’poster-print’, ’costs’, ’$12.40’, ’...’]
+
+*图 2.16 在 NLTK 这个基于 Python 的自然语言处理工具包（Bird et al., 2009）中，用正则表达式进行词元化的一次 Python 执行记录，为便于阅读加了注释；(?x) 详细模式标志告诉 Python 去掉注释和空白。图取自 Bird et al. (2009) 第 3 章。*
+*Figure 2.16 A Python trace of regular expression tokenization in the NLTK Python-based natural language processing toolkit (Bird et al., 2009), commented for readability; the (?x) verbose flag tells Python to strip comments and whitespace. Figure from Chapter 3 of Bird et al. (2009).*
+
+精心设计的确定性算法能够处理
+
+> Carefully designed deterministic algorithms can deal with the ambiguities that
+由此产生的各种歧义，例如撇号用作属格标记时（如 the book’s cover）、用作引语标记时（如 ‘The other class’, she said），或出现在 they’re 这类附着词中时，需要以不同的方式词元化。
+
+> arise, such as the fact that the apostrophe needs to be tokenized differently when used as a genitive marker (as in the book’s cover), a quotative as in ‘The other class’, she said, or in clitics like they’re.
+
+### 2.8.1 句子切分
+
+> 2.8.1 Sentence Segmentation
+
+基于规则的切分通常用于另一类词元化过程：句子。句子切分是一个可以有选择地应用的步骤
+
+> Rule-based segmentation is commonly used for another kind of tokenization process: the sentence. Sentence segmentation is a step that can be optionally applied
+
+> `sentence`（句子）
+>
+> 释义：由若干词元组成、能表达相对完整意义的语言单位，也是句法分析等结构检测任务的处理对象。
+
+> `segmentation`（切分）
+>
+> 释义：按某种边界把连续文本切成更小单位的过程，如把文本切成句子或把句子切成词元。
+
+，用在文本处理之中。当把 NLP 算法应用于检测结构（如句法分析结构）这类任务时，它尤为重要。
+
+> in text processing. It is especially important when applying NLP algorithms to tasks of detecting structure, like parse structure.
+
+句子切分取决于语言和体裁。对于把英语书面文本切分成句子来说，最有用
+
+> Sentence segmentation depends on the language and the genre. The most useful
+的线索往往是标点符号，如句号、问号和感叹号。问号和感叹号是相对明确的句子边界标记，当它们出现时，用简单的规则就能切分出句子。
+
+> cues for segmenting a text into sentences in English written text tend to be punctuation, like periods, question marks, and exclamation points. Question marks and exclamation points are relatively unambiguous markers of sentence boundaries, and simple rules can segment sentences when they appear.
+
+另一方面，句点字符“.”则是有歧义的，它既可能是句子
+
+> The period character “.”, on the other hand, is ambiguous between a sentence
+边界标记，也可能是 Dr. 或 Inc. 这类缩写的标记。你刚才读到的那句话展示了这种歧义更复杂的情形：其中 Inc. 末尾的句点既标记了缩写，又标记了句子边界。因此，句子词元化与单词词元化（word tokenization）可以合在一起处理。
+
+> boundary marker and a marker of abbreviations like Dr. or Inc. The previous sentence that you just read showed an even more complex case of this ambiguity, in which the final period of Inc. marked both an abbreviation and the sentence boundary marker. For this reason, sentence tokenization and word tokenization can be addressed jointly.
+
+许多英语句子词元化方法的做法是，先判断（通常依据
+
+> Many English sentence tokenization methods work by first deciding (often based
+确定性规则，有时则通过机器学习）句点究竟属于词的一部分，还是句子边界标记。缩写词典有助于判断该句点是否属于某个常用缩写；这类词典可以手工构建，也可以用机器学习得到（Kiss and Strunk, 2006），最终的句子切分器也是如此。例如在 Stanford CoreNLP 工具包（Manning et al., 2014）中，句子切分基于规则，是词元化的确定性结果；当句末标点（.、! 或 ?）尚未与其他字符一起组成一个词元（例如缩写或数字的词元）时，句子便在此结束，其后还可选地带额外的结尾引号或括号。
+
+> on deterministic rules, but sometimes via machine learning) whether a period is part of the word or is a sentence-boundary marker. An abbreviation dictionary can help determine whether the period is part of a commonly used abbreviation; the dictionaries can be hand-built or machine-learned (Kiss and Strunk, 2006), as can the final sentence splitter. In the Stanford CoreNLP toolkit (Manning et al., 2014), for example sentence splitting is rule-based, a deterministic consequence of tokenization; a sentence ends when a sentence-ending punctuation (., !, or ?) is not already grouped with other characters into a token (such as for an abbreviation or number), optionally followed by additional final quotes or brackets.
+
+## 2.9 最小编辑距离
+
+> 2.9 Minimum Edit Distance
+
+我们常常需要一种方法来比较两个词或两个字符串有多相似。正如后续章节将会看到的，这在自动语音识别或机器翻译等任务中最为常见，因为我们想知道某个词序列与某个参考词序列有多相似。
+
+> We often need a way to compare how similar two words or strings are. As we’ll see in later chapters, this comes up most commonly in tasks like automatic speech recognition or machine translation, where we want to know how similar the sequence of words is to some reference sequence of words.
+
+编辑距离为我们提供了一种量化这类关于字符串相似度的直觉的方法。
+
+> Edit distance gives us a way to quantify these intuitions about string similarity.
+
+> `minimum edit distance`（最小编辑距离）
+>
+> 释义：把一个字符串变换为另一个字符串所需的最少编辑操作次数，操作包括插入、删除和替换。
+
+更形式化地说，两个字符串之间的最小编辑距离定义为
+
+> More formally, the minimum edit distance between two strings is defined as the
+把一个字符串转换为另一个字符串所需的最少编辑操作次数（即插入、删除、替换这类操作）。本节将以单个词为例介绍编辑距离，但该算法同样适用于整个字符串。
+
+> minimum number of editing operations (operations like insertion, deletion, substitution) needed to transform one string into another. In this section we’ll introduce edit distance for single words, but the algorithm applies equally to entire strings.
+
+例如，intention 与 execution 之间的距离为 5（删除一个 i，把 n 替换为 e，把 t 替换为 x，插入 c，把 n 替换为 u）。要看清这一点，最简便的办法是观察字符串距离最重要的可视化形式——对齐
+
+> The gap between intention and execution, for example, is 5 (delete an i, substitute e for n, substitute x for t, insert c, substitute u for n). It’s much easier to see this by looking at the most important visualization for string distances, an alignment
+
+> `alignment`（对齐）
+>
+> 释义：两个序列的子串之间的对应关系，用于直观展示把一个字符串转换为另一个字符串所需的编辑操作。
+
+图 2.17 展示了两个字符串之间的这种对齐。给定两个序列，对齐就是这两个序列的子串之间的对应关系。因此我们说，I 与空字符串对齐，N 与 E 对齐，依此类推。在对齐后的字符串下方还有另一种表示：一串符号给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。
+
+> between the two strings, shown in Fig. 2.17. Given two sequences, an alignment is a correspondence between substrings of the two sequences. Thus, we say I aligns with the empty string, N with E, and so on. Beneath the aligned strings is another representation; a series of symbols expressing an operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.
+
+![](images/02-words-and-tokens/fig_p28_0.png)
+
+> 最后一行给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。
+>
+> *The final row gives the operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.*
+
+我们还可以为这些操作分别指定特定的代价或权重。
+
+> We can also assign a particular cost or weight to each of these operations. The
+
+两个序列之间的 Levenshtein 距离是最简单的加权方式，其中三种操作的代价均为 1（Levenshtein, 1966）——我们假定把字母替换为它自身（例如用 t 替换 t）的代价为零。intention 与 execution 之间的 Levenshtein 距离为 5。Levenshtein 还提出了他的度量的另一种版本：每次插入或删除的代价为 1，且不允许替换。（这等价于允许替换，但把每次替换的代价记为 2，因为任何替换都可以用一次插入和一次删除来表示。）使用这一版本时，intention 与 execution 之间的 Levenshtein 距离为 8。
+
+> Levenshtein distance between two sequences is the simplest weighting factor in which each of the three operations has a cost of 1 (Levenshtein, 1966)—we assume that the substitution of a letter for itself, for example, t for t, has zero cost. The Levenshtein distance between intention and execution is 5. Levenshtein also proposed an alternative version of his metric in which each insertion or deletion has a cost of 1 and substitutions are not allowed. (This is equivalent to allowing substitution, but giving each substitution a cost of 2 since any substitution can be represented by one insertion and one deletion). Using this version, the Levenshtein distance between intention and execution is 8.
+
+### 2.9.1 最小编辑距离算法
+
+> 2.9.1 The Minimum Edit Distance Algorithm
+
+我们如何找到最小编辑距离？可以把它看作一个搜索任务：我们在寻找从一个字符串到另一个字符串的最短路径，也就是一系列编辑操作。
+
+> How do we find the minimum edit distance? We can think of this as a search task, in which we are searching for the shortest path—a sequence of edits—from one string to another.
+
+![](images/02-words-and-tokens/fig_p29_1.png)
+
+*图 2.18 把寻找编辑距离视为搜索问题*
+*Figure 2.18 Finding the edit distance viewed as a search problem*
+
+> 所有可能编辑构成的空间极其庞大，因此我们无法朴素地搜索。不过，
+>
+> *The space of all possible edits is enormous, so we can’t search naively. However,*
+
+> 许多不同的编辑路径最终会到达同一个状态（字符串），因此我们不必重新计算所有这些路径，只需每次都记住到达某个状态的最短路径即可
+>
+> *lots of distinct edit paths will end up in the same state (string), so rather than recomputing all those paths, we could just remember the shortest path to a state each time*
+
+> `dynamic`（动态）
+>
+> 释义：与紧随其后的术语合为“动态规划”，指把大问题拆成子问题、以表格方式组合子问题解的算法类别。
+
+> 我们见过它。我们可以通过使用动态规划来做到这一点。动态规划
+>
+> *we saw it. We can do this by using dynamic programming. Dynamic programming*
+
+> `programming`（规划）
+>
+> 释义：与前面的“动态”合为“动态规划”，指按表格自底向上组合各子问题解来求解大问题的一类算法。
+
+> 是一类算法的名称，由 Bellman (1957) 首次提出，这类算法采用表格驱动的方法，通过组合子问题的解来求解问题。
+>
+> *is the name for a class of algorithms, first introduced by Bellman (1957), that apply a table-driven method to solve problems by combining solutions to subproblems.*
+
+> 自然语言处理中一些最常用的算法都使用了动态规划，例如 Viterbi 算法（第 18 章）和用于句法分析的 CKY 算法（第 19 章）。
+>
+> *Some of the most commonly used algorithms in natural language processing make use of dynamic programming, such as the Viterbi algorithm (Chapter 18) and the CKY algorithm for parsing (Chapter 19).*
+
+> 动态规划问题的直觉是，一个大问题可以
+>
+> *The intuition of a dynamic programming problem is that a large problem can*
+
+> 通过恰当地组合各个子问题的解来求解。考虑图 2.19 所示的、表示字符串 intention 与 execution 之间最小编辑距离的转换词最短路径。
+>
+> *be solved by properly combining the solutions to various subproblems. Consider the shortest path of transformed words that represents the minimum edit distance between the strings intention and execution shown in Fig. 2.19.*
+
+![](images/02-words-and-tokens/fig_p29_0.png)
+
+*图 2.19 从 intention 到 execution 的路径。*
+*Figure 2.19 Path from intention to execution.*
+
+设想某个字符串（也许是 exention）位于这条最优路径中（无论
+
+> Imagine some string (perhaps it is exention) that is in this optimal path (whatever
+它是什么）。动态规划的直觉是，如果 exention 出现在最优操作序列中，那么该最优序列也必定包含从 intention 到 exention 的最优路径。为什么？如果存在一条从 intention 到 exention 的更短路径，我们就可以改用它，从而得到一条更短的总体路径，那么该最优序列就不是最优的了，由此产生矛盾。
+
+> it is). The intuition of dynamic programming is that if exention is in the optimal operation list, then the optimal sequence must also include the optimal path from intention to exention. Why? If there were a shorter path from intention to exention, then we could use it instead, resulting in a shorter overall path, and the optimal sequence wouldn’t be optimal, thus leading to a contradiction.
+
+> `minimum edit distance algorithm`（最小编辑距离算法）
+>
+> 释义：用动态规划自底向上填表，求出把一个字符串转换为另一个字符串所需最少插入、删除、替换操作次数。
+
+最小编辑距离算法由 Wagner 和 Fischer 命名
+
+> The minimum edit distance algorithm was named by Wagner and Fischer
+（1974），但被许多人独立发现（参见第 18 章的历史注释部分）。
+
+> (1974) but independently discovered by many people (see the Historical Notes section of Chapter 18).
+
+我们首先定义两个字符串之间的最小编辑距离。给定两个
+
+> Let’s first define the minimum edit distance between two strings. Given two
+字符串，即长度为 n 的源字符串 X 和长度为 m 的目标字符串 Y，我们将 D[i, j] 定义为 X[1..i] 与 Y[1..j] 之间的编辑距离，也就是 X 的前 i 个字符与 Y 的前 j 个字符之间的编辑距离。因此 X 与 Y 之间的编辑距离就是 D[n,m]。
+
+> strings, the source string X of length n, and target string Y of length m, we’ll define D[i, j] as the edit distance between X[1..i] and Y[1..j], i.e., the first i characters of X and the first j characters of Y. The edit distance between X and Y is thus D[n,m].
+
+我们将使用动态规划自底向上地计算 D[n,m]，组合各个子问题的解。在基础情形中，当源子串长度为 i 而目标字符串为空时，从 i 个字符变为 0 个字符需要 i 次删除。当目标子串长度为 j 而源为空时，从 0 个字符变为 j 个字符需要 j 次插入。在计算出较小的 i、j 对应的 D[i, j] 之后，我们便根据此前算出的较小值来计算更大的 D[i, j]。D[i, j] 的值通过取到达该处的三条可能矩阵路径中的最小值来计算：
+
+> We’ll use dynamic programming to compute D[n,m] bottom up, combining solutions to subproblems. In the base case, with a source substring of length i but an empty target string, going from i characters to 0 requires i deletes. With a target substring of length j but an empty source going from 0 characters to j characters requires j inserts. Having computed D[i, j] for small i, j we then compute larger D[i, j] based on previously computed smaller values. The value of D[i, j] is computed by taking the minimum of the three possible paths through the matrix which arrive there:
+
+ D[i−1, j]+del-cost(source[i]) (2.19)
+D[i, j] = min D[i, j −1]+ins-cost(target[j])
+ D[i−1, j −1]+sub-cost(source[i],target[j])
+上文我们提到了莱文斯坦距离的两个版本，其中一个版本中替换的代价为 1，另一个版本中替换的代价为 2（即等同于一次插入加一次删除）。这里我们使用第二个版本的莱文斯坦距离，其中插入和删除各自的代价为 1（ins-cost(·) = del-cost(·) = 1），替换的代价为 2（相同字母之间的替换代价为零）。
+
+> We mentioned above two versions of Levenshtein distance, one in which substitutions cost 1 and one in which substitutions cost 2 (i.e., are equivalent to an insertion plus a deletion). Let’s here use that second version of Levenshtein distance in which the insertions and deletions each have a cost of 1 (ins-cost(·) = del-cost(·) = 1), and substitutions have a cost of 2 (except substitution of identical letters has zero cost).
+
+在这个版本的莱文斯坦距离下，D[i, j] 的计算式变为：
+
+> Under this version of Levenshtein, the computation for D[i, j] becomes:
+
+D[i−1, j]+1 D[i, j −1]+1 (2.20)
+
+>   D[i−1, j]+1 D[i, j −1]+1 (2.20)
+D[i, j] = min  2; if source[i]̸ = target[j]
+D[i−1, j −1]+
+
+>    D[i−1, j −1]+
+0; if source[i] = target[j]
+该算法总结于图 2.21；图 2.20 展示了采用式 2.20 中的莱文斯坦距离版本，将该算法应用于 intention 与 execution 之间距离的结果。
+
+> The algorithm is summarized in Fig. 2.21; Fig. 2.20 shows the results of applying the algorithm to the distance between intention and execution with the version of Levenshtein in Eq. 2.20.
+
+> 源\目标 # e x e c u t i o n
+>
+> *Src\Tar # e x e c u t i o n*
+
+> # 0 1 2 3 4 5 6 7 8 9 i 1 2 3 4 5 6 7 6 7 8 n 2 3 4 5 6 7 8 7 8 7 t 3 4 5 6 7 8 7 8 9 8 e 4 3 4 5 6 7 8 9 10 9 n 5 4 5 6 7 8 9 10 11 10 t 6 5 6 7 8 9 8 9 10 11 i 7 6 7 8 9 10 9 8 9 10 o 8 7 8 9 10 11 10 9 8 9 n 9 8 9 10 11 12 11 10 9 8
+
+*图 2.20 使用图 2.21 的算法计算 intention 与 execution 之间的最小编辑距离，所用莱文斯坦距离的插入或删除代价为 1*
+*Figure 2.20 Computation of minimum edit distance between intention and execution with the algorithm of Fig. 2.21, using Levenshtein distance with cost of 1 for insertions or dele-*
+
+![](images/02-words-and-tokens/fig_p31_0.png)
+
+*图 2.21 最小编辑距离算法，动态规划算法类的一个示例。各种代价既可以是固定的（例如 ∀x，ins-cost(x) = 1），也可以针对具体字母而定（用以刻画某些字母比其他字母更可能被插入这一事实）。我们假设将一个字母替换为它自身没有代价（即 sub-cost(x,x) = 0）。*
+*Figure 2.21 The minimum edit distance algorithm, an example of the class of dynamic programming algorithms. The various costs can either be fixed (e.g., ∀x,ins-cost(x) = 1) or can be specific to the letter (to model the fact that some letters are more likely to be inserted than others). We assume that there is no cost for substituting a letter for itself (i.e., sub-cost(x,x) = 0).*
+
+对齐 知道最小编辑距离对于诸如查找可能的拼写纠错之类的算法很有用。但编辑距离算法在另一方面也很重要：只需稍作改动，它还能给出两个字符串之间代价最小的对齐。对齐两个字符串在语音和语言处理的各个环节都很有用。在语音识别中，最小编辑距离对齐被用来计算词错误率（第 16 章）。对齐在机器翻译中也发挥作用，其中平行语料库（包含两种语言文本的语料库）中的句子需要彼此匹配。
+
+> Alignment Knowing the minimum edit distance is useful for algorithms like finding potential spelling error corrections. But the edit distance algorithm is important in another way; with a small change, it can also provide the minimum cost alignment between two strings. Aligning two strings is useful throughout speech and language processing. In speech recognition, minimum edit distance alignment is used to compute the word error rate (Chapter 16). Alignment plays a role in machine translation, in which sentences in a parallel corpus (a corpus with a text in two languages) need to be matched to each other.
+
+为了扩展编辑距离算法以产生对齐，我们可以先
+
+> To extend the edit distance algorithm to produce an alignment, we can start by
+将对齐想象成一条穿过编辑距离矩阵的路径。图 2.22 用粗体单元格展示了这条路径。每个粗体单元格表示两个字符串中一对字母的对齐。如果两个粗体单元格出现在同一行，则从源到目标的过程中会有一次插入；同一列中的两个粗体单元格则表示一次删除。
+
+> visualizing an alignment as a path through the edit distance matrix. Figure 2.22 shows this path with boldfaced cells. Each boldfaced cell represents an alignment of a pair of letters in the two strings. If two boldfaced cells occur in the same row, there will be an insertion in going from the source to the target; two boldfaced cells in the same column indicate a deletion.
+
+图 2.22 还展示了如何计算这条对齐路径的直观思路。
+
+> Figure 2.22 also shows the intuition of how to compute this alignment path. The
+
+计算分两步进行。第一步，我们扩充最小编辑距离算法，在每个单元格中存储回溯指针。一个单元格的回溯指针指向我们进入当前单元格时所来自的前一个（或若干个）单元格。
+
+> computation proceeds in two steps. In the first step, we augment the minimum edit distance algorithm to store backpointers in each cell. The backpointer from a cell points to the previous cell (or cells) that we came from in entering the current cell.
+
+我们在图 2.22 中给出了这些回溯指针的示意图。有些单元格有多个回溯指针，因为最小扩展可能来自多个前面的单元格。第二步，我们执行回溯。在回溯中，我们从
+
+> We’ve shown a schematic of these backpointers in Fig. 2.22. Some cells have multiple backpointers because the minimum extension could have come from multiple previous cells. In the second step, we perform a backtrace. In a backtrace, we start
+
+> `backtrace`（回溯）
+>
+> 释义：从动态规划矩阵末端的单元格出发，沿各单元格记录的回溯指针逐格返回初始单元格，从而还原出最小代价对齐路径的过程。
+
+最后一个单元格（位于最后一行和最后一列）开始，沿着指针回溯穿过动态规划矩阵。最后单元格与初始单元格之间的每条完整路径都是一条最小距离对齐。习题 2.10 要求你修改最小编辑距离算法，使其存储指针并计算回溯，从而输出一个对齐。
+
+> from the last cell (at the final row and column), and follow the pointers back through the dynamic programming matrix. Each complete path between the final cell and the initial cell is a minimum distance alignment. Exercise 2.10 asks you to modify the minimum edit distance algorithm to store the pointers and compute the backtrace to output an alignment.
+
+> # e x e c u t i o n
+
+> # 0 ←1 ←2 ←3 ←4 ←5 ←6 ←7 ←8 ←9 i ↑1 ↖←↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖6 ←7 ←8 n ↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↑7 ↖←↑8 ↖7 t ↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖7 ←↑8 ↖←↑9 ↑8 e ↑4 ↖3 ←4 ↖←5 ←6 ←7 ←↑8 ↖←↑9 ↖←↑10 ↑9 n ↑5 ↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖↑10 t ↑6 ↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖8 ←9 ←10 ←↑11 i ↑7 ↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↑9 ↖8 ←9 ←10 o ↑8 ↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↑10 ↑9 ↖8 ←9 n ↑9 ↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖←↑12 ↑11 ↑10 ↑9 ↖8
+
+*图 2.22 在填写每个单元格的值时，我们用最多三个箭头标出它是从三个相邻单元格中的哪一个过来的。表格填满后，我们从右下角的 8 出发，沿箭头回溯，从而计算出一个对齐（最小编辑路径）。加粗单元格组成的序列表示这两个字符串之间一种可能的最小代价对齐，同样使用 Levenshtein 距离，插入或删除的代价为 1，替换的代价为 2。图的设计参考 Gusfield (1997)。*
+*Figure 2.22 When entering a value in each cell, we mark which of the three neighboring cells we came from with up to three arrows. After the table is full we compute an alignment(minimum edit path) by using a backtrace, starting at the 8 in the lower-right corner and following the arrows back. The sequence of bold cells represents one possible minimum cost alignment between the two strings, again using Levenshtein distance with cost of 1 for insertions or deletions, 2 for substitutions. Diagram design after Gusfield (1997).*
+
+虽然我们的例子用的是简单的 Levenshtein 距离，但该算法
+
+> While we worked our example with simple Levenshtein distance, the algorithm
+在图 2.21 中允许为各种操作指定任意权重。例如在拼写纠错中，替换更可能发生在键盘上彼此相邻的字母之间。Viterbi 算法是最小编辑距离的概率化扩展。Viterbi 算法不是计算两个字符串之间的“最小编辑距离”，而是计算一个字符串与另一个字符串的“最大概率对齐”。我们将在第 18 章进一步讨论这一点。
+
+> in Fig. 2.21 allows arbitrary weights on the operations. For spelling correction, for example, substitutions are more likely to happen between letters that are next to each other on the keyboard. The Viterbi algorithm is a probabilistic extension of minimum edit distance. Instead of computing the “minimum edit distance” between two strings, Viterbi computes the “maximum probability alignment” of one string with another. We’ll discuss this more in Chapter 18.
+
+## 2.10 小结
+
+> 2.10 Summary
+
+本章介绍了语言处理中词元与词元化的基本概念。我们讨论了词、语素和字符这些语言层级，介绍了 Unicode 码点和 UTF-8 编码，介绍了用于词元化的 BPE 算法，以及用于比较字符串的正则表达式和最小编辑距离算法。下面总结我们围绕这些概念所涉及的主要要点：
+
+> This chapter introduced the fundamental concepts of tokens and tokenization in language processing. We discussed the linguistic levels of words, morphemes, and characters, introduced Unicode code points and the UTF-8 encoding, introduced the BPE algorithm for tokenization, and introduced the regular expression and the minimum edit distance algorithm for comparing strings. Here’s a summary of the main points we covered about these ideas:
+
+- 词和语素是有用的表示单位，但很难给出形式化的定义。
+- Unicode 是一套系统，用于表示书写世界各语言的众多文字系统中的字符。
+- 每个字符在内部都用一个称为码点的唯一 id 表示，并可以通过 UTF-8 之类的编码方式编码到文件中，UTF-8 是一种变长编码。
+- 字节对编码（Byte-Pair Encoding，BPE）是以数据驱动方式归纳出词元的标准做法。它是大多数大语言模型的第一步。
+- BPE 词元的大小通常大致相当于词或语素，不过也可能小到单个字符。
+
+> Words and morphemes are useful units of representation, but difficult to define formally.
+> Unicode is a system for representing characters in the many scripts used to write the languages of the world.
+> Each character is represented internally with a unique id called a code point, and can be encoded in a file via encoding methods like UTF-8, which is a variable-length encoding.
+> Byte-Pair Encoding or BPE is the standard way to induce tokens in a datadriven way. It is the first step in most large language models.
+> BPE tokens are often roughly word or morpheme-sized, although they can be as small as single characters.
+
+- 正则表达式语言是进行模式匹配的强大工具。
+- 正则表达式中的基本操作包括符号的析取（[,]、|）、计数器（*、+ 和 {n,m}）、锚点（ˆ、$）、捕获组（(、)）以及替换。
+- 两个字符串之间的最小编辑距离，是把其中一个编辑成另一个所需的最少操作次数。最小编辑距离可以用动态规划计算，计算过程同时还会得到这两个字符串的一个对齐。
+
+> The regular expression language is a powerful tool for pattern-matching.
+> Basic operations in regular expressions include disjunction of symbols ([,], |), counters (*, +, and {n,m}), anchors (ˆ, $), capture groups ((,)), and substitutions.
+> The minimum edit distance between two strings is the minimum number of operations it takes to edit one into the other. Minimum edit distance can be computed by dynamic programming, which also results in an alignment of the two strings.
+
+## 历史注记
+
+> Historical Notes
+
+关于 Herdan 定律和 Heaps 定律的更多内容，参见 Herdan (1960, p. 28)、Heaps (1978)、Egghe (2007) 和 Baayen (2001)。
+
+> For more on Herdan’s law and Heaps’ Law, see Herdan (1960, p. 28), Heaps (1978), Egghe (2007) and Baayen (2001).
+
+Unicode 借鉴了 ASCII 和 ISO 字符编码标准。早期的草案
+
+> Unicode drew on ASCII and ISO character encoding standards. Early drafts
+是在 Xerox 和 Apple 的工程师之间的讨论中形成的。一份早期的标准草案于 1988 年发布，1991 年则更正式地发布了 Unicode 标准。后来成为 UTF-8 的方案始于 1989 年的 ISO 草案，并带有各种扩展。其自同步特性是 1992 年由 Ken Thompson 与 Rob Pike 在新泽西一家餐馆的餐垫上勾勒出来的，此事颇为有名。
+
+> were worked out in discussions between engineers from Xerox and Apple. An early draft standard was published in 1988, with a more formal release of the Unicode Standard in 1991. What became UTF-8 began with ISO drafts in 1989, with various extensions. The self-synchronizing aspects were famously outlined on a placemat in a New Jersey diner in 1992 by Ken Thompson with Rob Pike.
+
+词的词元化和其他文本规范化算法一直被应用，
+
+> Word tokenization and other text normalization algorithms have been applied
+从本领域诞生之初便是如此。这些算法包括词干提取，例如 Lovins (1968) 被广泛使用的词干提取器，也包括应用于数字人文的工作，例如 Packard (1973) 为古希腊语构建的剥离词缀的形态分析器。BPE 最初是 Gage (1994) 提出的一种文本压缩方法，Sennrich 等 (2016) 将其应用于早期神经机器翻译中的子词词元化。随后它被 OpenAI 的 GPT-2 (Radford et al., 2019) 采用为默认的词元化方法，也被纳入开源的 SentencePiece 库 (Kudo and Richardson, 2018)。Andrej Karpathy 有一个很好的公开实现 minbpe，网址为 https://github.com/karpathy/minbpe，他还做了一场介绍 BPE 的广受欢迎的讲座（https://www.youtube.com/watch?v=zduSFxRajkE）。
+
+> since the beginning of the field. These include stemming, like the widely used stemmer of Lovins (1968), and applications to the digital humanities like those by Packard (1973), who built an affix-stripping morphological parser for Ancient Greek. BPE, originally a text compression method proposed by Gage (1994), was applied to subword tokenization in the context of early neural machine translation by Sennrich et al. (2016). It was then taken up in OpenAI’s GPT-2 (Radford et al., 2019) as the default tokenization method, and also included in the open-source SentencePiece library (Kudo and Richardson, 2018). There is a nice public implementation, minbpe, https://github.com/karpathy/minbpe, by Andrej Karpathy, who also has a popular lecture introducing BPE (https://www.youtube.com/watch?v=zduSFxRajkE).
+
+Kleene 1951; 1956 首次定义了正则表达式和有限自动机，
+
+> Kleene 1951; 1956 first defined regular expressions and the finite automaton,
+其基础是 McCulloch-Pitts 神经元。Ken Thompson 是最早把正则表达式编译器内置到编辑器中以实现文本搜索的人之一 (Thompson, 1968)。他的编辑器 ed 包含一条命令“g/regular expression/p”，即 Global Regular Expression Print，后来演变成了 Unix 的 grep 工具。
+
+> based on the McCulloch-Pitts neuron. Ken Thompson was one of the first to build regular expressions compilers into editors for text searching (Thompson, 1968). His editor ed included a command “g/regular expression/p”, or Global Regular Expression Print, which later became the Unix grep utility.
+
+NLTK 是一个必不可少的工具，它既提供了有用的 Python 库（https://
+
+> NLTK is an essential tool that offers both useful Python libraries (https://
+www.nltk.org），也在教科书 (Bird et al., 2009) 中描述了许多算法，包括文本规范化和语料库接口。
+
+> www.nltk.org) and textbook descriptions (Bird et al., 2009) of many algorithms including text normalization and corpus interfaces.
+
+关于编辑距离的更多内容，参见 Gusfield (1997)。我们测量编辑
+
+> For more on edit distance, see Gusfield (1997). Our example measuring the edit
+距离的例子，即从 ‘intention’ 到 ‘execution’，改编自 Kruskal (1983)。有多种公开可用的软件包可用于计算编辑距离，包括 Unix 的 diff 和 NIST 的 sclite 程序 (NIST, 2005)。
+
+> distance from ‘intention’ to ‘execution’ was adapted from Kruskal (1983). There are various publicly available packages to compute edit distance, including Unix diff and the NIST sclite program (NIST, 2005).
+
+Bellman（1984）在其自传中解释了他最初是如何想出
+
+> In his autobiography Bellman (1984) explains how he originally came up with
+动态规划这一术语的：
+
+> the term dynamic programming:
+
+“……20 世纪 50 年代对数学研究来说不是好年头。[时任]
+
+> “...The 1950s were not good years for mathematical research. [the]
+国防部长……对“研究”这个词有一种病态的恐惧和憎恨……因此我决定改用“规划”这个词。我想传达这样一种想法：这是动态的，这是多阶段的……我想，让我们……找一个含义绝对精确的词，也就是 dynamic（动态）……不可能把 dynamic 这个词用于贬义。你试着想一个有可能让它带上贬义的组合看看，那是不可能的。因此，我认为动态规划是个好名字。它甚至是连国会议员都无法反对的。”
+
+> Secretary of Defense ...had a pathological fear and hatred of the word, research... I decided therefore to use the word, “programming”. I wanted to get across the idea that this was dynamic, this was multi- stage... I thought, let’s ... take a word that has an absolutely precise meaning, namely dynamic... it’s impossible to use the word, dynamic, in a pejorative sense. Try thinking of some combination that will possibly give it a pejorative meaning. It’s impossible. Thus, I thought dynamic programming was a good name. It was something not even a Congressman could object to.”
+
+## 习题
+
+> Exercises
+
+2.1 把你所熟悉的一种语言中的一句话翻译成另一种语言。然后对
+
+> 2.1 Translate a sentence from one language you know to another. Now tokenize
+这两句话进行词元化，例如使用 Tat Dat Duong 的 Tiktokenizer 可视化工具（https://tiktokenizer.vercel.app/），看看词元数量是否有差异。
+
+> both sentences, for example using Tat Dat Duong’s Tiktokenizer visualizer(https://tiktokenizer.vercel.app/) and see if you see differences in the token count.
+
+2.2 对一个长数字、一个 URL 和一个化学式进行词元化。根据你所看到的结果，大型
+
+> 2.2 Tokenize a long number, a URL, and a chemical formula. Why might a large
+语言模型为什么可能不擅长算术？
+
+> language model be bad at arithmetic given what you see?
+
+2.3 利用图 2.5，手工将下列内容编码为 UTF-8，并展示位操作：(a) 字符 ´e（U+00E9）；(b) 字符 进（U+8FDB）。
+
+> 2.3 Using Fig. 2.5, encode the following into UTF-8 by hand, showing the bit manipulation: (a) the character ´e (U+00E9), and (b) the character 进(U+8FDB).
+
+每个字符各占多少字节？
+
+> How many bytes does each take?
+
+2.4 为下列语言写出正则表达式。
+
+> 2.4 Write regular expressions for the following languages.
+
+- 所有字母字符串的集合；
+- 所有以 b 结尾的小写字母字符串的集合；
+- 字母表 a,b 上所有满足每个 a 的前一个字符和后一个字符都是 b 的字符串的集合；
+
+> the set of all alphabetic strings;
+> the set of all lower case alphabetic strings ending in a b;
+> the set of all strings from the alphabet a,b such that each a is immediately preceded by and immediately followed by a b;
+
+2.5 为下列语言写出正则表达式。这里所说的“词”，指的是
+
+> 2.5 Write regular expressions for the following languages. By “word”, we mean
+由空白、任何相关的标点、换行符等与其他词分隔开的字母字符串。
+
+> an alphabetic string separated from other words by whitespace, any relevant punctuation, line breaks, and so forth.
+
+- 所有含有两个连续重复词的字符串的集合（例如“Humbert Humbert”和“the the”，但不包括“the bug”或“the big bug”）；
+- 所有在行首以整数开头、在行尾以词结尾的字符串；
+- 所有同时含有词 grotto 和词 raven 的字符串（但不包括诸如 grottos 这类仅仅包含 grotto 这个词的单词）；
+- 编写一个模式，把英语句子的第一个词存入一个寄存器。要处理标点。
+
+> the set of all strings with two consecutive repeated words (e.g., “Humbert Humbert” and “the the” but not “the bug” or “the big bug”);
+> all strings that start at the beginning of the line with an integer and that end at the end of the line with a word;
+> all strings that have both the word grotto and the word raven in them(but not, e.g., words like grottos that merely contain the word grotto);
+> write a pattern that places the first word of an English sentence in a register. Deal with punctuation.
+
+2.6 实现一个类似 ELIZA 的程序，使用诸如所描述的那类替换
+
+> 2.6 Implement an ELIZA-like program, using substitutions such as those described
+（见第 55 页）。你也许想选择一个不同于罗杰斯式心理学家的领域，但要记住，你需要一个能让你的程序合理地大量进行简单重复的领域。
+
+> on page 55. You might want to choose a different domain than a Rogerian psychologist, although keep in mind that you would need a domain in which your program can legitimately engage in a lot of simple repetition.
+
+2.7 计算编辑距离（插入代价为 1、删除代价为 1、替换
+
+> 2.7 Compute the edit distance (using insertion cost 1, deletion cost 1, substitution
+代价为 1），“leda”到“deal”。展示你的计算过程（使用编辑距离网格）。
+
+> cost 1) of “leda” to “deal”. Show your work (using the edit distance grid).
+
+2.8 判断 drive 与 brief 更接近，还是与 divers 更接近，并算出它与两者各自的编辑距离是多少。你可以使用任何一种你喜欢的距离定义。
+
+> 2.8 Figure out whether drive is closer to brief or to divers and what the edit distance is to each. You may use any version of distance that you like.
+
+2.9 现在实现一个最小编辑距离算法，并用你手工计算得到的
+
+> 2.9 Now implement a minimum edit distance algorithm and use your hand-computed
+结果来检验你的代码。
+
+> results to check your code.
+
+2.10 扩展最小编辑距离算法，使其输出一个对齐结果；你
+
+> 2.10 Augment the minimum edit distance algorithm to output an alignment; you
+需要存储指针，并增加一个阶段来计算回溯。
+
+> will need to store pointers and add a stage to compute the backtrace.

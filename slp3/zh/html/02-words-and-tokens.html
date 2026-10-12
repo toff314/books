@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 2 章 词与词元</title>
+<style>
+:root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
+* { box-sizing: border-box; }
+body { margin:0; background:#f6f7f9; color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+  line-height:1.85; font-size:16px; }
+.wrap { max-width:860px; margin:0 auto; background:var(--bg); min-height:100vh;
+  padding:48px 56px 120px; box-shadow:0 0 24px rgba(0,0,0,.06); }
+h1,h2,h3,h4 { line-height:1.35; margin:1.4em 0 .6em; }
+h1 { font-size:28px; border-bottom:2px solid var(--line); padding-bottom:.3em; }
+h2 { font-size:22px; } h3 { font-size:18px; } h4 { font-size:16px; }
+p { margin:0 0 .9em; text-align:justify; }
+ul { margin:.4em 0 1em 1.4em; } li { margin:.25em 0; }
+img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
+blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
+blockquote p { margin:.2em 0; }
+.term { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #b9c4d0; color:#4a4a4a; font-size:14px; }
+.term code { background:none; color:var(--accent); margin-right:.5em; }
+.term-zh { color:#333; margin-right:.5em; }
+.term-explain { color:#4a4a4a; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
+th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+th { background:#f3f5f7; font-weight:600; }
+code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
+.nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
+.nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
+footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
+  font-size:13px; color:var(--muted); }
+</style>
+</head><body><div class="wrap">
+<div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/02-words-and-tokens.md">Markdown 源文件</a></div>
+<h1>第 2 章 词与词元</h1>
+<h3>章</h3>
+<h1>2 词与词元</h1>
+<blockquote><p>用户：我需要一些帮助，这一点似乎很确定。</p></blockquote>
+<blockquote><p>ELIZA：如果你得到一些帮助，那对你意味着什么</p></blockquote>
+<blockquote><p>用户：也许我可以学着与我的母亲相处。</p></blockquote>
+<blockquote><p>ELIZA：多跟我讲讲你的家人</p></blockquote>
+<blockquote><p>用户：我的母亲照顾我。</p></blockquote>
+<blockquote><p>ELIZA：你家里还有谁照顾你</p></blockquote>
+<blockquote><p>用户：我的父亲。</p></blockquote>
+<blockquote><p>ELIZA：你的父亲</p></blockquote>
+<blockquote><p>用户：在某些方面你像我的父亲。</p></blockquote>
+<p>Weizenbaum（1966）上面这段对话来自 ELIZA，一个早期的自然语言处理系统，</p>
+<aside class="term"><code>ELIZA</code><span class="term-explain">早期自然语言处理系统，用词上的模式匹配模仿罗杰斯式心理治疗师的回应，与用户进行有限的对话。</span></aside>
+<p>它能通过模仿罗杰斯式心理治疗师的回应，与用户进行有限的对话（Weizenbaum, 1966）。ELIZA 是一个简单得令人惊讶的程序，它利用词上的模式匹配来识别诸如“我需要 X”这样的短语，并把词替换成合适的输出，如“如果你得到 X，那对你意味着什么？”。ELIZA 对人类对话的模仿，用现代标准衡量非常粗糙，却取得了惊人的成功：许多与 ELIZA 交互过的人开始相信它真的理解自己。因此，这项工作使研究者首次开始思考聊天机器人对其用户的影响（Weizenbaum, 1976）。</p>
+<p>当然，现代聊天机器人并不使用那种简单的基于模式的模仿，这种模仿正是 ELIZA 首创的。然而，ELIZA 中对词所实现的基于模式的方法在今天依然有意义，其背景便是词元化，即从连续文本中切分或</p>
+<aside class="term"><code>tokenization</code><span class="term-zh">词元化</span><span class="term-explain">把连续文本切分成词、词元或词片段等独立单位的处理任务，是现代自然语言处理流水线的第一步。</span></aside>
+<p>词元化出词和词片段的任务。词元化是现代自然语言处理的第一步，其中包含可追溯到 ELIZA 的基于模式的方法。</p>
+<p>要理解词元化，我们首先需要问：什么是词？um 是一个词吗？</p>
+<p>那纽约又该怎么算？不同语言中词的性质是否相似？有些语言，比如越南语或粤语，词非常短，而另一些语言，比如土耳其语，词则非常长。我们还需要考虑如何从字符的角度表示词。我们将介绍 Unicode——表示字符的现代系统，以及 UTF-8 文本编码。我们还会介绍语素，即词中有意义的组成部分（比如 longer 一词中的语素 -er）。</p>
+<p>对文本进行词元化的标准做法，是用输入字符来引导我们。</p>
+<p>因此，在理解了词可能有哪些组成部分之后，我们将介绍标准的字节对编码（BPE）算法，它能把输入文本自动切分</p>
+<aside class="term"><code>BPE</code><span class="term-explain">依据字符序列的简单统计，反复合并最频繁的相邻符号，从而自动切分文本并归纳出子词词表的算法。</span></aside>
+<p>为词元。该算法利用字母序列的简单统计，归纳出一个由子词词元构成的词表。所有词元化系统还都依赖于正则</p>
+<aside class="term"><code>regular</code><span class="term-zh">正则表达式</span><span class="term-explain">一种用于形式化描述和操作文本字符串的语言，是所有现代 NLP 系统中的重要工具。</span></aside>
+<p>表达式作为一个处理步骤。正则表达式是一种用于形式化</p>
+<aside class="term"><code>expressions</code><span class="term-zh">正则表达式</span><span class="term-explain">由普通字符与元字符构成的字符串模式，可匹配一整类字符串，常用于切分、过滤和抽取文本。</span></aside>
+<p>规定和操作文本字符串的语言，是所有现代 NLP 系统中的重要工具。我们将介绍正则表达式，并给出它们的使用示例。</p>
+<p>最后，我们将介绍一种称为编辑距离的度量，它衡量的是两个词或字符串有多相似，依据的是把一个字符串改成另一个字符串所需的编辑次数（插入、删除、替换）。只要我们需要比较两个词或字符串，编辑距离就在 NLP 中发挥作用，例如自动语音识别中至关重要的词错误率指标。</p>
+<h2>2.1 词</h2>
+<p>下面这个句子中有多少个词？</p>
+<p>他们在池边野餐，然后仰躺在草地上，看着星星。</p>
+<p>如果不把标点算作词，这个句子有 16 个词；如果把标点也算进去，则有 18 个词。我们是否把句号（“.”）、逗号（“,”）等当作词，取决于具体任务。标点对于找出事物之间的边界（逗号、句号、冒号）以及识别意义的某些方面（问号、感叹号、引号）至关重要。大语言模型通常把标点算作独立的词。</p>
+<p>在定义词方面，口语还会带来其他麻烦。</p>
+<p>那么，下面这句来自口语会话的话语又该怎么算？（话语是</p>
+<aside class="term"><code>utterance</code><span class="term-zh">话语</span><span class="term-explain">口语中实际说出的一段话，是句子在口语中的对应物。</span></aside>
+<p>语言学中用来指句子的口语对应物的术语）。</p>
+<p>我 做 呃 主要——主要是商业数据处理这句话语包含两种不流畅现象。被截断的词 main- 被</p>
+<aside class="term"><code>disfluency fragment</code><span class="term-zh">不流畅片段</span><span class="term-explain">说话人中途改口而在半截处中断的残词，如例句中的 main-，转录时通常需要识别并单独处理。</span></aside>
+<p>称为片段。像 uh 和 um 这样的词被称为填充词或填充停顿。我们应当把它们视为词吗？这同样取决于具体应用。如果我们</p>
+<aside class="term"><code>filled pause</code><span class="term-zh">填充停顿</span><span class="term-explain">说话人犹豫或组织语言时发出的 uh、um 一类无词汇意义的声音，在语音识别中有时按普通词处理。</span></aside>
+<p>构建语音转写系统，我们可能最终想要把不流畅现象剔除掉。但有时我们也会保留不流畅现象。像 uh 或 um 这样的不流畅现象其实有助于语音识别预测下一个词，因为它们可能提示说话人正在重新开始一个小句或一个想法，因此在语音识别中它们被当作普通词处理。由于不同的人使用不同的不流畅现象，它们也可以成为说话人识别的线索。事实上，Clark 和 Fox Tree（2002）表明，uh 和 um 在英语中具有不同的含义。</p>
+<p>你认为它们分别是什么？</p>
+<p>也许最重要的是，在思考什么是词时，我们需要区分谈论词的两种方式，这在全书中都会很有用。让我们看一个句子。如果忽略标点，这个句子有 16 个词，但只有 14 个不同的词（因为 the 出现了 3 次）。</p>
+<p>他们在水池边野餐，然后仰面躺在草地上，望着星星。</p>
+<p>我们把语料库中不同词的集合称为词类型。所以上面那个句子</p>
+<aside class="term"><code>word type</code><span class="term-zh">词类型</span><span class="term-explain">语料库中彼此不同的词构成的集合里的成员，同一词重复出现只计一次，如例句中 16 个词只对应 14 个词类型。</span></aside>
+<p>有 14 个词类型；如果整个语言的词表（该语言中可能出现的词的集合）为 V，那么类型的数量就是词表大小 |V|。我们把连续出现的词的数量 N 称为词例，所以上例中是 16。1</p>
+<aside class="term"><code>word instance</code><span class="term-zh">词例</span><span class="term-explain">文本中词每出现一次就计一个的计数单位，同一词重复出现分别计数，如上述 16 个词即 16 个词例。</span></aside>
+<p>我们仍有需要决定的问题！例如，我们是否应该把首字母大写的字符串（如 They）和不带大写的字符串（如 they）视为同一个词类型？</p>
+<p>答案是这取决于具体任务！在一些不太关心书写格式的任务中，They 和 they 可能会被合并为同一个类型；而在另一些任务中，大小写是有用的特征，会被保留。有时我们会同时保留某个 NLP 模型的两个版本，一个有大小写，一个没有大小写。</p>
+<p>到目前为止我们谈论的都是正字法词：基于我们的英语书写系统的词。但定义词还有许多其他可能的方式。</p>
+<blockquote><p>在较早的传统中，而且偶尔至今仍然如此，你可能会看到把词的实例称为词例，但</p></blockquote>
+<blockquote><p>语料库 类型数 = |V| 实例数 = N Shakespeare 2.9 万 88.4 万 Brown 语料库 3.8 万 100 万 Switchboard 电话对话 2 万 240 万 COCA 200 万 4.4 亿 Google n-grams 1300 万 1 万亿</p></blockquote>
+<p>例如，虽然从正字法上看 I’m 是一个词，但从语法上看它起两个词的作用：主语代词 I 和动词 ’m，即 am 的缩写。</p>
+<p>一旦开始考虑其他语言，这些区分就变得更难做出。例如，像汉语、日语和泰语这类语言的书写系统根本没有正字法意义上的词！也就是说，它们不使用空格来标记可能的词边界。以汉语为例，词由字符（汉语中称为汉字）构成。每个字符通常表示一个</p>
+<aside class="term"><code>hanzi</code><span class="term-zh">汉字</span><span class="term-explain">汉语书写系统的基本单位，每个汉字通常对应一个语素，并且以一个音节读出。</span></aside>
+<p>意义单位（称为语素，下文将介绍），并且可以读作一个音节。词的平均长度大致在 1.5 到 1.9 个字符之间，具体取决于你如何度量。但由于汉语没有正字法意义上的词，判断什么算作汉语中的一个词很复杂。例如，考虑下面这个句子：</p>
+<p>(2.1) 姚明进入总决赛 y´ao m´ıng j<code>ın r</code>u zˇong ju´e s`ai“Yao Ming reaches the finals”（姚明进入总决赛）正如 Chen et al. (2017b) 所指出的，这可以看作 3 个词（这种词的界定称为“Chinese Treebank”定义，其中汉语人名（姓后接名）被当作一个词）：</p>
+<p>(2.2) 姚明 进入 总决赛YaoMing reaches finals（姚明 进入 总决赛）但同一个句子也可以看作 5 个词（“北京大学”标准），其中人名被拆分为各自独立的单位，并且一些形容词作为单独的词出现：</p>
+<p>(2.3) 姚 明 进入 总 决赛Yao Ming reaches overall finals（姚 明 进入 总 决赛）最后，在汉语中也可以完全忽略词，直接以字符作为基本元素，把句子视为 7 个字符的序列；这种做法对汉语相当有效，因为对大多数应用而言，字符处于合理的语义层级 (Li et al., 2019)：</p>
+<p>(2.4) 姚 明 进 入 总 决 赛Yao Ming enter enter overall decision game（姚 明 进 入 总 决 赛）但这一方法对日语和泰语并不适用，因为在这两种语言中，单个字符作为单位太小了。</p>
+<p>这些关于词的界定的问题，使得很难把词作为在跨语言的 NLP 中对文本进行词元化。</p>
+<p>但词还有另一个问题：它们的数量实在太多了！！！</p>
+<p>英语里究竟有多少个词？当我们谈论一门语言中词的数量时，通常指的是词类型。图 2.1 给出了从一些英语语料库中统计出的类型数与实例数的大致数值。</p>
+<p>你会注意到，我们考察的语料库越大，发现的词类型就越多！这说明“一共有多少个词”并没有一个明确的答案；随着我们看到的数据增多，这个答案会不断变大！我们可以从数学上看到这一事实，因为类型数 |V| 与实例数 N 之间的关系被称为 Herdan 定律（Herdan, 1960）或 Heaps 定律（Heaps, 1978），其名称取自</p>
+<aside class="term"><code>Herdan’s Law Heaps’ Law</code><span class="term-zh">Herdan 定律 / Heaps 定律</span><span class="term-explain">刻画词类型数与实例数关系的经验规律，形式为 |V| = kN^β；语料越大，新出现的词类型越多。</span></aside>
+<p>其发现者（分别属于语言学界和信息检索界）。该定律见式 2.5，其中 k 和 β 为正的常数，且 0 &lt; β &lt; 1。</p>
+<table><tr><th>V</th><th>= kNβ (2.5)</th></tr></table>
+<p>β 的取值取决于语料库规模与体裁；报告中常见 0.44 到 0.56 甚至更高的数值。粗略地说，一段文本的词表规模增长速度略快于其词数长度的平方根。</p>
+<p>该定律还有一些变体，它们刻画的是这样一个事实：我们可以区分大致两类词。一类是功能词，即像</p>
+<aside class="term"><code>function words</code><span class="term-zh">功能词</span><span class="term-explain">承担语法功能的词，如英语的 a、of，数量相对固定，通常不会随语料增大而无限增长。</span></aside>
+<p>英语的 a 和 of 这样的语法词，它们的数量往往不会无限增长（一门语言中这类词通常维持固定的数量）。另一类是内容词：名词、形容词和动词，它们</p>
+<aside class="term"><code>content words</code><span class="term-zh">内容词</span><span class="term-explain">承载人、地点、事件等具体意义的实词，如名词、形容词和动词，其数量会随语料增大而持续增长。</span></aside>
+<p>往往含有关于人、地点和事件的意义。名词，尤其是像专名（names）和科技术语这类特定名词，确实会无限增长。因此，对功能词与内容词这一差异敏感的模型，在语料库中所有词都还在出现的起始部分使用一个 β 值，而在之后只有内容词仍在出现的阶段使用第二个 β 值。</p>
+<p>图 2.2 给出了 Tria 等（2018）的一个例子，展示了在 Gutenberg 图书语料库上计算的 Heaps 定律的两个 β 值（在其图中称为 γ）。</p>
+<img src="../md/images/02-words-and-tokens/fig_p4_0.png" alt="">
+<blockquote><p>之后，在功能词基本都已出现以后，新词的数量增长放缓，更接近语料库规模的平方根。图取自 Tria 等（2018）。</p></blockquote>
+<p>词会无止境地增长这一事实，给任何计算模型。无论我们的词表有多大，都不可能有一个能涵盖所有可能出现的词的词表！这意味着我们的计算模型会不断遇到未知词：即此前从未见过的词。</p>
+<p>这对机器学习模型来说是一个巨大的问题。</p>
+<p>由于这两个问题（第一，许多语言没有正字法意义上的词，而事后定义它们颇具挑战；第二，词的数量无界增长），语言模型和其他 NLP 模型往往不把词作为处理单位。相反，它们使用更小的单位——子词，子词可以重新组合，用来建模模型此前从未见过的新词。要讨论子词的定义，我们首先需要谈论比词更小的单位：语素和字符。</p>
+<h2>2.2 语素：词的组成部分</h2>
+<p>词是有组成部分的。在字符层面上，这一点显而易见。单词 cats 由四个字符组成，即 ‘c’、‘a’、‘t’、‘s’。但在更微妙的层面上同样如此：词有一些组成部分，它们本身具有连贯的意义。这些组成部分称为语素，对语素的研究称为形态学。一个</p>
+<aside class="term"><code>morphology morpheme</code><span class="term-zh">形态学；语素</span><span class="term-explain">语素是语言中最小的能承载意义的单位，形态学则研究词的内部构成方式与语素组合规律。</span></aside>
+<p>语素是语言中最小的能承载意义的单位。因此，举例来说，单词 fox 由一个语素组成（即语素 fox），而单词 cats 由两个语素组成：语素 cat 和表示复数的语素 -s。</p>
+<p>下面是一个用连字符切分为语素的英语句子：</p>
+<p>(2.6) Doc work-ed care-ful-ly wash-ing the glass-es正如我们上面提到的，在中文里，书写系统恰好是按每个字主要对应一个语素的方式设置的。下面是一个汉语句子，每个语素字都附有意义注释，随后是整句译文：</p>
+<p>(2.7) 梅 干 菜 用 清 水 泡 软 ， 捞 出 后 ， 沥 干plum dry vegetable use clear water soak soft , remove out after , drip dry切 碎chop fragment把腌菜用水浸泡至软，捞出，沥干，并切碎我们通常把语素区分为两大类：词根——词的核心</p>
+<aside class="term"><code>root</code><span class="term-zh">词根</span><span class="term-explain">词中承载主要意义的核心语素，可独立成词，如 worked 中的 work、glasses 中的 glass。</span></aside>
+<p>语素，提供主要意义——以及词缀——添加各种“附加”意义。在上面的英语例子中，对于单词 worked，work 是词根，-ed 是词缀；同理，对于 glasses，glass 是词根，-es 是词缀。</p>
+<aside class="term"><code>affix</code><span class="term-zh">词缀</span><span class="term-explain">附着在词根上、增添各类附加意义的语素，如表示过去时的 -ed 和表示复数的 -es。</span></aside>
+<p>词缀本身分为两类，更准确地说，是介于二者之间的一个连续统——</p>
+<aside class="term"><code>inflectional morphemes</code><span class="term-zh">屈折语素</span><span class="term-explain">主要承担句法功能（如标记一致、复数、时态）的语法语素，使用上能产、常为强制，意义可预测。</span></aside>
+<p>两极。位于一端的屈折语素是一类语法语素，它们往往起句法作用，比如标记一致关系。例如，英语用屈折语素 -s（或 -es）在名词上标记复数，用屈折语素 -ed 在动词上标记过去时。屈折语素往往具有能产性，且常常是强制性的，其意义也往往可以预测。</p>
+<aside class="term"><code>derivational morphemes</code><span class="term-zh">派生语素</span><span class="term-explain">通常只适用于特定子类词、与词根结合后常改变语法类别，且意义往往难以精确预测的语素。</span></aside>
+<p>派生语素在适用范围和意义上都更具特异性。</p>
+<p>它们通常只适用于某一特定子类别的词，并产生一个与词根语法类别不同的词，其意义往往难以精确预测。</p>
+<p>在上面的例子中，单词 care（名词）可以与派生词缀 -ful 结合，产生形容词（careful），再与另一个派生词缀 -ly 结合，得到副词（carefully）。</p>
+<p>还有另一类语素：附着词。附着词是一种语素，它在句法上</p>
+<aside class="term"><code>clitic</code><span class="term-zh">附着词</span><span class="term-explain">句法作用像词，但形式缩减并（语音上、有时正字法上）依附于另一个词，如英语 I’ve 中的 ’ve。</span></aside>
+<p>像词一样起作用，但形式已缩减，并（在语音上，有时还在正字法上）依附于另一个词。例如，英语单词 I’ve 中的语素 ’ve 就是附着词；它具有单词 have 的语法意义，但形式上不能单独出现（句子中不能只出现一个“’ve”）。英语短语 the teacher’s book 中的所有格语素 ’s 也是附着词。法语单词 l’op´era 中的定冠词 l’ 是附着词，阿拉伯语中表示 by/with 的介词 b 和表示 and 的连词 w 也是如此。</p>
+<p>研究各语言的形态如何不同，即词如何</p>
+<aside class="term"><code>morphological typology</code><span class="term-zh">形态类型学</span><span class="term-explain">按语素如何组成词以及每个词的语素数量，对各语言的形态进行分类比较的研究。</span></aside>
+<p>拆分成各个组成部分，称为形态类型学。尽管各语言的形态可以在许多维度上存在差异，但有两个维度对计算词元化尤为相关。</p>
+<p>第一个维度是每个词的语素数量。在某些语言中，如越南语，程度稍轻的还有粤语，平均每个词只略多于一个语素。我们把处于这一端的语言称为孤立语或分析语</p>
+<aside class="term"><code>isolating</code><span class="term-zh">孤立语</span><span class="term-explain">平均每个词只含一个语素、几乎没有屈折变化的一类语言，如越南语和粤语。</span></aside>
+<p>语言。例如，下面这个粤语句子中的每个词都只有一个语素（以及一个音节）：</p>
+<p>(2.8) keoi5 waa6 cyun4 gwok3 zeoi3 daai6 gaan1 uk1 hai6 ni1 gaan1他 说 整个 国家 最 大 建筑 房子 是 这 建筑“他说这个国家里最大的房子就是这一座”</p>
+<p>另一种情形是，在像科里亚克语这样的语言中——这是俄罗斯堪察加半岛北部使用的一种楚科奇-堪察加语系语言——单个词可能包含非常多的语素，相当于英语中的一整句话（Arkadiev, 2020; Kurebito, 2017）。我们把这类语言称为综合语，而处于该连续统最</p>
+<aside class="term"><code>synthetic</code><span class="term-zh">综合的</span><span class="term-explain">单个词可由大量语素构成，其内容常相当于英语的一整句，处在语素与词比例连续统的高端。</span></aside>
+<p>末端的是多式综合语。</p>
+<aside class="term"><code>polysynthetic</code><span class="term-zh">多式综合的</span><span class="term-explain">语素与词的比例达到极端的语言，一整句的信息几乎全部由动词的复杂词形承载。</span></aside>
+<p>(2.9) t-@-nk’e-mejN-@-jetem@-nni-k 1SG.S-E-midnight-big-E-yurt.cover-E-sew-1SG.S[PFV]“我在半夜里缝制了很多帐篷毡盖。”</p>
+<p>（科里亚克语，楚科奇-堪察加语系，俄罗斯；Kurebito (2017, 844)）图 2.3 展示了若干语言中每个词所含语素数量的一项早期计算，由语言类型学家 Joseph Greenberg（1960）给出。</p>
+<img src="../md/images/02-words-and-tokens/fig_p6_0.png" alt="">
+<p>第二个维度是语素可被切分的容易程度，其范围从像土耳其语这样的黏着语——其中语素具有相对清晰的分界——到像俄语这样的融合语，其中单个词缀</p>
+<aside class="term"><code>agglutinative fusion</code><span class="term-zh">黏着 / 融合</span><span class="term-explain">按语素边界的清晰程度划分的两类语言：一类语素分界整齐，另一类则让单个词缀同时承载多种语法范畴。</span></aside>
+<p>可能把多个语素合并在一起，例如单词 stolom 中的 -om（table-SG-INSTR-DECL1），它把工具格、单数和第一变格法这些不同的形态范畴融合起来。</p>
+<p>She reads the article 中英语的 -s 后缀就是融合的一个例子，因为该后缀既表示第三人称单数，也表示现在时，而且无法把这两层意义分派给 -s 的不同部分。</p>
+<p>尽管我们一直较为宽泛地谈论这些性质（分析性、多式综合性、融合性、黏着性），仿佛它们就是语言本身的属性，但实际上语言可以使用不同的形态系统，因此更准确的说法是把它们视为一般倾向。</p>
+<p>尽管如此，语素可能难以定义，而且许多语言可能含有不易切分成若干片段的复杂语素，这一事实使得把语素用作跨语言词元化的标准变得非常困难。</p>
+<h2>2.3 Unicode</h2>
+<p>词元化还可以考虑的另一种做法是以单个字符为单位。那么，我们又该如何表示跨语言、跨书写系统的字符呢？</p>
+<p>Unicode 标准是一种表示文本的方法，可用于表示由任何字符写成的文本</p>
+<aside class="term"><code>Unicode</code><span class="term-explain">一种通用字符编码标准，为世界各种书写系统的每个字符分配唯一码点，使跨语言文本得以统一表示。</span></aside>
+<p>无论这些语言使用何种文字（包括苏美尔楔形文字这类死语言，以及克林贡语这类人造语言）。</p>
+<p>我们先简要回顾一下 Unicode 中一个专用于英语的子集的历史（在 Unicode 中技术上的名称是“基本拉丁文”，通常则被称为 ASCII）。</p>
+<p>从 20 世纪 60 年代开始，用于书写英语的拉丁字符（就像本句中用到的这些）是用一种名为 ASCII 的编码来表示的（American Standard</p>
+<aside class="term"><code>ASCII</code><span class="term-explain">20 世纪 60 年代起用于表示英语拉丁字符的单字节编码，只使用 128 个码点，字节的高位恒为 0。</span></aside>
+<p>Code for Information Interchange，即美国信息交换标准代码）。ASCII 用单个字节表示每个字符。一个字节可以表示 256 个不同的字符，但 ASCII 只使用了其中 128 个；ASCII 字节的高位始终置为 0。（实际上它只用了其中 95 个，其余是控制码，供一种名为电传打字机的过时机器使用）。</p>
+<p>下面给出几个 ASCII 字符及其十六进制和十进制表示：</p>
+<p>字符 十六进制 十进制 字符 十六进制 十进制 字符 十六进制 十进制 字符 十六进制 十进制</p>
+<table><tr><th>字符</th><th>十六进制</th><th>十进制</th><th>字符</th><th>十六进制</th><th>十进制</th><th></th><th>字符</th><th>十六进制</th><th>十进制</th><th>字符</th><th>十六进制</th><th>十进制</th></tr><tr><td>&lt;</td><td>3C</td><td>60</td><td>@</td><td>40</td><td>64</td><td>...</td><td>\</td><td>5C</td><td>92</td><td>‘</td><td>60</td><td>96</td></tr><tr><td>=</td><td>3D</td><td>61</td><td>A</td><td>41</td><td>65</td><td>...</td><td>]</td><td>5D</td><td>93</td><td>a</td><td>61</td><td>97</td></tr><tr><td>&gt;</td><td>3E</td><td>62</td><td>B</td><td>42</td><td>66</td><td>...</td><td>ˆ</td><td>5E</td><td>94</td><td>b</td><td>62</td><td>98</td></tr><tr><td>?</td><td>3F</td><td>63</td><td>C</td><td>43</td><td>67</td><td>...</td><td>_</td><td>5F</td><td>95</td><td>c</td><td>63</td><td>99</td></tr><tr><td>图 2.4</td><td></td><td>若干英语字母的部分 ASCII 编码，编码同时以十六进制和十进制</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<p>但 ASCII 当然是不够的，因为世界各种书写系统中还有大量其他字符！即使对于使用拉丁字符的文字，字符数量也远多于 ASCII 中的 95 个。例如，下面这个西班牙语短语（意思是“先生，桑丘答道”）就有两个非 ASCII 字符：˜n 和 ´o：</p>
+<p>(2.10) —Se˜nor —respondi´o Sancho—而且许多语言根本不基于拉丁字符！天城文</p>
+<aside class="term"><code>Devanagari</code><span class="term-zh">天城文</span><span class="term-explain">用于印地语、马拉地语、梵语等 120 种语言的书写系统，字形与拉丁字母完全不同，需由 Unicode 单独编码。</span></aside>
+<p>文字被 120 种语言使用（包括印地语、马拉地语、尼泊尔语、信德语和梵语）。下面是《世界人权宣言》印地语文本中的一个天城文示例：</p>
+<img src="../md/images/02-words-and-tokens/img_169.png" alt="">
+<p>Unicode 中大约有 10 万个汉字（包括中文、日文、韩文和越南文所使用的重叠与不重叠变体，这些变体合称 CJKV）。</p>
+<p>总而言之，Unicode 16.0 支持超过 15 万个字符和 168 种不同的文字系统。尽管世界上还有许多文字系统尚未被加入 Unicode，但其中已有的实在太多了，既有现代语言使用的文字系统（中文、阿拉伯文、印地文、切罗基文、埃塞俄比亚文、高棉文、N’Ko、土耳其文、西班牙文），也有古代语言的文字系统（楔形文字、乌加里特文、埃及圣书体、巴列维文），还有数学符号、表情符号、货币符号等等。</p>
+<h3>2.3.1 码点</h3>
+<p>它是如何工作的？Unicode 为其中每一个字符都分配了一个唯一的 id，称为码点</p>
+<aside class="term"><code>code point</code><span class="term-zh">码点</span><span class="term-explain">Unicode 为每个字符分配的抽象唯一编号，传统上以十六进制书写，如字母 a 对应 U+0061。</span></aside>
+<p>也就是这 15 万个字符中的每一个。</p>
+<p>码点是字符的抽象表示，而每个码点都用一个数字来表示，传统上写作十六进制，从数字 0 一直到 0x10FFFF（即十进制的 1,114,111）。拥有一百多万个码点意味着有充足的空间容纳新字符。传统上用前缀“U+”来表示这些码点（它的意思只是“下面是一个码点的 Unicode 十六进制表示”）。所以字符 a 的码点是 U+0061，与 0x0061 相同。（注意，Unicode 的设计目标是向后兼容 ASCII，也就是说前 128 个码点，包括 a 的编码，都与 ASCII 完全相同。）下面是一些码点示例；其中一部分（但不是全部）带有说明：</p>
+<table><tr><th>U+0061</th><th>a</th><th>拉丁小写字母 A</th></tr><tr><td>U+0062</td><td>b</td><td>拉丁小写字母 B</td></tr><tr><td>U+0063</td><td>c</td><td>拉丁小写字母 C</td></tr><tr><td>U+00F9</td><td>`u</td><td>带重音符的拉丁小写字母 U</td></tr><tr><td>U+00FA</td><td>´u</td><td>带锐音符的拉丁小写字母 U</td></tr><tr><td>U+00FB</td><td>ˆu</td><td>带扬抑符的拉丁小写字母 U</td></tr><tr><td>U+00FC</td><td>¨u</td><td>带分音符的拉丁小写字母 U</td></tr><tr><td>U+8FDB</td><td>进</td><td></td></tr><tr><td>U+8FDC</td><td>远</td><td></td></tr><tr><td>U+8FDD</td><td>违</td><td></td></tr><tr><td>U+8FDE</td><td>连</td><td></td></tr><tr><td>U+1F600</td><td></td><td>咧嘴笑的脸</td></tr><tr><td>U+1F00E</td><td>🀎</td><td>麻将牌八万</td></tr></table>
+<img src="../md/images/02-words-and-tokens/img_208.png" alt="">
+<h3>U+1F00E 🀎</h3>
+<p>注意，码点并不指定字形，也就是字符的视觉表示</p>
+<aside class="term"><code>glyph</code><span class="term-zh">字形</span><span class="term-explain">字符在具体字体中呈现的视觉形状，同一码点可以有多种不同写法。</span></aside>
+<img src="../md/images/02-words-and-tokens/img_208.png" alt="">
+<p>字形存放在字体之中。码点 U+0061 是 a 的抽象表示。视觉表示可以有无限多种，例如 Times Roman（a）或 Courier（a）等不同字体，又或者粗体（a）、斜体（a）等不同字型样式。但它们全都是由同一个码点 U+0061 表示的。</p>
+<h3>2.3.2 UTF-8 编码</h3>
+<p>虽然码点（那个唯一 id）是字符在 Unicode 中的抽象表示，但我们并不会直接把那个 id 塞进文本文件。</p>
+<p>相反，每当需要在文本字符串中表示某个字符时，我们写出的是该字符的一种编码。可能的编码方法有很多种，但</p>
+<aside class="term"><code>encoding</code><span class="term-zh">编码</span><span class="term-explain">把码点写成字节序列以存入文本的具体方法，其中 UTF-8 使用最为广泛。</span></aside>
+<p>名为 UTF-8 的编码方法是最常见的（例如几乎整个互联网都采用 UTF-8 编码）。</p>
+<p>下面来谈谈编码。单词 hello 的 Unicode 表示由以下 5 个码点组成的序列构成：</p>
+<p>U+0068 U+0065 U+006C U+006C U+006F我们可以设想一种非常简单的编码方法：只需把码点 id 写进一个文件。由于字符超过 100 万个，16 位（2 字节）并不够用，所以我们需要用 4 字节（32 位）来容纳表示 110 万个字符所需的 21 位。（我们其实可以用 3 字节装下，但以 3 的倍数来划分字节很不方便。）采用这种 4 字节表示法，单词 hello 会被编码为下面这组字节：</p>
+<p>00 00 00 68 00 00 00 65 00 00 00 6C 00 00 00 6C 00 00 00 6F但我们并不使用这种编码（严格说来它称为 UTF-32），因为它会使每个文件都比用 ASCII 时长出 4 倍，让文件变得极大且充斥零字节。此外这些零还会带来另一个问题：事实证明，出现任何全零的字节都会破坏向后兼容性，因为历史上基于 ASCII 的系统把 0 字节用作字符串结束标记。</p>
+<p>相反，最常见的编码标准是 UTF-8（Unicode Transformation Format 8），它让一些字符用较少的字节、另一些字符用较多的字节来表示，从而高效地表示字符（平均使用更少的字节）。</p>
+<aside class="term"><code>UTF-8</code><span class="term-explain">Unicode 最常用的变长编码标准：前 128 个码点与 ASCII 相同，各占 1 字节，其余码点用 2 至 4 字节表示。</span></aside>
+<aside class="term"><code>variable-length encoding</code><span class="term-zh">变长编码</span><span class="term-explain">不同字符所占字节数并不固定的编码方式，如 UTF-8 中常用字符占 1 字节，其他字符占 2 至 4 字节。</span></aside>
+<p>因此 UTF-8 是一种变长编码。</p>
+<p>对于某些字符（前 128 个码点，即 ASCII 字符集），UTF-8 把它们编码为单个字节，所以 hello 的 UTF-8 编码是：</p>
+<p>68 65 6C 6C 6F这恰好意味着用 ASCII 编码的文件同时也是合法的 UTF-8 编码！</p>
+<p>但 UTF-8 是一种变长编码，这意味着大于等于 128 的码点会被编码为两个、三个或四个字节的序列。这些字节的取值都在 128 到 255 之间，因此不会与 ASCII 混淆；而且每个字节都用开头几位表明自己属于 2 字节、3 字节还是 4 字节编码。</p>
+<table><tr><th>码点</th><th></th><th></th><th>UTF-8 编码</th><th></th><th></th><th></th></tr><tr><td>起始 - 结束</td><td></td><td>位值</td><td>字节 1</td><td>字节 2</td><td>字节 3</td><td>字节 4</td></tr><tr><td>U+0000-U+007F</td><td></td><td>0xxxxxxx</td><td>0xxxxxxx</td><td></td><td></td><td></td></tr><tr><td>U+0080-U+07FF</td><td></td><td>00000yyy yyxxxxxx</td><td>110yyyyy</td><td>10xxxxxx</td><td></td><td></td></tr><tr><td>U+0800-U+FFFF</td><td></td><td>zzzzyyyy yyxxxxxx</td><td>1110zzzz</td><td>10yyyyyy</td><td>10xxxxxx</td><td></td></tr><tr><td>U+010000-U+10FFFF</td><td></td><td>000uuuuu zzzzyyyy yyxxxxxx</td><td>11110uuu</td><td>10uuzzzz</td><td>10yyyyyy</td><td>10xxxxxx</td></tr><tr><td>图 2.5</td><td>从 Unicode 码点到变长 UTF-8 编码的映射。对于给定的码点</td><td></td><td></td><td></td><td></td><td></td></tr></table>
+<blockquote><p>U+0800-U+FFFF zzzzyyyy yyxxxxxx 1110zzzz 10yyyyyy 10xxxxxx U+010000-U+10FFFF 000uuuuu zzzzyyyy yyxxxxxx 11110uuu 10uuzzzz 10yyyyyy 10xxxxxx</p></blockquote>
+<blockquote><p>在起始-结束范围内，第 2 列的位值被装入 1、2、3 或 4 个字节。图改编自 Unicode 16.0 核心规范第 3 章表 3-6。</p></blockquote>
+<p>图 2.5 展示了这种映射是如何发生的。例如，这些规则说明了该如何处理字符 ˜n，它的码点是 U+00F1。我们查看第二行，因为 U+00F1 位于 U+0080 和 U+07FF 之间。然后我们取出与 U+00F1 对应的位序列，把它映射到第二列中的 y 和 x 值上。在这里它看起来像 00000000 11110001（其中蓝色表示序列 yyyyy，红色表示序列 xxxxxx）。最后，表格右侧展示了这个位序列如何被编码成两字节的位序列 11000011 10110001，它对应 0xC3B1。作为这些规则的结果，前 127 个字符（ASCII）映射为一个字节，欧洲、中东和非洲文字中大多数其余字符映射为两个字节，大多数中文、日文和韩文字符映射为三个字节，而更罕见的 CJKV 字符、emoji 以及一些符号映射为 4 个字节。</p>
+<p>UTF-8 有许多优点。它相对高效，对于常见字符使用的字节更少，它不使用零字节（除非是字面表示 NULL 字符，即 U+0000），它与 ASCII 向后兼容，并且它是自同步的，这意味着如果文件损坏了，总是可以通过向左或向右移动至多 3 个字节来找到下一个或前一个字符的起始位置。</p>
+<p>Unicode 与 Python：从 Python 3 开始，所有 Python 字符串在内部都以 Unicode 存储，每个字符串是一个 Unicode 码点序列。因此字符串函数和正则表达式都原生地作用于码点。例如，像字符串的 len() 这样的函数返回的是它以字符计的长度，也就是码点数，而不是以字节计的长度。</p>
+<p>不过，在从文件读取或向文件写入时，码点需要被编码并使用像 UTF-8 这样的方法来解码。也就是说，每个文件都以某种编码方式编码。如果它不是 UTF-8，那就是像 ASCII 或 Latin-1（iso 8859 1）这样的较旧编码方法。不存在没有编码的文本文件。在 Python 中，打开文件进行读取和写入时会指定编码方法。</p>
+<h2>2.4 子词词元化：字节对编码</h2>
+<p>词元化是自然语言处理的第一阶段，是把连续不断的输入文本切分为词元的过程。</p>
+<aside class="term"><code>tokenization tokens</code><span class="term-zh">词元化；词元</span><span class="term-explain">把连续输入文本切分为词元的处理过程，切分所得的单位即词元，是自然语言处理流程的第一步。</span></aside>
+<p>我们已经见过三种词元的候选单位：词、语素和字符。但它们各自作为单位都有问题。词和语素似乎大致处于适合 NLP 处理的层级，因为它们往往具有一致的含义，但很难给出形式化的定义。字符的定义更清晰，但作为词元的单位似乎太小。</p>
+<p>本节介绍我们在 NLP 实践中的做法：使用数据驱动的方法来定义词元，这样得到的单位通常与语素或词的大小相当，但偶尔也会用到小至字符的单位。</p>
+<p>为什么要对输入做词元化？一个原因是，把输入转换为确定的固定单位集合，意味着不同的算法和系统能够在简单问题上取得一致。例如：这段文本有多长？（它包含多少个单位？）或者：don’t 或 New York 是一个词元还是两个词元？因此，标准化对于 NLP 实验的可复现性至关重要，本书介绍的许多算法（如用于语言模型的困惑度指标）都假定所有文本都有固定的词元化结果。</p>
+<p>为语素和字母等更小单位也保留词元的词元化算法也消除了未登录词的问题。什么是未登录词？正如我们将在下一章看到的，NLP 算法常常从一个语料库（训练语料库）中学习关于语言的一些事实，然后用这些事实对另一个测试语料库及其语言做出判断。因此，如果我们的训练语料库包含 low、new 和 newer 这些词，却不包含 lower，那么当 lower 这个词出现在测试语料库中时，我们的系统就不知道该怎么处理它。</p>
+<p>为了解决这个未登录词问题，现代词元化器会自动归纳出词元集合，其中包含比词更小的词元，称为子词。子词可以是任意的子串，也可以是像语素 -est 或 -er 这样承载意义的单位。在现代词元化方案中，许多词元是词，但另一些词元是频繁出现的语素或其他子词，如 -er。</p>
+<p>这样，每个未出现过的词都可以用某个已知子词单位的序列来表示。例如，如果我们恰好从未见过 lower 这个词，那么当它出现时，我们可以把它成功切分为我们已经见过的 low 和 er。</p>
+<p>在最坏的情况下，一个非常罕见的词（也许像 GRPO 这样的缩写词）在必要时会被词元化为单个字母的序列。</p>
+<p>现代语言模型中广泛使用两种词元化算法：字节对编码（BPE）（Sennrich et al., 2016）和一元语言建模（unigram language modeling, ULM）（Kudo, 2018）。2 本节我们介绍字节对编码，即 BPE</p>
+<aside class="term"><code>BPE</code><span class="term-zh">字节对编码（BPE）</span><span class="term-explain">一种从字符出发、反复合并语料中最频繁相邻词元以生成子词词表的词元化算法。</span></aside>
+<p>算法（Sennrich et al., 2016; Gage, 1994）；见图 2.6。</p>
+<p>与大多数词元化方案一样，BPE 算法包含两部分：一个训练阶段，以及编码器阶段。一般来说，在词元训练阶段，词元化器接受一个原始训练语料库（通常已大致预先切分为词，例如按空白字符切分），并归纳出一个词表，即一组词元。随后在编码阶段，词元化器接受一个原始测试句子，把它编码为训练中所学词表里的词元。</p>
+<h3>2.4.1 BPE 训练</h3>
+<p>BPE 训练算法迭代地合并频繁相邻的词元，从而生成越来越长的词元。该算法从一个仅由所有单个字符组成的词表开始。然后它检查训练语料库，找出最频繁相邻的两个字符。设想我们的原始语料库长度为 10 个字符，使用的词表包含 5 个字符 {A, B, C, D, E}：</p>
+<p>A B D C A B E C A B出现最频繁的相邻字符对是“A B”，于是我们合并它们，向词表中加入一个新的合并词元‘AB’，并把语料库中每一处相邻的‘A’‘B’替换为新的‘AB’：</p>
+<p>AB D C AB E C AB现在我们有一个包含 6 个可能词元的词表 {A, B, C, D, E, AB}，而语料库的长度为 7。现在最频繁的词元对是“C AB”，于是我们合并它们，得到一个包含 7 个词元的词表 {A, B, C, D, E, AB, CAB}，而语料库的长度为 5。</p>
+<p>AB D CAB E CAB算法继续计数并合并，生成越来越长的字符串，直到完成 k 次合并、产生 k 个新词元；因此 k 是该算法的一个参数。得到的词表由原始字符集合加上 k 个新符号组成。这就是该算法的核心。</p>
+<p>唯一额外的复杂之处在于，实践中算法并非运行在原始字符序列上，而通常只在词内部运行。也就是说，算法不跨词边界合并。为此，输入语料库往往先按空白字符和标点切分（使用我们在本章后面定义的正则表达式）。这样就得到一组起始字符串，每个字符串对应一个词的字符，（空白字符通常附着在词的开头），同时还得到各词的计数。随后，尽管计数来自语料库，合并却只允许在字符串内部进行。</p>
+<p>让我们看看完整的算法如何在这个微小的合成语料库上运作，其中我们已显式标出了单词之间的空格：3 (2.11) set new new renew reset renew首先，我们把语料库切分为单词，连同前导空白一起，并统计它们的频次；不允许任何合并越过这些单词边界。</p>
+<p>结果如下面的 4 个单词列表和由 7 个字符构成的初始词表所示：</p>
+<p>语料库 词表 2 n e w , e, n, r, s, t, w 2 r e n e w 1 s e t 1 r e s e t BPE 训练算法首先统计所有相邻符号对：出现最频繁的是符号对 n e，因为它在 new（频次为 2）和 renew（频次为 2）中出现，总计出现 4 次。随后我们合并这些符号，把 ne 视为一个符号，再重新统计：</p>
+<p>语料库 词表 2 ne w , e, n, r, s, t, w, ne 2 r e ne w 1 s e t 1 r e s e t现在最频繁的符号对是 ne w（总计 4 次），我们将其合并。</p>
+<p>语料库 词表 2 new , e, n, r, s, t, w, ne, new 2 r e new 1 s e t 1 r e s e t接下来 r（总计出现 3 次）被合并为 r，随后 r e（总计 3 次）被合并为 re。该系统实质上归纳出存在一个词首前缀 re-：</p>
+<p>语料库 词表 2 new , e, n, r, s, t, w, ne, new, r, re 2 re new 1 s e t 1 re s e t如果继续下去，接下来的合并为：</p>
+<blockquote><p>合并 当前词表( , new) , e, n, r, s, t, w, ne, new, r, re, new</p></blockquote>
+<blockquote><p>( re, new) , e, n, r, s, t, w, ne, new, r, re, new, renew</p></blockquote>
+<blockquote><p>(s, e) , e, n, r, s, t, w, ne, new, r, re, new, renew, se</p></blockquote>
+<blockquote><p>(se, t) , e, n, r, s, t, w, ne, new, r, re, new, renew, se, set</p></blockquote>
+<img src="../md/images/02-words-and-tokens/fig_p13_0.png" alt="">
+<h3>2.4.2 BPE 编码器</h3>
+<p>一旦学好了词表，就用 BPE 编码器对测试句子进行词元化。编码器只是在测试数据上执行我们从训练数据中学到的那些合并。它按我们学到它们的顺序执行这些合并（即贪心地执行，也就是从训练数据中出现最频繁的开始）。测试数据中的频率不起作用，起作用的只是训练数据中的频率。于是我们先把每个测试句子的词切分为字符。然后应用第一条规则：把测试语料库中每一处 n e 都替换为 ne，接着应用第二条规则：把测试语料库中每一处 ne w 都替换为 new，依此类推。到最后，许多合并当然只是重建了训练集中的词。但这些合并也产生了对语素的认知，例如 re- 前缀（它可能出现在 revisit 或 rearrange 这类也许未曾见过的组合中），或者不带起始空格的语素 new（因而是词内部的），后者可能出现在句子开头，也可能出现在训练中未曾见过的词如 anew 中。</p>
+<p>当然，在实际环境中，BPE 会在一个非常大的输入语料库上执行数万次合并，从而得到 50,000、100,000 甚至 200,000 个词元的词表规模。其结果是大多数词都能用单个词元表示，只有较罕见的词（以及未知词）才不得不用多个词元表示。</p>
+<p>至少对英语是这样。对于多语言系统，词元可能以英语为主，留给其他语言的词元更少，我们将在下文讨论这一点。</p>
+<h3>2.4.3 BPE 的实践</h3>
+<p>上面的例子只展示了从 ASCII 字节序列进行简单的 BPE 学习。那么 BPE 如何处理 Unicode 输入呢？我们通常对 UTF-8 编码文本的单个字节运行 BPE。也就是说，我们把文本的 Unicode 表示视为一系列码点，用 UTF-8 将其编码为字节，并把每一个这样的字节都当作 BPE 的输入。因此 BPE 很可能首先是重新发现了 UTF-8 用来编码各种码点的 2 字节序列和常见的 3 字节序列。同样，只在预先切分好的词内部运行 BPE 有助于避免问题。</p>
+<p>由于一个字节只有 256 种可能的取值，因此不会出现未知词元，尽管 BPE 有可能学到一些跨越字符边界的非法 UTF-8 序列。这些序列非常罕见，可以用一个过滤器消除。</p>
+<p>让我们看一些 BPE 词元化器工业应用的例子，它被用于像 OpenAI GPT-4o 这样的大型系统。该词元化器有 200K 个词元，这是相对较大的数量。我们可以使用 Tat Dat Duong 的 Tiktokenizer 可视化工具（https://tiktokenizer.vercel.app/）查看给定句子中的词元数量。例如，下面是我们编造的一个无意义句子的词元化结果；该可视化工具用中心点表示空格：</p>
+<img src="../md/images/02-words-and-tokens/img_228.png" alt="">
+<p>该可视化用颜色把各个词区分开来，但词元化器真正的输出当然只是一个由唯一词元 id 组成的序列。（如果你感兴趣，它们就是下面这 13 个词元：11865, 8923, 11, 31211, 6177, 23919, 885, 220, 19427, 7633, 18887, 147065, 0）注意，大多数词本身就是单独的词元，通常还包含前导空格。</p>
+<p>像 ’s 这样的附着词出现在 Jane 这类专有名词上时会被切分出来，但在 she’s 这类高频词中却被算作词的一部分。数字往往被切分成每 3 位一组。还有些词（如 anyhow）在句首大写出现时（切分为 Any 和 how 两个词元）与在空格之后小写出现时（一个词元 anyhow）的切分方式不同。</p>
+<p>其中一些现象与预处理步骤有关。正如我们上文简要提到的，语言模型通常在预词元化阶段生成词元，该阶段首先用正则表达式切分输入，例如在空格和标点处断开输入、剥离附着词，并把数字拆成数字串。我们将在 2.6 节看到如何使用正则表达式。</p>
+<aside class="term"><code>pretokenization</code><span class="term-zh">预词元化</span><span class="term-explain">运行 BPE 等算法之前，先用正则表达式按空格、标点切分输入并剥离附着词的预处理步骤，以避免跨词合并带来的问题。</span></aside>
+<p>可以改变这种预词元化方式，让 BPE 词元跨越多个词。例如 SuperBPE（Liu et al., 2025）和 BoundlessBPE（Schmidt</p>
+<aside class="term"><code>SuperBPE</code><span class="term-explain">一种词元化算法：先强制预词元化以得到常规 BPE 子词词元，再允许跨空格与标点的合并，从而获得更高效的大词表。</span></aside>
+<p>et al., 2025）算法首先通过强制预词元化生成常规的 BPE 子词词元。随后它们运行第二阶段 BPE，允许跨空格和标点进行合并。其结果是得到一大批可能更高效的词元（图 2.7）。</p>
+<aside class="term"><code>BoundlessBPE</code><span class="term-explain">一种词元化算法：在常规 BPE 子词词元的基础上再做第二阶段合并，允许跨越空格与标点，从而得到更高效的词元。</span></aside>
+<img src="../md/images/02-words-and-tokens/fig_p14_0.png" alt="">
+<p>实际用于大语言模型的词元化器有许多是多语言的，即在多种语言上训练而成。但由于大语言模型的训练数据绝大部分是英文文本，这些多语言 BPE 词元化器往往把大部分词元用于英文，留给其他语言的词元较少。结果就是它们对英文的词元化效果更好，而其他语言的词往往被切分成更短的词元。例如，让我们来看一个来自大蕉食谱的西班牙语句子以及它的英文翻译。</p>
+<p>英文版本有 19 个词元，14 个词中有 13 个各作为一个词元，只有nutmeg 被拆成 2 个词元（此外还有 3 个逗号和句末的句号）。</p>
+<img src="../md/images/02-words-and-tokens/img_232.png" alt="">
+<p>相比之下，西班牙语原文的 16 个词被编码成了 33 个词元，数量大得多。注意许多基本词都被拆成了碎片。</p>
+<p>例如 hondo（“深”）被切分成 h 和 ondo。jugo（“汁”）、nuez（“坚果”）和 jengibre（“姜”）也是如此）：</p>
+<img src="../md/images/02-words-and-tokens/img_234.png" alt="">
+<p>西班牙语并不是低资源语言；这种过度切分在资源更少的语言中可能更加严重，常常细到单个字符。切分成这些极小的词元会给该语言的下游处理带来各种问题。等我们在第 7 章介绍 transformer 模型之后就会更清楚，这种碎片化会导致意义表示不佳、需要更长的上下文，以及模型训练成本更高（Rust et al., 2021; Ahia et al., 2023）。</p>
+<h2>2.5 语料库</h2>
+<p>词不会凭空出现。我们研究的任何一段具体文本，都是由一个或多个特定的说话人或写作者，在特定的时间、特定的地点，为特定的用途，用某种特定语言的某种特定方言产生的。</p>
+<p>也许最重要的变异维度是语言。NLP 算法在能够适用于多种语言时才最有用。根据在线 Ethnologue 目录，在撰写本书时世界上有 7097 种语言（Simons and Fennig, 2018）。在不止一种语言上测试算法很重要，尤其是在具有不同特性的语言上测试；相比之下，当前一个不幸的趋势是 NLP 算法只针对英文开发和测试（Bender, 2019）。即使算法的开发超出了英文，也往往只面向大型工业化国家的官方语言（中文、西班牙语、日语、德语等），但我们不希望把工具局限在这少数几种语言上。此外，大多数语言还拥有多种变体，常常在不同地区使用或由不同社会群体使用。因此，例如，如果我们要处理的文本使用了非裔美国人英语（AAE）或非洲</p>
+<aside class="term"><code>AAE</code><span class="term-zh">非裔美国人英语</span><span class="term-explain">非裔美国人社区广泛使用的英语变体，其特有的构词与拼写会影响词元切分。</span></aside>
+<p>裔美国人白话英语（AAVE）——非裔美国人社区中数百万人可能使用的英语变体（King 2020）——的特征时，我们就必须使用能够处理这些变体特征的 NLP 工具。Twitter 帖子可能使用非裔美国人英语使用者常用的特征，例如 iont 这类结构（在主流美国英语（MAE）中意为 I don’t），或者 talmbout 对应于</p>
+<aside class="term"><code>MAE</code><span class="term-zh">主流美国英语</span><span class="term-explain">在美国被广泛使用的标准英语变体，本书用它作为与少数族裔语言变体对比的基准。</span></aside>
+<p>MAE 中的 talking about，这两个例子都会影响词切分（Blodgett et al. 2016, Jones 2015）。</p>
+<p>说话人或写作者在单个话语中使用多种语言也相当常见，这一现象称为语码转换。语码转换极其</p>
+<aside class="term"><code>code switching</code><span class="term-zh">语码转换</span><span class="term-explain">在同一话语或文本中交替使用两种及以上语言或语言变体的现象。</span></aside>
+<p>在世界各地普遍存在；下面是一些例子，展示西班牙语和（转写的）印地语与英语的语码转换（Solorio et al. 2014, Jurgens et al. 2017）：</p>
+<p>(2.12) Por primera vez veo a @username actually being hateful! it was beautiful:) [第一次看到 @username 竟然真的如此充满恶意！这太美妙了:)] (2.13) dost tha or ra- hega ... dont wory ... but dherya rakhe [“他曾是朋友，也将始终是朋友……别担心……但要有信念”]本章我们关注的是文本（第 15 章将转向语音），但需要注意的是，许多语言主要是口头的，甚至是完全口头的。这些语言的使用者往往以一种特定的方式处于双言状态：他们使用一种口头白话来进行</p>
+<aside class="term"><code>vernacular vehicular</code><span class="term-zh">白话；通行语</span><span class="term-explain">白话指用于家庭或本地日常交流的口头语言变体；通行语则是跨越不同语言群体、用于参与更大范围经济与社会交往的语言，通常有书面形式。</span></aside>
+<p>家庭或本地交流，并使用另一种通行语，后者很可能具有书面形式，用于参与更大范围的经济、社会或民族国家的事务（Bird, 2020）。</p>
+<p>另一个变异维度是体裁。我们的算法必须处理的文本可能来自新闻电讯、虚构或非虚构书籍、科学论文、Wikipedia 或宗教文本。它也可能来自口语体裁，如电话交谈、商务会议、警察随身摄像头、医疗问诊，或电视节目与电影的转写文本。它还可能来自工作场景，如医生笔记、法律文本，或议会与国会的议事记录。</p>
+<p>文本还反映了作者（或说话者）的人口学特征：其年龄、性别、种族、社会经济阶层都会影响我们所处理文本的语言属性。</p>
+<p>最后，时间也很重要。语言会随时间而变化，而对某些语言，我们拥有来自不同历史时期的优质文本语料库。</p>
+<p>由于语言总是处于特定情境之中，在基于语料库开发语言处理的计算模型时，重要的是考虑语言是谁产生的、在什么情境下产生的、出于什么目的。数据集的使用者如何才能了解所有这些细节？最好的办法是由语料库创建者为每个语料库编写一份数据说明书（Gebru</p>
+<aside class="term"><code>datasheet</code><span class="term-zh">数据说明书</span><span class="term-explain">随语料库一同发布的文档，说明其收集动机与资助方、产生的情境、语言变体、说话者人口学特征以及收集与抽样过程。</span></aside>
+<p>et al., 2020）或数据声明（Bender et al., 2021a）。数据说明书会指明数据集的如下属性：</p>
+<p>动机：语料库为何被收集、由谁收集、由谁资助？</p>
+<p>情境：文本是在何时、何种情境下被书写或说出的？例如，是否存在某项任务？这些语言原本是口头会话、经过编辑的文本、社交媒体交流，还是独白或对话？</p>
+<p>语言变体：语料库使用的是哪种语言（包括方言或地区变体）？</p>
+<p>说话者人口学特征：例如，文本作者的年龄或性别是什么？</p>
+<p>收集过程：数据规模有多大？如果它是子样本，又是如何抽样的？</p>
+<p>数据收集是否征得了同意？数据是如何预处理的，有哪些可用的元数据？</p>
+<p>标注过程：标注内容是什么，标注者的人口统计特征是怎样的，他们接受过怎样的培训，数据是如何标注的？</p>
+<p>分发：是否存在版权或其他知识产权方面的限制？</p>
+<h2>2.6 正则表达式</h2>
+<p>计算机科学中用于文本处理的最有用工具之一就是正则</p>
+<aside class="term"><code>regular expression</code><span class="term-zh">正则表达式</span><span class="term-explain">一种刻画字符串集合的代数记号语言，可用于在文本中搜索模式并指定替换方式，也是预词元化的常用工具。</span></aside>
+<p>表达式（或称 regex），一种用于描述文本字符串的语言。正则表达式被用于每一种计算机语言、像 Unix grep 这样的文本处理工具，以及 vim 或 Emacs 之类的编辑器。它们在 BPE 等词元化算法的预词元化步骤中也起着重要作用。形式上，正则表达式是一种刻画字符串集合的代数记号。在实际使用中，我们可以用正则表达式在文本中搜索某个字符串，并指定如何修改该字符串，这两点对词元化都至关重要。</p>
+<p>我们用正则表达式在字符串中搜索某个模式，这个字符串可以是</p>
+<aside class="term"><code>string</code><span class="term-zh">字符串</span><span class="term-explain">正则表达式搜索时作用的目标序列，可以是单行文本，也可以是更长的文本，匹配时返回其中第一个命中的片段。</span></aside>
+<p>单行文本，也可以是更长的文本。例如，Python 函数re.search(pattern,string)会扫描该字符串，并返回其中第一个与该模式匹配的结果。在接下来的示例中，我们通常会标出与正则表达式精确匹配的字符串，并且只显示第一个匹配项。我们将使用 Python 语法，把正则表达式写成原始字符串（带 Python 的 raw 前缀 r，用双引号括起：r&quot;regex&quot;）。原始字符串这一说法意味着，例如反斜杠被当作字面字符处理，这会影响正则表达式的写法，我们稍后会讨论这一点。</p>
+<p>正则表达式有若干不同的变体，因此使用在线的正则表达式测试器有助于确认你的正则表达式确实在做你认为它在做的事。</p>
+<h3>2.6.1 字符析取：方括号</h3>
+<p>最简单的一类正则表达式就是由简单字符构成的序列。模式 r&quot;Buttercup&quot; 可以匹配任意字符串中的子串 Buttercup（例如字符串 I’m called little Buttercup）。但很多时候我们需要使用特殊字符。</p>
+<p>例如，我们可能想匹配某个字符，也可能想匹配另一个字符。举例来说，正则表达式通常是区分大小写的：r&quot;s&quot; 匹配小写 s</p>
+<aside class="term"><code>character disjunction</code><span class="term-zh">字符析取</span><span class="term-explain">用方括号列出若干可相互替代的字符，表示匹配其中任意一个，例如同时匹配小写 s 与大写 S。</span></aside>
+<p>但不能匹配大写 S。要同时匹配 s 和 S，我们可以使用字符析取运算符，即方括号 [ 和 ]。方括号内的字符串指定了要匹配的一批字符的析取。例如，图 2.8 表明模式 r&quot;[mM]&quot; 匹配含有 m 或 M 的模式。</p>
+<blockquote><p>模式 匹配 字符串 r&quot;[mM]ary&quot; Mary 或 mary “Mary Ann stopped by Mona’s”r&quot;[abc]&quot; ‘a’、‘b’或‘c’ “In uomini, in soldati”r&quot;[1234567890]&quot; 任意一个数字 “plenty of 7 to 5”</p></blockquote>
+<p>正则表达式 r&quot;[1234567890]&quot; 指定任意单个数字。这会变得很笨拙（想象一下输入 r&quot;[ABCDEFGHIJKLMNOPQRSTUVWXYZ]&quot; 来表示一个大写字母），因此方括号还可以与连字符（-）一起使用，以指定某个范围内任意一个字符。模式 r&quot;[2-5]&quot; 指定字符 2、3、</p>
+<aside class="term"><code>range</code><span class="term-zh">范围</span><span class="term-explain">正则表达式中用连字符表示的一组连续字符，如 [2-5] 匹配 2 到 5 中任意一个字符。</span></aside>
+<p>4 或 5 中的任意一个。模式 r&quot;[b-g]&quot; 指定字符 b、c、d、e、f 或 g 中的一个。图 2.9 给出了另外一些示例。</p>
+<blockquote><p>正则表达式 匹配 示例 被匹配的模式 r&quot;[A-Z]&quot; 一个大写字母 “we should call it ‘Drenched Blossoms’ ”r&quot;[a-z]&quot; 一个小写字母 “my beans were impatient to be hoed!”r&quot;[0-9]&quot; 单个数字 “Chapter 1: Down the Rabbit Hole”</p></blockquote>
+<p>方括号还可以用来指定单个字符不能是什么，方法是使用脱字符 ˆ。如果脱字符 ˆ 是左方括号 [ 之后的第一个符号，得到的模式就被否定。例如，模式 r&quot;[ˆa]&quot; 匹配除 a 以外的任意单个字符（包括特殊字符）。这一点仅当脱字符是左方括号后的第一个符号时才成立。如果它出现在其他任何位置，通常就表示一个脱字符；图 2.10 给出了一些示例。</p>
+<blockquote><p>正则表达式 匹配（单个字符） 示例 被匹配的模式 r&quot;[ˆA-Z]&quot; 不是大写字母 “Oyfn pripetchik”r&quot;[ˆSs]&quot; 既不是 ‘S’ 也不是 ‘s’ “I have no exquisite reason for’t”r&quot;[ˆ.]&quot; 不是句点 “our resident Djinn”r&quot;[eˆ]&quot; ‘e’ 或 ‘ˆ’ “look up ˆ now”r&quot;aˆb&quot; 模式 ‘aˆb’ “look up aˆb now”</p></blockquote>
+<h3>2.6.2 计数、可选性与通配符</h3>
+<p>我们如何表示可选元素，比如当我们想同时匹配 koala 和 koalas 时那个可选的 s？我们不能使用方括号，因为方括号允许我们说“s 或 S”，却不允许我们说“s 或什么也没有”。为此我们使用问号 r&quot;?&quot;，它表示“前面的字符或什么也没有”。因此 r&quot;colou?r&quot; 同时匹配 color 和 colour，而 r&quot;koalas?&quot; 匹配 koala 或 koalas。</p>
+<p>还有另一种方式来表示可能出现也可能不出现的元素。考虑一下某种羊的语言，它由如下所示的字符串构成：</p>
+<p>baa! baaa! baaaa!...</p>
+<p>这种羊的语言由这样的字符串组成：一个 b，后面跟着至少两个（并且任意多个）a，后面跟一个感叹号。为了表示这种语言，我们将使用一个很有用的运算符，它写作星号，即 <em>，称为 Kleene</em>（通常读作“cleany star”）。Kleene 星号的意思是“紧邻的前一个字符或正则表达式出现零次或多次”。因此 r&quot;a*&quot; 表示“由零个或多个 a 组成的任意字符串”。</p>
+<aside class="term"><code>Kleene *</code><span class="term-zh">Kleene 星号（*）</span><span class="term-explain">正则表达式运算符 <em>，表示紧邻其前的字符或子表达式可以出现零次或多次，例如 r&quot;a</em>&quot; 可匹配空串或任意多个 a。</span></aside>
+<p>r&quot;ba*&quot; 能表示绵羊语言吗？它能正确匹配 ba 或baaaaaa，但这里有个问题！它也会匹配不含 a 的 b，或者只含一个 a 的 ba</p>
+<ul><li>这是因为 Kleene 星号表示“零次或多次出现”。对绵羊语言来说，我们需要的其实是 r&quot;baaa<em>&quot;，即 b 后面跟 aa，再跟零个或多个额外的 a。更复杂的模式也可以重复。所以 r&quot;[ab]</em>&quot; 表示“零个或多个 a 或 b”（而不是“零个或多个右方括号”）。它将匹配像 aaaa、ababab 或 bbbb 这样的字符串，也能匹配空字符串。要指定一个整数（一串数字），我们可以用 r&quot;[0-9][0-9]<em>&quot;。（为什么不能直接用 r&quot;[0-9]</em>&quot; 呢？）</li></ul>
+<p>还有一种稍短的写法可以指定某个字符“至少出现一次”，那就是Kleene 加号，它表示“紧邻的前一个</p>
+<aside class="term"><code>Kleene +</code><span class="term-zh">Kleene 加号（+）</span><span class="term-explain">正则表达式运算符 +，表示紧邻其前的字符或子表达式至少出现一次，例如 r&quot;[0-9]+&quot; 可匹配一串数字。</span></aside>
+<p>字符或正则表达式出现一次或多次”。因此 r&quot;[0-9]+&quot; 是指定“一串数字”的常规写法，我们也可以把绵羊语言写成 r&quot;baa+!&quot;。</p>
+<p>除了 Kleene 星号和 Kleene 加号，我们还可以把显式的数字放在花括号中用作计数器。运算符 r&quot;{3}&quot; 表示“前一个字符或表达式恰好出现 3 次”。因此 r&quot;ax{10}z&quot; 会匹配 a 后面跟恰好 10 个 x、再跟 z。</p>
+<p>一个重要的特殊字符是句点（r&quot;.&quot;），它是一个通配符表达式，</p>
+<aside class="term"><code>period</code><span class="term-zh">句点（.）</span><span class="term-explain">正则表达式中的通配符 .，可匹配除换行符以外的任意单个字符，常与星号连用表示任意字符串。</span></aside>
+<p>匹配任意单个字符（换行符除外）。</p>
+<p>通配符常与 Kleene 星号一起使用，表示“任意字符串（由字符组成）”。例如，假设我们想找出某个特定单词（比如 rose）出现两次的任意一行。我们可以用正则表达式 r&quot;rose.*rose&quot; 来指定，它表示两个 rose，中间隔着由零个或多个（任意种类的）字符组成的序列。图 2.11 对此做了总结。</p>
+<h3>2.6.3 锚点与边界</h3>
+<p>锚点是一类特殊字符，它们把正则表达式锚定到字符串中的特定位置</p>
+<aside class="term"><code>anchors</code><span class="term-zh">锚点</span><span class="term-explain">用于把匹配限定在行首、行尾或词边界等特定位置的正则表达式符号，最常用的是 ˆ 和 $。</span></aside>
+<p>。最常见的锚点是脱字符 ˆ 和美元符号 $。脱字符 ˆ 匹配行的开头。模式 r&quot;ˆThe&quot; 只在行首匹配单词 The。因此，脱字符 ˆ 有三种用途：匹配行的开头、在方括号内表示否定，以及仅表示脱字符本身。（</p>
+<blockquote><p>Regex 匹配 <em> 前一个字符或表达式出现零次或多次 + 前一个字符或表达式出现一次或多次 ? 前一个字符或表达式出现零次或一次 {n} 前一个字符或表达式恰好出现 n 次 . 任意单个字符 .</em> 由零个或多个字符组成的任意字符串</p></blockquote>
+<p>那些让系统得以知道某个插入符应当具有哪种功能的上下文？）美元符号 $ 匹配行的末尾。因此模式 ␣$ 是匹配行末空格的有用模式，而 r&quot;ˆThe dog\.$&quot; 匹配只包含短语 The dog. 且以句点结尾的一行。</p>
+<p>请注意，在上一个例子中我们必须使用反斜杠，因为我们希望这里的 . 表示“句点”而不是通配符。相比之下，正则表达式 r&quot;ˆThe dog.$&quot; 会匹配 The dog.，但也会匹配 The dog! 和 The dogo。正如下文将要讨论的，我们目前定义的所有特殊字符（* + ? . []）在按字面意义使用时都需要加反斜杠。</p>
+<blockquote><p>正则表达式 匹配ˆ 行的开头$ 行的末尾\b 词边界\B 非词边界</p></blockquote>
+<p>还有其他锚点：\b 匹配词边界，而 \B 匹配非词边界。因此，r&quot;\bthe\b&quot; 匹配单词 the，但不匹配单词 other。</p>
+<p>就正则表达式而言，“词”被定义（依据编程语言中的词）为数字、下划线或字母组成的序列。因此 r&quot;\b99\b&quot; 会匹配 There are 99 bottles of beer on the wall 中的字符串 99（因为 99 前面是空格），但不会匹配 There are 299 bottles of beer on the wall 中的 99（因为 99 前面是数字）。不过它会匹配 $99 中的 99（因为 99 前面是美元符号（$），而它不是数字、下划线或字母）。</p>
+<p>请注意，所有这些锚点和边界运算符在技术上都匹配空字符串，这意味着它们不会消耗字符串中的任何字符。模式 r&quot;ˆThe&quot; 中的插入符匹配 &quot;The&quot; 的开头，但实际上并不会越过第一个字符 T。而模式 r&quot;the\b the&quot; 匹配 the the；\b 知道空格是一个边界，但它匹配的是紧挨空格之前的空字符串，而不是空格本身，因此空格字符仍可供匹配。</p>
+<h3>2.6.4 析取、分组与优先级</h3>
+<p>假设我们需要搜索关于宠物的文本；也许我们尤其对猫和狗感兴趣。在这种情况下，我们可能想搜索字符串 cat 或字符串 dog。由于我们不能用方括号来搜索“cat 或 dog”（为什么 r&quot;[catdog]&quot; 达不到正确效果呢？），我们需要一个新的运算符，即析取运算符，也叫竖线符号 |。模式 r&quot;cat|dog&quot;</p>
+<aside class="term"><code>disjunction</code><span class="term-zh">析取</span><span class="term-explain">正则表达式中用竖线 | 表示的选择关系，匹配其两侧模式中的任意一个。</span></aside>
+<p>匹配字符串 cat 或字符串 dog。</p>
+<p>有时我们需要在更长的序列中间使用这个析取运算符。例如，假设我想搜索对宠物鱼的提及。我怎样才能同时指定 guppy 和 guppies？我们不能简单地说 r&quot;guppy|ies&quot;，因为那样只会匹配字符串 guppy 和 ies。这是因为像 guppy 这样的序列优先于析取运算符 |。为了让析取</p>
+<aside class="term"><code>precedence</code><span class="term-zh">优先级</span><span class="term-explain">运算符结合的先后次序，序列连接先于析取 | 生效，故需用括号改变默认结合方式。</span></aside>
+<p>运算符只作用于某个特定模式，我们需要使用圆括号运算符 ( 和 )。把模式括在圆括号中，对于相邻的运算符（如竖线 | 和 Kleene*）而言，它就相当于单个字符。因此模式 r&quot;gupp(y|ies)&quot; 表示我们只让析取作用于后缀 y 和 ies。</p>
+<p>当我们使用像Kleene<em> 这样的计数器时，圆括号运算符 ( 也很有用。与 | 运算符不同，Kleene</em> 运算符默认只作用于单个字符，而不是整个序列。假设我们想匹配某个字符串的重复出现。也许我们有一行，其中是 Column 1 Column 2 Column 3 形式的列标签。表达式 r&quot;Column␣[0-9]+␣<em>&quot; 并不会匹配我们想要的任意多个 Column；相反，它会匹配一个 Column 后面跟着任意多个空格！这里的星号只作用于它前面的空格 ␣，而不是整个序列。借助圆括号，我们可以写出表达式 r&quot;(Column␣[0-9]+␣+)</em>&quot;，以匹配单词 Column 后面跟一个数字和若干空格，整个模式重复零次或多次。</p>
+<p>一个运算符可能优先于另一个运算符，从而需要我们有时用括号来明确我们想表达的意思，这一思想由正则表达式的运算符</p>
+<aside class="term"><code>operator precedence</code><span class="term-zh">运算符优先级</span><span class="term-explain">规定正则表达式中各运算符结合的先后次序：括号最高，其后依次是计数符、序列与锚点、析取。</span></aside>
+<p>优先级层级体系加以形式化。下表给出了运算符优先级的次序，从最高优先级到最低优先级。</p>
+<table><tr><th>括号</th><th>()</th></tr><tr><td>计数符</td><td>* + ? {}</td></tr><tr><td>序列与锚点</td><td>the ˆmy end$</td></tr><tr><td>析取</td><td>\</td><td></td></tr></table>
+<p>因此，由于计数符的优先级高于序列，r&quot;the*&quot; 匹配 theeeee 但不匹配 thethe。由于序列的优先级高于析取，r&quot;the|any&quot; 匹配 the 或 any，但不匹配 thany 或 theny。</p>
+<p>模式还可能在另一个方面产生歧义。考虑表达式 r&quot;[a-z]*&quot;</p>
+<p>在与文本 once upon a time 匹配时，由于 r&quot;[a-z]*&quot; 匹配零个或多个字母，这个表达式可以什么都不匹配，也可以只匹配第一个字母 o、on、onc 或 once。在这些情况下，正则表达式总是匹配它能匹配的最长字符串；我们说模式是贪婪的，会扩展以覆盖字符串中尽可能多的部分。</p>
+<aside class="term"><code>greedy</code><span class="term-zh">贪婪</span><span class="term-explain">指量词默认尽可能多地匹配字符，使整个模式覆盖字符串中最长的可行部分。</span></aside>
+<p>不过，也有办法强制进行非贪婪匹配，这要用到 ? 限定符的另一种含义。运算符 *? 是克莱尼星号，它匹配的文本尽可能</p>
+<aside class="term"><code>non-greedy *?</code><span class="term-zh">非贪婪 *?</span><span class="term-explain">在星号后加 ? 后改为尽量少地匹配，一旦后续模式能够成立便立即停止扩展。</span></aside>
+<p>少。运算符 +? 是克莱尼加号，它匹配的文本尽可能少。</p>
+<aside class="term"><code>+?</code><span class="term-zh">非贪婪 +?</span><span class="term-explain">克莱尼加号的非贪婪形式，只重复满足匹配所需的最少次数，避免多匹配文本。</span></aside>
+<h3>2.6.5 一个简单的例子</h3>
+<p>假设我们想写一个正则表达式来查找英语冠词 the 出现的各种情况。一个简单（但不正确）的模式可能是：</p>
+<p>r&quot;the&quot; (2.14)一个问题在于，当这个词位于句子开头因而被大写时（即 The），这个模式会漏掉它。这可能促使我们写出下面这个模式：</p>
+<p>r&quot;[tT]he&quot; 但我们仍然会过度泛化，错误地返回把 the 嵌在其他词中（例如 other 或 there）的文本。因此我们需要规定要的是两侧都有词边界的情形：</p>
+<p>r&quot;\b[tT]he\b&quot; (2.16)我们刚刚走过的这个简单过程，其基础是修正两类错误：</p>
+<p>假阳性，即我们错误匹配到的字符串，如 other 或 there；以及假</p>
+<aside class="term"><code>false positives false negatives</code><span class="term-zh">假阳性与假阴性</span><span class="term-explain">匹配器把不该命中的字符串判为命中是假阳性，漏掉应当命中的字符串是假阴性。</span></aside>
+<p>阴性，即我们错误漏掉的字符串，如 The。处理这两类错误在语言处理中会反复出现。因此，降低一个应用的总体错误率涉及两种相互对抗的努力：</p>
+<ul><li>提高精确率（最小化假阳性）</li><li>提高召回率（最小化假阴性）</li></ul>
+<p>第 4 章我们会带着更精确的定义再来讨论精确率和召回率。</p>
+<h3>2.6.6 更多运算符</h3>
+<p>图 2.13 给出了常用范围的一些实用别名：</p>
+<blockquote><p>Regex 展开 匹配 首个匹配示例\d [0-9] 任意数字 Party␣of␣5\D [ˆ0-9] 任意非数字 Blue␣moon\w [a-zA-Z0-9_] 任意字母数字或下划线 Daiyu\W [ˆ\w] 非字母数字字符 !!!!\s [␣\r\t\n\f] 空白（空格、制表符） in Concord\S [ˆ\s] 非空白字符 in␣Concord</p></blockquote>
+<p>最后，某些特殊字符要用基于反斜杠（\）的特殊记法来表示（见图 2.14）。其中最常见的是换行符</p>
+<aside class="term"><code>newline</code><span class="term-zh">换行符</span><span class="term-explain">标记一行文本结束的控制字符，在正则表达式中以转义序列 \n 表示。</span></aside>
+<p>\n 和制表符 \t。</p>
+<p>当我们想表示本身就很特殊的字符（如 .、<em>、-、[ 和\)）的字面含义，而不是它们的特殊用法时，该怎么表示呢？也就是说，如果我们要匹配一个句点、一个星号，或者一个方括号、圆括号呢？要得到特殊字符的字面含义，需要在它们前面加上反斜杠，即 r&quot;\.&quot;、r&quot;\</em>&quot;、r&quot;\[&quot; 和 r&quot;\\&quot;。</p>
+<blockquote><p>Regex 匹配 首个匹配的模式\<em> 星号 “</em>” “K<em>A</em>P<em>L</em>A*N”\. 句点 “.” “Dr. Livingstone, I presume”\? 问号 “Why don’t they come and lend a hand?”\n 换行符\t 制表符</p></blockquote>
+<h3>2.6.7 替换与捕获组</h3>
+<p>正则表达式的一个重要用途是替换，即用一个字符串替换另一个字符串。正则表达式可以帮助我们同时指定要被替换的字符串以及替换后的内容。在 Python 中我们使用函数 re.sub()（其他语言和环境中也有类似的函数）。</p>
+<p>re.sub(pattern, repl, string) 接受三个参数：一个要搜索的模式，一个用于替换它的替换内容，以及要在其中进行搜索和替换的字符串。</p>
+<p>例如，我们可以把 string 中每一处 cherry 都改成 apricot：</p>
+<p>re.sub(r&quot;cherry&quot;, r&quot;apricot&quot;, string)或者我们可以把某个特定名字的所有实例都转换为大写：</p>
+<p>re.sub(r&quot;janet&quot;, r&quot;Janet&quot;, string)然而更常见的情况是，替换会以更复杂的方式依赖于匹配到模式的字符串。例如，假设我们有一个文档，其中所有日期都采用美国格式（mm/dd/yyyy），而我们想把它们改成欧盟及许多其他地区使用的格式：（dd-mm-yyyy）。模式 r&quot;\d{2}/\d{2}/\d{4}&quot; 可以匹配一个日期。但我们如何在替换中指定想要交换日期和月份的值呢？</p>
+<p>正则表达式中用于此目的的工具是捕获组。捕获组</p>
+<aside class="term"><code>capture group</code><span class="term-zh">捕获组</span><span class="term-explain">正则表达式中用圆括号把匹配到的子串存入编号分组，以便在替换时按分组编号引用其内容。</span></aside>
+<p>使用圆括号来捕获（存储）我们在搜索中匹配到的值，这样就能在替换中复用它们。我们把一对圆括号放在模式中想要捕获的部分两侧，它就会被存入一个编号分组（分组从左到右编号）。然后在 repl 中，我们用一个编号指令引用回该分组。</p>
+<p>考虑下面的表达式：</p>
+<p>re.sub(r&quot;(\d{2})/(\d{2})/(\d{4})&quot;, r&quot;\2-\1-\3&quot;, string)我们在两位月份数字、两位日期数字和四位年份数字两侧加上了圆括号 ( 和 )，从而把前 2 位数字存入分组 1，把接下来 2 位数字存入分组 2，把最后的数字存入分组 3。然后在 repl 字符串中，我们用编号操作符 \1、\2 和 \3 引用回第一、第二和第三个寄存器。结果会把一个这样的字符串日期是 10/15/2011转换为日期是 15-10-2011即使不做替换，捕获组也很有用。例如我们可以用它们来查找重复，这是文本处理中经常需要的操作。例如，要在字符串中查找重复出现的词，可以使用下面这个模式：它先查找一个词，把它捕获到一个组中，然后在空白之后回头引用它：</p>
+<p>r&quot;\b([A-Za-z]+)\s+\1\b&quot;</p>
+<p>因此圆括号在正则表达式中具有双重功能：它们用于把各项组合起来，以指定运算符的适用顺序；它们也用于捕获匹配结果。有时我们需要圆括号只是为了分组，而并不</p>
+<aside class="term"><code>non-capturing group</code><span class="term-zh">非捕获组</span><span class="term-explain">正则中用 (?: … ) 指定的括号，只起分组作用而不分配组号，因此不会被提取或反向引用。</span></aside>
+<p>想捕获所得到的模式。这时我们使用非捕获组，它的指定方式是在左圆括号之后加上特殊指令 ?:，形式为 (?: pattern )。当我们只想捕获一个很长或很复杂的模式中的某一部分时，通常就会使用非捕获组。比如我们可能要匹配一串由空格分隔的日期 (\d\d/\d\d/\d\d\d\d)，并且只提取第 15 个。我们需要使用圆括号，以便对前 14 个施加计数运算符，但又不想存储所有这些无用的信息。下面这个模式只在组 1 中存储第 15 个日期：</p>
+<p>r&quot;(?:\d\d/\d\d/\d\d\d\d\s+){14}(\d\d/\d\d/\d\d\d\d)&quot; 替换和捕获组对于实现 ELIZA（Weizenbaum, 1966）这类具有历史意义的聊天机器人也很有用。回想一下，ELIZA 通过进行如下对话来模拟一位罗杰斯学派的心理学家：</p>
+<blockquote><p>用户2：他们总是为这样那样的事烦我们。</p></blockquote>
+<blockquote><p>ELIZA2：你能想出一个具体的例子吗 用户3：嗯，是我男朋友让我来这儿的。 ELIZA3：你男朋友让你来这儿的 用户4：他说我大部分时间都很抑郁。 ELIZA4：听说你抑郁，我很遗憾</p></blockquote>
+<p>ELIZA 的工作方式是使用一系列或一串级联的正则替换，其中每一个替换匹配并修改输入行的某一部分。输入被转换为大写之后，替换会把所有出现的 MY 改为 YOUR，把 I’M 改为 YOU ARE，等等。</p>
+<p>这样一来，当 ELIZA 复述用户话语的一部分时，看起来就是在正确地指称用户。下一组替换匹配并替换输入中的其他模式，把输入变成完整的回应。下面是一些例子：</p>
+<p>re.sub(r&quot;.<em> YOU ARE (DEPRESSED|SAD) .</em>&quot;,r&quot;I AM SORRY TO HEAR YOU ARE \1&quot;,input) re.sub(r&quot;.<em> ALWAYS .</em>&quot;,r&quot;CAN YOU THINK OF A SPECIFIC EXAMPLE&quot;,input)</p>
+<h3>2.6.8 前瞻断言</h3>
+<p>最后，有时我们需要预测未来：在文本中向前查看某个模式是否匹配，但暂时不推进我们始终用来记录当前所在位置的指针，这样如果该模式出现，我们就可以处理它，而如果没有出现，我们也可以改去检查别的东西。</p>
+<p>这些前瞻断言沿用了上一节中非捕获组所用的 (? 语法。运算符 (?= pattern) 在 pattern 出现时为真，但它是零宽的，也就是说匹配指针不会前进，正如我们所见</p>
+<aside class="term"><code>lookahead</code><span class="term-zh">前瞻</span><span class="term-explain">正则中的零宽断言，在当前位置向右试探后面文本是否匹配某模式，只影响成败，不消耗字符。</span></aside>
+<aside class="term"><code>zero-width</code><span class="term-zh">零宽</span><span class="term-explain">指匹配不消耗任何字符，指针停在原处；前瞻等断言和行首行尾锚点都属于此类。</span></aside>
+<p>并与 \b 之类的锚点和边界标记配合使用。运算符 (?! pattern) 只在某个模式不匹配时才返回真，但它同样是零宽度的，不会推进指针。当我们解析某个复杂模式、却想排除某种特殊情况时，常常会用到否定前瞻。例如，假设我们想捕获行上的第一个词，但前提是它不以字母 T 开头。我们可以用否定前瞻来实现这一点：</p>
+<p>r&quot;ˆ(?![tT])(\w+)\b&quot; (2.18)第一个否定前瞻说明该行不能以 t 或 T 开头，但它匹配的是空字符串，并不移动匹配指针。随后捕获组捕获第一个词。</p>
+<h3>2.6.9 用于 BPE 预词元化的正则表达式</h3>
+<p>我们在第 2.4 节中介绍过，在对语料库运行 BPE 词元化算法之前，我们首先要进行预词元化，大致按空白字符把语料库切分开。然后 BPE 词元化算法在词内部的字符序列之上逐步构建词元，不会跨越词边界进行词元化。</p>
+<p>下面这个正则表达式就用于完成这种预词元化，它被一个颇具影响力的语言模型——GPT-2 语言模型（Radford et al., 2019）所采用：</p>
+<blockquote><p>&gt;&gt;&gt; import regex as re</p></blockquote>
+<blockquote><p>&gt;&gt;&gt; pat = re.compile(</p></blockquote>
+<blockquote><p>... # Contractions: ’t and ’m are tokens</p></blockquote>
+<blockquote><p>... r&quot;’s|’t|’re|’ve|’m|’ll|’d|&quot;</p></blockquote>
+<blockquote><p>... # Words: sequence of Unicode letters (after optional space)</p></blockquote>
+<blockquote><p>... r&quot; ?\p{L}+|&quot;</p></blockquote>
+<blockquote><p>... #Number: sequence of digits (after optional space)</p></blockquote>
+<blockquote><p>... r&quot; ?\p{N}+|&quot;</p></blockquote>
+<blockquote><p>... # Punctuation: sequence of non-alphanumeric/non-space</p></blockquote>
+<blockquote><p>... #(after optional space)</p></blockquote>
+<blockquote><p>... r&quot; ?[ˆ\s\p{L}\p{N}]+|&quot;</p></blockquote>
+<blockquote><p>... # whitespace</p></blockquote>
+<blockquote><p>... r&quot;\s+(?!\S)|\s+&quot;</p></blockquote>
+<blockquote><p>... )</p></blockquote>
+<blockquote><p>&gt;&gt;&gt; text = &quot;We’re 350 dogs! Um, lunch?&quot;</p></blockquote>
+<blockquote><p>&gt;&gt;&gt; print(pat.findall(text))</p></blockquote>
+<blockquote><p>[’We’, &quot;’re&quot;, ’ 350’, ’ dogs’, ’!’, ’ Um’, ’,’, ’ lunch’, ’?’]</p></blockquote>
+<blockquote><p>&gt;&gt;&gt;</p></blockquote>
+<blockquote><p>r&quot;’s|’t|’re|’ve|’m|’ll|’d| ?\p{L}+| ?\p{N}+| ?[ˆ\s\p{L}\p{N}]+|\s+(?!\S)|\s+&quot;</p></blockquote>
+<p>这是一个相当复杂的正则表达式，并且还用到了若干高级的与 Unicode 相关的特性，这些我们尚未介绍。这些特性来自一个流行的外部 Python 3 库 regex（它比 Python 3 内置的库 re 更强大）。</p>
+<p>例如，regex 库有特殊的 \p 和 \P 运算符，可以匹配当前字符是否具有特定的 Unicode 码点属性。例如 \p{L} 匹配任意 Unicode 字母，\P{L} 匹配任意非字母，\p{N} 匹配任意数字，\P{N} 匹配任意非数字。</p>
+<p>图 2.15 更清晰地标注了这个正则表达式，并展示了在句子 We’re 350 dogs! Um, lunch? 上运行 GPT-2 词元化器所得到的输出。</p>
+<p>注意，词元化器把 We’re 切分为 We 和 ’re，标点被从 dogs 和 lunch 上切分下来，并且有些词元（如 dogs）以空格开头，而另一些（如 We 和 !）则不然。</p>
+<h2>2.7 用于词元化的简单 Unix 工具</h2>
+<p>对于英语，可以在一条 Unix 命令行中完成简单的朴素词元化和词频统计。正如 Church（1994）所指出的，当我们需要快速获取某个文本语料库的信息时，这很有用。我们会用到几个 Unix 命令：tr，用于系统地替换输入中的特定字符；sort，按字母顺序对输入行排序；以及 uniq，合并并统计相邻的相同行。</p>
+<p>例如，我们从单个文件 sh.txt 中莎士比亚作品的“完整词语”开始。我们可以用 tr 对词语进行词元化，把每一段非字母字符序列都替换为换行符（’A-Za-z’ 表示字母，-c 选项取补集（即从字母变为非字母），因此二者合起来就选中了每一个非字母字符，由 tr 将其替换为换行符。-s（“squeeze”，挤压）选项用于把多次连续替换的结果合并为单个输出，因此一连串相邻的非字母字符都会被“挤压”成一个换行符）：</p>
+<p>tr -sc ’A-Za-z’ ’\n’ &lt; sh.txt该命令的输出为：</p>
+<p>十四行诗集 威廉·莎士比亚 从最美的生灵……</p>
+<p>既然每行只有一个词，我们就可以对这些行排序，并把它们传给 uniq</p>
+<p>tr -sc ’A-Za-z’ ’\n’ &lt; sh.txt | sort | uniq -c输出如下：</p>
+<p>1945 A 72 AARON 19 ABBESS 25 Aaron 6 Abate 1 Abates...</p>
+<p>或者，我们也可以把所有大写字母合并为小写字母：</p>
+<p>tr -sc ’A-Za-z’ ’\n’ &lt; sh.txt | tr A-Z a-z | sort | uniq -c其输出为14725 a 97 aaron 1 abaissiez 10 abandon 2 abandoned 2 abase 1 abash 14 abate...</p>
+<p>现在我们可以再次排序，找出高频词。sort 的 -n 选项表示按数值而非按字母排序，-r 选项表示按相反顺序（从高到低）排序：</p>
+<p>结果表明，与任何其他语料库一样，莎士比亚作品中最常见的词是像冠词、代词、介词这样的短虚词：</p>
+<p>27378 the 26084 and 22538 i 19771 to 17481 of 14725 a 13826 you……</p>
+<p>这类 Unix 工具在快速构建词频统计时非常方便适用于任何英语语料库。对于更复杂的情况，我们通常会转而使用上文讨论过的更精细的词元化算法。</p>
+<h2>2.8 基于规则的词元化</h2>
+<p>虽然像 BPE 这样基于数据的词元化是最常见的词元化方式，但也有一些情形我们希望把词元限制为词而不是子词。如果我们为英语运行句法分析算法、而分析器可能需要语法词作为输入，这种做法可能就有用。或者，对于任何我们已经对想研究的词元有某种先验定义的语言学应用，它也可能有用。又或者，对于把正字法词作为有用研究领域的社会科学应用，它也可能有用。</p>
+<p>在基于规则的词元化中，我们预先定义一个标准，并实现规则来实现那种词元化。下面我们以英语的词语词元化为例来探讨。</p>
+<p>对英语我们有一些期望。我们通常希望把标点切分出来作为独立的词元；逗号对分析器来说是有用的信息，句点则有助于标示句子边界。但我们通常希望保留出现在词内部的标点，例如 m.p.h.、Ph.D.、AT&amp;T 和 cap’n 这类例子。特殊字符和数字需要在价格（$45.55）和日期（01/02/06）中保留；我们不想把那个价格切分成 “45” 和 “55” 两个独立词元。此外还有 URL（https://www.stanford.edu）、Twitter 话题标签（#nlproc）或电子邮件地址（someone@cs.colorado.edu）。</p>
+<p>数字表达会带来一些麻烦；除了出现在词边界处之外，在英语中逗号还出现在数字内部，每三位数字一个：555,500.50。</p>
+<p>词元化因语言而异；例如西班牙语、法语和德语等语言用逗号标示小数点，而在英语使用逗号的地方使用空格（有时是句点），例如 555 500,50。</p>
+<p>基于规则的词元化器还可以用来展开那些由撇号标记的附着词缩写，</p>
+<aside class="term"><code>clitic</code><span class="term-zh">附着词</span><span class="term-explain">不能独立成词、必须依附于另一个词才能出现的语言成分，如英语中的 n’t、法语代词 j’ai 中的 j’。</span></aside>
+<p>把 what’re 转换成 what are 两个词元，把 we’re 转换成 we are。附着词是词的一部分，不能独立存在，只能附着在另一个词上时才会出现。这类缩合形式也出现在其他拼音文字语言中，包括法语代词（j’ai）和冠词（l’homme）。</p>
+<p>视应用而定，词元化算法也可能把 New York 或 rock ’n’ roll 这类多词表达当作单个词元来处理，这就需要某种多词表达词典。因此，基于规则的词元化与命名实体识别——即检测人名、日期和机构的任务——密切相关（第 18 章）。</p>
+<p>一种常用的词元化标准称为 Penn Treebank 词元化标准，用于由语言数据联盟（Lin-</p>
+<aside class="term"><code>Penn Treebank tokenization</code><span class="term-zh">Penn Treebank 词元化</span><span class="term-explain">一种基于规则的英语词元化标准，把附着词和所有标点切分出来，并保留连字符词，常用于树库语料。</span></aside>
+<p>guistic Data Consortium，LDC）发布的、已作句法分析的语料库（树库），LDC 是许多有用数据集的来源。该标准把附着词切分出来（doesn’t 变成 does 加 n’t），把带连字符的词保持在一起，并把所有标点切分出来（为了节省空间，我们在词元之间显示可见的空格‘ ’，尽管更常见的输出是换行）：</p>
+<p>输入：&quot;The San Francisco-based restaurant,&quot; they said, &quot;doesn’t charge $10&quot;.</p>
+<p>输出：&quot; The San Francisco-based restaurant , &quot; they said , &quot; does n’t charge $ 10 &quot; .</p>
+<p>在实践中，由于词元化先于任何其他语言处理运行，它必须非常快。对于基于规则的词语词元化，我们通常使用基于正则表达式的确定性算法，这些正则表达式会被编译成高效的有限状态自动机。例如，图 2.16 展示了一个基本正则表达式，它可以配合基于 Python 的自然语言工具包（NLTK）中的 nltk.regexp tokenize 函数对英语进行词元化（Bird et al. 2009; https://www.nltk.org）。</p>
+<blockquote><p>&gt;&gt;&gt; text = ’That U.S.A. poster-print costs $12.40...’</p></blockquote>
+<blockquote><p>&gt;&gt;&gt; pattern = r’’’(?x) # set flag to allow verbose regexps</p></blockquote>
+<blockquote><p>... (?:[A-Z]\.)+ # abbreviations, e.g. U.S.A.</p></blockquote>
+<blockquote><p>... | \w+(?:-\w+)* # words with optional internal hyphens</p></blockquote>
+<blockquote><p>... | \$?\d+(?:\.\d+)?%? # currency, percentages, e.g. $12.40, 82%</p></blockquote>
+<blockquote><p>... | \.\.\. # ellipsis</p></blockquote>
+<blockquote><p>... | [][.,;&quot;’?():_‘-] # these are separate tokens; includes ], [</p></blockquote>
+<blockquote><p>... ’’’</p></blockquote>
+<blockquote><p>&gt;&gt;&gt; nltk.regexp_tokenize(text, pattern)</p></blockquote>
+<blockquote><p>[’That’, ’U.S.A.’, ’poster-print’, ’costs’, ’$12.40’, ’...’]</p></blockquote>
+<p>精心设计的确定性算法能够处理由此产生的各种歧义，例如撇号用作属格标记时（如 the book’s cover）、用作引语标记时（如 ‘The other class’, she said），或出现在 they’re 这类附着词中时，需要以不同的方式词元化。</p>
+<h3>2.8.1 句子切分</h3>
+<p>基于规则的切分通常用于另一类词元化过程：句子。句子切分是一个可以有选择地应用的步骤</p>
+<aside class="term"><code>sentence</code><span class="term-zh">句子</span><span class="term-explain">由若干词元组成、能表达相对完整意义的语言单位，也是句法分析等结构检测任务的处理对象。</span></aside>
+<aside class="term"><code>segmentation</code><span class="term-zh">切分</span><span class="term-explain">按某种边界把连续文本切成更小单位的过程，如把文本切成句子或把句子切成词元。</span></aside>
+<p>，用在文本处理之中。当把 NLP 算法应用于检测结构（如句法分析结构）这类任务时，它尤为重要。</p>
+<p>句子切分取决于语言和体裁。对于把英语书面文本切分成句子来说，最有用的线索往往是标点符号，如句号、问号和感叹号。问号和感叹号是相对明确的句子边界标记，当它们出现时，用简单的规则就能切分出句子。</p>
+<p>另一方面，句点字符“.”则是有歧义的，它既可能是句子边界标记，也可能是 Dr. 或 Inc. 这类缩写的标记。你刚才读到的那句话展示了这种歧义更复杂的情形：其中 Inc. 末尾的句点既标记了缩写，又标记了句子边界。因此，句子词元化与单词词元化（word tokenization）可以合在一起处理。</p>
+<p>许多英语句子词元化方法的做法是，先判断（通常依据确定性规则，有时则通过机器学习）句点究竟属于词的一部分，还是句子边界标记。缩写词典有助于判断该句点是否属于某个常用缩写；这类词典可以手工构建，也可以用机器学习得到（Kiss and Strunk, 2006），最终的句子切分器也是如此。例如在 Stanford CoreNLP 工具包（Manning et al., 2014）中，句子切分基于规则，是词元化的确定性结果；当句末标点（.、! 或 ?）尚未与其他字符一起组成一个词元（例如缩写或数字的词元）时，句子便在此结束，其后还可选地带额外的结尾引号或括号。</p>
+<h2>2.9 最小编辑距离</h2>
+<p>我们常常需要一种方法来比较两个词或两个字符串有多相似。正如后续章节将会看到的，这在自动语音识别或机器翻译等任务中最为常见，因为我们想知道某个词序列与某个参考词序列有多相似。</p>
+<p>编辑距离为我们提供了一种量化这类关于字符串相似度的直觉的方法。</p>
+<aside class="term"><code>minimum edit distance</code><span class="term-zh">最小编辑距离</span><span class="term-explain">把一个字符串变换为另一个字符串所需的最少编辑操作次数，操作包括插入、删除和替换。</span></aside>
+<p>更形式化地说，两个字符串之间的最小编辑距离定义为把一个字符串转换为另一个字符串所需的最少编辑操作次数（即插入、删除、替换这类操作）。本节将以单个词为例介绍编辑距离，但该算法同样适用于整个字符串。</p>
+<p>例如，intention 与 execution 之间的距离为 5（删除一个 i，把 n 替换为 e，把 t 替换为 x，插入 c，把 n 替换为 u）。要看清这一点，最简便的办法是观察字符串距离最重要的可视化形式——对齐</p>
+<aside class="term"><code>alignment</code><span class="term-zh">对齐</span><span class="term-explain">两个序列的子串之间的对应关系，用于直观展示把一个字符串转换为另一个字符串所需的编辑操作。</span></aside>
+<p>图 2.17 展示了两个字符串之间的这种对齐。给定两个序列，对齐就是这两个序列的子串之间的对应关系。因此我们说，I 与空字符串对齐，N 与 E 对齐，依此类推。在对齐后的字符串下方还有另一种表示：一串符号给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。</p>
+<img src="../md/images/02-words-and-tokens/fig_p28_0.png" alt="">
+<blockquote><p>最后一行给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。</p></blockquote>
+<p>我们还可以为这些操作分别指定特定的代价或权重。</p>
+<p>两个序列之间的 Levenshtein 距离是最简单的加权方式，其中三种操作的代价均为 1（Levenshtein, 1966）——我们假定把字母替换为它自身（例如用 t 替换 t）的代价为零。intention 与 execution 之间的 Levenshtein 距离为 5。Levenshtein 还提出了他的度量的另一种版本：每次插入或删除的代价为 1，且不允许替换。（这等价于允许替换，但把每次替换的代价记为 2，因为任何替换都可以用一次插入和一次删除来表示。）使用这一版本时，intention 与 execution 之间的 Levenshtein 距离为 8。</p>
+<h3>2.9.1 最小编辑距离算法</h3>
+<p>我们如何找到最小编辑距离？可以把它看作一个搜索任务：我们在寻找从一个字符串到另一个字符串的最短路径，也就是一系列编辑操作。</p>
+<img src="../md/images/02-words-and-tokens/fig_p29_1.png" alt="">
+<blockquote><p>所有可能编辑构成的空间极其庞大，因此我们无法朴素地搜索。不过，</p></blockquote>
+<blockquote><p>许多不同的编辑路径最终会到达同一个状态（字符串），因此我们不必重新计算所有这些路径，只需每次都记住到达某个状态的最短路径即可</p></blockquote>
+<aside class="term"><code>dynamic</code><span class="term-zh">动态</span><span class="term-explain">与紧随其后的术语合为“动态规划”，指把大问题拆成子问题、以表格方式组合子问题解的算法类别。</span></aside>
+<blockquote><p>我们见过它。我们可以通过使用动态规划来做到这一点。动态规划</p></blockquote>
+<aside class="term"><code>programming</code><span class="term-zh">规划</span><span class="term-explain">与前面的“动态”合为“动态规划”，指按表格自底向上组合各子问题解来求解大问题的一类算法。</span></aside>
+<blockquote><p>是一类算法的名称，由 Bellman (1957) 首次提出，这类算法采用表格驱动的方法，通过组合子问题的解来求解问题。</p></blockquote>
+<blockquote><p>自然语言处理中一些最常用的算法都使用了动态规划，例如 Viterbi 算法（第 18 章）和用于句法分析的 CKY 算法（第 19 章）。</p></blockquote>
+<blockquote><p>动态规划问题的直觉是，一个大问题可以</p></blockquote>
+<blockquote><p>通过恰当地组合各个子问题的解来求解。考虑图 2.19 所示的、表示字符串 intention 与 execution 之间最小编辑距离的转换词最短路径。</p></blockquote>
+<img src="../md/images/02-words-and-tokens/fig_p29_0.png" alt="">
+<p>设想某个字符串（也许是 exention）位于这条最优路径中（无论它是什么）。动态规划的直觉是，如果 exention 出现在最优操作序列中，那么该最优序列也必定包含从 intention 到 exention 的最优路径。为什么？如果存在一条从 intention 到 exention 的更短路径，我们就可以改用它，从而得到一条更短的总体路径，那么该最优序列就不是最优的了，由此产生矛盾。</p>
+<aside class="term"><code>minimum edit distance algorithm</code><span class="term-zh">最小编辑距离算法</span><span class="term-explain">用动态规划自底向上填表，求出把一个字符串转换为另一个字符串所需最少插入、删除、替换操作次数。</span></aside>
+<p>最小编辑距离算法由 Wagner 和 Fischer 命名（1974），但被许多人独立发现（参见第 18 章的历史注释部分）。</p>
+<p>我们首先定义两个字符串之间的最小编辑距离。给定两个字符串，即长度为 n 的源字符串 X 和长度为 m 的目标字符串 Y，我们将 D[i, j] 定义为 X[1..i] 与 Y[1..j] 之间的编辑距离，也就是 X 的前 i 个字符与 Y 的前 j 个字符之间的编辑距离。因此 X 与 Y 之间的编辑距离就是 D[n,m]。</p>
+<p>我们将使用动态规划自底向上地计算 D[n,m]，组合各个子问题的解。在基础情形中，当源子串长度为 i 而目标字符串为空时，从 i 个字符变为 0 个字符需要 i 次删除。当目标子串长度为 j 而源为空时，从 0 个字符变为 j 个字符需要 j 次插入。在计算出较小的 i、j 对应的 D[i, j] 之后，我们便根据此前算出的较小值来计算更大的 D[i, j]。D[i, j] 的值通过取到达该处的三条可能矩阵路径中的最小值来计算：</p>
+<p> D[i−1, j]+del-cost(source[i]) (2.19) D[i, j] = min D[i, j −1]+ins-cost(target[j]) D[i−1, j −1]+sub-cost(source[i],target[j])上文我们提到了莱文斯坦距离的两个版本，其中一个版本中替换的代价为 1，另一个版本中替换的代价为 2（即等同于一次插入加一次删除）。这里我们使用第二个版本的莱文斯坦距离，其中插入和删除各自的代价为 1（ins-cost(·) = del-cost(·) = 1），替换的代价为 2（相同字母之间的替换代价为零）。</p>
+<p>在这个版本的莱文斯坦距离下，D[i, j] 的计算式变为：</p>
+<p>D[i−1, j]+1 D[i, j −1]+1 (2.20) D[i, j] = min  2; if source[i]̸ = target[j] D[i−1, j −1]+ 0; if source[i] = target[j]该算法总结于图 2.21；图 2.20 展示了采用式 2.20 中的莱文斯坦距离版本，将该算法应用于 intention 与 execution 之间距离的结果。</p>
+<blockquote><p>源\目标 # e x e c u t i o n</p></blockquote>
+<blockquote><p># 0 1 2 3 4 5 6 7 8 9 i 1 2 3 4 5 6 7 6 7 8 n 2 3 4 5 6 7 8 7 8 7 t 3 4 5 6 7 8 7 8 9 8 e 4 3 4 5 6 7 8 9 10 9 n 5 4 5 6 7 8 9 10 11 10 t 6 5 6 7 8 9 8 9 10 11 i 7 6 7 8 9 10 9 8 9 10 o 8 7 8 9 10 11 10 9 8 9 n 9 8 9 10 11 12 11 10 9 8</p></blockquote>
+<img src="../md/images/02-words-and-tokens/fig_p31_0.png" alt="">
+<p>对齐 知道最小编辑距离对于诸如查找可能的拼写纠错之类的算法很有用。但编辑距离算法在另一方面也很重要：只需稍作改动，它还能给出两个字符串之间代价最小的对齐。对齐两个字符串在语音和语言处理的各个环节都很有用。在语音识别中，最小编辑距离对齐被用来计算词错误率（第 16 章）。对齐在机器翻译中也发挥作用，其中平行语料库（包含两种语言文本的语料库）中的句子需要彼此匹配。</p>
+<p>为了扩展编辑距离算法以产生对齐，我们可以先将对齐想象成一条穿过编辑距离矩阵的路径。图 2.22 用粗体单元格展示了这条路径。每个粗体单元格表示两个字符串中一对字母的对齐。如果两个粗体单元格出现在同一行，则从源到目标的过程中会有一次插入；同一列中的两个粗体单元格则表示一次删除。</p>
+<p>图 2.22 还展示了如何计算这条对齐路径的直观思路。</p>
+<p>计算分两步进行。第一步，我们扩充最小编辑距离算法，在每个单元格中存储回溯指针。一个单元格的回溯指针指向我们进入当前单元格时所来自的前一个（或若干个）单元格。</p>
+<p>我们在图 2.22 中给出了这些回溯指针的示意图。有些单元格有多个回溯指针，因为最小扩展可能来自多个前面的单元格。第二步，我们执行回溯。在回溯中，我们从</p>
+<aside class="term"><code>backtrace</code><span class="term-zh">回溯</span><span class="term-explain">从动态规划矩阵末端的单元格出发，沿各单元格记录的回溯指针逐格返回初始单元格，从而还原出最小代价对齐路径的过程。</span></aside>
+<p>最后一个单元格（位于最后一行和最后一列）开始，沿着指针回溯穿过动态规划矩阵。最后单元格与初始单元格之间的每条完整路径都是一条最小距离对齐。习题 2.10 要求你修改最小编辑距离算法，使其存储指针并计算回溯，从而输出一个对齐。</p>
+<blockquote><p># e x e c u t i o n</p></blockquote>
+<blockquote><p># 0 ←1 ←2 ←3 ←4 ←5 ←6 ←7 ←8 ←9 i ↑1 ↖←↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖6 ←7 ←8 n ↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↑7 ↖←↑8 ↖7 t ↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖7 ←↑8 ↖←↑9 ↑8 e ↑4 ↖3 ←4 ↖←5 ←6 ←7 ←↑8 ↖←↑9 ↖←↑10 ↑9 n ↑5 ↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖↑10 t ↑6 ↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖8 ←9 ←10 ←↑11 i ↑7 ↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↑9 ↖8 ←9 ←10 o ↑8 ↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↑10 ↑9 ↖8 ←9 n ↑9 ↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖←↑12 ↑11 ↑10 ↑9 ↖8</p></blockquote>
+<p>虽然我们的例子用的是简单的 Levenshtein 距离，但该算法在图 2.21 中允许为各种操作指定任意权重。例如在拼写纠错中，替换更可能发生在键盘上彼此相邻的字母之间。Viterbi 算法是最小编辑距离的概率化扩展。Viterbi 算法不是计算两个字符串之间的“最小编辑距离”，而是计算一个字符串与另一个字符串的“最大概率对齐”。我们将在第 18 章进一步讨论这一点。</p>
+<h2>2.10 小结</h2>
+<p>本章介绍了语言处理中词元与词元化的基本概念。我们讨论了词、语素和字符这些语言层级，介绍了 Unicode 码点和 UTF-8 编码，介绍了用于词元化的 BPE 算法，以及用于比较字符串的正则表达式和最小编辑距离算法。下面总结我们围绕这些概念所涉及的主要要点：</p>
+<ul><li>词和语素是有用的表示单位，但很难给出形式化的定义。</li><li>Unicode 是一套系统，用于表示书写世界各语言的众多文字系统中的字符。</li><li>每个字符在内部都用一个称为码点的唯一 id 表示，并可以通过 UTF-8 之类的编码方式编码到文件中，UTF-8 是一种变长编码。</li><li>字节对编码（Byte-Pair Encoding，BPE）是以数据驱动方式归纳出词元的标准做法。它是大多数大语言模型的第一步。</li><li>BPE 词元的大小通常大致相当于词或语素，不过也可能小到单个字符。</li></ul>
+<ul><li>正则表达式语言是进行模式匹配的强大工具。</li><li>正则表达式中的基本操作包括符号的析取（[,]、|）、计数器（*、+ 和 {n,m}）、锚点（ˆ、$）、捕获组（(、)）以及替换。</li><li>两个字符串之间的最小编辑距离，是把其中一个编辑成另一个所需的最少操作次数。最小编辑距离可以用动态规划计算，计算过程同时还会得到这两个字符串的一个对齐。</li></ul>
+<h2>历史注记</h2>
+<p>关于 Herdan 定律和 Heaps 定律的更多内容，参见 Herdan (1960, p. 28)、Heaps (1978)、Egghe (2007) 和 Baayen (2001)。</p>
+<p>Unicode 借鉴了 ASCII 和 ISO 字符编码标准。早期的草案是在 Xerox 和 Apple 的工程师之间的讨论中形成的。一份早期的标准草案于 1988 年发布，1991 年则更正式地发布了 Unicode 标准。后来成为 UTF-8 的方案始于 1989 年的 ISO 草案，并带有各种扩展。其自同步特性是 1992 年由 Ken Thompson 与 Rob Pike 在新泽西一家餐馆的餐垫上勾勒出来的，此事颇为有名。</p>
+<p>词的词元化和其他文本规范化算法一直被应用，从本领域诞生之初便是如此。这些算法包括词干提取，例如 Lovins (1968) 被广泛使用的词干提取器，也包括应用于数字人文的工作，例如 Packard (1973) 为古希腊语构建的剥离词缀的形态分析器。BPE 最初是 Gage (1994) 提出的一种文本压缩方法，Sennrich 等 (2016) 将其应用于早期神经机器翻译中的子词词元化。随后它被 OpenAI 的 GPT-2 (Radford et al., 2019) 采用为默认的词元化方法，也被纳入开源的 SentencePiece 库 (Kudo and Richardson, 2018)。Andrej Karpathy 有一个很好的公开实现 minbpe，网址为 https://github.com/karpathy/minbpe，他还做了一场介绍 BPE 的广受欢迎的讲座（https://www.youtube.com/watch?v=zduSFxRajkE）。</p>
+<p>Kleene 1951; 1956 首次定义了正则表达式和有限自动机，其基础是 McCulloch-Pitts 神经元。Ken Thompson 是最早把正则表达式编译器内置到编辑器中以实现文本搜索的人之一 (Thompson, 1968)。他的编辑器 ed 包含一条命令“g/regular expression/p”，即 Global Regular Expression Print，后来演变成了 Unix 的 grep 工具。</p>
+<p>NLTK 是一个必不可少的工具，它既提供了有用的 Python 库（https:// www.nltk.org），也在教科书 (Bird et al., 2009) 中描述了许多算法，包括文本规范化和语料库接口。</p>
+<p>关于编辑距离的更多内容，参见 Gusfield (1997)。我们测量编辑距离的例子，即从 ‘intention’ 到 ‘execution’，改编自 Kruskal (1983)。有多种公开可用的软件包可用于计算编辑距离，包括 Unix 的 diff 和 NIST 的 sclite 程序 (NIST, 2005)。</p>
+<p>Bellman（1984）在其自传中解释了他最初是如何想出动态规划这一术语的：</p>
+<p>“……20 世纪 50 年代对数学研究来说不是好年头。[时任]国防部长……对“研究”这个词有一种病态的恐惧和憎恨……因此我决定改用“规划”这个词。我想传达这样一种想法：这是动态的，这是多阶段的……我想，让我们……找一个含义绝对精确的词，也就是 dynamic（动态）……不可能把 dynamic 这个词用于贬义。你试着想一个有可能让它带上贬义的组合看看，那是不可能的。因此，我认为动态规划是个好名字。它甚至是连国会议员都无法反对的。”</p>
+<h2>习题</h2>
+<p>2.1 把你所熟悉的一种语言中的一句话翻译成另一种语言。然后对这两句话进行词元化，例如使用 Tat Dat Duong 的 Tiktokenizer 可视化工具（https://tiktokenizer.vercel.app/），看看词元数量是否有差异。</p>
+<p>2.2 对一个长数字、一个 URL 和一个化学式进行词元化。根据你所看到的结果，大型语言模型为什么可能不擅长算术？</p>
+<p>2.3 利用图 2.5，手工将下列内容编码为 UTF-8，并展示位操作：(a) 字符 ´e（U+00E9）；(b) 字符 进（U+8FDB）。</p>
+<p>每个字符各占多少字节？</p>
+<p>2.4 为下列语言写出正则表达式。</p>
+<ul><li>所有字母字符串的集合；</li><li>所有以 b 结尾的小写字母字符串的集合；</li><li>字母表 a,b 上所有满足每个 a 的前一个字符和后一个字符都是 b 的字符串的集合；</li></ul>
+<p>2.5 为下列语言写出正则表达式。这里所说的“词”，指的是由空白、任何相关的标点、换行符等与其他词分隔开的字母字符串。</p>
+<ul><li>所有含有两个连续重复词的字符串的集合（例如“Humbert Humbert”和“the the”，但不包括“the bug”或“the big bug”）；</li><li>所有在行首以整数开头、在行尾以词结尾的字符串；</li><li>所有同时含有词 grotto 和词 raven 的字符串（但不包括诸如 grottos 这类仅仅包含 grotto 这个词的单词）；</li><li>编写一个模式，把英语句子的第一个词存入一个寄存器。要处理标点。</li></ul>
+<p>2.6 实现一个类似 ELIZA 的程序，使用诸如所描述的那类替换（见第 55 页）。你也许想选择一个不同于罗杰斯式心理学家的领域，但要记住，你需要一个能让你的程序合理地大量进行简单重复的领域。</p>
+<p>2.7 计算编辑距离（插入代价为 1、删除代价为 1、替换代价为 1），“leda”到“deal”。展示你的计算过程（使用编辑距离网格）。</p>
+<p>2.8 判断 drive 与 brief 更接近，还是与 divers 更接近，并算出它与两者各自的编辑距离是多少。你可以使用任何一种你喜欢的距离定义。</p>
+<p>2.9 现在实现一个最小编辑距离算法，并用你手工计算得到的结果来检验你的代码。</p>
+<p>2.10 扩展最小编辑距离算法，使其输出一个对齐结果；你需要存储指针，并增加一个阶段来计算回溯。</p>
+</div></body></html>

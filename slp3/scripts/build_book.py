@@ -51,7 +51,7 @@ def build(slug: str, title: str, dual: bool, out_pdf: bool) -> None:
 
     # 1. Markdown（中文 + 可选对照）
     md_cmd = [PY, SKILL / "scripts" / "build_markdown.py", translated, "-o", md_dir,
-              "--slug", slug, "--title", title]
+              "--slug", slug, "--title", title, "--img-subdir", slug]
     if dual:
         md_cmd.append("--bilingual")
     run(md_cmd)
