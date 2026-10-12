@@ -47,7 +47,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 
 
 def inline(text: str) -> str:
+    # 表格单元格里的 <br> 是 build_markdown 生成的换行标记：先还原、再统一转成真实换行，
+    # 否则会被 escape 成字面 "&lt;br&gt;" 显示给读者。
+    text = (text or "").replace("<br>", "\n")
     text = H.escape(text)
+    text = text.replace("\n", "<br>")
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", text)
@@ -82,6 +86,20 @@ def table(block: list[str]) -> str:
         out.append("<tr>" + "".join(f"<{tag}>{inline(c)}</{tag}>" for c in cells) + "</tr>")
     out.append("</table>")
     return "".join(out)
+
+
+def join_lines(lines: list[str]) -> str:
+    """合并同一段落的软换行：拉丁文之间补空格，中文之间不补。"""
+    out = ""
+    for s in lines:
+        if not out:
+            out = s
+            continue
+        if out[-1:].isascii() and s[:1].isascii():
+            out += " " + s
+        else:
+            out += s
+    return out
 
 
 def convert(md: str) -> str:
@@ -147,7 +165,7 @@ def convert(md: str) -> str:
             para.append(s)
             i += 1
         if para:
-            out.append("<p>" + inline(" ".join(para)) + "</p>")
+            out.append("<p>" + inline(join_lines(para)) + "</p>")
         else:
             i += 1
     return "\n".join(out)
