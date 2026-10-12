@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 5 章 嵌入</title>
+<style>
+:root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
+* { box-sizing: border-box; }
+body { margin:0; background:#f6f7f9; color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+  line-height:1.85; font-size:16px; }
+.wrap { max-width:860px; margin:0 auto; background:var(--bg); min-height:100vh;
+  padding:48px 56px 120px; box-shadow:0 0 24px rgba(0,0,0,.06); }
+h1,h2,h3,h4 { line-height:1.35; margin:1.4em 0 .6em; }
+h1 { font-size:28px; border-bottom:2px solid var(--line); padding-bottom:.3em; }
+h2 { font-size:22px; } h3 { font-size:18px; } h4 { font-size:16px; }
+p { margin:0 0 .9em; text-align:justify; }
+ul { margin:.4em 0 1em 1.4em; } li { margin:.25em 0; }
+img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
+blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
+blockquote p { margin:.2em 0; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
+th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+th { background:#f3f5f7; font-weight:600; }
+code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
+.nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
+.nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
+footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
+  font-size:13px; color:var(--muted); }
+</style>
+</head><body><div class="wrap">
+<div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/05-embeddings.md">Markdown 源文件</a></div>
+<h1>第 5 章 嵌入</h1>
+<h3>章</h3>
+<h1>5 嵌入</h1>
+<p>荃者所以在鱼，得鱼而忘荃 网是为了捕鱼；</p>
+<p>捕到鱼之后，就可以忘掉网。</p>
+<p>言者所以在意，得意而忘言 言语是为了表达意义；</p>
+<p>领会了意义之后，就可以忘掉言语</p>
+<blockquote><p>庄子（Zhuangzi），第 26 章</p></blockquote>
+<p>洛杉矶闻名于世的沥青主要出现在它的高速公路上。但</p>
+<p>在市中心还有另一片沥青地，即拉布雷亚沥青坑（La Brea tar pits），这片沥青保存了来自更新世（Pleistocene Epoch）最后一个冰期的数百万块化石骨骼。这些化石中有一件是斯剑虎（Smilodon），即剑齿虎，凭其长长的犬齿一眼即可辨认。大约五百万年前，一种完全不同的剑齿虎——袋剑虎（Thylacosmilus）——生活在阿根廷以及南美洲的其他地区。Thylacosmilus 是有袋类动物，而 Smilodon 是胎盘哺乳动物，但 Thylacosmilus 拥有同样长长的上犬齿，并且和 Smilodon 一样，下颌上有一块起保护作用的骨质凸缘。这两种哺乳动物的相似性是平行演化或趋同演化的众多例证之一，在这类演化中，特定的语境或环境导致不同物种演化出极为相似的结构（Gould, 1980）。</p>
+<img src="../md/images/img_84.jpeg" alt="">
+<p>语境的作用在一种不那么具有生物学色彩的</p>
+<p>生物体——词——的相似性中同样重要。出现在相似语境中的词往往具有相似的意义。词在分布方式上的相似性与</p>
+<blockquote><p>分布的</p></blockquote>
+<p>它们在意义上所具有的相似性之间的联系，被称为分布假说（distributional hypothesis）。该假说</p>
+<blockquote><p>假说</p></blockquote>
+<p>最早由 Joos（1950）、Harris（1954）和 Firth（1957）等语言学家在 20 世纪 50 年代提出，他们注意到，互为同义词的词（如 oculist 与 eye-doctor）往往出现在相同的环境之中（例如出现在 eye 或 examined 这类词附近），而两个词之间意义差异的大小“大致对应于它们环境差异的大小”（Harris, 1954, p. 157）。</p>
+<p>本章介绍嵌入，即词的意义的向量表示，</p>
+<blockquote><p>嵌入</p></blockquote>
+<p>这种表示直接从文本中的词分布学习得到。嵌入位于大语言模型以及其他现代应用的核心。我们在此介绍的静态嵌入，是第 7 章和第 9 章将看到的 BERT 之类更强大的动态嵌入（或称语境化嵌入）的基础。</p>
+<p>研究嵌入及其意义的语言学领域被称为向量</p>
+<blockquote><p>向量</p></blockquote>
+<p>语义学。嵌入也是本书中表示学习的第一个例子，</p>
+<blockquote><p>表示语义</p></blockquote>
+<p>即自动学习输入文本的有用表示。寻找</p>
+<blockquote><p>学习</p></blockquote>
+<p>这种以自监督方式学习语言表示、而不是通过特征工程手工构造表示的做法，是现代自然语言处理（NLP）的一条重要原则（Bengio et al., 2013）。</p>
+<p>128 第 5 章 • 嵌入</p>
+<h2>5.1 词汇语义</h2>
+<p>我们先从词义的一些基本原理讲起。我们应当如何表示一个词的意义？在第 3 章的 n-gram 模型以及经典的自然语言处理应用中，我们对一个词唯一的表示就是一串字母，或者词表中的一个索引。这种表示与哲学中的一种传统并没有多大差别——也许你在逻辑学入门课上见过它——那种传统仅仅用小型大写字母拼写出词来表示词的意义：把“dog”的意义表示为 DOG，把“cat”的表示为 CAT，或者使用一个撇号（DOG’）。</p>
+<p>通过把词大写的办法来表示一个词的意义，是一种相当不令人满意的</p>
+<p>模型。你可能见过一个最初出自语义学家 Barbara Partee 的笑话的某个版本（Carlson, 1977）：</p>
+<p>问：生命的意义是什么？答：LIFE’</p>
+<p>我们肯定能做得比这更好！毕竟，我们希望一个词义模型</p>
+<p>能为我们做各种各样的事情。它应当告诉我们，有些词意义相近（cat 与 dog 相近），有些词互为反义词（cold 是 hot 的反面），有些词带有正面内涵（happy），而另一些词带有负面内涵（sad）。它应当表示出这一事实：buy、sell 和 pay 的意义为同一个底层的购买事件提供了不同的视角。（如果我从你那里买了某样东西，你很可能把它卖给了我，而我很可能付了钱给你。）更一般地说，词义模型应当让我们能够进行推理，以处理问答或对话之类与意义相关的任务。</p>
+<p>本节我们总结其中一些需求，所依据的是</p>
+<blockquote><p>词汇</p></blockquote>
+<p>语言学对词义的研究成果，这项研究被称为词汇语义学；我们将回到</p>
+<blockquote><p>语义</p></blockquote>
+<p>并在附录 I 和第 22 章中扩充这一列表。</p>
+<p>词元与义项 我们先来看一个词（我们选 mouse）在词典中可能如何被定义（简化自在线词典 WordNet）：</p>
+<blockquote><p>mouse（名词）</p></blockquote>
+<blockquote><p>1. 众多小型啮齿动物中的任意一种……</p></blockquote>
+<blockquote><p>2. 一种控制光标的手持设备……</p></blockquote>
+<p>这里，形式 mouse 就是词元（lemma），也称为引用形式（citation form）。形式</p>
+<blockquote><p>词元</p></blockquote>
+<p>mouse 也同样是单词 mice 的词元；词典不会为</p>
+<blockquote><p>引用形式</p></blockquote>
+<p>mice 这类屈折形式单独列出释义。同样，sing 是 sing、sang、sung 的词元。在许多语言中，动词的不定式形式被用作该动词的词元，因此西班牙语 dormir“睡觉”是 duermes“你睡觉”的词元。sung、carpets、sing 或 duermes 这些具体形式称为词形（wordform）。</p>
+<blockquote><p>词形</p></blockquote>
+<p>如上例所示，每个词元都可能有多个含义；</p>
+<p>词元 mouse 既可以指这种啮齿动物，也可以指光标控制设备。我们把 mouse 含义的每一个方面称为一个词义（word sense）。词元可能是一词多义的（具有多个词义），这一事实会使理解变得困难（搜索“mouse info”的人是想找宠物还是想找控件？）。第 9 章和附录 I 将讨论多义性问题，并介绍词义消歧（word sense disambiguation），即判定某个词在特定上下文中使用的是哪个词义的任务。</p>
+<p>同义关系（Synonymy） 词义的一个重要组成部分是词义之间的关系。例如，当一个词的某个词义与另一个词的某个词义 5.1 • 词汇语义学 129 相同或几乎相同时，我们就说这两个词的这两个词义是同义词。同义词包括这样一些词对：</p>
+<blockquote><p>同义词</p></blockquote>
+<p>couch/sofa（长沙发/沙发） vomit/throw up（呕吐/吐） filbert/hazelnut（榛子/榛子） car/automobile（汽车/汽车）</p>
+<p>同义关系（指词与词之间而非词义之间）更形式化的定义是，</p>
+<p>如果两个词在任何句子中都能相互替换而不改变该句的真值条件，即使该句为真的那些情境，那么这两个词就是同义的。</p>
+<p>虽然 car / automobile 或 water / H2O 这类词对之间的替换是保真的，但这些词在含义上仍然并不相同。事实上，恐怕没有任何两个词在含义上是绝对相同的。……其中一条基本</p>
+<blockquote><p>的原则</p></blockquote>
+<p>语义学信条，称为对比原则（Girard 1718，Br´eal 1897，Clark</p>
+<blockquote><p>对比</p></blockquote>
+<p>1987），它指出：语言形式上的差异总是与某种含义上的差异相关联。例如，H2O 一词用于科学语境，用在徒步指南中就不合适——water 会更恰当——而这种体裁上的差异也是该词含义的一部分。因此在实际使用中，synonym（同义词）一词描述的是近似或粗略的同义关系。</p>
+<p>词的相似性（Word Similarity） 虽然拥有很多同义词的词并不多，但大多数词确实都有许多相似的词。Cat 不是 dog 的同义词，但 cats 和 dogs 无疑是相似的词。从同义关系转向相似性时，把话题从词义之间的关系（如同义关系）转向词与词之间的关系（如相似性）会很有用。以词为处理对象，就不必确定某种特定的词义表示方式，而这最终会简化我们的任务。</p>
+<p>词的相似性这一概念在更大的语义任务中非常有用。了解</p>
+<blockquote><p>相似性</p></blockquote>
+<p>两个词有多相似，有助于计算两个短语或句子的含义有多相似，而这在问答、复述和摘要等任务中是非常重要的组成部分。获取词的相似性数值的一种方法是请人来判断一个词与另一个词有多相似。这类实验已经产生了一些数据集。例如，SimLex-999 数据集（Hill 等，2015）给出 0 到 10 的评分，如下面的例子所示，其范围从近义词（vanish、disappear）到似乎几乎没有共同之处的词对（hole、agreement）：</p>
+<table><tr><th>vanish（消失）</th><th>disappear（消失）</th><th>9.8</th></tr><tr><td>belief（信念）</td><td>impression（印象）</td><td>5.95</td></tr><tr><td>muscle（肌肉）</td><td>bone（骨头）</td><td>3.65</td></tr><tr><td>modest（谦虚的）</td><td>flexible（灵活的）</td><td>0.98</td></tr><tr><td>hole（洞）</td><td>agreement（一致）</td><td>0.3</td></tr></table>
+<p>belief（信念） impression（印象） 5.95 muscle（肌肉） bone（骨头） 3.65 modest（谦虚的） flexible（灵活的） 0.98</p>
+<p>词的相关性（Word Relatedness） 两个词的含义可以以相似之外的其他方式相关联。其中一类联系称为词的相关性（word relatedness）（Budanitsky</p>
+<blockquote><p>相关性</p></blockquote>
+<p>与 Hirst，2006），在心理学中也历来称为词联想（word association）。</p>
+<blockquote><p>联想</p></blockquote>
+<p>考察 coffee 和 cup 这两个词的含义。coffee 与 cup 并不相似；</p>
+<p>它们几乎不共享任何特征（coffee 是一种植物或一种饮料，而 cup 是一件具有特定形状的人造物品）。但 coffee 和 cup 显然相关；它们通过共同参与一个日常事件（用杯子喝咖啡这一事件）而相互关联。同样，scalpel 和 surgeon 并不相似，但通过事件相关联（外科医生往往会使用手术刀）。</p>
+<p>词与词之间一种常见的相关性是它们属于同一</p>
+<p>语义场。语义场是一组覆盖某一特定语义</p>
+<blockquote><p>语义场</p></blockquote>
+<p>领域并彼此具有结构化关系的词的集合。例如，有些词可能 130 第 5 章 • 嵌入 因为同属医院（surgeon、scalpel、nurse、anesthetic、hospital）、餐馆（waiter、menu、plate、food、chef）或住宅（door、roof、kitchen、family、bed）的语义场而相互关联。语义场还与一种称为主题模型（topic models）的形式化方法相关，例如潜在狄利克雷分配（Latent Dirichlet Allocation，LDA），它在大规模文本集合上应用无监督学习，从文本中归纳出相关联的词集。语义场和主题模型是发现文档中主题结构的非常有用的工具。</p>
+<blockquote><p>主题模型</p></blockquote>
+<p>在附录 I 中，我们将介绍更多词义之间的关系，例如上位关系（hypernymy）或</p>
+<p>IS-A、反义关系（即对立）以及部分—整体关系（meronymy）。</p>
+<p>内涵意义（Connotation） 最后，词还具有情感意义或内涵意义。这个词</p>
+<blockquote><p>内涵义</p></blockquote>
+<p>内涵义在不同领域有不同的含义，但在这里我们用它来指词义中与作者或读者的情绪、情感、观点或评价相关的那些方面。例如，有些词带有正面内涵义（wonderful），而另一些词带有负面内涵义（dreary）。即使在其它方面意义相近的词，内涵义也可能不同；试比较 fake、knockoff、forgery 与 copy、replica、reproduction 之间内涵义的差异，或者 innocent（正面内涵义）与 naive（负面内涵义）的差异。有些词表达正面评价（great、love），另一些则表达负面评价（terrible、hate）。表达正面或负面评价的语言称为情感，而词的情感在诸如情感</p>
+<blockquote><p>情感</p></blockquote>
+<p>分析、立场检测，以及 NLP 在政治语言和消费者评论中的应用等任务中发挥着作用。</p>
+<p>关于情感意义（affective meaning）的早期研究（Osgood 等，1957）发现，词之间存在差异</p>
+<p>这种差异体现在情感意义的三个重要维度上：</p>
+<p>效价（valence）：刺激的愉悦程度</p>
+<p>唤醒度（arousal）：刺激所引发情绪的强度</p>
+<p>支配度（dominance）：刺激所施加的控制程度</p>
+<p>因此，像 happy 或 satisfied 这样的词效价高，而 unhappy 或 annoyed 效价低。Excited 唤醒度高，而 calm 唤醒度低。</p>
+<p>Controlling 支配度高，而 awed 或 influenced 支配度低。</p>
+<p>因此，每个词都由三个数字表示，分别对应它在三个维度上的取值：</p>
+<p>效价 唤醒度 支配度</p>
+<table><tr><th></th><th>效价</th><th>唤醒度</th><th>支配度</th></tr><tr><td>勇敢的</td><td>8.0</td><td>5.5</td><td>7.4</td></tr><tr><td>音乐</td><td>7.7</td><td>5.6</td><td>6.5</td></tr><tr><td>心碎</td><td>2.5</td><td>5.7</td><td>3.6</td></tr><tr><td>幼兽</td><td>6.7</td><td>4.0</td><td>4.2</td></tr></table>
+<p>勇敢的 8.0 5.5 7.4</p>
+<p>Osgood 等（1957）注意到，在用这 3 个数字表示一个词的</p>
+<p>意义时，该模型把每个词表示为三维空间中的一个点，即一个向量，其三个维度分别对应该词在三个量表上的评分。词义可以被表示为空间中的一个点，这一革命性思想（例如，heartbreak 的部分意义可以表示为点 [2.5,5.7,3.6]）首次体现了我们接下来要介绍的向量语义模型。</p>
+<p>5.2 • 向量语义：直观理解 131</p>
+<h2>5.2 向量语义：直观理解</h2>
+<blockquote><p>向量</p></blockquote>
+<p>向量语义是 NLP 中表示词义的标准方式，它帮助我们</p>
+<blockquote><p>语义</p></blockquote>
+<p>对上一节中所看到的词义的许多方面进行建模。该模型的根源可追溯到 20 世纪 50 年代，当时两个重要构想汇合在一起：上文提到的 Osgood 1957 年的构想，即用一个三维空间中的点来表示词的内涵义；以及 Joos（1950）、Harris（1954）和 Firth（1957）等语言学家的主张，即通过词在语言使用中的分布来定义词义，也就是通过它的邻近词或语法环境来定义。他们的观点是：分布非常相似（邻近词相似）的两个词具有相似的意义。</p>
+<p>例如，假设你不知道 ongchoi 这个词的意思（它是近期从粤语借入的词），但你在以下语境中见到了它：</p>
+<p>（5.1）Ongchoi 用大蒜爆炒很美味。</p>
+<p>（5.2）Ongchoi 配米饭极佳。</p>
+<p>（5.3）……ongchoi 叶配咸味酱汁……</p>
+<p>再假设你曾在其它语境中见过其中许多上下文词：</p>
+<p>（5.4）……菠菜用大蒜爆炒，配米饭……</p>
+<img src="../md/images/img_114.png" alt="">
+<p>（5.5）……莙荙菜的茎和叶很美味……</p>
+<p>（5.6）……羽衣甘蓝和其它带咸味的绿叶蔬菜</p>
+<p>ongchoi 与米饭、大蒜、美味和</p>
+<p>咸味这类词共现，菠菜、莙荙菜和羽衣甘蓝等词也是如此，这一事实可能提示 ongchoi 是一种与这些其它绿叶蔬菜相似的绿叶蔬菜。1 我们可以通过在 ongchoi 的上下文中统计词，用计算的方式实现同样的直觉。</p>
+<table><tr><th></th><th></th></tr><tr><td>图 5.1</td><td>200 维 word2vec 嵌</td></tr></table>
+<blockquote><p>入，涉及若干与单词 sweet 相近的词，表明意义相似的词在空间中彼此邻近。该可视化使用 TensorBoard Embedding Projector https://projector.tensorflow.org/ 生成。</p></blockquote>
+<p>向量语义的思想是把词表示为多维语义空间中的一个点，该空间由词的邻近词的分布导出（导出的方式各有不同，我们随后会看到）。用于表示词的向量称为嵌入。</p>
+<blockquote><p>嵌入</p></blockquote>
+<blockquote><p>1</p></blockquote>
+<blockquote><p>它实际上是 Ipomoea aquatica（蕹菜），一种牵牛花的近亲，在英语中有时被称为 water spinach。</p></blockquote>
+<p>132 第 5 章 • 嵌入</p>
+<p>“嵌入”（embedding）一词在历史上源自其数学含义，即从一个空间或结构到另一个空间或结构的映射，尽管其含义已经发生变化；参见本章末尾。</p>
+<p>图 5.1 展示了由 word2vec 算法学习得到的嵌入的可视化，</p>
+<p>其中显示了若干选定词（“sweet”的近邻）从 200 维空间投影到二维空间后的位置。注意 sweet 的最近邻是 honey、candy、juice、chocolate 等语义相关的词。相似词在高维空间中互为近邻这一思想，为语言模型和其他 NLP 应用提供了巨大的能力。例如，第 4 章的情感分类器依赖于相同的词同时出现在训练集和测试集中。但通过把词表示为嵌入，分类器只要见到一些含义相似的词就能判定情感。而且正如我们将看到的，像图 5.1 所示的这类向量语义模型可以无需监督地从文本中自动学习得到。</p>
+<p>本章我们将从一个简单的教学用嵌入模型开始，</p>
+<p>该模型用一个包含附近词计数的向量来定义词的含义。</p>
+<p>我们引入这个模型，是为了帮助理解向量的概念，以及向量作为词义表示意味着什么；但更精细的变体，比如我们将在第 11 章介绍的 tf-idf 模型，也是你应当掌握的重要方法。我们会看到，这种方法会产生非常长且稀疏的向量，即大部分元素为零（因为大多数词根本不会出现在其他词的上下文中）。随后我们将介绍 word2vec 模型族，用于构造更短、更稠密且具有更有用语义性质的向量。</p>
+<p>我们还会介绍余弦（cosine），这是用嵌入来计算两个词、两个句子或两个文档之间语义相似度的标准方法，也是实际应用中的重要工具。</p>
+<h2>5.3 简单的基于计数的嵌入</h2>
+<p>“三维空间中向量最重要的属性是 {位置，位置，位置}”</p>
+<blockquote><p>Randall Munroe，来自 https://xkcd.com/2358/ 的悬停文本</p></blockquote>
+<p>现在我们介绍计算词向量嵌入的第一种方法。这种最简单的词义向量模型基于共现矩阵（co-occurrence matrix），即一种表示词与词共现频率的方式。我们将定义一种特殊的共现</p>
+<blockquote><p>词-上下文</p></blockquote>
+<p>矩阵，即词-上下文矩阵（word-context matrix），其中矩阵的每一行代表词汇表中的一个词</p>
+<blockquote><p>矩阵</p></blockquote>
+<p>而每一列代表词汇表中其他每个词在其附近出现的频率。因此该矩阵的维度为 |V| × |V|，每个单元格记录行（目标）词与列（上下文）词在某个训练语料中于近旁共现的次数。</p>
+<p>我们所说的“近旁”是什么意思？我们可以采用多种方法，但让我们</p>
+<p>先从一种非常简单的方法开始：以该词为中心的上下文窗口，比如说左侧 4 个词、右侧 4 个词。如果这样做，每个单元格就表示（在某个训练语料中）列词出现在行词周围这样的 ±4 词窗口中的次数。</p>
+<p>让我们看看这对 4 个词是如何运作的：cherry、strawberry、digital 和 information。对每个词，我们从语料中取出一个实例，并展示该实例的 ±4 词窗口：</p>
+<p>5.3 • 简单的基于计数的嵌入 133</p>
+<p>传统上后接 cherry pie（樱桃派），一种传统甜点</p>
+<p>常与其他水果混合，例如 strawberry rhubarb pie（草莓大黄派）。Apple pie</p>
+<p>计算机外围设备和个人数字助理。这些设备通常</p>
+<p>一台计算机。这包括互联网上可获得的信息</p>
+<p>如果我们随后取大语料中每个词的每一次出现，并统计</p>
+<p>它周围的上下文词，就得到一个词-上下文共现矩阵。完整的词-上下文共现矩阵非常庞大，因为对词汇表中的每个词（规模为 |V|），我们都必须统计它与词汇表中其他每个词共现的频率，因此维度为 |V|×|V|。所以我们改为在更小的尺度上勾勒这一过程。假设我们只看这 4 个词，并且只考虑以下 3 个上下文词：a、computer 和 pie。此外再假设我们只统计上面这个小语料中的出现次数。</p>
+<p>所以在看图 5.2 之前，请手工计算这 3 个上下文</p>
+<p>词对于 cherry、strawberry、digital 和 information 这 4 个词的计数。</p>
+<blockquote><p>a computer pie</p></blockquote>
+<table><tr><th>a computer pie</th><th></th></tr><tr><td>cherry 1 0 1&lt;br&gt;strawberry 0 0 2&lt;br&gt;digital 0 1 0&lt;br&gt;information 1 1 0</td><td></td></tr><tr><td>图 5.2</td><td>四个词的共现向量，计数来自上面 4 个窗口，</td></tr></table>
+<blockquote><p>cherry 1 0 1 strawberry 0 0 2 digital 0 1 0 information 1 1 0</p></blockquote>
+<blockquote><p>仅显示潜在的上下文词维度中的 3 个。cherry 的向量用红色标出。注意真实的向量维度要多得多，因而更加稀疏。</p></blockquote>
+<p>希望你的计数与图 5.2 所示一致，即每个单元格表示某个特定词（由行定义）出现在某个特定上下文（由词列定义）中的次数。</p>
+<p>这样，每一行就是代表一个词的向量。回顾一些基本的线性</p>
+<p>代数知识：向量本质上就是一个数字列表或数组。因此 cherry 被表示为</p>
+<blockquote><p>向量</p></blockquote>
+<p>列表 [1,0,1]（图 5.2 中的第一行向量），而 information 被表示为列表 [1,1,0]（第四行向量）。</p>
+<p>向量空间是一组向量的集合，其特征由维数决定。</p>
+<blockquote><p>向量空间</p></blockquote>
+<p>三维向量空间中的向量对于该空间的每一个维度都有一个元素，</p>
+<blockquote><p>维度</p></blockquote>
+<p>空间。我们粗略地把 3 维空间中的向量称为 3 维向量，每个维度上各有一个元素。在图 5.2 的例子中，我们选择把词向量设为 3 维，只是为了能放进页面；在真实的词–词矩阵中，向量的维度会是 |V|，即词汇表大小。</p>
+<p>向量空间中数字的排列顺序指示了各不相同的维度</p>
+<p>词语正是在这些维度上发生变化。所有这些向量的第三个维度对应于 pie 在上下文中出现的次数。它们全部的第二维度对应于单词 computer 出现的次数。注意，information 和 digital 的向量在这个“computer”维度上具有相同的值（1）。</p>
+<p>在现实中，我们并不是在单个上下文窗口上计算词向量，而是</p>
+<p>在整个语料库上计算它们。让我们看看一些真实计数是什么样子。</p>
+<p>让我们看看按这种方式计算得到的一些向量。图 5.3 展示了这四个词的词–词共现矩阵的一个子集；同样，由于无法在本教科书的页面上可视化全部 |V| 个可能的上下文词，我们只展示其中 6 个维度的子集，计数由 Wikipedia 语料库计算得到（Davies, 2015）。</p>
+<p>注意在图 5.3 中，cherry 和 strawberry 这两个词彼此之间更为相似，而不是 134 第 5 章 • 嵌入</p>
+<blockquote><p>aardvark ... computer data result pie sugar ...</p></blockquote>
+<blockquote><p>cherry 0 ... 2 8 9 442 25 ... strawberry 0 ... 0 0 1 60 19 ... digital 0 ... 1670 1683 85 5 4 ... information 0 ... 3325 3982 378 5 13 ...</p></blockquote>
+<blockquote><p>图 5.3 Wikipedia 语料库中四个词的共现向量，展示了其中六个维度（为教学目的手工挑选）。digital 的向量用红色勾勒。注意，真实的向量会有多得多的维度，因而稀疏得多，即在大多数维度上取值为零。</p></blockquote>
+<p>彼此之间更相似（pie 和 sugar 都倾向于出现在它们的窗口中），而不是与像 digital 这样的其他词更相似；反过来，digital 和 information 彼此之间也比它们与 strawberry 之类更相似。</p>
+<p>我们可以把某个词的向量看作 |V| 维空间中的一个点；因此</p>
+<p>图 5.3 中的词是 6 维空间中的点。图 5.4 展示了 2 维的空间可视化。</p>
+<table><tr><th></th><th>4000&lt;br&gt;information computer&lt;br&gt;3000 [3982,3325]&lt;br&gt;digital&lt;br&gt;2000 [1683,1670]&lt;br&gt;1000&lt;br&gt;1000 2000 3000 4000&lt;br&gt;data</th></tr><tr><td>图 5.4</td><td></td></tr></table>
+<blockquote><p>4000</p></blockquote>
+<blockquote><p>information</p></blockquote>
+<p>computer</p>
+<blockquote><p>3000 [3982,3325]</p></blockquote>
+<blockquote><p>digital</p></blockquote>
+<blockquote><p>2000 [1683,1670]</p></blockquote>
+<blockquote><p>1000</p></blockquote>
+<blockquote><p>1000 2000 3000 4000</p></blockquote>
+<p>data</p>
+<blockquote><p>图 5.4 digital 和 information 的词向量空间可视化，只展示了其中两个维度，分别对应于单词 data 和 computer。</p></blockquote>
+<p>注意，|V|（即向量的维度）通常是词汇表的大小，往往在 10,000 到 50,000 个词之间（使用训练语料库中最频繁出现的词；保留大约最频繁的 50,000 个之后的词通常没有帮助）。由于这些数字大多是零，因此它们是稀疏向量表示；存在高效的算法来存储稀疏矩阵并用其进行计算。</p>
+<p>也可以对这些计数应用各种类型的加权函数</p>
+<p>施加在这些单元格上。最流行的此类加权是 tf-idf，我们将在第 11 章介绍它，但历史上曾出现过各种各样的其他加权方式。</p>
+<p>既然我们已经有了一些直观认识，接下来就详细考察词相似度的计算。</p>
+<h2>5.4 用余弦度量相似度</h2>
+<p>要度量两个目标词 v 和 w 之间的相似度，我们需要一个度量：它接收两个向量（维度相同，要么都以词为维度，因而长度为 |V|，要么都以文档为维度，长度为 |D|），并给出它们相似程度的一个度量。迄今为止最常见的相似度度量是向量之间夹角的余弦。</p>
+<p>5.4 • 用余弦度量相似度 135</p>
+<p>余弦——如同 NLP 中使用的大多数向量相似度度量一样——基于</p>
+<p>线性代数中的点积算子，也称为内积：</p>
+<blockquote><p>点积</p></blockquote>
+<blockquote><p>内积</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<p>X</p>
+<p>dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN</p>
+<blockquote><p>(5.7)</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都很大时，点积往往也很大。反之，若两个向量在不同维度上取零——即正交向量——其点积为 0，表示它们高度不相似。</p>
+<p>然而，这种原始点积作为相似度度量存在一个问题：它偏爱</p>
+<p>长向量。向量长度的定义为</p>
+<blockquote><p>向量长度</p></blockquote>
+<p>v u</p>
+<blockquote><p>N</p></blockquote>
+<p>u t X</p>
+<p>v2</p>
+<blockquote><p>(5.8)</p></blockquote>
+<table><tr><th>v</th><th>=</th></tr></table>
+<blockquote><p>i</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>向量越长，各维度上的取值越大，点积就越高。</p>
+<p>更频繁出现的词具有更长的向量，因为它们倾向于与更多词共现，且与其中每个词的共现值都更高。因此，原始点积对高频词而言会更大。但这是一个问题；我们希望相似度度量能告诉我们两个词有多相似，而不受其词频影响。</p>
+<p>我们修改点积，通过将</p>
+<p>点积除以两个向量各自的长度，从而对向量长度做归一化。根据向量 a 与 b 之间点积的定义可知，这个归一化后的点积恰好等于两个向量夹角的余弦：</p>
+<p>a·b = |a||b|cosθ|a||b| = cosθ a·b</p>
+<blockquote><p>(5.9)</p></blockquote>
+<p>于是，两个向量 v 与 w 之间的余弦相似度度量可以计算为：</p>
+<blockquote><p>余弦</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<p>X</p>
+<p>viwi</p>
+<p>cosine(v,w) = v ·w</p>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>(5.10)</p></blockquote>
+<table><tr><th>v</th><th></th><th>w</th><th>= v u v u</th></tr></table>
+<blockquote><p>N N</p></blockquote>
+<p>u t X u t X</p>
+<p>v2 w2</p>
+<blockquote><p>i i</p></blockquote>
+<blockquote><p>i=1 i=1</p></blockquote>
+<p>对于某些应用，我们会预先对每个向量做归一化，即将其除以自身长度，得到一个长度为 1 的单位向量。于是我们可以由 a 通过</p>
+<blockquote><p>单位向量</p></blockquote>
+<p>将其除以 |a| 来计算单位向量。对于单位向量，点积与余弦相同。</p>
+<p>余弦值的范围从 1（向量指向同一方向），经过</p>
+<p>0（正交向量），到 -1（向量指向相反方向）。但由于原始频数取值非负，这些向量的余弦范围为 0–1。</p>
+<p>下面我们看看，余弦如何计算出 cherry 与 digital 这两个词中哪一个</p>
+<p>在含义上更接近 information，仅使用下面这张简化表中的原始计数：</p>
+<blockquote><p>pie data computer</p></blockquote>
+<blockquote><p>cherry 442 8 2 digital 5 1683 1670 information 5 3982 3325</p></blockquote>
+<p>136 第 5 章 • 嵌入</p>
+<p>442∗5+8∗3982+2∗3325</p>
+<p>cos(cherry,information) = √ 4422 +82 +22√ 52 +39822 +33252 = .018</p>
+<p>5∗5+1683∗3982+1670∗3325</p>
+<p>cos(digital,information) = √ 52 +16832 +16702√ 52 +39822 +33252 = .996</p>
+<p>模型判定 information 与 digital 的距离远比它与 cherry 的距离更近，这</p>
+<p>一结果看来是合理的。图 5.5 给出了可视化。</p>
+<blockquote><p>维度 1：“pie”</p></blockquote>
+<blockquote><p>500 cherry</p></blockquote>
+<blockquote><p>digital information</p></blockquote>
+<blockquote><p>500 1000 1500 2000 2500 3000</p></blockquote>
+<blockquote><p>维度 2：“computer”</p></blockquote>
+<blockquote><p>图 5.5 余弦相似度的一个（粗略）图形演示，展示了三个词（cherry、digital 和 information）在以邻近词 computer 与 pie 的计数所定义的二维空间中的向量。图中并未显示余弦值，而是突出了夹角；注意 digital 与 information 之间的夹角小于 cherry 与 information 之间的夹角。两个向量越相似，余弦值越大而夹角越小；当两个向量之间的夹角最小（0◦）时，余弦值达到最大（1）；其他所有角度的余弦值都小于 1。</p></blockquote>
+<p>余弦相似度可用于估计词相似度，以完成诸如查找</p>
+<p>词的释义、追踪词义变化，或在不同语料库中自动发现词语含义之类的任务。例如，我们可以计算 w 与其余 |V|−1 个词各自之间的余弦值，排序后取前 10 名，从而找出与任意目标词 w 最相似的 10 个词。</p>
+<h2>5.5 Word2vec</h2>
+<p>在前几节中，我们看到了如何把一个词表示为稀疏的长向量，其维度对应于词表中的词。现在我们引入一种更强大的词表示：嵌入（embedding），即短而稠密的向量。与目前所见过的向量不同，嵌入很短，其维度数 d 在 50 到 1000 之间，而不是大得多的词表大小 |V|。这 d 个维度并没有明确的解释。而且这些向量是稠密的：向量元素不再是稀疏的、大多为零的计数或计数的函数，取而代之的可以是取负值的实数值。</p>
+<p>事实证明，在每一项 NLP 任务中，稠密向量都比稀疏向量表现更好。</p>
+<p>尽管我们并不完全理解其中的所有原因，但对此有一些直觉。把词表示为 300 维稠密向量时，分类器需要学习的权重数量远少于把词表示为 50,000 维向量时的情形，而更小的参数空间可能有助于泛化和避免过拟合。稠密向量在捕捉同义关系方面也可能做得更好。例如，在稀疏向量表示中，car 和 5.5 • WORD2VEC 137 automobile 这类同义词的维度各不相同且互不相关；因此稀疏向量可能无法捕捉到以 car 为邻近词的词与以 automobile 为邻近词的词之间的相似性。</p>
+<p>本节介绍一种计算嵌入的方法：skip-gram</p>
+<blockquote><p>skip-gram</p></blockquote>
+<p>带负采样，有时称为 SGNS。skip-gram 算法是</p>
+<blockquote><p>SGNS</p></blockquote>
+<p>名为 word2vec 的软件包中两种算法之一，因此有时该</p>
+<blockquote><p>word2vec</p></blockquote>
+<p>算法被宽泛地称作 word2vec（Mikolov et al. 2013a，Mikolov et al. 2013b）。word2vec 方法速度快、训练效率高，并且可以在网上方便地获取代码和预训练嵌入。Word2vec 嵌入是静态嵌入，即该方法为</p>
+<blockquote><p>静态</p></blockquote>
+<blockquote><p>嵌入</p></blockquote>
+<p>词表中的每个词学习一个固定的嵌入。第 9 章将介绍学习动态上下文嵌入的方法，例如广受欢迎的 BERT 表示系列，其中每个词的向量在不同上下文中各不相同。</p>
+<p>word2vec 的基本思路是：我们不去统计每个上下文</p>
+<p>词 c 在比如 apricot 附近的出现频率，而是改为在一个二分类预测任务上训练分类器：“词 c 是否可能出现在 apricot 附近？”我们其实并不关心这个预测任务本身，而是把学到的分类器权重作为词嵌入。</p>
+<p>这里具有革命性的洞见在于，我们可以直接把连续文本用作隐含的</p>
+<p>监督训练数据来训练这样的分类器；出现在目标词 apricot 附近的词 c 就充当问题“词 c 是否可能出现在 apricot 附近？”的黄金“正确答案”。这种方法通常称为自监督，它避免了</p>
+<blockquote><p>自监督</p></blockquote>
+<p>任何形式的人工标注监督信号。这一思想最初是在神经语言建模任务中提出的，当时 Bengio 等人（2003）和 Collobert 等人（2011）表明，神经语言模型（一种从前面若干个词学习预测下一个词的神经网络）可以直接把连续文本中的下一个词作为其监督信号，并且可以在完成这一预测任务的过程中为每个词学习一种嵌入表示。</p>
+<p>我们将在下一章看到如何实现神经网络，但 word2vec 是一个</p>
+<p>比神经网络语言模型简单得多的模型，体现在两个方面。第一，word2vec 简化了任务（把它变成二分类而不是词预测）。第二，word2vec 简化了架构（训练一个逻辑回归分类器，而不是带隐藏层、需要更复杂训练算法的多层神经网络）。skip-gram 的思路是：</p>
+<ul><li>把目标词及其邻近的上下文词当作正例。</li><li>从词库中随机抽取其他词作为负例样本。</li><li>用逻辑回归训练一个分类器来区分这两种情况。</li><li>把学到的权重用作嵌入。</li></ul>
+<h3>5.5.1 分类器</h3>
+<p>我们先从分类任务谈起，然后再讨论如何训练。</p>
+<p>设想下面这样一个句子，目标词为 apricot，并假设我们使用 ±2 个上下文词的窗口：</p>
+<blockquote><p>……柠檬、一[汤匙杏子酱、一]撮……</p></blockquote>
+<blockquote><p>c1 c2 w c3 c4</p></blockquote>
+<p>我们的目标是训练一个分类器，使其在给定由目标词</p>
+<p>w 与候选上下文词 c 组成的元组（例如 (apricot, jam)，或者也可能是 138 第 5 章 • 嵌入 (apricot, aardvark)）时，返回 c 是真实上下文词的概率（对 jam 为真，对 aardvark 为假）：</p>
+<p>P(+|w,c) (5.11)</p>
+<p>词 c 不是 w 的真实上下文词的概率，就是 1 减去</p>
+<p>式 5.11：</p>
+<p>P(−|w,c) = 1−P(+|w,c) (5.12)</p>
+<p>分类器如何计算概率 P？skip-gram 模型的直觉是让这一概率建立在嵌入相似度之上：如果某个词的嵌入向量与目标词的嵌入向量相似，它就更有可能出现在目标词附近。为了计算这些稠密嵌入之间的相似度，我们依据这样一个直觉：两个向量的点积大，就说明它们相似（毕竟余弦只是归一化的点积）。换句话说：</p>
+<p>Similarity(w,c) ≈c·w</p>
+<blockquote><p>(5.13)</p></blockquote>
+<p>点积 c · w 不是概率，它只是一个取值范围从 −∞ 到 ∞ 的数（由于 word2vec 嵌入中的元素可以为负，点积也可以为负）。要把点积转化为概率，我们使用 logistic 函数或称 sigmoid 函数 σ(x)，它是逻辑回归最根本的核心：</p>
+<p>1</p>
+<p>σ(x) =</p>
+<blockquote><p>(5.14)</p></blockquote>
+<p>1+exp(−x)</p>
+<p>我们把词 c 是目标词 w 的真实上下文词的概率建模为：</p>
+<p>1</p>
+<p>P(+|w,c) = σ(c·w) =</p>
+<blockquote><p>(5.15)</p></blockquote>
+<p>1+exp(−c·w)</p>
+<p>sigmoid 函数返回一个 0 到 1 之间的数，但要让它成为一个概率，我们还需要两个可能事件（c 是上下文词，以及 c 不是上下文词）的概率之和为 1。因此，我们把词 c 不是 w 的真实上下文词的概率估计为：</p>
+<p>P(−|w,c) = 1−P(+|w,c)</p>
+<p>1</p>
+<blockquote><p>(5.16)</p></blockquote>
+<p>= σ(−c·w) = 1+exp(c·w)</p>
+<p>式 5.15 给出了一个词的概率，但窗口中还有很多上下文词。Skip-gram 做出了一个简化假设：所有上下文词都是相互独立的，这使我们能够直接把它们的概率相乘：</p>
+<blockquote><p>L</p></blockquote>
+<p>Y</p>
+<p>P(+|w,c1:L) =</p>
+<blockquote><p>(5.17)</p></blockquote>
+<p>σ(ci ·w)</p>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>L</p></blockquote>
+<p>X</p>
+<p>logP(+|w,c1:L) = logσ(ci ·w)</p>
+<blockquote><p>(5.18)</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>总之，skip-gram 训练一个概率分类器：给定测试目标词 w 及其包含 L 个词的上下文窗口 c1:L，该分类器根据这个上下文窗口与目标词的相似程度赋予一个概率。该概率基于将 5.5 • WORD2VEC 139</p>
+<table><tr><th>1..d&lt;br&gt;aardvark 1&lt;br&gt;apricot&lt;br&gt;W 目标词&lt;br&gt;… …&lt;br&gt;𝜽 = zebra \</th><th>V\</th><th>&lt;br&gt;aardvark \</th><th>V\</th><th>+1&lt;br&gt;apricot&lt;br&gt;C 上下文与噪声&lt;br&gt;… … 词&lt;br&gt;zebra 2\</th><th>V\</th><th></th><th></th></tr><tr><td>图 5.6</td><td>由 skip-gram 模型学习得到的嵌入。该算法存储两个嵌—</td></tr></table>
+<blockquote><p>1..d</p></blockquote>
+<blockquote><p>aardvark 1</p></blockquote>
+<blockquote><p>apricot</p></blockquote>
+<h3>𝜽 =</h3>
+<p>W 目标词</p>
+<blockquote><p>… …</p></blockquote>
+<blockquote><p>zebra |V|</p></blockquote>
+<blockquote><p>aardvark |V|+1</p></blockquote>
+<blockquote><p>apricot</p></blockquote>
+<p>C 上下文与噪声</p>
+<blockquote><p>… …</p></blockquote>
+<p>词</p>
+<blockquote><p>zebra 2|V|</p></blockquote>
+<blockquote><p>每个词的两个嵌入：目标嵌入（有时称为输入嵌入）和上下文嵌入（有时称为输出嵌入）。因此，算法学习到的参数 θ 是一个由 2|V| 个向量构成的矩阵，每个向量的维度为 d，由两个矩阵拼接而成，即目标嵌入 W 和上下文+噪声嵌入 C。</p></blockquote>
+<p>logistic（sigmoid）函数应用于目标词嵌入与每个上下文词嵌入的点积。要计算该概率，我们只需要词汇表中每个目标词和上下文词的嵌入。</p>
+<p>图 5.6 展示了我们所需参数的直观含义。skip-gram 实际上</p>
+<p>为每个词存储两个嵌入：一个用于该词作为目标词的情形，另一个用于该词被视作上下文的情形。因此，我们需要学习的参数是两个矩阵 W 和 C，每个矩阵都包含词汇表 V 中 |V| 个词各自的嵌入。2 现在让我们转向学习这些嵌入（这本来就是训练该分类器的真正目标）。</p>
+<h3>5.5.2 学习 skip-gram 嵌入</h3>
+<p>skip-gram 嵌入的学习算法以文本语料库和选定的词汇表规模 N 作为输入。它首先为 N 个词汇表中的每个词随机分配一个嵌入向量，然后迭代地调整每个词 w 的嵌入，使其更接近文本中出现在附近的词的嵌入，而不那么接近未出现在附近的词的嵌入。让我们先来看一条训练数据：</p>
+<blockquote><p>... lemon, a [tablespoon of apricot jam, a] pinch ...</p></blockquote>
+<blockquote><p>c1 c2 w c3 c4</p></blockquote>
+<p>该示例有一个目标词 w（apricot），以及 L = ±2</p>
+<p>窗口中的 4 个上下文词，由此得到 4 个正训练实例（见下左）：</p>
+<p>正例 + 负例 w cpos w cneg w cneg apricot tablespoon apricot aardvark apricot seven apricot of apricot my apricot forever apricot jam apricot where apricot dear apricot a apricot coaxial apricot if</p>
+<blockquote><p>2</p></blockquote>
+<blockquote><p>原则上，目标矩阵和上下文矩阵可以使用不同的词汇表，但我们简化处理，假设共用一个词汇表 V。</p></blockquote>
+<p>140 第 5 章 • 嵌入</p>
+<p>训练二分类器还需要负例。事实上，带负采样的 skip-gram（skipgram with negative sampling，SGNS）使用的负例多于正例（两者之间的比例由参数 k 设定）。因此，对于每个 (w,cpos) 训练实例，我们会创建 k 个负样本，每个负样本由目标 w 加上一个“噪声词”cneg 组成。噪声词是从词表中随机抽取的词，并被约束为不能是目标词 w。正上方的表格展示了 k = 2 的设置，因此对于每个正例 w,cpos，我们在负训练集中会有 2 个负例。</p>
+<p>噪声词根据其加权一元概率来选取</p>
+<p>pα(w)，其中 α 是权重。如果我们按照未加权的概率 P(w) 采样，那就意味着会以一元概率 P(“the”) 选取词 the 作为噪声词，以一元概率 P(“aardvark”) 选取 aardvark，依此类推。但在实践中通常设定 α = 0.75，即使用加权 P3 4 (w)：</p>
+<p>count(w)α</p>
+<p>Pα(w) = P</p>
+<blockquote><p>(5.19)</p></blockquote>
+<p>w′ count(w′)α</p>
+<p>设定 α = .75 能获得更好的性能，因为它给稀有的噪声词略高的概率：对于稀有词，Pα(w) &gt; P(w)。为说明这一直观理解，不妨计算一个例子中的概率，其中 α = .75 且有两个事件，P(a) = 0.99，P(b) = 0.01：</p>
+<p>.99.75</p>
+<p>Pα(a) = .99.75 +.01.75 = 0.97</p>
+<p>.01.75</p>
+<p>Pα(b) = .99.75 +.01.75 = 0.03</p>
+<blockquote><p>(5.20)</p></blockquote>
+<p>因此，使用 α = .75 会把稀有事件 b 的概率从 0.01 提高到 0.03。</p>
+<p>给定正、负训练实例的集合，以及一组初始的</p>
+<p>嵌入向量，学习算法的目标是调整这些嵌入向量，以</p>
+<ul><li>最大化取自正例的目标词、上下文词对 (w,cpos) 的相似度</li><li>最小化取自负例的 (w,cneg) 词对的相似度。</li></ul>
+<p>若考虑一个词/上下文词对 (w,cpos) 及其 k 个噪声词 cneg1...cnegk，</p>
+<p>我们可以把这两个目标表示为如下待最小化的损失函数 L（故带有 − 号）；其中第一项表示我们希望分类器给真实上下文词 cpos 赋予较高的成为邻居的概率，第二项表示我们希望给每个噪声词 cnegi 赋予较高的不成为邻居的概率，二者相乘是因为我们假定它们相互独立：</p>
+<p>&quot; kY #</p>
+<p>L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi)</p>
+<blockquote><p>i=1</p></blockquote>
+<p>&quot; #</p>
+<blockquote><p>k</p></blockquote>
+<p>X</p>
+<p>= − logP(+|w,cpos)+ logP(−|w,cnegi)</p>
+<blockquote><p>i=1</p></blockquote>
+<p>&quot; #</p>
+<blockquote><p>k</p></blockquote>
+<p>X   </p>
+<p>= − logP(+|w,cpos)+ log 1−P(+|w,cnegi)</p>
+<blockquote><p>i=1</p></blockquote>
+<p>&quot; #</p>
+<blockquote><p>k</p></blockquote>
+<p>X</p>
+<p>logσ(cpos ·w)+ logσ(−cnegi ·w)</p>
+<blockquote><p>(5.21)</p></blockquote>
+<p>= −</p>
+<blockquote><p>i=1</p></blockquote>
+<p>5.5 • WORD2VEC 141</p>
+<p>也就是说，我们希望最大化该词与真实上下文词的点积，并最小化该词与 k 个负采样的非邻居词的点积。</p>
+<p>我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了</p>
+<p>一步学习的直观含义。</p>
+<table><tr><th>aardvark&lt;br&gt;使 apricot 与 jam 靠近，&lt;br&gt;apricot w 增大 c pos z w&lt;br&gt;W&lt;br&gt;“…apricot jam…”&lt;br&gt;zebra&lt;br&gt;!&lt;br&gt;aardvark&lt;br&gt;使 apricot 与 matrix 远离&lt;br&gt;减小 c z w&lt;br&gt;jam c neg1&lt;br&gt;pos&lt;br&gt;C&lt;br&gt;matrix c neg1&lt;br&gt;k=2&lt;br&gt;Tolstoy c neg2 使 apricot 与 Tolstoy 远离&lt;br&gt;减小 c z w&lt;br&gt;neg2&lt;br&gt;zebra</th><th></th></tr><tr><td>图 5.7</td><td>梯度下降一步的直观含义。skip-gram 模型试图移动嵌-</td></tr></table>
+<blockquote><p>aardvark</p></blockquote>
+<table><tr><th>aardvark&lt;br&gt;apricot&lt;br&gt;W&lt;br&gt;zebra&lt;br&gt;!&lt;br&gt;aardvark&lt;br&gt;jam&lt;br&gt;C&lt;br&gt;matrix&lt;br&gt;k=2&lt;br&gt;Tolstoy&lt;br&gt;zebra</th><th></th><th></th><th></th><th>使 apricot 与 jam 靠近，&lt;br&gt;w 增大 c pos z w&lt;br&gt;“…apricot jam…”&lt;br&gt;使 apricot 与 matrix 远离&lt;br&gt;减小 c z w&lt;br&gt;c neg1&lt;br&gt;pos&lt;br&gt;c&lt;br&gt;neg1&lt;br&gt;c 使 apricot 与 Tolstoy 远离&lt;br&gt;neg2&lt;br&gt;减小 c z w&lt;br&gt;neg2</th></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td>apricot</td><td></td><td></td><td>w</td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td>jam</td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>c&lt;br&gt;neg1</td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td>Tolstoy</td><td></td><td></td><td>c&lt;br&gt;neg2</td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></table>
+<blockquote><p>使 apricot 与 jam 靠近，</p></blockquote>
+<blockquote><p>apricot w 增大 cpos z w</p></blockquote>
+<h3>W</h3>
+<p>“…apricot jam…”</p>
+<blockquote><p>zebra</p></blockquote>
+<blockquote><p>aardvark 使 apricot 与 matrix 相互远离</p></blockquote>
+<blockquote><p>jam cpos 递减 cneg1 z w</p></blockquote>
+<h3>C</h3>
+<blockquote><p>matrix cneg1</p></blockquote>
+<blockquote><p>k=2</p></blockquote>
+<blockquote><p>Tolstoy cneg2 使 apricot 与 Tolstoy 相互远离</p></blockquote>
+<blockquote><p>递减 cneg2 z w</p></blockquote>
+<blockquote><p>zebra</p></blockquote>
+<blockquote><p>嵌入，因此目标嵌入（此处为 apricot）与附近单词（此处为 jam）的上下文嵌入更接近（点积更大），而与不在附近出现的噪声词（此处为 Tolstoy 和 matrix）的上下文嵌入更远（点积更小）。</p></blockquote>
+<p>为了求梯度，我们需要对式 5.21 求关于</p>
+<p>不同嵌入的导数。结果表明导数如下（我们将证明留作本章末尾的练习）：</p>
+<p>∂L</p>
+<p>= [σ(cpos ·w)−1]w</p>
+<blockquote><p>(5.22)</p></blockquote>
+<p>∂cpos∂L</p>
+<blockquote><p>(5.23)</p></blockquote>
+<p>∂cnegi = [σ(cnegi ·w)]w</p>
+<blockquote><p>k</p></blockquote>
+<p>∂L X∂w = [σ(cpos ·w)−1]cpos +</p>
+<blockquote><p>(5.24)</p></blockquote>
+<p>[σ(cnegi ·w)]cnegi</p>
+<blockquote><p>i=1</p></blockquote>
+<p>因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程为：</p>
+<p>ct+1 = ct pos −η[σ(ct pos ·wt)−1]wt</p>
+<blockquote><p>(5.25)</p></blockquote>
+<blockquote><p>pos</p></blockquote>
+<p>ct+1 negi = ct negi −η[σ(ct negi ·wt)]wt</p>
+<blockquote><p>(5.26)</p></blockquote>
+<p>&quot; #</p>
+<blockquote><p>k</p></blockquote>
+<p>wt+1 = wt −η X</p>
+<p>[σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct</p>
+<blockquote><p>(5.27)</p></blockquote>
+<p>pos +</p>
+<blockquote><p>negi</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>因此，与逻辑回归一样，学习算法从随机初始化的 W 和 C 矩阵开始，然后遍历训练语料，利用梯度下降移动 W 和 C，通过执行（式 5.25）—（式 5.27）中的更新来最小化式 5.21 中的损失。</p>
+<p>142 第 5 章 • 嵌入</p>
+<p>回想一下，skip-gram 模型为每个单词 i 学习两个独立的嵌入：</p>
+<blockquote><p>目标</p></blockquote>
+<p>目标嵌入 wi 与上下文嵌入 ci，它们存储在两个矩阵中，即</p>
+<blockquote><p>上下文嵌入</p></blockquote>
+<p>目标矩阵 W 和上下文矩阵 C。通常的做法是把它们直接相加，</p>
+<blockquote><p>嵌入</p></blockquote>
+<p>用向量 wi + ci 表示词 i。另一种做法是丢弃 C 矩阵，只用一个向量 wi 来表示每个词 i。</p>
+<p>与 tf-idf 这类简单的基于计数的方法一样，上下文窗口大小</p>
+<p>会影响 skip-gram 嵌入的性能，实验中常常在开发集上调整上下文窗口大小这个参数。</p>
+<h3>5.5.3 其他类型的静态嵌入</h3>
+<p>静态嵌入有很多种。作为 word2vec 的一种扩展，fasttext</p>
+<blockquote><p>fasttext</p></blockquote>
+<p>（Bojanowski 等，2017）解决了我们目前所介绍的 word2vec 存在的一个问题：它没有好的办法处理未知词——即出现在测试语料中、却在训练语料中未见过的词。与之相关的一个问题是词稀疏，例如在形态丰富的语言中，每个名词和动词的众多形式中有些可能只是偶尔出现。fasttext 通过使用子词模型来处理这些问题，它把每个词表示为该词自身再加上一组构成它的 n-gram，并为每个词添加特殊的边界符号 &lt; 和 &gt;。例如，当 n = 3 时，单词 where 会被表示为序列 &lt;where&gt; 再加上字符 n-gram：</p>
+<p>&lt;wh, whe, her, ere, re&gt;</p>
+<p>然后为每个构成它的 n-gram 学习一个 skipgram 嵌入，单词 where 就由它的各个构成 n-gram 的嵌入之和来表示。</p>
+<p>这样，未知词就只能由其构成 n-gram 的嵌入之和来表示。</p>
+<p>fasttext 开源库（其中包含 157 种语言的预训练嵌入）可在 https://fasttext.cc 获取。</p>
+<p>另一个应用非常广泛的静态嵌入模型是 GloVe（Pennington 等，</p>
+<p>2014），它是 Global Vectors 的缩写，因为该模型基于对全局语料统计量的捕捉。GloVe 基于词—词共现矩阵中概率的比值。</p>
+<p>事实证明，像 word2vec 这样的稠密嵌入与基于计数的嵌入之间实际上存在一种优雅的数学关系，其中 word2vec 可以被看作是隐式地优化一个带有特定（PPMI）加权的计数矩阵函数（Levy and Goldberg, 2014c）。</p>
+<h2>5.6 嵌入的可视化</h2>
+<p>“只要维度在二维左右，我在很多个维度上都看得很清楚。”</p>
+<blockquote><p>已故经济学家马丁·舒比克（Martin Shubik）</p></blockquote>
+<p>可视化嵌入是帮助理解、应用和</p>
+<p>改进这些词义模型的一个重要目标。但我们怎样可视化一个（例如）100 维的向量呢？</p>
+<p>可视化一个词的含义最简单的方法，</p>
+<blockquote><p>手腕 脚踝</p></blockquote>
+<p>就是列出与嵌入在空间中的 w 最相似的词，</p>
+<blockquote><p>手臂 肩膀</p></blockquote>
+<p>做法是把词汇表中所有词的向量，按它们与 w 的向量</p>
+<blockquote><p>腿 手 脚</p></blockquote>
+<p>的余弦值排序。例如，与 frog 最接近的 7 个</p>
+<blockquote><p>头 鼻子</p></blockquote>
+<p>词（使用某一组特定的嵌入计算得到）</p>
+<blockquote><p>手指 脚趾 脸 耳朵 眼睛 牙齿 狗 猫</p></blockquote>
+<blockquote><p>幼犬 小猫 老鼠 奶牛</p></blockquote>
+<blockquote><p>乌龟 牡蛎 公牛 狮子 芝加哥 亚特兰大</p></blockquote>
+<p>5.7 • 嵌入的语义特性 143</p>
+<p>使用 GloVe 算法计算时，最接近的词是：frogs、toad、litoria、leptodactylidae、rana、lizard 和 eleutherodactylus（Pennington 等，2014）。</p>
+<p>还有一种可视化方法是使用聚类</p>
+<p>算法，以分层的方式展示嵌入空间中哪些词与哪些词相似。左图把一些名词的嵌入向量的层次聚类作为一种可视化方法（Rohde 等，2006）。</p>
+<p>不过，最常见的可视化方法大概是把单词的 100 个维度投影到 2 维空间。图 5.1 展示了这样一种可视化，图 5.10 也是如此，它使用的投影方法叫作 t-SNE（van der</p>
+<p>Maaten and Hinton, 2008）。</p>
+<h2>5.7 嵌入的语义性质</h2>
+<p>本节简要概括已有研究考察过的嵌入的一些语义性质。</p>
+<p>不同类型相似性或关联：向量语义模型的一个参数是用于收集计数的上下文窗口大小。它通常是目标词每一侧 1 到 10 个词（总计 2-20 个词的上下文）。</p>
+<p>这一选择取决于表示的目标。较短的上下文窗口</p>
+<p>往往会产生语法性稍强的表示，因为信息来自紧邻的词。当向量由短上下文窗口计算得到时，与目标词 w 最相似的词往往是词性相同的语义相似词。当向量由长上下文窗口计算得到时，与目标词 w 余弦相似度最高的词往往是主题相关但并不相似的词。</p>
+<p>例如，Levy and Goldberg（2014a）表明，使用窗口为</p>
+<p>±2 的 skip-gram 时，与单词 Hogwarts（来自《哈利·波特》系列）最相似的词是其他虚构学校的名称：Sunnydale（来自《吸血鬼猎人巴菲》）或 Evernight（来自一部吸血鬼系列）。窗口为 ±5 时，与 Hogwarts 最相似的词是与《哈利·波特》系列主题相关的其他词：Dumbledore、Malfoy 和 half-blood。</p>
+<p>区分以下两种相似性或关联往往也很有用</p>
+<blockquote><p>一阶</p></blockquote>
+<p>词（Sch¨utze and Pedersen, 1993）。两个词具有一阶共现</p>
+<blockquote><p>共现</p></blockquote>
+<p>（有时称为组合关系关联），如果它们通常彼此邻近出现。</p>
+<p>因此，wrote 是 book 或 poem 的一阶关联词。两个词具有二阶</p>
+<blockquote><p>二阶</p></blockquote>
+<p>共现（有时称为聚合关系关联），如果它们具有相似的</p>
+<blockquote><p>共现</p></blockquote>
+<p>邻居。因此，wrote 是 said 或 remarked 这类词的二阶关联词。</p>
+<p>类比／关系相似性：嵌入的另一项语义性质是它们捕捉关系含义的能力。在一个重要的早期向量空间</p>
+<blockquote><p>平行四边形</p></blockquote>
+<p>认知模型中，Rumelhart and Abrahamson（1973）提出了平行四边形模型</p>
+<blockquote><p>模型</p></blockquote>
+<p>用于求解形如「a 之于 b 如同 a* 之于什么？」的简单类比问题。在此类问题中，系统会拿到像 apple:tree::grape:? 这样的问题，即 apple 之于 tree 如同 grape 之于 ____，并且必须填入单词 vine。在平行四边形模型中，如第 144 页第 5 章 • 嵌入 图 5.8 所示，从单词 apple 到单词 tree 的向量（= # » tree−# » apple）被加到 grape 的向量（# » grape）上；返回离该点最近的单词。</p>
+<table><tr><th>tree&lt;br&gt;apple&lt;br&gt;vine&lt;br&gt;grape</th><th></th></tr><tr><td>图 5.8</td><td>类比问题的平行四边形模型（Rumelhart and Abrahamson,</td></tr></table>
+<p>tree</p>
+<p>apple</p>
+<p>vine</p>
+<p>grape</p>
+<blockquote><p>1973）：从 # » tree 中减去 # » apple 再加上 # » grape，即可得到 # » vine 的位置。</p></blockquote>
+<p>在稀疏嵌入的早期研究中，学者们表明稀疏的语义向量模型也能求解这类类比问题（Turney and Littman, 2005），但平行四边形方法因在 word2vec 或 GloVe 向量上取得成功而获得了更现代的关注（Mikolov et al. 2013c, Levy and Goldberg 2014b, Pennington et al. 2014）。例如，表达式 # » king −man + # » # » woman 的结果是一个接近 # » queen 的向量。类似地，# » Paris −# » France + # » Italy 得到的向量接近 # » Rome。因此，嵌入模型似乎提取出了诸如 男性-女性、首都-所属国家，甚至 比较级／最高级 之类关系的表示，如图 5.9 中来自 GloVe 的结果所示。</p>
+<table><tr><th>(a) (b)</th><th></th></tr><tr><td>图 5.9</td><td>GloVe 向量空间的关系性质，通过把向量投影到两个维度上展示。</td></tr></table>
+<img src="../md/images/img_358.png" alt="">
+<img src="../md/images/img_347.png" alt="">
+<p>(a) (b)</p>
+<blockquote><p>（a）# » king−# » man+ # » woman 接近 # » queen。（b）偏移量似乎捕捉到了比较级和最高级的形态信息（Pennington et al., 2014）。</p></blockquote>
+<p>对于 a : b :: a∗: b∗ 问题，即算法给定向量 a、b 与</p>
+<p>a∗，并且必须找出 b∗，平行四边形方法如下：</p>
+<p>ˆb∗= argmin distance(x,b−a+a∗)</p>
+<blockquote><p>(5.28)</p></blockquote>
+<blockquote><p>x</p></blockquote>
+<p>其中 distance 是某种距离函数，例如欧氏距离。</p>
+<p>这里有一些需要注意的地方。例如，word2vec 或 GloVe 嵌入空间中的平行四边形算法返回的最接近值，通常实际上并不是 5.8 • 偏见与嵌入 145 b*，而是 3 个输入词之一或它们的形态变体（即 cherry:red :: potato:x 返回的是 potato 或 potatoes，而不是 brown），因此必须显式地将它们排除。此外，如果任务涉及高频词、较小的距离以及某些特定关系（如把国家与其首都联系起来，或把动词/名词与它们的屈折形式联系起来），嵌入空间的表现很好，但对其他关系而言，基于嵌入的平行四边形方法效果就不那么好了（Linzen 2016, Gladkova et al. 2016, Schluter 2018, Ethayarajh et al. 2019a）；事实上 Peterson et al.（2020）认为，平行四边形方法总体上过于简单，无法建模人类形成这类类比时的认知过程。</p>
+<h3>5.7.1 嵌入与历史语义学</h3>
+<p>嵌入也可以成为研究意义如何随时间变化的有用工具，方法是计算多个嵌入空间，每个嵌入空间都来自某一特定时期写成的文本。例如，图 5.10 展示了英语词汇在过去两个世纪中的意义变化可视化，它是通过为每一个十年分别构建嵌入空间计算得到的，所用的历史语料包括 Google n-grams（Lin et al., 2012b）和美国历史英语语料库（Corpus of Historical American English，Davies, 2012）。</p>
+<table><tr><th></th><th></th></tr><tr><td>图 5.10</td><td>对英语中 3 个词的语义变化进行的 t-SNE 可视化，使用的是</td></tr></table>
+<img src="../md/images/img_392.png" alt="">
+<blockquote><p>word2vec 向量。每个词的现代含义以及灰色的上下文词，都是从最近（现代）时间点的嵌入空间计算得到的；更早的点则由更早的历史嵌入空间计算得到。这些可视化展示了 gay 一词从与“cheerful（快活）”或“frolicsome（嬉闹）”相关的含义转变为指代同性恋，broadcast 现代的“播送”义从其原本“播种”义发展而来，以及 awful 一词的语义贬降——它从意为“full of awe（充满敬畏）”转变为意为“terrible or appalling（可怕或骇人）”（Hamilton et al., 2016b）。</p></blockquote>
+<h2>5.8 偏见与嵌入</h2>
+<p>除了能够从文本中学习词义之外，遗憾的是，嵌入还会重现文本中潜藏的隐性偏见与刻板印象。正如上一节所示，嵌入可以粗略地建模关系相似性：与‘king’ - ‘man’ + ‘woman’ 最接近的词是‘queen’，这蕴含着类比 man:woman::king:queen。但同样的嵌入类比也表现出性别刻板印象。例如，Bolukbasi et al.（2016）发现，在基于新闻文本训练的 word2vec 嵌入中，与‘computer programmer’ - ‘man’ + ‘woman’ 最接近的职业是‘homemaker’，并且嵌入同样暗示了“‘father’之于‘doctor’相当于‘mother’之于‘nurse’”这一类比。这可能造成 Crawford</p>
+<blockquote><p>分配性</p></blockquote>
+<p>（2017）和 Blodgett et al.（2020）所称的分配性伤害，即当一个系统分</p>
+<blockquote><p>伤害</p></blockquote>
+<p>146 第 5 章 • 词嵌入</p>
+<p>配资源（工作或信贷）时不公平地分给不同群体。例如，那些把嵌入作为筛选潜在程序员或医生招聘手段的一部分的算法，就可能因此错误地降低含有女性姓名的文档的权重。</p>
+<p>事实证明，嵌入不仅反映其输入的统计特性，还会</p>
+<blockquote><p>偏见</p></blockquote>
+<p>放大偏见；带有性别色彩的词在嵌入空间中变得比它们</p>
+<blockquote><p>放大</p></blockquote>
+<p>在输入文本的统计中更具性别色彩（Zhao et al. 2017, Ethayarajh et al. 2019b, Jia et al. 2020），并且这些偏见比实际劳动力就业统计中的情况更为夸张（Garg et al., 2018）。</p>
+<p>嵌入还编码了隐含联想，而这是人类</p>
+<p>推理的一种特性。内隐联想测验（Implicit Association Test，Greenwald et al., 1998）通过测量人们对各类别词汇进行标注时的反应延迟差异，来衡量人们对概念（如‘flowers’或‘insects’）与属性（如‘pleasantness’和‘unpleasantness’）之间的联想。3 使用这类方法，美国境内的人被证明会把非裔美国人的名字与不愉悦的词联系起来（强于对欧裔美国人名字的联想），把男性名字更多地与数学联系起来、把女性名字与艺术联系起来，并把老年人的名字与不愉悦的词联系起来（Greenwald et al. 1998, Nosek et al. 2002a, Nosek et al. 2002b）。Caliskan et al.（2017）用 GloVe 向量和余弦相似度代替人类的反应延迟，复现了所有这些内隐联想的发现。例如，像‘Leroy’和‘Shaniqua’这样的非裔美国人名字与不愉悦词的 GloVe 余弦相似度更高，而欧裔美国人名字（‘Brad’、‘Greg’、‘Courtney’）与愉悦词的余弦相似度更高。这些与嵌入有关的问题正是代表性伤害的一个例子（Crawford 2017, Blodgett et al. 2020），它是由</p>
+<blockquote><p>代表性</p></blockquote>
+<blockquote><p>伤害</p></blockquote>
+<p>系统贬低甚至忽视某些社会群体而造成的伤害。因此，任何使用了词语情感倾向、能够感知嵌入的算法，都可能加剧对非裔美国人的偏见。</p>
+<p>近期研究聚焦于设法去除这类偏见的方法，例如</p>
+<p>通过设计一种对嵌入空间的变换，去除性别刻板印象但保留与定义相关的性别信息（Bolukbasi et al. 2016, Zhao et al. 2017），或者改变训练过程（Zhao et al., 2018b）。然而，尽管这类去偏可能减少嵌入中的偏见，但并不能消除它</p>
+<blockquote><p>去偏</p></blockquote>
+<p>（Gonen and Goldberg, 2019），这仍是一个未解决的问题。</p>
+<p>历史嵌入也被用来衡量过去的偏见。Garg</p>
+<p>et al.（2018）使用来自历史文本的嵌入，衡量整个 20 世纪中职业的嵌入与各种族裔或性别的名字的嵌入之间的关联（例如女性名字相对于男性名字与‘librarian’或‘carpenter’这类职业词之间的余弦相似度）。</p>
+<p>他们发现，这些余弦相似度与那些职业中女性或族裔群体在历史上的实际百分比相关。历史嵌入还复现了早期关于族裔刻板印象的调查：1933 年的实验参与者倾向于把‘industrious（勤勉）’或‘superstitious（迷信）’这类形容词与例如华裔联系起来，这种倾向与使用 1930 年代文本训练的嵌入中中文姓氏与这些形容词之间的余弦相似度相关。他们还能够记录历史上的性别偏见，例如与能力相关的形容词（‘smart’、‘wise’、‘thoughtful’、‘resourceful’）的嵌入与男性词的余弦相似度高于与女性词的余弦相似度，并表明这种偏见自 1960 年以来一直在缓慢减弱。我们</p>
+<blockquote><p>3</p></blockquote>
+<blockquote><p>粗略地说，如果人类把‘flowers’与‘pleasantness’联系起来、把‘insects’与‘unpleasantness’联系起来，那么当他们被要求为‘flowers’（daisy、iris、lilac）和‘pleasant words’（love、laughter、pleasure）按绿色按钮、为‘insects’（flea、spider、mosquito）和‘unpleasant words’（abuse、hatred、ugly）按红色按钮时，他们的反应要比在不一致条件下更快——在不一致条件下，他们要分别为‘flowers’和‘unpleasant words’按红色按钮、为‘insects’和‘pleasant words’按绿色按钮。</p></blockquote>
+<p>5.9 • 向量模型的评估 147</p>
+<p>将在后续章节回到这个关于偏见在自然语言处理中所起作用的问题。</p>
+<h2>5.9 向量模型的评估</h2>
+<p>对向量模型来说，最重要的评价指标是在任务上的外部评价，即在某个自然语言处理任务中使用向量，看它是否比其他某些模型能带来更好的性能。</p>
+<p>尽管如此，进行内部评价仍是有用的。最常见的指标</p>
+<p>是测试它们在相似度上的表现，即计算算法给出的词语相似度分数与人工给出的词语相似度评分之间的相关性。</p>
+<p>WordSim-353（Finkelstein et al., 2002）是一组常用的评分数据，包含 353 个名词对的 0 到 10 分评分；例如（plane, car）的平均分为 5.77。</p>
+<p>SimLex-999（Hill 等，2015）是一个更复杂的数据集，它量化的是相似性 similarity(cup, mug)，而非相关性 relatedness(cup, coffee)，并包含具体与抽象的形容词、名词和动词对。TOEFL 数据集是一组 80 道题，每道题由一个目标词和 4 个额外词选项组成；任务是选出其中正确的同义词，如示例所示：Levied 在意义上最接近的是：imposed、believed、requested、correlated（Landauer and Dumais, 1997）。所有这些数据集给出的词都不带上下文。</p>
+<p>略微更贴近实际的是包含上下文的内部相似性任务。</p>
+<p>Stanford Contextual Word Similarity（SCWS）数据集（Huang 等，2012）和 Word-in-Context（WiC）数据集（Pilehvar and Camacho-Collados, 2019）提供了更丰富的评测场景。SCWS 给出对 2,003 对词在其句子上下文中的相似性的人工判断，而 WiC 给出处于两个句子上下文中的目标词，这两个上下文要么属于同一义项，要么属于不同义项；参见附录 I。语义文本相似性任务（Agirre 等 2012，Agirre 等 2015）评估句子级相似度算法的性能，该任务由一组句子对构成，每对句子都带有人工标注的相似度分数。</p>
+<p>另一种用于评估的任务是类比任务，已在第 143 页讨论，</p>
+<p>在这类任务中，系统必须求解形如「a 之于 b 相当于 a<em> 之于 b</em>」的问题，给定 a、b 和 a<em>，要求找出 b</em>（Turney and Littman, 2005）。人们已为该任务创建了若干元组集合（Mikolov 等 2013a，Mikolov 等 2013c，Gladkova 等 2016），涵盖形态关系（city:cities::child:children）、词汇关系（leg:table::spout:teapot）和百科关系（Beijing:China::Dublin:Ireland），其中一些取自 SemEval-2012 任务 2 中 79 种不同关系的数据集（Jurgens 等，2012）。</p>
+<p>所有嵌入算法都存在固有的变异性。例如，由于</p>
+<p>初始化中的随机性和随机负采样，像 word2vec 这样的算法即使在同一个数据集上也可能产生不同的结果，而且集合中个别文档可能对所得的嵌入产生很大影响（Tian 等 2016，Hellrich and Hahn 2016，Antoniak and Mimno 2018）。因此，当使用嵌入来研究特定语料库中的词语关联时，最佳做法是对文档进行自助采样（bootstrap sampling）来训练多个嵌入，并对结果取平均（Antoniak and Mimno, 2018）。</p>
+<p>148 第 5 章 • 嵌入</p>
+<h2>5.10 小结</h2>
+<ul><li>在向量语义学中，一个词被建模为一个向量——高维空间中的一个点，也称为嵌入。本章我们关注静态嵌入，即每个词都被映射到一个固定的嵌入。</li><li>向量语义模型分为两类：稀疏模型和稠密模型。在稀疏模型中，每个维度对应词汇表 V 中的一个词，单元格是共现计数的某种函数。词—上下文矩阵（或称词项—词项矩阵）为词汇表中的每个（目标）词设一行，为词汇表中的每个上下文词项设一列。</li><li>稠密向量模型的维度通常为 50–1000。像 skip-gram 这样的 word2vec 算法是计算稠密嵌入的常用方法。</li></ul>
+<p>skip-gram 训练一个逻辑回归分类器，以计算两个词「可能在文本中邻近出现」的概率。该概率由这两个词的嵌入之间的点积计算得到。</p>
+<ul><li>skip-gram 使用随机梯度下降来训练该分类器，其学习目标是使嵌入与邻近出现的词的嵌入具有高点积，而与噪声词具有低点积。</li><li>其他重要的嵌入算法包括 GloVe，这是一种基于词共现概率之比的方法。</li><li>无论使用稀疏向量还是稠密向量，词与文档的相似度都由向量之间点积的某种函数计算得到。两个向量的余弦——一种归一化的点积——是这类度量中最常用的一种。</li></ul>
+<h2>历史注记</h2>
+<p>向量语义学的思想源于 20 世纪 50 年代三个不同领域的研究：语言学、心理学和计算机科学，每个领域都贡献了该模型的一个基本方面。</p>
+<p>意义与词在上下文中的分布有关这一观点，</p>
+<p>在 20 世纪 50 年代的语言学理论中广为流传，持此观点的有 Zellig Harris、Martin Joos 和 J. R. Firth 等分布主义者，以及 Thomas Sebeok 等符号学家。正如 Joos（1950）所说，</p>
+<blockquote><p>语言学家所说的语素「意义」……按定义就是该语素在与所有其他语素共现的上下文中的条件概率集合。</p></blockquote>
+<p>词的意义可以被建模为多维语义空间中的一个点，这一想法来自 Charles E. Osgood 等心理学家，他此前一直在研究人们如何通过在快乐/悲伤或硬/软等量表上赋分来回应词的意义。Osgood 等（1957）提出，一般而言，词的意义可以建模为多维欧几里得空间中的一个点，而两个词之间意义的相似性可以建模为该空间中这些点之间的距离。</p>
+<p>20 世纪 50 年代和 60 年代初的最后一个思想来源，是当时被称为</p>
+<blockquote><p>机械</p></blockquote>
+<p>机械索引的领域，现在称为信息检索。在后来被称为</p>
+<blockquote><p>索引</p></blockquote>
+<p>信息检索的向量空间模型（Salton 1971，Sparck Jones 历史注记 149 1986）的那项工作中，研究者展示了用向量来定义词义的新方法（Switzer, 1965），并改进了基于词间统计关联度量（如互信息（Giuliano, 1965）和 idf（Sparck Jones, 1972））的词相似度方法，还表明文档的意义可以在与词相同的向量空间中表示。大约在同一时期，Cordier（1965）表明，对词关联概率做因子分析可以用来形成词的稠密向量表示。</p>
+<p>分布式思维方式的一些哲学基础，</p>
+<p>来自哲学家维特根斯坦（Wittgenstein）晚期的著作，他对为每个词建立完全形式化的意义定义理论的可能性持怀疑态度。维特根斯坦转而提出，「一个词的意义就是它在语言中的用法」（Wittgenstein, 1953, PI 43）。也就是说，维特根斯坦的想法是不用某种逻辑语言来定义每个词，也不诉诸外延或真值，而是应当根据人们在日常交往中说话和理解时如何使用一个词来定义它，从而预示了语言学和自然语言处理中走向具身与体验式模型的运动（Glenberg and Robertson 2000, Lake and Murphy 2021, Bisk et al. 2020, Bender and Koller 2020）。</p>
+<p>关系更远一些的是用离散特征向量来定义词的想法，其根源至少可以追溯到笛卡尔（Descartes）和莱布尼茨（Leibniz）（Wierzbicka 1992, Wierzbicka 1996）。到 20 世纪中叶，从 Hjelmslev 的工作（Hjelmslev, 1969）（原版为 1943）开始，并在生成语法的早期模型（Katz and Fodor, 1963）中得到充实，出现了用「意</p>
+<blockquote><p>语义</p></blockquote>
+<p>义」用语义特征来表示的想法，这类特征符号代表某种原始意义。</p>
+<blockquote><p>特征</p></blockquote>
+<p>例如 hen、rooster 或 chick 这类词有共同之处（它们都描述鸡），也有不同之处（它们的年龄和性别），可以表示为：</p>
+<p>hen +female, +chicken, +adult rooster -female, +chicken, +adult chick +chicken, -adult</p>
+<p>然而，意义的向量模型用来定义词的那些维度，</p>
+<p>只是抽象地与这种由少量固定的手工构建维度构成的想法相关。</p>
+<p>尽管如此，已有一些尝试表明，嵌入模型的某些维度确实像这些早期的语义特征一样，贡献了意义的某个特定的组合方面。</p>
+<p>用稠密向量来建模词义的做法，乃至 embedding（嵌入）这一术语本身，都源于潜在语义索引（latent semantic indexing，LSI）模型（Deerwester et al., 1988），该模型后来被重新表述为 LSA（latent semantic analysis，潜在语义分析）（Deerwester et al., 1990）。在 LSA 中，奇异值分解——SVD——被应用于一个词项-文档矩阵（每个</p>
+<blockquote><p>SVD</p></blockquote>
+<p>单元格按对数频率加权并按熵归一化），然后取前 300 个维度作为 LSA 嵌入。奇异值分解（Singular Value Decomposition，SVD）是一种找出数据集最重要维度的方法，即数据变化最大的那些维度。LSA 随后迅速得到广泛应用：作为认知模型（Landauer and Dumais, 1997），以及用于拼写检查（Jones and Martin, 1997）、语言建模（Bellegarda 1997，Coccaro and Jurafsky 1998，Bellegarda 2000）、形态归纳（Schone and Jurafsky 2000，Schone and Jurafsky 2001b）、多词表达（multiword expressions，MWE）（Schone and Jurafsky, 2001a）和作文评分（Rehder et al., 1998）等任务。与此同时，Sch¨utze（1992b）也独立开发了相关模型并将其应用于词义消歧。</p>
+<p>LSA 还促成了最早在概率分类器中使用嵌入表示词的做法，即 Sch¨utze et al.（1995）的逻辑回归文档路由器。</p>
+<p>在词项-词项矩阵（而非词项-文档矩阵）上做 SVD，以此作为 NLP 的意义模型，150 第 5 章 • 嵌入 这一想法在 LSA 之后不久由 Sch¨utze（1992b）提出。</p>
+<p>Sch¨utze 将 SVD 产生的低秩（97 维）嵌入应用于词义消歧任务，分析了由此得到的语义空间，还提出了可能的技术，如丢弃高阶维度。参见 Sch¨utze（1997）。</p>
+<p>在早期的 SVD 工作之后，又出现了一系列替代的矩阵模型，</p>
+<p>包括概率潜在语义索引（Probabilistic Latent Semantic Indexing，PLSI）（Hofmann, 1999）、潜在狄利克雷分配（Latent Dirichlet Allocation，LDA）（Blei et al., 2003）和非负矩阵分解（Non-negative Matrix Factorization，NMF）（Lee and Seung, 1999）。</p>
+<p>LSA 学界似乎最早是在 Landauer</p>
+<p>et al.（1997）中使用了“embedding”一词，用的是其数学含义的一个变体，即从一个空间或数学结构到另一个空间的映射。在 LSA 中，embedding 一词似乎指的是从稀疏计数向量空间到 SVD 稠密向量的潜在空间的映射。因此，尽管该词最初意指从一个空间到另一个空间的映射，但它已通过转喻转变为指潜在空间中由此得到的稠密向量，而我们当前正是在这个意义上使用该词。</p>
+<p>到下一个十年，Bengio et al.（2003）和 Bengio et al.（2006）表明，</p>
+<p>神经语言模型也可以用来发展嵌入，并将其作为词预测任务的一部分。随后 Collobert and Weston（2007）、Collobert and Weston（2008）和 Collobert et al.（2011）证明，嵌入可用于表示多种 NLP 任务中的词义。Turian et al.（2010）比较了不同种类的嵌入在不同 NLP 任务中的价值。Mikolov et al.（2011）表明循环神经网络可以用作语言模型。将这些神经网络语言模型的隐藏层简化以构造 skipgram（以及 CBOW）算法的想法由 Mikolov et al.（2013a）提出。负采样训练算法在 Mikolov et al.（2013b）中提出。关于静态嵌入及其参数化有大量综述（Bullinaria and Levy 2007，Bullinaria and Levy 2012，Lapesa and Evert 2014，Kiela and Clark 2014，Levy et al. 2015）。</p>
+<p>要更深入地理解其作用，参见 Manning et al.（2008）和第 11 章</p>
+<p>即向量在信息检索中的作用，包括如何比较查询与文档、关于 tf-idf 的更多细节，以及扩展到超大规模数据集的问题。关于 word2vec 的清晰而全面的教程，参见 Kim（2019）。Cruse（2004）是一本关于词汇语义学的有用语言学入门教材。</p>
+<h2>练习</h2>
+<p>5.1 使用图 5.2 中的共现计数，计算 cos(cherry, strawberry)</p>
+<p>以及仅使用 pie 和 result 两个维度的 cos(cherry, digital)。哪一对更相似，结果是否符合你关于这些词含义的直觉？</p>
+<p>5.2 证明余弦相似度对缩放不变：对任意正常数 c，</p>
+<p>cos(cv,w) = cos(v,w)。鉴于第 5.4 节对频率和向量长度的讨论，为什么这是词相似度度量所期望的一个性质？</p>
+<p>5.3 通过对损失函数求导，推导式 5.22-式 5.24 中的 SGNS 梯度，该损失函数为</p>
+<p>式 5.21，分别对 cpos、cneg 和 w 求导。你可以利用 dσ(z) =</p>
+<blockquote><p>dz</p></blockquote>
+<p>σ(z)(1−σ(z))，以及 d(cw) = c。</p>
+<blockquote><p>dw</p></blockquote>
+</div></body></html>
