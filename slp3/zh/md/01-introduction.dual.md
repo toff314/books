@@ -289,16 +289,11 @@ LLM 在信息获取与教育获取方面也有明确的应用。LLM
 >
 > *scaling laws*
 
-> 1 1
+Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)
 
-Nopt ∝C Dopt ∝C
 缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。
 
 > Scaling laws explain why models tend to get bigger, with both positive outcomes(more impressive performance) and negative ones (more expense and use of natural resources like water and energy). But very big models are also very expensive at inference every time we prompt a model. So scaling laws also explain why we often choose to instead train a smaller model and make it better by training for more time over more data.
-
-> (1.1)
-
-> 2 2
 
 ## 1.2 大语言模型从词（token）预测中学到
 
@@ -666,11 +661,9 @@ Q: 谁写了《物种起源》？ A: Charles
 
 > nsubj dobj
 
-> (1.6)
+她在一月份宣布了这件事（1.6）
 
-她在一月份宣布了这件事
-
-> She announced this in January
+> She announced this in January (1.6)
 检测这些句法依存关系（第 20 章）——这一任务称为句法分析——是 NLP 中最古老的任务之一。
 
 > Detecting these syntactic dependency relationships (Chapter 20) a task called parsing, is one of the oldest tasks in NLP.
@@ -727,11 +720,9 @@ Q: 谁写了《物种起源》？ A: Charles
 >
 > *coreference attention*
 
-> (1.8)
+因为她就自家房屋的受损情况征求了一些专家意见（1.8）
 
-因为她就自家房屋的受损情况征求了一些专家意见
-
-> as she got some expert opinions on the damage to her home
+> as she got some expert opinions on the damage to her home (1.8)
 语言结构还有助于分析以下双方之间的语言互动：
 
 > Linguistic structure can also help in analysis of linguistic interaction between

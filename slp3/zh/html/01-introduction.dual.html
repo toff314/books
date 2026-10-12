@@ -175,11 +175,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>（2022）表明，在计算成本 C 固定时，参数数量 N 和训练数据 token 数量 D 都应当大致同等地随 C 按幂律增长：</p>
 <blockquote><p>(2022) showed that for a fixed compute cost C the number of parameters N, and the number of training data tokens D, should go up roughly equally as a power law of C:</p></blockquote>
 <blockquote><p>缩放定律</p><p><em>scaling laws</em></p></blockquote>
-<blockquote><p>1 1</p></blockquote>
-<p>Nopt ∝C Dopt ∝C缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。</p>
+<p>Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)</p>
+<p>缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。</p>
 <blockquote><p>Scaling laws explain why models tend to get bigger, with both positive outcomes(more impressive performance) and negative ones (more expense and use of natural resources like water and energy). But very big models are also very expensive at inference every time we prompt a model. So scaling laws also explain why we often choose to instead train a smaller model and make it better by training for more time over more data.</p></blockquote>
-<blockquote><p>(1.1)</p></blockquote>
-<blockquote><p>2 2</p></blockquote>
 <h2>1.2 大语言模型从词（token）预测中学到</h2>
 <blockquote><p>1.2 What do LLMs Learn From Word (Token) Predic-</p></blockquote>
 <p>什么？</p>
@@ -360,9 +358,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>理解人类语言及其语言学属性和结构，在语音与语言处理研究中起着核心作用。例如，考虑两种语言结构。句法结构（第 20 章）描述词或短语之间的抽象语法关系，例如动词有主语和直接宾语，就像下面例子中的动词 announced：</p>
 <blockquote><p>An understanding of human language and its linguistic properties and structures plays a central role in studying speech and language processing. Consider, for example, two kinds of linguistic structure. Syntactic structure (Chapter 20) describes abstract grammatical relationships between words or phrases, like the fact that verbs have subjects and direct objects, like the verb announced in this example:</p></blockquote>
 <blockquote><p>nsubj dobj</p></blockquote>
-<blockquote><p>(1.6)</p></blockquote>
-<p>她在一月份宣布了这件事</p>
-<blockquote><p>She announced this in January</p></blockquote>
+<p>她在一月份宣布了这件事（1.6）</p>
+<blockquote><p>She announced this in January (1.6)</p></blockquote>
 <p>检测这些句法依存关系（第 20 章）——这一任务称为句法分析——是 NLP 中最古老的任务之一。</p>
 <blockquote><p>Detecting these syntactic dependency relationships (Chapter 20) a task called parsing, is one of the oldest tasks in NLP.</p></blockquote>
 <blockquote><p>句法分析</p><p><em>parsing</em></p></blockquote>
@@ -389,9 +386,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>它接着推销几只多元化共同基金，而其他针对某个实体提及的注意力头则关注同一实体此前的一次共指提及（其先行语）：</p>
 <blockquote><p>it goes on to plug a few diversified mutual funds while other attention heads for a mention of an entity attend to a previous coreferent mention of the same entity (its antecedent):</p></blockquote>
 <blockquote><p>共指注意力</p><p><em>coreference attention</em></p></blockquote>
-<blockquote><p>(1.8)</p></blockquote>
-<p>因为她就自家房屋的受损情况征求了一些专家意见</p>
-<blockquote><p>as she got some expert opinions on the damage to her home</p></blockquote>
+<p>因为她就自家房屋的受损情况征求了一些专家意见（1.8）</p>
+<blockquote><p>as she got some expert opinions on the damage to her home (1.8)</p></blockquote>
 <p>语言结构还有助于分析以下双方之间的语言互动：</p>
 <blockquote><p>Linguistic structure can also help in analysis of linguistic interaction between</p></blockquote>
 <p>语言模型与用户。让我们考虑会话互动中相关的第三种语言结构。在人与人的对话中，人们试图彼此建立相互理解，也就是我们所说的共同基础</p>
