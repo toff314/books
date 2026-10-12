@@ -1,0 +1,1784 @@
+# 第 21 章 信息抽取：关系、事件与时间
+
+### 章
+
+> CHAPTER
+
+# 21 信息抽取：关系、事件与时间
+
+> 21 Information Extraction: Relations, Events, and Time
+
+> 时间会说明一切。
+>
+> *Time will explain.*
+
+简·奥斯汀，《劝导》
+
+> Jane Austen, Persuasion
+设想你是一家追踪航空股的投资公司的分析师。
+
+> Imagine that you are an analyst with an investment firm that tracks airline stocks.
+
+你的任务是判断航空公司关于票价上涨的公告与其股票次日表现之间的关系（如果存在的话）。股票价格的历史数据很容易获得，但航空公司的公告呢？你至少需要知道航空公司的名称、拟议涨价的性质、公告的日期，可能还包括其他航空公司的反应。幸运的是，这些都能在如下这样的新闻文章中找到：
+
+> You’re given the task of determining the relationship (if any) between airline announcements of fare increases and the behavior of their stocks the next day. Historical data about stock prices is easy to come by, but what about the airline announcements? You will need to know at least the name of the airline, the nature of the proposed fare hike, the dates of the announcement, and possibly the response of other airlines. Fortunately, these can be all found in news articles like this one:
+
+以燃油价格高企为由，United Airlines 周五表示，已将飞往一些同样由低成本航空公司提供服务的城市的航班往返票价上调 $6。AMR Corp. 旗下公司 American Airlines 立即跟进，其发言人 Tim Wagner 表示。UAL Corp. 旗下公司 United 表示，此次涨价于周四生效，适用于其与折扣航空公司竞争的大多数航线，例如芝加哥至达拉斯、丹佛至旧金山。
+
+> Citing high fuel prices, United Airlines said Friday it has increased fares by $6 per round trip on flights to some cities also served by lowercost carriers. American Airlines, a unit of AMR Corp., immediately matched the move, spokesman Tim Wagner said. United, a unit of UAL Corp., said the increase took effect Thursday and applies to most routes where it competes against discount carriers, such as Chicago to Dallas and Denver to San Francisco.
+
+本章介绍从文本中抽取有限几类语义内容的技术。这一信息抽取（IE）过程将非结构化的
+
+> This chapter presents techniques for extracting limited kinds of semantic content from text. This process of information extraction (IE) turns the unstructured
+
+> `information extraction`（信息抽取）
+>
+> 释义：指从文本中抽取有限几类语义内容并转化为结构化数据的技术，例如用于填充关系数据库。
+
+嵌入文本中的信息转化为结构化数据，例如用于填充关系数据库以便进行进一步处理。
+
+> information embedded in texts into structured data, for example for populating a relational database to enable further processing.
+
+> `relation`（关系）
+>
+> 释义：指文本中两个命名实体之间存在的语义联系，如父子、部分-整体或地理空间关系。
+
+我们从关系抽取任务开始：即找出并分类文本中提及的实体之间的语义
+
+> We begin with the task of relation extraction: finding and classifying semantic
+
+> `extraction`（抽取）
+>
+> 释义：从文本中识别并抽出所需信息的过程，此处指抽出实体之间的语义关系。
+
+关系，如 child-of（X 是 Y 的孩子）、部分-整体关系或地理空间关系。关系抽取与填充关系数据库有密切联系，而知识图谱——即结构化关系
+
+> relations among entities mentioned in a text, like child-of (X is the child-of Y), or part-whole or geospatial relations. Relation extraction has close links to populating a relational database, and knowledge graphs, datasets of structured relational
+
+> `knowledge graphs`（知识图谱）
+>
+> 释义：以结构化形式存储实体及其相互关系的知识数据集，是搜索引擎向用户呈现信息的一种方式。
+
+知识的数据集——则是搜索引擎向用户呈现信息的一种有用方式。
+
+> knowledge, are a useful way for search engines to present information to users.
+
+> `event`（事件）
+>
+> 释义：文本中由触发词所指示、由若干实体参与的活动或状态变化，并具有时间定位。
+
+接下来我们讨论事件抽取，即找出这些实体所参与的事件的任务，例如在示例文本中 United 和 American 的票价上涨，以及报道性事件 said 和 cite。事件还具有时间定位，发生在某个特定的日期或时间；事件之间也可以有先后或同时的时间关系。我们需要识别像 Friday、Thursday 或 two days from now 这样的时间表达式，以及像 3:30 P.M. 这样的时刻，并把它们归一化到具体的日历日期或时间上。我们需要把 Friday 链接到 United 发布公告的时间，把 Thursday 链接到前一天的票价上涨，还需要生成一条时间线，其中 United 的公告在票价上涨之后，而 American 的公告在这两个事件之后。
+
+> Next, we discuss event extraction, the task of finding events in which these entities participate, like, in our sample text, the fare increases by United and American and the reporting events said and cite. Events are also situated in time, occurring at a particular date or time, and events can be related temporally, happening before or after or simultaneously with each other. We’ll need to recognize temporal expressions like Friday, Thursday or two days from now and times such as 3:30 P.M., and normalize them onto specific calendar dates or times. We’ll need to link Friday to the time of United’s announcement, Thursday to the previous day’s fare increase, and we’ll need to produce a timeline in which United’s announcement follows the fare increase and American’s announcement follows both of those events.
+
+> `extraction`（抽取）
+>
+> 释义：此处承接事件抽取，指从文本中识别并抽出事件及其参与者等信息。
+
+相关的模板填充任务，是找出文档中反复出现的典型事件或
+
+> The related task of template filling is to find recurring stereotypical events or
+
+> `template filling`（模板填充）
+>
+> 释义：在文档中找出反复出现的典型事件或情境并填写相应模板槽位的任务。
+
+情境，并填入模板的各个槽位。这些槽填充值可以是直接从文本中抽取的文本片段，也可以是通过额外处理推断出的概念，如时间、数量或本体实体。我们的航空
+
+> situations in documents and fill in the template slots. These slot-fillers may consist of text segments extracted directly from the text, or concepts like times, amounts, or ontology entities that have been inferred through additional processing. Our airline
+
+![](images/21-information-extraction/fig_p2_0.png)
+
+*图 21.1 ACE 关系抽取任务中使用的 17 种关系。*
+*Figure 21.1 The 17 relations used in the ACE relation extraction task.*
+
+文本呈现的正是这样一种典型情境，因为航空公司常常先涨价，然后观望竞争对手是否跟进。这里我们可以识别出 United 是率先涨价的领头航空公司，$6 是涨价金额，Thursday 是涨价日期，而 American 是跟进的航空公司，由此得到如下填好的模板：
+
+> text presents such a stereotypical situation since airlines often raise fares and then wait to see if competitors follow along. Here we can identify United as a lead airline that initially raised its fares, $6 as the amount, Thursday as the increase date, and American as an airline that followed along, leading to a filled template like the following:
+
+>  
+>
+> * *
+
+> 涨价尝试：领头航空公司：UNITED AIRLINES
+>
+> *FARE-RAISE ATTEMPT: LEAD AIRLINE: UNITED AIRLINES*
+
+> 金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES
+>
+> * AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES*
+
+## 21.1 关系抽取
+
+> 21.1 Relation Extraction
+
+假设我们已经在示例文本中检测出命名实体（也许用的是第 18 章的技术），并希望辨明检测出的这些实体之间存在什么关系：
+
+> Let’s assume that we have detected the named entities in our sample text (perhaps using the techniques of Chapter 18), and would like to discern the relationships that exist among the detected entities:
+
+以燃油价格高企为由，[ORG United Airlines] 于 [TIME 周五] 表示，已将飞往一些同样由低成本航空公司提供服务的城市的航班往返票价上调 [MONEY $6]。[ORG American Airlines] 是 [ORG AMR Corp.] 的旗下公司，立即跟进了这一举动，其发言人 [PER Tim Wagner] 表示。[ORG United] 是 [ORG UAL Corp.] 的旗下公司，表示此次涨价于 [TIME 周四] 生效，适用于其与折扣航空公司竞争的大多数航线，如从 [LOC 芝加哥] 到 [LOC 达拉斯]、从 [LOC 丹佛] 到 [LOC 旧金山]。
+
+> Citing high fuel prices, [ORG United Airlines] said [TIME Friday] it has increased fares by [MONEY $6] per round trip on flights to some cities also served by lower-cost carriers. [ORG American Airlines], a unit of [ORG AMR Corp.], immediately matched the move, spokesman[PER Tim Wagner] said. [ORG United], a unit of [ORG UAL Corp.], said the increase took effect [TIME Thursday] and applies to most routes where it competes against discount carriers, such as [LOC Chicago] to [LOC Dallas] and [LOC Denver] to [LOC San Francisco].
+
+例如，文本告诉我们，Tim Wagner 是 American Airlines 的发言人，
+
+> The text tells us, for example, that Tim Wagner is a spokesman for American
+即 United 是 UAL Corp. 的旗下公司，而 American 是 AMR 的旗下公司。
+
+> Airlines, that United is a unit of UAL Corp., and that American is a unit of AMR.
+
+这些二元关系是诸如部分-整体（part-of）或 employs 等更通用关系的实例，它们在新闻文体中相当常见。图 21.1 列出了 ACE 关系抽取评测中使用的 17 种关系，图 21.2 给出了一些关系示例。我们还可以抽取更领域特定的关系，例如航线这一概念。比如，从这段文本我们可以得出，United 有通往芝加哥、达拉斯、丹佛和旧金山的航线。
+
+> These binary relations are instances of more generic relations such as part-of or employs that are fairly frequent in news-style texts. Figure 21.1 lists the 17 relations used in the ACE relation extraction evaluations and Fig. 21.2 shows some sample relations. We might also extract more domain-specific relations such as the notion of an airline route. For example from this text we can conclude that United has routes to Chicago, Dallas, Denver, and San Francisco.
+
+> 关系 类型 示例 Physical-Located PER-GPE 他当时在田纳西州 Part-Whole-Subsidiary ORG-ORG XYZ，ABC 的母公司 Person-Social-Family PER-PER Yoko 的丈夫 John Org-AFF-Founder PER-ORG Steve Jobs，Apple 的联合创始人……
+>
+> *Relations Types Examples Physical-Located PER-GPE He was in Tennessee Part-Whole-Subsidiary ORG-ORG XYZ, the parent company of ABC Person-Social-Family PER-PER Yoko’s husband John Org-AFF-Founder PER-ORG Steve Jobs, co-founder of Apple...*
+
+*图 21.2 语义关系及其示例，以及它们所涉及的命名实体类型。*
+*Figure 21.2 Semantic relations with examples and the named entity types they involve.*
+
+许多其他领域也定义了各自的关系集合。例如
+
+> Sets of relations have been defined for many other domains as well. For example
+美国国家医学图书馆（US National Library of Medicine）的 UMLS，即统一医学语言系统（UMLS），拥有一个网络，其中定义了 134 个宽泛的主题类别、实体类型，以及实体之间的 54 种关系，例如以下这些：
+
+> UMLS, the Unified Medical Language System from the US National Library of Medicine has a network that defines 134 broad subject categories, entity types, and 54 relations between the entities, such as the following:
+
+| 实体<br>Entity | 关系<br>Relation | 实体<br>Entity |
+| --- | --- | --- |
+| 损伤<br>Injury | 破坏<br>disrupts | 生理功能<br>Physiological Function |
+| 身体部位<br>Bodily Location | 位于<br>location-of | 生物功能<br>Biologic Function |
+| 解剖结构<br>Anatomical Structure | 部分-整体（part-of）<br>part-of | 生物体<br>Organism |
+| 药物物质<br>Pharmacologic Substance | 导致<br>causes | 病理功能<br>Pathological Function |
+| 药物物质<br>Pharmacologic Substance | 治疗<br>treats | 病理功能<br>Pathologic Function |
+
+身体部位 位于 生物功能
+
+> Bodily Location location-of Biologic Function
+药物物质 导致 病理功能 药物物质 治疗 病理功能
+
+> Pharmacologic Substance causes Pathological Function Pharmacologic Substance treats Pathologic Function
+给定如下这样一个医学句子：
+
+> Given a medical sentence like this one:
+
+（21.1）多普勒超声心动图可用于诊断左前降支
+
+> (21.1) Doppler echocardiography can be used to diagnose left anterior descending
+动脉狭窄，见于 2 型糖尿病患者
+
+> artery stenosis in patients with type 2 diabetes
+因此我们可以抽取 UMLS 关系：
+
+> We could thus extract the UMLS relation:
+
+多普勒超声心动图 诊断 获得性狭窄
+
+> Echocardiography, Doppler Diagnoses Acquired stenosis
+Wikipedia 还提供了大量关系，它们来自信息框（infobox），即与某些 Wikipedia 文章相关联的结构化表格。例如，Stanford 的 Wikipedia 信息框中包含诸如 state = "California" 或 president = "Marc Tessier-Lavigne" 这样的结构化事实。这些事实可以转换为诸如 president-of 或 located-in 这样的关系，也可以转换为一种称为 RDF 的元语言中的关系
+
+> Wikipedia also offers a large supply of relations, drawn from infoboxes, structured tables associated with certain Wikipedia articles. For example, the Wikipedia infobox for Stanford includes structured facts like state = "California" or president = "Marc Tessier-Lavigne". These facts can be turned into relations like president-of or located-in. or into relations in a metalanguage called RDF
+
+> `infoboxes`（信息框）
+>
+> 释义：Wikipedia 文章中附带的、以键值形式列出结构化事实的表格，是关系抽取的重要来源。
+
+> `RDF`
+>
+> 释义：一种用三元组描述实体间关系的元语言，全称为资源描述框架（Resource Description Framework）。
+
+（Resource Description Framework，资源描述框架）。一个 RDF 三元组是由实体-关系-实体构成的元组，称为主语-谓语-宾语表达式。下面是一个 RDF 三元组示例：
+
+> (Resource Description Framework). An RDF triple is a tuple of entity-relationentity, called a subject-predicate-object expression. Here’s a sample RDF triple:
+
+> `RDF triple`（RDF 三元组）
+>
+> 释义：由主语、谓语、宾语三部分组成的表达式，用于表示两个实体之间的一条关系。
+
+主语 谓语 宾语 Golden Gate Park location San Francisco
+
+> subject predicate object Golden Gate Park location San Francisco
+例如，众包的 DBpedia（Bizer 等，2009）是从 Wikipedia 衍生出的本体，包含超过 20 亿个 RDF 三元组。另一个来自 Wikipedia 信息框的数据集 Freebase（Bollacker 等，2008），现已成为 Wikidata 的一部分（Vrandečić
+
+> For example the crowdsourced DBpedia (Bizer et al., 2009) is an ontology derived from Wikipedia containing over 2 billion RDF triples. Another dataset from Wikipedia infoboxes, Freebase (Bollacker et al., 2008), now part of Wikidata (Vrandeˇci´c
+
+> `Freebase`
+>
+> 释义：一个由 Wikipedia 信息框构建起来的大规模知识库，后来被并入 Wikidata。
+
+和 Krötzsch，2014），其中包含人物与其国籍之间的关系，以及地点与包含它们的其他地点之间的关系。
+
+> and Kr¨otzsch, 2014), has relations between people and their nationality, or locations, and other locations they are contained in.
+
+WordNet 或其他本体提供了一些有用的本体关系，用来表达词或概念之间的层级关系。例如 WordNet 具有 is-a 关系，即
+
+> WordNet or other ontologies offer useful ontological relations that express hierarchical relations between words or concepts. For example WordNet has the is-a or
+
+> `is-a`
+>
+> 释义：表示一个类归属于另一个更宽泛类的层级关系，也就是上位词与下位词之间的关系。
+
+类之间的上位词关系，
+
+> hypernym relation between classes,
+
+> `hypernym`（上位词）
+>
+> 释义：指称更宽泛类别的词，其含义涵盖另一个更具体的词所指称的类别。
+
+长颈鹿 is-a 反刍动物 is-a 有蹄类动物 is-a 哺乳动物 is-a 脊椎动物 ……
+
+> Giraffe is-a ruminant is-a ungulate is-a mammal is-a vertebrate ...
+
+WordNet 还具有个体与类之间的 Instance-of 关系，例如 San Francisco 就与 city 处于 Instance-of 关系中。抽取这些关系是扩展或构建本体的重要一步。
+
+> WordNet also has Instance-of relation between individuals and classes, so that for example San Francisco is in the Instance-of relation with city. Extracting these relations is an important step in extending or building ontologies.
+
+最后，还有一些大型数据集，其中的句子被手工标注了它们所表达的
+
+> Finally, there are large datasets that contain sentences hand-labeled with their
+关系，专门用于训练和测试关系抽取器。TACRED 数据集（Zhang 等，2017）包含 106,264 个关于特定人物或组织的关系三元组示例，这些标注取自年度 TAC 知识库填充（TAC Knowledge Base Population，TAC KBP）挑战赛中来自新闻和网页文本的句子。TACRED 包含 41 种关系类型（如 per:city of birth、org:subsidiaries、org:member of、per:spouse），外加一个 no relation 标签；示例见图 21.3。所有示例中约 80% 被标注为 no relation；拥有足够的负例数据对于训练有监督分类器来说很重要。
+
+> relations, designed for training and testing relation extractors. The TACRED dataset(Zhang et al., 2017) contains 106,264 examples of relation triples about particular people or organizations, labeled in sentences from news and web text drawn from the annual TAC Knowledge Base Population (TAC KBP) challenges. TACRED contains 41 relation types (like per:city of birth, org:subsidiaries, org:member of, per:spouse), plus a no relation tag; examples are shown in Fig. 21.3. About 80% of all examples are annotated as no relation; having sufficient negative data is important for training supervised classifiers.
+
+示例 实体类型与标签 Carey 将接替 Cathleen P. Black，后者担任该职位 15 PERSON/TITLE 年，并将出任赫斯特杂志（Hearst Magazines）董事长这一新职务， Relation: per:title 该公司表示。 Irene Morgan Kirkaldy 出生于巴尔的摩并在那里长大， PERSON/CITY 现居长岛，与她的第二任 Relation: per:city of birth 丈夫 Stanley Kirkaldy 在皇后区经营一家儿童保育中心。 Baldwin 拒绝进一步置评，并称捷蓝航空（JetBlue）首席执行 Types: PERSON/TITLE 官 Dave Barger 无法联系。 Relation: no relation
+
+> Example Entity Types & Label Carey will succeed Cathleen P. Black, who held the position for 15 PERSON/TITLE years and will take on a new role as chairwoman of Hearst Maga- Relation: per:title zines, the company said. Irene Morgan Kirkaldy, who was born and reared in Baltimore, lived PERSON/CITY on Long Island and ran a child-care center in Queens with her second Relation: per:city of birth husband, Stanley Kirkaldy. Baldwin declined further comment, and said JetBlue chief executive Types: PERSON/TITLE Dave Barger was unavailable. Relation: no relation
+
+*图 21.3 TACRED 数据集（Zhang 等，2017）中的示例句子与标签。*
+*Figure 21.3 Example sentences and labels from the TACRED dataset (Zhang et al., 2017).*
+
+SemEval 2010 任务 8 也制作了一个标准数据集，用于检测
+
+> A standard dataset was also produced for the SemEval 2010 Task 8, detecting
+名词性成分之间的关系（Hendrickx 等，2009）。该数据集有 10,717 个示例，每个示例包含一对名词性成分（无类型），并手工标注为 9 种有向关系之一，如 product-producer（a factory manufactures suits，工厂制造西装）或 component-whole（my apartment has a large kitchen，我的公寓有一个大厨房）。
+
+> relations between nominals (Hendrickx et al., 2009). The dataset has 10,717 examples, each with a pair of nominals (untyped) hand-labeled with one of 9 directed relations like product-producer ( a factory manufactures suits) or component-whole(my apartment has a large kitchen).
+
+## 21.2 关系抽取算法
+
+> 21.2 Relation Extraction Algorithms
+
+关系抽取算法主要有五类：手写模式、有监督机器学习、半监督（通过自举或远程监督）以及无监督。我们将在接下来的几节中逐一介绍这些方法。
+
+> There are five main classes of algorithms for relation extraction: handwritten patterns, supervised machine learning, semi-supervised (via bootstrapping or distant supervision), and unsupervised. We’ll introduce each of these in the next sections.
+
+### 21.2.1 使用模式抽取关系
+
+> 21.2.1 Using Patterns to Extract Relations
+
+最早且至今仍常见的关系抽取算法是词汇-句法模式，它由 Hearst（1992a）首次提出，因此常被称为 Hearst 模式。请看下面这个句子：
+
+> The earliest and still common algorithm for relation extraction is lexico-syntactic patterns, first developed by Hearst (1992a), and therefore often called Hearst patterns. Consider the following sentence:
+
+> `Hearst patterns`（Hearst 模式）
+>
+> 释义：利用 such as 一类固定的词汇-句法结构来识别上下位等语义关系的模式。
+
+琼脂是一种从红藻混合物中制备的物质，如石花菜（Gelidium），供实验室或工业使用。
+
+> Agar is a substance prepared from a mixture of red algae, such as Gelidium, for laboratory or industrial use.
+
+Hearst 指出，大多数人类读者并不知道 Gelidium 是什么，但他们能轻易推断出它是红藻的一种（红藻的下位词），无论红藻究竟是什么。
+
+> Hearst points out that most human readers will not know what Gelidium is, but that they can readily infer that it is a kind of (a hyponym of) red algae, whatever that is.
+
+她提出，以下词汇-句法模式
+
+> She suggests that the following lexico-syntactic pattern
+NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）
+
+> NP0 such as NP1{,NP2 ...,(and|or)NPi},i ≥1 (21.2)
+蕴含以下语义
+
+> implies the following semantics
+∀NPi，i ≥1，hyponym(NPi,NP0) （21.3）
+
+> ∀NPi,i ≥1,hyponym(NPi,NP0) (21.3)
+从而使我们能够推断出
+
+> allowing us to infer
+hyponym(Gelidium,red algae) （21.4）
+
+> hyponym(Gelidium,red algae) (21.4)
+
+> NP {, NP}* {,} (and|or) other NPH
+
+> 神庙、国库以及其他重要的市政建筑
+>
+> *temples, treasuries, and other important civic buildings*
+
+> NPH such as {NP,}* {(or|and)} NP
+
+> 像 Gelidium 这样的红藻
+>
+> *red algae such as Gelidium*
+
+> such NPH as {NP,}* {(or|and)} NP
+
+> 像 Herrick、Goldsmith 与 Shakespeare 这样的作者
+>
+> *such authors as Herrick, Goldsmith, and Shakespeare*
+
+> NPH {,} including {NP,}* {(or|and)} NP
+
+> 包括 Canada 与 England 在内的普通法国家
+>
+> *common-law countries, including Canada and England*
+
+> NPH {,} especially {NP}* {(or|and)} NP
+
+> 尤其是 France、England 与 Spain 等欧洲国家
+>
+> *European countries, especially France, England, and Spain*
+
+*图 21.4 用于寻找上位词的手工构建词汇-句法模式，其中用 {} 标记可选成分（Hearst 1992a，Hearst 1998）。*
+*Figure 21.4 Hand-built lexico-syntactic patterns for finding hypernyms, using {} to mark optionality (Hearst 1992a, Hearst 1998).*
+
+图 21.4 展示了 Hearst（1992a，1998）为推断
+
+> Figure 21.4 shows five patterns Hearst (1992a, 1998) suggested for inferring
+下位词关系而提出的五种模式；我们把 NPH 表示为父项/下位词。基于模式的现代方法通过加入命名实体约束对其加以扩展。例如，如果我们的目标是回答“谁在哪个组织担任什么职务？”这类问题，就可以使用如下模式：
+
+> the hyponym relation; we’ve shown NPH as the parent/hyponym. Modern versions of the pattern-based approach extend it by adding named entity constraints. For example if our goal is to answer questions about “Who holds what office in which organization?”, we can use patterns like the following:
+
+PER, POSITION of ORG: George Marshall, Secretary of State of the United States
+PER (named|appointed|chose|etc.) PER Prep? POSITION Truman appointed Marshall Secretary of State
+PER [be]? (named|appointed|etc.) Prep? ORG POSITION George Marshall was named US Secretary of State
+手工构建的模式具有高准确率的优势，并且可以针对
+
+> Hand-built patterns have the advantage of high-precision and they can be tailored
+特定领域进行定制。另一方面，它们的召回率往往偏低，而且要为所有可能的模式都创建这样的模式需要大量工作。
+
+> to specific domains. On the other hand, they are often low-recall, and it’s a lot of work to create them for all possible patterns.
+
+### 21.2.2 通过有监督学习进行关系抽取
+
+> 21.2.2 Relation Extraction via Supervised Learning
+
+关系抽取的有监督机器学习方法遵循一套到目前应该已经熟悉的方案。先选定一组固定的关系和实体，由人工在训练语料上标注这些关系和实体，然后用这些标注过的文本训练分类器，以便标注一个未见过的测试集。
+
+> Supervised machine learning approaches to relation extraction follow a scheme that should be familiar by now. A fixed set of relations and entities is chosen, a training corpus is hand-annotated with the relations and entities, and the annotated texts are then used to train classifiers to annotate an unseen test set.
+
+最直接的方法如图 21.5 所示：(1) 找出成对的
+
+> The most straightforward approach, illustrated in Fig. 21.5 is: (1) Find pairs of
+命名实体（通常位于同一个句子中）。(2)：对每一对实体应用一个关系分类器。该分类器可以使用任何有监督技术（逻辑回归、RNN、Transformer、随机森林等）。
+
+> named entities (usually in the same sentence). (2): Apply a relation-classification on each pair. The classifier can use any supervised technique (logistic regression, RNN, Transformer, random forest, etc.).
+
+可以使用一个可选的中间过滤分类器来加速处理，它对给定的命名实体对是否（以任何关系）相关作出二值判定。它的训练正例直接抽取自标注语料中的所有关系，负例则由句内未被标注任何关系的实体对生成。
+
+> An optional intermediate filtering classifier can be used to speed up the processing by making a binary decision on whether a given pair of named entities are related(by any relation). It’s trained on positive examples extracted directly from all relations in the annotated corpus, and negative examples generated from within-sentence entity pairs that are not annotated with a relation.
+
+基于特征的有监督关系分类器。我们来考虑一个基于特征的分类器（如逻辑回归或随机森林）在判定下面这个句子中 American Airlines（提及 1，即 M1）与 Tim Wagner（提及 2，即 M2）之间的关系时所用的示例特征：
+
+> Feature-based supervised relation classifiers. Let’s consider sample features for a feature-based classifier (like logistic regression or random forests), classifying the relationship between American Airlines (Mention 1, or M1) and Tim Wagner (Mention 2, M2) from this sentence:
+
+（21.5）American Airlines 作为 AMR 的一个下属单位，立即跟进采取了这一举措，
+
+> (21.5) American Airlines, a unit of AMR, immediately matched the move,
+发言人 Tim Wagner 说
+
+> spokesman Tim Wagner said
+这些特征包括词特征（以词嵌入或 1-hot 形式表示，是否做过词干化均可）：
+
+> These include word features (as embeddings, or 1-hot, stemmed or not):
+
+- M1 与 M2 的中心词及其拼接 Airlines Wagner Airlines-Wagner
+
+> The headwords of M1 and M2 and their concatenation Airlines Wagner Airlines-Wagner
+
+![](images/21-information-extraction/fig_p6_0.png)
+
+*图 21.5 找出并分类文本中实体之间的关系。*
+*Figure 21.5 Finding and classifying the relations among entities in a text.*
+
+- M1 与 M2 中的词袋和二元组 American, Airlines, Tim, Wagner, American Airlines, Tim Wagner
+- 特定位置上的词或二元组 M2: -1 spokesman M2: +1 said
+- M1 与 M2 之间的词袋或二元组：a, AMR, of, immediately, matched, move, spokesman, the, unit
+
+> Bag-of-words and bigrams in M1 and M2 American, Airlines, Tim, Wagner, American Airlines, Tim Wagner
+> Words or bigrams in particular positions M2: -1 spokesman M2: +1 said
+> Bag of words or bigrams between M1 and M2: a, AMR, of, immediately, matched, move, spokesman, the, unit
+
+命名实体特征：
+
+> Named entity features:
+
+- 命名实体类型及其拼接（M1: ORG，M2: PER，M1M2: ORG-PER）
+- M1 与 M2 的实体层级（取自集合 NAME、NOMINAL、PRONOUN）M1: NAME [it 或 he 会是 PRONOUN] M2: NAME [the company 会是 NOMINAL]
+- 两个论元之间的实体数量（此处为 1，即 AMR）
+
+> Named-entity types and their concatenation(M1: ORG, M2: PER, M1M2: ORG-PER)
+> Entity Level of M1 and M2 (from the set NAME, NOMINAL, PRONOUN) M1: NAME [it or he would be PRONOUN] M2: NAME [the company would be NOMINAL]
+> Number of entities between the arguments (in this case 1, for AMR)
+
+句法结构是一种有用的信号，通常表示为实体之间在句法树上经过的依存或
+
+> Syntactic structure is a useful signal, often represented as the dependency or
+成分句法路径。
+
+> constituency syntactic path traversed through the tree between the entities.
+
+- M1 与 M2 之间的成分路径 NP ↑NP ↑S ↑S ↓NP
+- 依存树路径 Airlines ←subj matched ←comp said →subj Wagner
+
+> Constituent paths between M1 and M2 NP ↑NP ↑S ↑S ↓NP
+> Dependency-tree paths Airlines ←sub j matched ←comp said →subj Wagner
+
+基于神经网络的有监督关系分类器 用于关系抽取的神经模型同样把该任务视为有监督分类。我们来考虑一个应用于 TACRED 关系抽取数据集与任务的典型系统（Zhang et al., 2017）。在 TACRED 中，我们被给定一个句子以及其中的两个片段：一个主语，它是人或组织；一个宾语，它是其他任意实体。任务是从 42 种 TAC 关系中指派一个关系，其中包括“无关系”。
+
+> Neural supervised relation classifiers Neural models for relation extraction similarly treat the task as supervised classification. Let’s consider a typical system applied to the TACRED relation extraction dataset and task (Zhang et al., 2017). In TACRED we are given a sentence and two spans within it: a subject, which is a person or organization, and an object, which is any other entity. The task is to assign a relation from the 42 TAC relations, including no relation.
+
+一个典型的 Transformer 编码器算法如图 21.6 所示，它只是取一个
+
+> A typical Transformer-encoder algorithm, shown in Fig. 21.6, simply takes a
+像 BERT 这样的预训练编码器，并在句子表示（例如 BERT [CLS] 词元）之上添加一个线性层，该线性层被微调为一个 1-of-N 分类器，用来指派 43 个标签中的一个。BERT 编码器的输入被部分地去词汇化；主语和宾语实体在输入中被它们的 NER 标签替换。这有助于使系统避免对个别词汇项过拟合（Zhang et al., 2017）。在使用 BERT 类 Transformer 做关系抽取时，使用像 RoBERTa（Liu et al., 2019）或 spanBERT（Joshi et al., 2020）这样的 BERT 版本会有所帮助，它们没有由 [SEP] 词元分隔的两个序列，而是由单个长句子序列构成输入。
+
+> pretrained encoder like BERT and adds a linear layer on top of the sentence representation (for example the BERT [CLS] token), a linear layer that is finetuned as a 1-of-N classifier to assign one of the 43 labels. The input to the BERT encoder is partially de-lexified; the subject and object entities are replaced in the input by their NER tags. This helps keep the system from overfitting to the individual lexical items(Zhang et al., 2017). When using BERT-type Transformers for relation extraction, it helps to use versions of BERT like RoBERTa (Liu et al., 2019) or spanBERT (Joshi et al., 2020) that don’t have two sequences separated by a [SEP] token, but instead form the input from a single long sequence of sentences.
+
+一般而言，如果测试集与训练集足够相似，并且有
+
+> In general, if the test set is similar enough to the training set, and if there is
+足够多的人工标注数据，那么有监督关系抽取系统就能获得很高的准确度
+
+> enough hand-labeled data, supervised relation extraction systems can get high ac-
+
+![](images/21-information-extraction/fig_p7_1.png)
+
+*图 21.6 关系抽取被建模为编码器（此处为 BERT）之上的一个线性层，输入中的主语和宾语实体被它们的 NER 标签替换（Zhang et al. 2017，Joshi et al. 2020）。*
+*Figure 21.6 Relation extraction as a linear layer on top of an encoder (in this case BERT), with the subject and object entities replaced in the input by their NER tags (Zhang et al. 2017, Joshi et al. 2020).*
+
+准确率。但标注一个大型训练集极其昂贵，而且有监督模型很脆弱：它们不能很好地泛化到不同的文本体裁。因此，关系抽取中的许多研究都集中在我们接下来要讨论的半监督和无监督方法上。
+
+> curacies. But labeling a large training set is extremely expensive and supervised models are brittle: they don’t generalize well to different text genres. For this reason, much research in relation extraction has focused on the semi-supervised and unsupervised approaches we turn to next.
+
+### 21.2.3 通过自举的半监督关系抽取
+
+> 21.2.3 Semisupervised Relation Extraction via Bootstrapping
+
+有监督机器学习假定我们拥有大量标注数据。遗憾的是，这很昂贵。但是假设我们只有少数高精度的种子模式，比如第 21.2.1 节中的那些，或者也许只有几个种子元组。这就足以
+
+> Supervised machine learning assumes that we have lots of labeled data. Unfortunately, this is expensive. But suppose we just have a few high-precision seed patterns, like those in Section 21.2.1, or perhaps a few seed tuples. That’s enough
+
+> `seed patterns seed tuples bootstrapping`（种子模式、种子元组、自举（bootstrapping））
+>
+> 释义：指仅凭少量高精度初始模式或初始元组启动的半监督方法，通过迭代匹配与泛化不断发现新模式和新元组。
+
+自举出一个分类器了！自举的做法是取出种子中的实体
+
+> to bootstrap a classifier! Bootstrapping proceeds by taking the entities in the seed
+对，然后在（网络中，或者我们正在使用的任何数据集中）查找
+
+> pair, and then finding sentences (on the web, or whatever dataset we are using) that
+同时包含这两个实体的句子。从所有这样的句子中，我们抽取并泛化实体周围的上下文，以学习新的模式。图 21.7 给出了一个基本算法。
+
+> contain both entities. From all such sentences, we extract and generalize the context around the entities to learn new patterns. Fig. 21.7 sketches a basic algorithm.
+
+![](images/21-information-extraction/fig_p7_0.png)
+
+*图 21.7 从种子实体对出发通过自举学习关系。*
+*Figure 21.7 Bootstrapping from seed entity pairs to learn relations.*
+
+例如，假设我们需要生成一份航空公司/枢纽对的列表，而我们
+
+> Suppose, for example, that we need to create a list of airline/hub pairs, and we
+只知道 Ryanair 在 Charleroi 有一个枢纽。我们可以利用这一种子事实，通过在语料库中查找该关系的其他提及来发现新的模式。我们在一定的邻近范围内搜索 Ryanair、Charleroi 和 hub 这些词项。也许我们会找到下面这组句子：
+
+> know only that Ryanair has a hub at Charleroi. We can use this seed fact to discover new patterns by finding other mentions of this relation in our corpus. We search for the terms Ryanair, Charleroi and hub in some proximity. Perhaps we find the following set of sentences:
+
+（21.6）把 Charleroi 用作枢纽的廉价航空公司 Ryanair，取消了所有
+
+> (21.6) Budget airline Ryanair, which uses Charleroi as a hub, scrapped all
+从该机场出发的周末航班。
+
+> weekend flights out of the airport.
+
+（21.7）进出 Ryanair 位于 Charleroi 机场的枢纽的所有航班，都在
+
+> (21.7) All flights in and out of Ryanair’s hub at Charleroi airport were grounded on
+周五停飞了……
+
+> Friday...
+
+（21.8）Charleroi 的一位发言人——该地是 Ryanair 的一个主要枢纽——估计已有 8000
+
+> (21.8) A spokesman at Charleroi, a main hub for Ryanair, estimated that 8000
+名乘客受到影响。
+
+> passengers had already been affected.
+
+从这些结果中，我们可以利用实体提及之间的词语上下文、
+
+> From these results, we can use the context of words between the entity mentions,
+第一个提及之前的词语、第二个提及之后的词语，以及这两个提及的命名实体类型，也许还有其他特征，来抽取如下的一般模式：
+
+> the words before mention one, the word after mention two, and the named entity types of the two mentions, and perhaps other features, to extract general patterns such as the following:
+
+/ [ORG]，其将 [LOC] 用作枢纽 // [ORG] 位于 [LOC] 的枢纽 // [LOC]，[ORG] 的一个主要枢纽 /
+
+> / [ORG], which uses [LOC] as a hub // [ORG]’s hub at [LOC] // [LOC], a main hub for [ORG] /
+然后就可以用这些新模式来搜索更多的元组。
+
+> These new patterns can then be used to search for additional tuples.
+
+> `confidence values`（置信度）
+>
+> 释义：系统为每个新模式或新元组赋予的数值，用以衡量其可靠程度，从而抑制自举过程中的语义漂移。
+
+自举系统还会为新元组赋予置信度，以避免语义漂移。在语义漂移中，一个错误的模式会导致引入
+
+> Bootstrapping systems also assign confidence values to new tuples to avoid semantic drift. In semantic drift, an erroneous pattern leads to the introduction of
+
+> `semantic drift`（语义漂移）
+>
+> 释义：自举过程中错误模式不断引入错误元组，使抽取出的关系含义逐步偏离原本目标关系的现象。
+
+错误元组，而这些错误元组又会导致产生有问题的模式，使所抽取关系的含义发生“漂移”。看下面这个例子：
+
+> erroneous tuples, which, in turn, lead to the creation of problematic patterns and the meaning of the extracted relations ‘drifts’. Consider the following example:
+
+（21.9）Sydney 在 Circular Quay 有一个渡轮枢纽。
+
+> (21.9) Sydney has a ferry hub at Circular Quay.
+
+如果被当作正例接受，这个表达就可能导致错误地引入元组 ⟨Sydney,CircularQuay⟩。基于该元组的模式会把更多的错误传播到数据库中。
+
+> If accepted as a positive example, this expression could lead to the incorrect introduction of the tuple ⟨Sydney,CircularQuay⟩. Patterns based on this tuple could propagate further errors into the database.
+
+模式的置信度建立在对两个因素的权衡之上：该模式的
+
+> Confidence values for patterns are based on balancing two factors: the pattern’s
+相对于当前元组集合的表现，以及该模式在文档集合中产生的匹配数量所体现的产出能力。更形式化地说，给定文档集合 D、当前元组集合 T 和一个候选模式 p，我们需要跟踪两个因素：
+
+> performance with respect to the current set of tuples and the pattern’s productivity in terms of the number of matches it produces in the document collection. More formally, given a document collection D, a current set of tuples T, and a proposed pattern p, we need to track two factors:
+
+- hits(p)：在 D 中查找时，p 在 T 中匹配到的元组集合
+- finds(p)：p 在 D 中找到的全部元组集合
+
+> hits(p): the set of tuples in T that p matches while looking in D
+> finds(p): The total set of tuples that p finds in D
+
+下面的公式对这两方面的考虑进行了权衡（Riloff and Jones, 1999）。
+
+> The following equation balances these considerations (Riloff and Jones, 1999).
+
+Conf RlogF(p) = |hits(p)|（21.10）
+
+> Conf RlogF(p) = |hits(p)| (21.10)
+|finds(p)|log(|finds(p)|)
+该指标通常会被归一化，以得到一个概率值。
+
+> This metric is generally normalized to produce a probability.
+
+我们可以通过综合各项证据来评估一个候选新元组的置信度，这些证据来自
+
+> We can assess the confidence in a proposed new tuple by combining the evidence
+在 D 中匹配该元组的所有模式 P′ 对它的支持（Agichtein and Gravano, 2000）。综合这类证据的一种方法是噪声或技术。假设
+
+> supporting it from all the patterns P′ that match that tuple in D (Agichtein and Gravano, 2000). One way to combine such evidence is the noisy-or technique. Assume
+
+> `noisy-or`（噪声或（noisy-or））
+>
+> 释义：一种组合多个独立证据的模型，用 1 减去各来源失败概率之积，来估计新元组成立的置信度。
+
+给定元组由 P 中模式的一个子集支持，其中每个模式都有按上述方法评估出的置信度。在噪声或模型中，我们做两个基本假设。第一，要让一个候选元组为假，它的所有支持模式都必须出错；第二，它们各自失败的来源相互独立。如果我们粗略地把置信度当作概率，那么任一模式 p 失败的概率为 1 −Conf(p)；一个元组的所有支持模式都出错的概率等于它们各自失败概率的乘积，由此就得到下面这个关于新元组置信度的公式。
+
+> that a given tuple is supported by a subset of the patterns in P, each with its own confidence assessed as above. In the noisy-or model, we make two basic assumptions. First, that for a proposed tuple to be false, all of its supporting patterns must have been in error, and second, that the sources of their individual failures are all independent. If we loosely treat our confidence measures as probabilities, then the probability of any individual pattern p failing is 1 −Conf(p); the probability of all of the supporting patterns for a tuple being wrong is the product of their individual failure probabilities, leaving us with the following equation for our confidence in a new tuple.
+
+Y
+Conf(t) = 1− (1−Conf(p))（21.11）
+
+> Conf(t) = 1− (1−Conf(p)) (21.11)
+为新模式的接受设定保守的置信度阈值
+
+> Setting conservative confidence thresholds for the acceptance of new patterns
+和元组，这在自举（bootstrapping）过程中有助于防止系统偏离目标关系。
+
+> and tuples during the bootstrapping process helps prevent the system from drifting away from the targeted relation.
+
+> p∈P′
+
+### 21.2.4 关系抽取的远程监督
+
+> 21.2.4 Distant Supervision for Relation Extraction
+
+尽管为文本人工标注关系标签的成本很高，但仍然存在
+
+> Although hand-labeling text with relation labels is expensive to produce, there are
+
+> `distant`（远程）
+>
+> 释义：此处指远程监督（distant supervision）中“远程”的含义：不依赖人工标注，而是借助已有的大型知识库间接地为文本自动生成关系标注。
+
+找到间接训练数据来源的办法。远程监督方法
+
+> ways to find indirect sources of training data. The distant supervision method
+
+> `supervision`（监督）
+>
+> 释义：此处指远程监督中的“监督”信号：把知识库中的关系元组当作标签，为海量文本自动生成带噪的训练样本，用以替代人工标注。
+
+（Mintz 等，2009）把自举（bootstrapping）与有监督学习的优势结合起来。远程监督不只使用少量种子，而是利用一个大型数据库获取数量巨大的种子示例，从所有这些示例中生成大量含噪的模式特征，然后把它们组合在一个有监督分类器中。
+
+> (Mintz et al., 2009) combines the advantages of bootstrapping with supervised learning. Instead of just a handful of seeds, distant supervision uses a large database to acquire a huge number of seed examples, creates lots of noisy pattern features from all these examples and then combines them in a supervised classifier.
+
+例如，假设我们要学习人物与其出生城市之间的出生地（place-of-birth）关系。在基于种子的方法中，我们开始时可能只有 5 个示例。但像 DBPedia 或 Freebase 这样基于维基百科的数据库拥有数万个各种关系的示例，其中包括超过 100,000 个出生地关系的示例（<Edwin Hubble, Marshfield>、<Albert Einstein, Ulm> 等）。下一步是在大量文本上运行命名实体标注器——Mintz 等（2009）使用了来自维基百科的 800,000 篇文章——并抽取所有包含与该元组匹配的两个命名实体的句子，如下所示：
+
+> For example suppose we are trying to learn the place-of-birth relationship between people and their birth cities. In the seed-based approach, we might have only 5 examples to start with. But Wikipedia-based databases like DBPedia or Freebase have tens of thousands of examples of many relations; including over 100,000 examples of place-of-birth, (<Edwin Hubble, Marshfield>, <Albert Einstein, Ulm>, etc.,). The next step is to run named entity taggers on large amounts of text—Mintz et al. (2009) used 800,000 articles from Wikipedia—and extract all sentences that have two named entities that match the tuple, like the following:
+
+……Hubble 出生于 Marshfield…… ……Einstein 出生于（1879 年），Ulm…… ……Hubble 在 Marshfield 的出生地……
+
+> ...Hubble was born in Marshfield......Einstein, born (1879), Ulm......Hubble’s birthplace in Marshfield...
+
+现在可以从这些数据中抽取训练实例，每一个训练实例
+
+> Training instances can now be extracted from this data, one training instance
+对应每一个相同的元组 <relation, entity1, entity2>。因此，下列每一项都将对应一个训练实例：
+
+> for each identical tuple <relation, entity1, entity2>. Thus there will be one training instance for each of:
+
+<born-in, Edwin Hubble, Marshfield><born-in, Albert Einstein, Ulm><born-year, Albert Einstein, 1879>
+等等。
+
+> and so on.
+
+然后我们可以应用基于特征的分类或神经分类。对于基于特征的
+
+> We can then apply feature-based or neural classification. For feature-based
+分类，我们可以使用标准的有监督关系抽取特征，例如两个提及的命名实体标签、两个提及之间的词和依存路径，以及相邻词。每个元组都将拥有从许多训练实例中收集到的特征；像 (<born-in,Albert Einstein, Ulm> 这样的单个训练实例，其特征向量将包含来自许多提到 Einstein 和 Ulm 的不同句子的词汇特征和句法特征。
+
+> classification, we can use standard supervised relation extraction features like the named entity labels of the two mentions, the words and dependency paths in between the mentions, and neighboring words. Each tuple will have features collected from many training instances; the feature vector for a single training instance like (<born-in,Albert Einstein, Ulm> will have lexical and syntactic features from many different sentences that mention Einstein and Ulm.
+
+由于远程监督拥有非常大的训练集，它也能够使用非常
+
+> Because distant supervision has very large training sets, it is also able to use very
+丰富的特征，这些特征是上述各个单个特征的合取。因此，我们将抽取数千个把实体类型与中间的词或依存路径联结起来的模式，如下所示：
+
+> rich features that are conjunctions of these individual features. So we will extract thousands of patterns that conjoin the entity types with the intervening words or dependency paths like these:
+
+PER was born in LOC PER, born (XXXX), LOC PER’s birthplace in LOC
+回到我们一直使用的例子，对于这个句子：
+
+> To return to our running example, for this sentence:
+
+（21.12）美国航空（American Airlines）是 AMR 旗下的一个部门，立即对这一举措作出了回应，
+
+> (21.12) American Airlines, a unit of AMR, immediately matched the move,
+发言人 Tim Wagner 说
+
+> spokesman Tim Wagner said
+我们会学到像下面这样的丰富合取特征：
+
+> we would learn rich conjunction features like this one:
+
+M1 = ORG & M2 = PER & nextword=“said”& path= NP ↑NP ↑S ↑S ↓NP 其结果是一个有监督分类器，它拥有一个庞大而丰富的特征集可供
+
+> M1 = ORG & M2 = PER & nextword=“said”& path= NP ↑NP ↑S ↑S ↓NP The result is a supervised classifier that has a huge rich set of features to use
+在检测关系时使用。由于并非每个测试句子都会包含某个训练关系，分类器还需要能够把一个示例标注为无关系（no-relation）。
+
+> in detecting relations. Since not every test sentence will have one of the training relations, the classifier will also need to be able to label an example as no-relation.
+
+这个标签的训练方式是：随机选取不出现在任何 Freebase 关系中的实体对，为它们抽取特征，并为每个这样的元组构建一个特征向量。最终算法如图 21.8 所示。
+
+> This label is trained by randomly selecting entity pairs that do not appear in any Freebase relation, extracting features for them, and building a feature vector for each such tuple. The final algorithm is sketched in Fig. 21.8.
+
+![](images/21-information-extraction/fig_p10_0.png)
+
+*图 21.8 用于关系抽取的远程监督算法。神经分类器会跳过特征集 f。*
+*Figure 21.8 The distant supervision algorithm for relation extraction. A neural classifier would skip the feature set f.*
+
+远程监督与我们考察过的每一种方法都共享一些优点。与有监督分类一样，远程监督使用一个带有大量特征的分类器，并由详细的人工创建的知识来监督。与基于模式的分类器一样，它可以利用关于实体之间关系的高精度证据。事实上，远程监督系统学到的模式正像早期关系抽取器手工构建的模式一样。例如，Snow 等（2005）的 is-a 或上位词抽取系统使用 WordNet 中的上位词/下位词 NP 对作为远程监督，然后从大量文本中学习新的模式。他们的系统恰好归纳出了 Hearst（1992a）最初的 5 个模板模式，但另外还归纳出了 70,000 个附加模式，其中包括以下四个：
+
+> Distant supervision shares advantages with each of the methods we’ve examined. Like supervised classification, distant supervision uses a classifier with lots of features, and supervised by detailed hand-created knowledge. Like pattern-based classifiers, it can make use of high-precision evidence for the relation between entities. Indeed, distance supervision systems learn patterns just like the hand-built patterns of early relation extractors. For example the is-a or hypernym extraction system of Snow et al. (2005) used hypernym/hyponym NP pairs from WordNet as distant supervision, and then learned new patterns from large amounts of text. Their system induced exactly the original 5 template patterns of Hearst (1992a), but also 70,000 additional patterns including these four:
+
+NPH like NP Many hormones like leptin... NPH called NP ...using a markup language called XHTML NP is a NPH Ruby is a programming language... NP, a NPH IBM, a company with a long...
+
+这种同时使用大量特征的能力意味着，与基于种子的系统中模式的迭代扩展不同，这里不存在语义漂移。与无监督分类一样，它不使用带标签的文本训练语料库，因此对训练语料库中的体裁问题不敏感，并且依赖非常大量的未标注数据。远程监督还有一个优势，即它可以创建供神经分类器使用的训练元组，而神经分类器并不需要特征。
+
+> This ability to use a large number of features simultaneously means that, unlike the iterative expansion of patterns in seed-based systems, there’s no semantic drift. Like unsupervised classification, it doesn’t use a labeled training corpus of texts, so it isn’t sensitive to genre issues in the training corpus, and relies on very large amounts of unlabeled data. Distant supervision also has the advantage that it can create training tuples to be used with neural classifiers, where features are not required.
+
+远程监督的主要问题在于它往往会产生低精度的
+
+> The main problem with distant supervision is that it tends to produce low-precision
+结果，因此当前的研究集中在提高精度的方法上。此外，远程监督只能有助于抽取那些已经存在足够大型数据库的关系。对于没有数据集可用的新关系，或新领域中的关系，必须使用纯无监督方法。
+
+> results, and so current research focuses on ways to improve precision. Furthermore, distant supervision can only help in extracting relations for which a large enough database already exists. To extract new relations without datasets, or relations for new domains, purely unsupervised methods must be used.
+
+### 21.2.5 无监督关系抽取
+
+> 21.2.5 Unsupervised Relation Extraction
+
+无监督关系抽取的目标是：在没有带标签的训练数据、甚至没有任何关系列表的情况下从网络中抽取关系。这项任务通常称为开放信息抽取（open information extraction）或 Open IE。在 Open IE 中，关系就是简单的词串（通常以动词开头）。
+
+> The goal of unsupervised relation extraction is to extract relations from the web when we have no labeled training data, and not even any list of relations. This task is often called open information extraction or Open IE. In Open IE, the relations are simply strings of words (usually beginning with a verb).
+
+例如，ReVerb 系统（Fader 等，2011）从
+
+> For example, the ReVerb system (Fader et al., 2011) extracts a relation from a
+句子 s 中通过 4 个步骤抽取关系：
+
+> sentence s in 4 steps:
+
+- 对 s 运行词性标注器和实体组块器
+- 对于 s 中的每个动词，找出以动词开头且满足句法和词汇约束的最长词序列 w，并合并相邻的匹配。
+- 对于每个短语 w，找到其左侧最近的、不是关系代词、wh-词或存在句 “there” 的名词短语 x。找到其右侧最近的名词短语 y。
+- 使用置信度分类器为关系 r = (x,w,y) 赋予置信度 c，并返回该关系。
+
+> Run a part-of-speech tagger and entity chunker over s
+> For each verb in s, find the longest sequence of words w that start with a verb and satisfy syntactic and lexical constraints, merging adjacent matches.
+> For each phrase w, find the nearest noun phrase x to the left which is not a relative pronoun, wh-word or existential “there”. Find the nearest noun phrase y to the right.
+> Assign confidence c to the relation r = (x,w,y) using a confidence classifier and return it.
+
+一个关系只有在满足句法和词汇约束时才会被接受。这些
+
+> A relation is only accepted if it meets syntactic and lexical constraints. The
+句法约束确保它是一个以动词开头的序列，其中也可能包含名词（以 make、have 或 do 这类轻动词开头的关系，常常用名词来表达关系的核心，例如 have a hub in）：
+
+> syntactic constraints ensure that it is a verb-initial sequence that might also include nouns (relations that begin with light verbs like make, have, or do often express the core of the relation with a noun, like have a hub in):
+
+V | VP | VW*P V = verb particle? adv? W = (noun | adj | adv | pron | det ) P = (prep | particle | infinitive “to”)
+词汇约束基于一个词典 D，该词典用来剪除非常罕见的长关系字符串。其直觉是剔除那些没有以足够数量的不同论元类型出现、因而很可能是坏样本的候选关系。系统首先对 5 亿个网络句子离线运行上述关系抽取算法，并在对关系进行归一化（去除屈折变化、助动词、形容词和副词）之后，抽取出所有出现过的关系的列表。每个关系 r 若至少与 20 个不同论元一起出现，就被加入该词典。
+
+> The lexical constraints are based on a dictionary D that is used to prune very rare, long relation strings. The intuition is to eliminate candidate relations that don’t occur with sufficient number of distinct argument types and so are likely to be bad examples. The system first runs the above relation extraction algorithm offline on 500 million web sentences and extracts a list of all the relations that occur after normalizing them (removing inflection, auxiliary verbs, adjectives, and adverbs). Each relation r is added to the dictionary if it occurs with at least 20 different arguments.
+
+Fader 等人（2011）使用了一个包含 170 万个归一化关系的词典。
+
+> Fader et al. (2011) used a dictionary of 1.7 million normalized relations.
+
+最后，使用逻辑回归分类器为每个关系计算一个置信度值。该分类器的训练方法是：取 1000 个随机网络句子，运行抽取器，并人工把每个抽取出的关系标注为正确或不正确。然后在这个人工标注的数据上训练一个置信度分类器，使用的特征来自该关系本身以及其周围的词。图 21.9 展示了分类中使用的一些示例特征。
+
+> Finally, a confidence value is computed for each relation using a logistic regression classifier. The classifier is trained by taking 1000 random web sentences, running the extractor, and hand labeling each extracted relation as correct or incorrect. A confidence classifier is then trained on this hand-labeled data, using features of the relation and the surrounding words. Fig. 21.9 shows some sample features used in the classification.
+
+> (x,r,y) 覆盖 s 中的所有词；r 中最后一个介词是 for；r 中最后一个介词是 on；len(s) ≤10；在 s 中 r 的左侧有并列连词；r 与句法约束中的单个 V 匹配；在 s 中 x 的左侧有介词；在 s 中 y 的右侧有 NP
+>
+> *(x,r,y) covers all words in s the last preposition in r is for the last preposition in r is on len(s) ≤10 there is a coordinating conjunction to the left of r in s r matches a lone V in the syntactic constraints there is preposition to the left of x in s there is an NP to the right of y in s*
+
+*图 21.9 为开放信息抽取系统 REVERB（Fader 等人，2011）所抽取的关系赋予置信度的分类器所用的特征。*
+*Figure 21.9 Features for the classifier that assigns confidence to relations extracted by the Open Information Extraction system REVERB (Fader et al., 2011).*
+
+例如下面这个句子：
+
+> For example the following sentence:
+
+（21.13）United 在芝加哥设有一个枢纽，而芝加哥是 United
+
+> (21.13) United has a hub in Chicago, which is the headquarters of United
+Continental Holdings 的总部。
+
+> Continental Holdings.
+
+它得到关系短语 has a hub in 和 is the headquarters of（它也能得到 has 和 is，但更长的短语更受青睐）。第 3 步在 has a hub in 的左侧找到 United，在其右侧找到 Chicago，并跳过 which，在 is the headquarters of 的左侧找到 Chicago。最终的输出是：
+
+> has the relation phrases has a hub in and is the headquarters of (it also has has and is, but longer phrases are preferred). Step 3 finds United to the left and Chicago to the right of has a hub in, and skips over which to find Chicago to the left of is the headquarters of. The final output is:
+
+> r1: <United, has a hub in, Chicago>
+
+> r2: <Chicago, is the headquarters of, United Continental Holdings>
+
+无监督关系抽取的巨大优势在于它有能力处理
+
+> The great advantage of unsupervised relation extraction is its ability to handle
+数量庞大的关系，而无需事先把它们指定出来。其缺点是需要把所有字符串都映射为某种规范形式，以便加入数据库或知识图谱。当前的方法主要着眼于用动词表达的关系，因此会漏掉许多用名词性形式表达的关系。
+
+> a huge number of relations without having to specify them in advance. The disadvantage is the need to map all the strings into some canonical form for adding to databases or knowledge graphs. Current methods focus heavily on relations expressed with verbs, and so will miss many relations that are expressed nominally.
+
+### 21.2.6 关系抽取的评测
+
+> 21.2.6 Evaluation of Relation Extraction
+
+有监督关系抽取系统的评测方法是：使用带有人工标注的黄金标准关系的测试集，并计算准确率、召回率和 F 值。
+
+> Supervised relation extraction systems are evaluated by using test sets with humanannotated, gold-standard relations and computing precision, recall, and F-measure.
+
+有标签的准确率和召回率要求系统能正确地对关系进行分类，而无标签的方法只是衡量系统检测出彼此相关的实体的能力。
+
+> Labeled precision and recall require the system to classify the relation correctly, whereas unlabeled methods simply measure a system’s ability to detect entities that are related.
+
+半监督和无监督方法要难评测得多，因为它们是从网络或大规模文本中抽取出全新的关系。由于这些方法使用非常大量的文本，一般不可能只在一个小型标注测试集上运行它们，因此也就不可能预先标注出一组正确关系实例的黄金标准集合。
+
+> Semi-supervised and unsupervised methods are much more difficult to evaluate, since they extract totally new relations from the web or a large text. Because these methods use very large amounts of text, it is generally not possible to run them solely on a small labeled test set, and as a result it’s not possible to pre-annotate a gold set of correct instances of relations.
+
+对于这些方法，可以通过抽取一个
+
+> For these methods it’s possible to approximate (only) precision by drawing a
+从输出中随机抽取的关系样本，并让人工检查其中每个关系的准确性，来（仅仅）近似估计准确率。通常这种做法的关注点是要从一个文本集合中抽取的元组，而不是关系提及；系统不必检测出某个关系的每一次提及就能获得正确的评分。相反，评测的依据是系统结束时所拥有的数据库中的那组元组。也就是说，我们想知道系统是否能够发现 Ryanair 在 Charleroi 有一个枢纽；我们并不真的在意它发现了多少次。估计的准确率 ˆP 则为
+
+> random sample of relations from the output, and having a human check the accuracy of each of these relations. Usually this approach focuses on the tuples to be extracted from a body of text rather than on the relation mentions; systems need not detect every mention of a relation to be scored correctly. Instead, the evaluation is based on the set of tuples occupying the database when the system is finished. That is, we want to know if the system can discover that Ryanair has a hub at Charleroi; we don’t really care how many times it discovers it. The estimated precision ˆP is then
+ˆP = 样本中正确抽取的关系元组数 (21.14)
+
+> ˆP = # of correctly extracted relation tuples in the sample (21.14)
+样本中抽取的关系元组总数。
+
+> total # of extracted relation tuples in the sample.
+
+另一种能让我们获得一点关于召回率的信息的方法是，在不同的召回率水平上计算准确率。假设我们的系统能够对它产生的关系进行排序（按概率或置信度），我们就可以分别计算前 1000 个新关系、前 10,000 个新关系、前 100,000 个新关系等等的准确率。在每种情况下，我们都从该集合中抽取一个随机样本。这会向我们显示，随着我们抽取的元组越来越多，准确率曲线表现如何。但没有任何办法直接评测召回率。
+
+> Another approach that gives us a little bit of information about recall is to compute precision at different levels of recall. Assuming that our system is able to rank the relations it produces (by probability, or confidence) we can separately compute precision for the top 1000 new relations, the top 10,000 new relations, the top 100,000, and so on. In each case we take a random sample of that set. This will show us how the precision curve behaves as we extract more and more tuples. But there is no way to directly evaluate recall.
+
+## 21.3 抽取事件
+
+> 21.3 Extracting Events
+
+> `event`（事件）
+>
+> 释义：在本书中指可以用文本中的某个表达式表示、并可被指派到时间轴上某个时点或时段的事件或状态。
+
+事件抽取的任务是识别文本中对事件的提及。就本
+
+> The task of event extraction is to identify mentions of events in texts. For the
+
+> `extraction`（抽取）
+>
+> 释义：指从文本中识别并抽出特定结构化信息的过程，信息抽取、关系抽取与事件抽取都以它为核心动作。
+
+任务的目的而言，事件提及是任何表示事件或状态、并且可以被指派到时间中某个特定时点或时段的表达式。下面第 473 页上示例文本的标记展示了这段文本中的所有事件。
+
+> purposes of this task, an event mention is any expression denoting an event or state that can be assigned to a particular point, or interval, in time. The following markup of the sample text on page 473 shows all the events in this text.
+
+[EVENT 援引] 燃油价格高企，United Airlines [EVENT 表示] 周五它已经 [EVENT 上调] 了飞往某些同样由低成本航空公司提供服务的城市的航班票价，每往返程 6 美元。AMR Corp. 的下属单位 American Airlines 立即 [EVENT 跟进] [EVENT 了这一举措]，发言人 Tim Wagner [EVENT 说]。UAL Corp. 的下属单位 United [EVENT 表示]，[EVENT 这次涨价] 于周四生效，并 [EVENT 适用于] 它 [EVENT 与] 折扣航空公司竞争的多数航线，例如芝加哥到达拉斯以及丹佛到旧金山。
+
+> [EVENT Citing] high fuel prices, United Airlines [EVENT said] Friday it has [EVENT increased] fares by $6 per round trip on flights to some cities also served by lower-cost carriers. American Airlines, a unit of AMR Corp., immediately [EVENT matched] [EVENT the move], spokesman Tim Wagner [EVENT said]. United, a unit of UAL Corp.,[EVENT said] [EVENT the increase] took effect Thursday and [EVENT applies] to most routes where it [EVENT competes] against discount carriers, such as Chicago to Dallas and Denver to San Francisco.
+
+在英语中，大多数事件提及对应动词，而且大多数动词都引入
+
+> In English, most event mentions correspond to verbs, and most verbs introduce
+事件。然而，正如从我们的例子中可以看到的，情况并非总是如此。事件可以由名词短语引入，如 the move 和 the increase；而有些动词则无法引入事件，如短语动词 took effect，它指事件开始的时间，而不是事件本身。类似地，像 make、take 这样的轻动词
+
+> events. However, as we can see from our example, this is not always the case. Events can be introduced by noun phrases, as in the move and the increase, and some verbs fail to introduce events, as in the phrasal verb took effect, which refers to when the event began rather than to the event itself. Similarly, light verbs such as make, take,
+
+> `light verbs`（轻动词（light verbs））
+>
+> 释义：在本章中指自身词汇意义很弱、主要为其宾语名词提供句法结构、事件意义由宾语名词承担的动词。
+
+和 have 常常不表示事件。轻动词是自身意义很小的动词，相关的事件转而由其直接宾语名词来表达。在像 took a flight 这样的轻动词例子中，定义事件的是 flight 这个词；这些轻动词只是为该名词的论元提供句法结构。
+
+> and have often fail to denote events. A light verb is a verb that has very little meaning itself, and the associated event is instead expressed by its direct object noun. In light verb examples like took a flight, it’s the word flight that defines the event; these light verbs just provide a syntactic structure for the noun’s arguments.
+
+事件抽取任务存在多种版本，具体取决于目标。例
+
+> Various versions of the event extraction task exist, depending on the goal. For
+如在 TempEval 共享任务（Verhagen 等，2009）中，目标是抽取事件及其各方面信息，如体属性和时间属性。事件要
+
+> example in the TempEval shared tasks (Verhagen et al. 2009) the goal is to extract events and aspects like their aspectual and temporal properties. Events are to be
+
+> `reporting`（报道）
+>
+> 释义：在本书中指由 say、report、tell、explain 等动词所表达的一类事件，即说话人转述信息的言语事件。
+
+被分类为动作、状态、报道事件（say、report、tell、explain）、感知
+
+> classified as actions, states, reporting events (say, report, tell, explain), perception
+
+> `events`（事件）
+>
+> 释义：此处它出现在「感知事件」这一类别名中，指由 see、hear 等感知动词所表达的一类事件。
+
+事件，等等。每个事件的体、时态和情态也需要抽取。因此，例如示例文本中各个 said 事件会被标注为 (class=REPORTING, tense=PAST, aspect=PERFECTIVE)。
+
+> events, and so on. The aspect, tense, and modality of each event also needs to be extracted. Thus for example the various said events in the sample text would be annotated as (class=REPORTING, tense=PAST, aspect=PERFECTIVE).
+
+事件抽取通常通过有监督学习来建模，其中检测事件
+
+> Event extraction is generally modeled via supervised learning, detecting events
+通过 IOB 序列模型完成，并用多类分类器指派事件类别和属性。输入可以是以编码器为起点的神经模型；也可以是使用如图 21.10 所示特征的传统基于特征的模型。
+
+> via IOB sequence models and assigning event classes and attributes with multi-class classifiers. The input can be neural models starting from encoders; or classic featurebased models using features like those in Fig. 21.10.
+
+> 特征 说明 字符词缀 目标词的字符级前缀和后缀 名词化后缀 名词化形式的字符级后缀（如 -tion） 词性 目标词的词性 轻动词 二值特征，指示目标词是否由轻动词支配 主语句法类别 句子主语的句法类别 形态词干 目标词的词干化形式 动词词根 作为名词化基础的动词的词根形式 WordNet 上位词 目标词的上位词集合
+>
+> *Feature Explanation Character affixes Character-level prefixes and suffixes of target word Nominalization suffix Character-level suffixes for nominalizations (e.g., -tion) Part of speech Part of speech of the target word Light verb Binary feature indicating that the target is governed by a light verb Subject syntactic category Syntactic category of the subject of the sentence Morphological stem Stemmed version of the target word Verb root Root form of the verb basis for a nominalization WordNet hypernyms Hypernym set for the target*
+
+*图 21.10 事件检测中经典基于特征的方法常用的特征。*
+*Figure 21.10 Features commonly used in classic feature-based approaches to event detection.*
+
+## 21.4 表示时间
+
+> 21.4 Representing Time
+
+让我们先介绍时间逻辑的基础知识，以及人类语言
+
+> Let’s begin by introducing the basics of temporal logic and how human languages
+
+> `temporal logic`（时间逻辑）
+>
+> 释义：用于刻画事件发生先后以及时间点、时间区间之间关系的逻辑体系，是理解时间表达式语义的基础。
+
+如何传达时间信息。关于时间最直观的理论认为，时间不可阻挡地向前流动，而事件与时间轴上的某个时间点或时间区间相关联。我们可以把不同的事件放到时间轴上来排序：如果时间的流动从第一个事件指向第二个事件，那么一个事件就先于另一个事件。在大多数理论中，与这些概念相伴的还有“当前时刻”这一概念。把这一概念与时间排序关系的概念结合起来，就得到了我们熟悉的过去、现在和未来。
+
+> convey temporal information. The most straightforward theory of time holds that it flows inexorably forward and that events are associated with either points or intervals in time, as on a timeline. We can order distinct events by situating them on the timeline; one event precedes another if the flow of time leads from the first event to the second. Accompanying these notions in most theories is the idea of the current moment in time. Combining this notion with the idea of a temporal ordering relationship yields the familiar notions of past, present, and future.
+
+可以使用各种不同的时间表示系统来讨论时间排序关系。计算建模中最常用的一种是 Allen（1984）的区间代数。Allen 把所有事件和时间
+
+> Various kinds of temporal representation systems can be used to talk about temporal ordering relationship. One of the most commonly used in computational modeling is the interval algebra of Allen (1984). Allen models all events and time
+
+> `interval algebra`（区间代数）
+>
+> 释义：Allen（1984）的时间表示系统，把事件和时间表达式都建模为区间，并用 13 种基本关系描述区间之间的先后与重叠。
+
+表达式都建模为区间，没有对“点”的表示（尽管区间可以非常短）。为了在没有点的情况下处理区间，他识别出 13 种可以成立在这些时间区间之间的基本关系。图 21.11 给出了这 13 种 Allen 关系。
+
+> expressions as intervals there is no representation for points (although intervals can be very short). In order to deal with intervals without points, he identifies 13 primitive relations that can hold between these temporal intervals. Fig. 21.11 shows these 13 Allen relations.
+
+> `Allen relations`（Allen 关系）
+>
+> 释义：Allen（1984）用来刻画两个时间区间之间相对位置与重叠方式的 13 种基本时间关系，是区间代数的基础。
+
+![](images/21-information-extraction/fig_p14_0.png)
+
+*图 21.11 Allen（1984）给出的 13 种时间关系。*
+*Figure 21.11 The 13 temporal relations from Allen (1984).*
+
+### 21.4.1 Reichenbach（赖兴巴赫）的参照点
+
+> 21.4.1 Reichenbach’s reference point
+
+简单动词时态与时间点之间的关系绝非直截了当。现在时可以用来指称未来的事件，如下例所示：
+
+> The relation between simple verb tenses and points in time is by no means straightforward. The present tense can be used to refer to a future event, as in this example:
+
+（21.15）好，我们 10 点从旧金山飞往波士顿。
+
+> (21.15) Ok, we fly from San Francisco to Boston at 10.
+
+或者考虑下面这些例子：
+
+> Or consider the following examples:
+
+（21.16）1902 航班晚点到达。
+（21.17）1902 航班已经晚点到达。
+
+> (21.16) Flight 1902 arrived late.(21.17) Flight 1902 had arrived late.
+
+尽管两者都指称过去的事件，但用同样的方式表示它们似乎是错误的。第二个例子似乎还有另一个未被点明的事件潜藏于背景之中（例如，当其他某件事发生时，1902 航班就已经晚点到达了）。
+
+> Although both refer to events in the past, representing them in the same way seems wrong. The second example seems to have another unnamed event lurking in the background (e.g., Flight 1902 had already arrived late when something else happened).
+
+为了解释这一现象，Reichenbach（1947）引入了
+
+> To account for this phenomena, Reichenbach (1947) introduced the notion of
+参照点的概念。在我们简单的时间方案中，当前时刻
+
+> a reference point. In our simple temporal scheme, the current moment in time is
+
+> `reference point`（参照点）
+>
+> 释义：Reichenbach 提出的时间分析概念，它独立于话语时间和事件时间，用来确定事件相对于某一时点的位置。
+
+被视为话语时间，并用作判断事件发生于何时（之前、同时或之后）的参照点。在 Reichenbach 的方法中，参照点的概念与话语时间和事件时间是分离的。下面的例子说明了这一方法的基本要点：
+
+> equated with the time of the utterance and is used as a reference point for when the event occurred (before, at, or after). In Reichenbach’s approach, the notion of the reference point is separated from the utterance time and the event time. The following examples illustrate the basics of this approach:
+
+（21.18）玛丽的航班起飞时，我吃了午饭。
+（21.19）玛丽的航班起飞时，我已经吃过午饭了。
+
+> (21.18) When Mary’s flight departed, I ate lunch.(21.19) When Mary’s flight departed, I had eaten lunch.
+
+在这两个例子中，吃饭事件都发生在过去，也就是先于
+
+> In both of these examples, the eating event has happened in the past, that is, prior
+话语。然而，第一个例子中的动词时态表明，吃饭事件在航班起飞时开始，而第二个例子表明，吃饭在航班起飞之前就已完成。因此，用 Reichenbach 的术语来说，起飞事件确定了参照点。这些事实可以通过把吃饭事件和起飞事件联系起来的额外约束来刻画。在第一个例子中，参照点先于吃饭事件；在第二个例子中，吃饭先于参照点。图 21.12 用英语的主要时态说明了 Reichenbach 的方法。练习 21.4 要求你用 FOL 表示这些例子。
+
+> to the utterance. However, the verb tense in the first example indicates that the eating event began when the flight departed, while the second example indicates that the eating was accomplished prior to the flight’s departure. Therefore, in Reichenbach’s terms the departure event specifies the reference point. These facts can be accommodated by additional constraints relating the eating and departure events. In the first example, the reference point precedes the eating event, and in the second example, the eating precedes the reference point. Figure 21.12 illustrates Reichenbach’s approach with the primary English tenses. Exercise 21.4 asks you to represent these examples in FOL.
+
+![](images/21-information-extraction/fig_p15_0.png)
+
+*图 21.12 Reichenbach 的方法应用于英语的各种时态。在这些图中，时间从左向右流动，E 表示事件时间，R 表示参照时间，U 表示话语时间。*
+*Figure 21.12 Reichenbach’s approach applied to various English tenses. In these diagrams, time flows from left to right, E denotes the time of the event, R denotes the reference time, and U denotes the time of the utterance.*
+
+除了时态，语言还有许多其他方式传达时间信息。
+
+> Languages have many other ways to convey temporal information besides tense.
+
+对我们的目的最有用的是像 in the morning、6:45 或 afterwards 这样的时间表达式。
+
+> Most useful for our purposes will be temporal expressions like in the morning or 6:45 or afterwards.
+
+（21.20）我想在早上 6:45 出发。
+（21.21）大约中午左右吧。
+（21.22）我想之后坐火车回去。
+
+> (21.20) I’d like to go at 6:45 in the morning.(21.21) Somewhere around noon, please.(21.22) I want to take the train back afterwards.
+
+顺便说一句，时间表达式展现出一种引人入胜的隐喻性概念
+
+> Incidentally, temporal expressions display a fascinating metaphorical conceptual
+组织。英语中的时间表达式常常用空间词语来表达，这些例子中 at、in、somewhere 和 near 的各种用法就体现了这一点（Lakoff and Johnson 1980, Jackendoff 1983）。诸如此类用一个域系统地表达另一个域的隐喻性组织，在世界各种语言中都非常普遍。
+
+> organization. Temporal expressions in English are frequently expressed in spatial terms, as is illustrated by the various uses of at, in, somewhere, and near in these examples (Lakoff and Johnson 1980, Jackendoff 1983). Metaphorical organizations such as these, in which one domain is systematically expressed in terms of another, are very common in languages of the world.
+
+## 21.5 表示体
+
+> 21.5 Representing Aspect
+
+与时间相关的一个概念是体，我们用它来指称事件可以被
+
+> A related notion to time is aspect, which is what we call the way events can be
+
+> `aspect`（体）
+>
+> 释义：依据事件的内部时间结构或时间轮廓对事件分类的方式，关注事件是正在进行还是已经结束、是瞬时还是延续。
+
+其内部时间结构或时间轮廓加以分类的方式。我们指的是诸如此类的问题：事件是正在进行的还是已经结束的，或者它们被理解为发生在某一时间点上还是跨越某个时间区间。自亚里士多德以来，这类时间轮廓的概念就被用来把事件表达式划分为不同类别，不过我们在这里要引入的四个类别是由 Vendler（1967）提出的（你可能也会看到用德语术语 aktionsart 来指称这些类别）。
+
+> categorized by their internal temporal structure or temporal contour. By this we mean questions like whether events are ongoing or have ended, or whether they are conceptualized as happening at a point in time or over some interval. Such notions of temporal contour have been used to divide event expressions into classes since Aristotle, although the set of four classes we’ll introduce here is due to Vendler(1967) (you may also see the German term aktionsart used to refer to these classes).
+
+> `aktionsart`（aktionsart（动作方式））
+>
+> 释义：德语术语，指依据事件内部时间结构划分出的动词语义类别，与这里采用的 Vendler 四类划分所指相同。
+
+最基本的体的区分是事件（涉及变化）
+
+> The most basic aspectual distinction is between events (which involve change)
+
+> `events`（事件）
+>
+> 释义：在体的分类中指涉及变化的一类情状，与不涉及变化的“状态”相对立。
+
+与状态（不涉及变化）之间的区分。状态性表达式表示
+
+> and states (which do not involve change). Stative expressions represent the notion
+
+> `states`（状态）
+>
+> 释义：在体的分类中指不涉及变化的一类情状，表示事件参与者处于某种状况或具有某种属性。
+
+事件参与者在给定时间处于某种状态或具有某种属性的概念。
+
+> of an event participant being in a state, or having a particular property, at a given
+
+> `stative`（状态）
+>
+> 释义：指把世界与参与者概念化为在某一时间点上保持不变、不涉及内部变化的一类事件表达式。
+
+时间点上。状态表达式捕捉世界在单一时间点上的某些方面，并把参与者概念化为不变且连续的。考虑以下 ATIS 例子。
+
+> point in time. Stative expressions capture aspects of the world at a single point in time, and conceptualize the participant as unchanging and continuous. Consider the following ATIS examples.
+
+(21.23) 我喜欢快车。(21.24) 我需要最便宜的票价。(21.25) 我想坐头等舱。
+
+> (21.23) I like express trains.(21.24) I need the cheapest fare.(21.25) I want to go first class.
+
+在这类例子中，由主语表示的事件参与者可以被看作在某个特定时间点上经历着某事，并且不涉及任何随时间发生的内部变化（喜欢或需要被概念化为连续且不变的）。
+
+> In examples like these, the event participant denoted by the subject can be seen as experiencing something at a specific point in time, and don’t involve any kind of internal change over time (the liking or needing is conceptualized as continuous and unchanging).
+
+非状态（我们将其称为事件）被划分为若干子类；我们将
+
+> Non-states (which we’ll refer to as events) are divided into subclasses; we’ll
+在此介绍其中三类。活动表达式描述参与者从事的、在一段时间跨度内发生的事件（而不是像状态表达式那样被概念化为单一时间点），并且没有特定的终点。当然，在实践中一切都会结束，但该表达式的意义并不表示这一事实。考虑以下例子：
+
+> introduce three here. Activity expressions describe events undertaken by a participant that occur over a span of time (rather than being conceptualized as a single point in time like stative expressions), and have no particular end point. Of course in practice all things end, but the meaning of the expression doesn’t represent this fact. Consider the following examples:
+
+> `activity`（活动）
+>
+> 释义：指描述参与者在某段时间内持续进行、且没有特定终点的一类事件表达式。
+
+(21.26) 她开一辆马自达（Mazda）。(21.27) 我住在布鲁克林。
+
+> (21.26) She drove a Mazda.(21.27) I live in Brooklyn.
+
+这两个例子都表明，主语在一段时间内从事或曾经从事由动词所表示的活动，但都没有说明开车或居住可能在何时停止。
+
+> These examples both specify that the subject is engaged in, or has engaged in, the activity specified by the verb for some period of time, but doesn’t specify when the driving or living might have stopped.
+
+还有两类表达式，即达成表达式和完结表达式，它们描述随时间发生的事件，但同时也把该事件概念化为具有某种特定的终点或目标。希腊词 telos 意为“终点”或“目标”，因此这类表达式所描述的事件常被称为终结性事件（telic events）。
+
+> Two more classes of expressions, achievement expressions and accomplishment expressions, describe events that take place over time, but also conceptualize the event as having a particular kind of endpoint or goal. The Greek word telos means ‘end’ or ’goal’ and so the events described by these kinds of expressions are often called telic events.
+
+> `telic`（终结性（telic））
+>
+> 释义：指所描述的事件被概念化为具有特定终点或目标，而不只是持续一段时间的那一类表达。
+
+> `accomplishment expressions`（完结表达式）
+>
+> 释义：指描述具有自然终点、并最终导致某一特定状态出现的一类事件表达式。
+
+完结表达式描述具有自然终点并
+
+> Accomplishment expressions describe events that have a natural end point and
+导致某种特定状态的事件。考虑以下例子：
+
+> result in a particular state. Consider the following examples:
+
+(21.28) 他为我预订了一个座位。(21.29) 7:00 的火车把我送到了纽约市。
+
+> (21.28) He booked me a reservation.(21.29) The 7:00 train got me to New York City.
+
+在这些例子中，事件被看作在某段时间内发生，并在预期的状态实现时结束（即我拥有一个预订这一状态，或我身处纽约市这一状态）。
+
+> In these examples, an event is seen as occurring over some period of time that ends when the intended state is accomplished (i.e., the state of me having a reservation, or me being in New York City).
+
+最后一个体类别，即达成表达式，与
+
+> The final aspectual class, achievement expressions, is only subtly different than
+完结表达式只有细微的差别。考虑以下例子：
+
+> accomplishments. Consider the following:
+
+(21.30) 她找到了她的登机口。(21.31) 我到达了纽约。
+
+> (21.30) She found her gate.(21.31) I reached New York.
+
+与完结表达式一样，达成表达式也会导致某种状态。但与完结表达式不同，达成事件是“瞬时的”：它们被认为发生在一瞬间，动词并不把通向该状态的过程或活动概念化。因此，这些例子中的事件实际上可能之前有持续时间较长的寻找或旅行事件，但动词并不把这些之前的过程概念化，而是把与“找到”和“到达”相对应的事件概念化为点，而不是区间。
+
+> Like accomplishment expressions, achievement expressions result in a state. But unlike accomplishments, achievement events are ‘punctual’: they are thought of as happening in an instant and the verb doesn’t conceptualize the process or activity leading up the state. Thus the events in these examples may in fact have been preceded by extended searching or traveling events, but the verb doesn’t conceptualize these preceding processes, but rather conceptualizes the events corresponding to finding and reaching as points, not intervals.
+
+总之，按时间轮廓对事件表达式进行分类的一种标准方式是
+
+> In summary, a standard way of categorizing event expressions by their temporal
+通过以下四个一般类别：
+
+> contours is via these four general classes:
+
+状态：我知道我的登机口。活动：John 正在飞行。完结：Sally 预订了她的航班。达成：她找到了她的登机口。
+
+> Stative: I know my departure gate. Activity: John is flying. Accomplishment: Sally booked her flight. Achievement: She found her gate.
+
+在继续之前请注意，事件表达式可以很容易地从一个
+
+> Before moving on, note that event expressions can easily be shifted from one
+类别转换到另一个类别。考虑以下例子：
+
+> class to another. Consider the following examples:
+
+(21.32) 我飞了。(21.33) 我飞到了纽约。
+
+> (21.32) I flew.(21.33) I flew to New York.
+
+第一个例子是一个简单的活动；它没有自然终点。第二个例子显然是一个完结事件，因为它有一个终点，并导致某种特定状态。显然，事件的分类并不只由动词决定，而是由整个表达式在上下文中的语义决定。
+
+> The first example is a simple activity; it has no natural end point. The second example is clearly an accomplishment event since it has an end point, and results in a particular state. Clearly, the classification of an event is not solely governed by the verb, but by the semantics of the entire expression in context.
+
+## 21.6 带时间标注的数据集：TimeBank
+
+> 21.6 Temporally Annotated Datasets: TimeBank
+
+TimeBank 语料库由标注了时间
+
+> The TimeBank corpus consists of American English text annotated with temporal
+
+> `TimeBank`
+>
+> 释义：一个由美式英语文本构成的语料库，其中带有时间信息标注，标注采用 TimeML 标记语言。
+
+信息（Pustejovsky et al., 2003）。其标注使用 TimeML（Saurí et al., 2006），这是一种基于上文讨论的 Allen 区间代数的时间标记语言（Allen, 1984）。TimeML 对象有三种类型：EVENT 表示事件和状态，TIME 表示日期之类的时间表达式，LINK 表示事件与时间之间的各种关系（事件-事件、事件-时间以及时间-时间）。这些链接包括用于 13 种 Allen 关系的时间链接（TLINK）、用于事件与子事件之间体关系的体链接（ALINK），以及标记事实性的 SLINK。
+
+> information (Pustejovsky et al., 2003). The annotations use TimeML (Saur´ı et al., 2006), a markup language for time based on Allen’s interval algebra discussed above(Allen, 1984). There are three types of TimeML objects: an EVENT represent events and states, a TIME represents time expressions like dates, and a LINK represents various relationships between events and times (event-event, event-time, and timetime). The links include temporal links (TLINK) for the 13 Allen relations, aspectual links (ALINK) for aspectual relationships between events and subevents, and SLINKS which mark factuality.
+
+考虑下面这个示例句子及其在
+
+> Consider the following sample sentence and its corresponding markup shown in
+图 21.13 中所示的相应标记，该句选自 TimeBank 文档之一。
+
+> Fig. 21.13, selected from one of the TimeBank documents.
+
+(21.34) 达美航空（Delta Air Lines）的收益在第一财季飙升 33% 至创纪录水平，
+
+> (21.34) Delta Air Lines earnings soared 33% to a record in the fiscal first quarter,
+逆行业利润不断下滑的趋势。
+
+> bucking the industry trend toward declining profits.
+
+这段文本有三个事件和两个时间表达式（包括文章的创建
+
+> This text has three events and two temporal expressions (including the creation
+时间，它充当文档时间），以及四个使用 Allen 关系进行刻画的时间链接：
+
+> time of the article, which serves as the document time), and four temporal links that capture the using the Allen relations:
+
+- Soaringe1 包含在第一财季 t58 内
+- Soaringe1 早于 1989-10-26 t57
+- Soaringe1 与 buckinge3 同时发生
+
+> Soaringe1 is included in the fiscal first quartert58
+> Soaringe1 is before 1989-10-26t57
+> Soaringe1 is simultaneous with the buckinge3
+
+![](images/21-information-extraction/fig_p18_0.png)
+
+*图 21.13 TimeBank 语料库中的一个示例。*
+*Figure 21.13 Example from the TimeBank corpus.*
+
+- Declininge4 包含 soaringe1 我们还可以把这些链接可视化为一个图。式 21.35 中的 TimeBank 片段
+
+> Declininge4 includes soaringe1 We can also visualize the links as a graph. The TimeBank snippet in Eq. 21.35
+
+会用一个类似图 21.14 的图来表示。
+
+> would be represented with a graph like Fig. 21.14.
+
+(21.35) [DCT:11/02/891]1：Pacific First Financial Corp. 称2，股东
+
+> (21.35) [DCT:11/02/891]1: Pacific First Financial Corp. said2 shareholders
+批准3 由多伦多的 Royal Trustco Ltd. 以每股 27 美元、即 2.12 亿美元的价格对其进行的收购4。这家储蓄控股公司称5，它预计6 在年底11 前获得7 监管批准8 并完成9 这笔交易10。
+
+> approved3 its acquisition4 by Royal Trustco Ltd. of Toronto for $27 a share, or $212 million. The thrift holding company said5 it expects6 to obtain7 regulatory approval8 and complete9 the transaction10 by year-end11.
+
+![](images/21-information-extraction/fig_p18_1.png)
+
+*图 21.14 式 21.35 中文本的图，改编自（Ocal et al., 2022）。TLINK 用蓝色表示，ALINK 用红色表示，SLINK 用绿色表示。*
+*Figure 21.14 A graph of the text in Eq. 21.35, adapted from (Ocal et al., 2022). TLINKS are shown in blue, ALINKS in red, and SLINKS in green.*
+
+## 21.7 自动时间分析
+
+> 21.7 Automatic Temporal Analysis
+
+这里我们介绍分析文本中的时间时所用的三个常见步骤：
+
+> Here we introduce the three common steps used in analyzing time in text:
+
+- 抽取时间表达式
+- 通过把这些表达式转换为标准格式来对其做归一化。
+- 把事件与时间关联起来，并抽取时间图与时间线
+
+> Extracting temporal expressions
+> Normalizing these expressions, by converting them to a standard format.
+> Linking events to times and extracting time graphs and timelines
+
+### 21.7.1 抽取时间表达式
+
+> 21.7.1 Extracting Temporal Expressions
+
+时间表达式是用于指称绝对时间点、相对时间、持续时间以及这些内容的集合的短语。绝对时间表达式是那些可以
+
+> Temporal expressions are phrases that refer to absolute points in time, relative times, durations, and sets of these. Absolute temporal expressions are those that can be
+
+> `absolute relative`（绝对时间与相对时间）
+>
+> 释义：指时间表达式按确定时间的方式划分的两类：绝对时间能直接对应日历日期或时刻，相对时间则要借助别的参照点才能定位。
+
+直接映射到日历日期、一天中的时刻，或二者兼有。相对时间表达式通过某个其他参照点映射到特定时间（例如从上周二算起的一周）。最后，持续时间表示不同粒度级别的时间跨度——
+
+> mapped directly to calendar dates, times of day, or both. Relative temporal expressions map to particular times through some other reference point (as in a week from last Tuesday). Finally, durations denote spans of time at varying levels of granular-
+
+> `duration`（持续时间）
+>
+> 释义：指时间表达式所表达的时长，可按秒、分钟、天、周、世纪等不同粒度来度量，如“三周”“六天”。
+
+（秒、分钟、天、周、世纪等）。图 21.15 列出了这些类别各自的一些示例时间表达式。
+
+> ity (seconds, minutes, days, weeks, centuries, etc.). Figure 21.15 lists some sample temporal expressions in each of these categories.
+
+时间表达式是语法结构，其中心词常常是时间性的
+
+> Temporal expressions are grammatical constructions that often have temporal
+词汇触发词，因此很容易被发现。词汇触发词可能是
+
+> lexical triggers as their heads, making them easy to find. Lexical triggers might
+
+> 绝对 相对 持续时间 1916 年 4 月 24 日（April 24, 1916） 昨天（yesterday） 四小时（four hours） 1977 年夏天（The summer of ’77） 下学期（next semester） 三周（three weeks） 上午 10:15（10:15 AM） 从昨天起两周后（two weeks from yesterday） 六天（six days） 2006 年第三季度（The 3rd quarter of 2006） 上一季度（last quarter） 最近三个季度（the last three quarters）
+>
+> *Absolute Relative Durations April 24, 1916 yesterday four hours The summer of ’77 next semester three weeks 10:15 AM two weeks from yesterday six days The 3rd quarter of 2006 last quarter the last three quarters*
+
+*图 21.15 绝对、相对和持续时间表达式的示例。*
+*Figure 21.15 Examples of absolute, relational and durational temporal expressions.*
+
+名词、专有名词、形容词和副词；完整的时间表达式由它们的短语投射构成：名词短语、形容词短语和副词短语（图 21.16）。
+
+> be nouns, proper nouns, adjectives, and adverbs; full temporal expressions consist of their phrasal projections: noun phrases, adjective phrases, and adverbial phrases(Figure 21.16).
+
+> 类别 示例 名词（Noun） 早晨（morning）、正午（noon）、夜晚（night）、冬季（winter）、黄昏（dusk）、黎明（dawn） 专有名词（Proper Noun） 一月（January）、星期一（Monday）、Ides、复活节（Easter）、犹太新年（Rosh Hashana）、斋月（Ramadan）、春节（Tet） 形容词（Adjective） 最近的（recent）、过去的（past）、一年一度的（annual）、前任的（former） 副词（Adverb） 每小时（hourly）、每天（daily）、每月（monthly）、每年（yearly）
+>
+> *Category Examples Noun morning, noon, night, winter, dusk, dawn Proper Noun January, Monday, Ides, Easter, Rosh Hashana, Ramadan, Tet Adjective recent, past, annual, former Adverb hourly, daily, monthly, yearly*
+
+*图 21.16 时间词汇触发词的示例。*
+*Figure 21.16 Examples of temporal lexical triggers.*
+
+该任务是在连续文本中检测出时间表达式，如下面的例子所示，
+
+> The task is to detect temporal expressions in running text, like this examples,
+其中用 TIMEX3 标签标出（Pustejovsky et al. 2005；Ferro et al. 2005）。
+
+> shown with TIMEX3 tags (Pustejovsky et al. 2005, Ferro et al. 2005).
+
+由 UAL Corp 旗下的 United Airlines 在<TIMEX3>上周</TIMEX3>发起的票价上调，在<TIMEX3>周末</TIMEX3>得到了竞争对手的跟进，这标志着<TIMEX3>两周</TIMEX3>内第二次成功的票价上调。
+
+> A fare increase initiated <TIMEX3>last week</TIMEX3> by UAL Corp’s United Airlines was matched by competitors over <TIMEX3>the weekend</TIMEX3>, marking the second successful fare increase in<TIMEX3>two weeks</TIMEX3>.
+
+基于规则的方法使用级联的正则表达式，从先前阶段的结果中识别出越来越大
+
+> Rule-based approaches use cascades of regular expressions to recognize larger
+的语块，其依据是包含词性、触发词（如 February）或类别（如 MONTH）的模式（Chang and Manning, 2012；Strötgen and Gertz, 2013；Chambers, 2013）。下面是 SUTime（Chang and Manning, 2012）中用于检测像 3 years old 这类表达式的一条规则：
+
+> and larger chunks from previous stages, based on patterns containing parts of speech, trigger words (e.g., February) or classes (e.g., MONTH) (Chang and Manning, 2012; Str¨otgen and Gertz, 2013; Chambers, 2013). Here’s a rule from SUTime (Chang and Manning, 2012) for detecting expressions like 3 years old:
+
+/(\d+)[-\s]($TEUnits)(s)?([-\s]old)?/
+序列标注方法使用标准的 IOB 方案，把词标记为
+
+> Sequence-labeling approaches use the standard IOB scheme, marking words
+位于时间表达式内部（I，Inside）、外部（O，Outside）或处于其开头（B，Beginning）：
+
+> that are either (I)nside, (O)utside or at the (B)eginning of a temporal expression:
+
+由 UAL Corp 在上周发起的票价上调……
+
+> A fare increase initiated last week by UAL Corp’s...
+
+O O O O B I O O O
+训练一个统计序列标注器，其输入可以是嵌入或微调过的编码器，也可以是从词元及其上下文中抽取的经典特征，包括词、词汇触发词和词性。
+
+> A statistical sequence labeler is trained, using either embeddings or a fine-tuned encoder, or classic features extracted from the token and context including words, lexical triggers, and POS.
+
+时间表达式识别器用通常的召回率、准确率
+
+> Temporal expression recognizers are evaluated with the usual recall, precision,
+和 F 值来评估。对所有这些高度词汇化的方法来说，一个主要困难是避免那些会引发假阳性的表达式：
+
+> and F-measures. A major difficulty for all of these very lexicalized approaches is avoiding expressions that trigger false positives:
+
+(21.36) 《1984》讲述了 Winston Smith 的故事……（21.37）……U2 的经典歌曲 Sunday Bloody Sunday
+
+> (21.36) 1984 tells the story of Winston Smith...(21.37) ...U2’s classic Sunday Bloody Sunday
+
+### 21.7.2 时间归一化
+
+> 21.7.2 Temporal Normalization
+
+> `temporal`（时间的（temporal））
+>
+> 释义：在本书中作修饰语使用，指与文本中时间信息相关的各项任务，如时间表达式抽取、时间归一化和时间关系抽取。
+
+时间归一化是把时间表达式映射到一个时间点
+
+> Temporal normalization is the task of mapping a temporal expression to a point
+
+> `normalization`（归一化）
+>
+> 释义：指把抽取到的时间表达式转换成标准格式的时间点或时长，使之可比较、可计算的处理步骤。
+
+或一个持续时间上的任务。时间点对应日历日期、一天中的时刻，或二者兼有。持续时间主要由时间长度构成。归一化后的时间
+
+> in time or to a duration. Points in time correspond to calendar dates, to times of day, or both. Durations primarily consist of lengths of time. Normalized times
+
+![](images/21-information-extraction/fig_p20_0.png)
+
+*图 21.17 包含时间表达式归一化取值的 TimeML 标注。*
+*Figure 21.17 TimeML markup including normalized values for temporal expressions.*
+
+通过用于编码时间值的 ISO 8601 标准来表示（ISO8601，2004）。图 21.17 用这些 VALUE 属性重现了我们前面的示例。
+
+> are represented via the ISO 8601 standard for encoding temporal values (ISO8601, 2004). Fig. 21.17 reproduces our earlier example with these value attributes.
+
+这段文本的日期行（dateline），也就是文档日期，是 2007 年 7 月 2 日。这类表达式的 ISO 表示形式为 YYYY-MM-DD，此处即 2007-07-02。
+
+> The dateline, or document date, for this text was July 2, 2007. The ISO representation for this kind of expression is YYYY-MM-DD, or in this case, 2007-07-02.
+
+我们示例文本中时间表达式的编码都由这一日期推得，在此作为 VALUE 属性的取值给出。
+
+> The encodings for the temporal expressions in our sample text all follow from this date, and are shown here as values for the VALUE attribute.
+
+正文中的第一个时间表达式指的是某一年中的某一周。
+
+> The first temporal expression in the text proper refers to a particular week of the
+
+在 ISO 标准中，周从 01 编号到 53，一年的第一周是包含该年第一个星期四的那一周。这些周用模板 YYYY-Wnn 表示。我们文档日期对应的 ISO 周是第 27 周；因此上周的取值表示为“2007-W26”。
+
+> year. In the ISO standard, weeks are numbered from 01 to 53, with the first week of the year being the one that has the first Thursday of the year. These weeks are represented with the template YYYY-Wnn. The ISO week for our document date is week 27; thus the value for last week is represented as “2007-W26”.
+
+下一个时间表达式是 the weekend。ISO 的周从星期一开始；
+
+> The next temporal expression is the weekend. ISO weeks begin on Monday;
+
+因此，周末出现在一周的末尾，并完整地落在单周之内。周末被当作持续时间来处理，所以 VALUE 属性的取值必须是一个长度。持续时间按照模式 Pnx 表示，其中 n 是表示长度的整数，x 表示单位，例如 P3Y 表示三年、P2D 表示两天。在本例中，一个周末被记为 P1WE。在这种情况下，也有足够的信息把这个特定的周末锚定为某一周的一部分。这类信息编码在 ANCHORTIMEID 属性中。
+
+> thus, weekends occur at the end of a week and are fully contained within a single week. Weekends are treated as durations, so the value of the VALUE attribute has to be a length. Durations are represented according to the pattern Pnx, where n is an integer denoting the length and x represents the unit, as in P3Y for three years or P2D for two days. In this example, one weekend is captured as P1WE. In this case, there is also sufficient information to anchor this particular weekend as part of a particular week. Such information is encoded in the ANCHORTIMEID attribute.
+
+最后，two weeks 这一短语也表示一段持续时间，记为 P2W。图 21.18 给出了更多示例，但各种时间标注标准的内容远不止这些；更多细节可参阅 ISO8601（2004）、Ferro et al.（2005）和 Pustejovsky et al.（2005）。
+
+> Finally, the phrase two weeks also denotes a duration captured as P2W. Figure 21.18 give some more examples, but there is a lot more to the various temporal annotation standards; consult ISO8601 (2004), Ferro et al. (2005), and Pustejovsky et al. (2005) for more details.
+
+> 单位　模式　示例取值 完全指定的日期　YYYY-MM-DD　1991-09-28 周　YYYY-Wnn　2007-W27 周末　PnWE　P1WE 24 小时制时刻　HH:MM:SS　11:13:45 日期与时刻　YYYY-MM-DDTHH:MM:SS　1991-09-28T11:00:00 财政季度　Qn　1999-Q3
+>
+> *Unit Pattern Sample Value Fully specified dates YYYY-MM-DD 1991-09-28 Weeks YYYY-Wnn 2007-W27 Weekends PnWE P1WE 24-hour clock times HH:MM:SS 11:13:45 Dates and times YYYY-MM-DDTHH:MM:SS 1991-09-28T11:00:00 Financial quarters Qn 1999-Q3*
+
+*图 21.18　用于表示各种时间与持续时间的 ISO 模式示例。*
+*Figure 21.18 Sample ISO patterns for representing various times and durations.*
+
+当前大多数时间归一化方法都是基于规则的（Chang and
+
+> Most current approaches to temporal normalization are rule-based (Chang and
+Manning 2012，Strötgen and Gertz 2013）。匹配时间表达式的模式会与语义分析过程相关联。例如，上面用于识别 3 years old 这类短语的模式，可以与谓词 Duration 相关联，该谓词接受两个参数：长度和时间单位：
+
+> Manning 2012, Str¨otgen and Gertz 2013). Patterns that match temporal expressions are associated with semantic analysis procedures. For example, the pattern above for recognizing phrases like 3 years old can be associated with the predicate Duration that takes two arguments, the length and the unit of time:
+
+pattern: /(\d+)[-\s]($TEUnits)(s)?([-\s]old)?/result: Duration($1, $2)
+这项任务之所以困难，是因为完全限定的时间表达式相当罕见，
+
+> The task is difficult because fully qualified temporal expressions are fairly rare
+在真实文本中，新闻文章里的大多数时间表达式都是不完整的，只被隐式地锚定，通常是相对于文章的日期行锚定，我们将其称为
+
+> in real texts. Most temporal expressions in news articles are incomplete and are only implicitly anchored, often with respect to the dateline of the article, which we refer
+
+> `temporal anchor`（时间锚）
+>
+> 释义：文档中用作时间表达式解释基准的时间点，通常取报道的日期行，用于计算 yesterday 这类相对时间。
+
+文档的时间锚。时间表达式的取值，诸如
+
+> to as the document’s temporal anchor. The values of temporal expressions such
+today、yesterday 或 tomorrow 这样的，都可以相对于这个时间锚计算出来。today 的语义过程就是直接赋予该锚点，而 tomorrow 和 yesterday 的挂接分别是在锚点上加一天和减一天。当然，鉴于我们对月、周、日以及一天中各时刻的表示具有循环性质，我们的时间算术过程必须使用与所用时间单位相适应的模运算。
+
+> as today, yesterday, or tomorrow can all be computed with respect to this temporal anchor. The semantic procedure for today simply assigns the anchor, and the attachments for tomorrow and yesterday add a day and subtract a day from the anchor, respectively. Of course, given the cyclic nature of our representations for months, weeks, days, and times of day, our temporal arithmetic procedures must use modulo arithmetic appropriate to the time unit being used.
+
+遗憾的是，即使是 the weekend 或 Wednesday 这样的简单表达式，也会引入相当多的复杂性。在我们当前的例子中，the weekend 显然指的是紧接文档日期之前那一周的周末。但情况并非总是如此，下面的例子就说明了这一点。
+
+> Unfortunately, even simple expressions such as the weekend or Wednesday introduce a fair amount of complexity. In our current example, the weekend clearly refers to the weekend of the week that immediately precedes the document date. But this won’t always be the case, as is illustrated in the following example.
+
+（21.38）昨天在 Sky Harbor 开始的随机安全检查将继续
+
+> (21.38) Random security checks that began yesterday at Sky Harbor will continue
+至少持续到 the weekend。
+
+> at least through the weekend.
+
+在这种情况下，the weekend 这一表达式指的是锚定日期所在那一周的周末（也就是即将到来的那个周末）。传达这一含义的信息来自 continue 的时态，也就是支配 the weekend 的那个动词。
+
+> In this case, the expression the weekend refers to the weekend of the week that the anchoring date is part of (i.e., the coming weekend). The information that signals this meaning comes from the tense of continue, the verb governing the weekend.
+
+相对时间表达式用时间算术来处理，其方式与
+
+> Relative temporal expressions are handled with temporal arithmetic similar to
+处理 today 和 yesterday 所用的方式类似。文档日期表明我们的示例文章处于 ISO 第 27 周，因此 last week 这一表达式归一化为当前周减 1。为了解决有歧义的 next 和 last 表达式，我们考虑锚定日期到最近单位的距离。Next Friday 既可以指紧接着的下一个星期五，也可以指那之后的那个星期五，但文档日期离星期五越近，这个短语跳过最近那个星期五的可能性就越大。这类歧义通过把语言和领域相关的启发式规则编码进时间挂接来处理。
+
+> that used for today and yesterday. The document date indicates that our example article is ISO week 27, so the expression last week normalizes to the current week minus 1. To resolve ambiguous next and last expressions we consider the distance from the anchoring date to the nearest unit. Next Friday can refer either to the immediately next Friday or to the Friday following that, but the closer the document date is to a Friday, the more likely it is that the phrase will skip the nearest one. Such ambiguities are handled by encoding language and domain-specific heuristics into the temporal attachments.
+
+### 21.7.3 事件的时间排序
+
+> 21.7.3 Temporal Ordering of Events
+
+时间分析的目标是把时间与事件关联起来，再把这些事件全部拟合到一条完整的时间线上。这一雄心勃勃的任务是当前大量研究的主题，但要高精度地解决它，已超出当前系统的能力。一个稍简单但仍很有用的任务，是对文本中提到的事件和时间表达式施加偏序。这样的排序可以提供与真正的时间线许多相同的好处。这种偏序的一个例子是判定：在我们的示例文本中，美国航空公司（American Airlines）的票价上调发生在联合航空（United）的票价上调之后。判定这样的排序可以看作一个二元关系检测与分类任务。
+
+> The goal of temporal analysis, is to link times to events and then fit all these events into a complete timeline. This ambitious task is the subject of considerable current research but solving it with a high level of accuracy is beyond the capabilities of current systems. A somewhat simpler, but still useful, task is to impose a partial ordering on the events and temporal expressions mentioned in a text. Such an ordering can provide many of the same benefits as a true timeline. An example of such a partial ordering is the determination that the fare increase by American Airlines came after the fare increase by United in our sample text. Determining such an ordering can be viewed as a binary relation detection and classification task.
+
+即便是这个偏序任务，也假定除了上面描述的时间表达式检测与归一化步骤之外，我们还要已经检测出文本中的所有事件。事实上，许多时间表达式锚定到文本中提到的事件，而不是直接锚定到其他时间表达式。请考虑下面的例子：
+
+> Even this partial ordering task assumes that in addition to the detecting and normalizing time expressions steps described above, we have already detected all the events in the text. Indeed, many temporal expressions are anchored to events mentioned in a text and not directly to other temporal expressions. Consider the following example:
+
+（21.39）风暴过后一周，JetBlue 发布了它的客户权利法案。
+
+> (21.39) One week after the storm, JetBlue issued its customer bill of rights.
+
+要确定 JetBlue 是在什么时候发布客户权利法案的，我们需要先确定风暴事件的时间，然后用时间表达式 one week after 对这个时间加以修正。
+
+> To determine when JetBlue issued its customer bill of rights we need to determine the time of the storm event, and then we need to modify that time by the temporal expression one week after.
+
+因此，一旦检测出事件和时间，我们接下来的目标就是在所有时间与事件之间断言链接
+
+> Thus once the events and times have been detected, our goal next is to assert links
+：即创建事件-事件、事件-时间、时间-时间、DCT-事件和 DCT-时间这几类 TimeML TLINK。这可以通过训练时间关系分类器来实现，让它们预测每一对时间/事件之间正确的 TLINK，用 TimeBank 语料库中的黄金标签进行监督，特征包括词/词嵌入、句法分析路径、时态和体。使用按准确率排序的分类器集合的筛网式架构也很常用，我们将在第 24 章介绍它。
+
+> between all the times and events: i.e. creating event-event, event-time, time-time, DCT-event, and DCT-time TimeML TLINKS. This can be done by training time relation classifiers to predict the correct T:INK between each pair of times/events, supervised by the gold labels in the TimeBank corpus with features like words/embeddings, parse paths, tense and aspect The sieve-based architecture using precision-ranked sets of classifiers, which we’ll introduce in Chapter 24, is also commonly used.
+
+执行全部 4 项任务的系统（时间抽取、创建与归一化、
+
+> Systems that perform all 4 tasks (time extraction creation and normalization,
+事件抽取，以及时间/事件链接）包括 TARSQI（Verhagen et al.，2005）、CLEARTK（Bethard，2013）、CAEVO（Chambers et al.，2014）和 CATENA（Mirza and Tonelli，2016）。
+
+> event extraction, and time/event linking) include TARSQI (Verhagen et al., 2005) CLEARTK (Bethard, 2013), CAEVO (Chambers et al., 2014), and CATENA (Mirza and Tonelli, 2016).
+
+## 21.8 模板填充
+
+> 21.8 Template Filling
+
+许多文本包含对事件、有时是事件序列的报道，这些报道往往对应世界上相当常见、刻板化的情境。这些抽象的情境或故事与所谓的脚本（script）相关（Schank and Abelson，1977），由子事件、参与者及其角色的原型序列组成。这些脚本所提供的强烈预期，有助于对实体进行恰当的分类、把实体指派到角色和关系中，而最关键的是，有助于进行推理以填补那些未被说出的内容。在最简单的形式下，这类脚本可以表示为模板，由固定的
+
+> Many texts contain reports of events, and possibly sequences of events, that often correspond to fairly common, stereotypical situations in the world. These abstract situations or stories, related to what have been called scripts (Schank and Abelson, 1977), consist of prototypical sequences of sub-events, participants, and their roles. The strong expectations provided by these scripts can facilitate the proper classification of entities, the assignment of entities into roles and relations, and most critically, the drawing of inferences that fill in things that have been left unsaid. In their simplest form, such scripts can be represented as templates consisting of fixed
+
+> `scripts`（脚本）
+>
+> 释义：Schank 与 Abelson 提出的、用于描述常见情境的典型子事件序列及参与者角色的抽象结构。
+
+> `templates`（模板）
+>
+> 释义：由一组固定槽位构成的结构，用于表示脚本，每个槽位以属于特定类别的槽填充值作为取值。
+
+槽位集合组成，槽位以属于特定类别的槽填充值作为取值。模板填充的任务是找出触发特定脚本的文档，然后填充
+
+> sets of slots that take as values slot-fillers belonging to particular classes. The task of template filling is to find documents that invoke particular scripts and then fill the
+
+> `template filling`（模板填充）
+>
+> 释义：找出触发特定脚本的文档，并填入各槽位相应槽填充值的任务。
+
+用从文本中抽取出的填充值填充相关模板中的槽。这些槽填充值既可以由直接从文本中抽取的文本片段构成，也可以由通过某些额外处理从文本元素推断出的概念构成。
+
+> slots in the associated templates with fillers extracted from the text. These slot-fillers may consist of text segments extracted directly from the text, or they may consist of concepts that have been inferred from text elements through some additional processing.
+
+来自我们最初那个航空公司故事的已填充模板可能如下所示。
+
+> A filled template from our original airline story might look like the following.
+
+ 
+FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES
+
+> FARE-RAISE ATTEMPT: LEAD AIRLINE: UNITED AIRLINES
+AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES
+
+>  AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES
+该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司
+
+> This template has four slots (LEAD AIRLINE, AMOUNT, EFFECTIVE DATE, FOL-
+）。下一节将描述一种填充槽的标准序列标注方法。21.8.2 节随后介绍一个更早的系统，它基于有限状态转换器级联的使用，旨在处理一项更复杂的模板填充任务，而当前基于学习的系统尚未处理该任务。
+
+> LOWER). The next section describes a standard sequence-labeling approach to filling slots. Section 21.8.2 then describes an older system based on the use of cascades of finite-state transducers and designed to address a more complex template-filling task that current learning-based systems don’t yet address.
+
+### 21.8.1 模板填充的机器学习方法
+
+> 21.8.1 Machine Learning Approaches to Template Filling
+
+在模板填充的标准范式中，我们拿到的是训练文档，其中的文本片段被标注了预定义的模板及其槽填充值。我们的目标是为输入中的每个事件各创建一个模板，并用文本片段填入各个槽。
+
+> In the standard paradigm for template filling, we are given training documents with text spans annotated with predefined templates and their slot fillers. Our goal is to create one template for each event in the input, filling in the slots with text spans.
+
+该任务通常的建模方式是训练两个彼此独立的有监督系统。其
+
+> The task is generally modeled by training two separate supervised systems. The
+第一个系统判定某个特定句子中是否存在该模板。这
+
+> first system decides whether the template is present in a particular sentence. This
+
+> `template`（模板）
+>
+> 释义：书中指预先定义的事件信息结构，由若干槽组成，用来承载从文本中抽取并填入其中的槽填充值。
+
+任务被称为模板识别，有时在这一也许有点令人困惑的
+
+> task is called template recognition or sometimes, in a perhaps confusing bit of
+
+> `recognition`（识别）
+>
+> 释义：在本书中它与前置词构成复合名称，表示判断某类事件的信息结构是否出现于给定句子中的任务。
+
+术语上称为事件识别。模板识别可以看作一个文本分类任务，其特征从训练文档中被标注为填充所检测模板任一槽的每个词序列中抽取。可以使用通常的那组特征：词元、嵌入、词形、词性标签、句法组块标签和命名实体标签。
+
+> terminology, event recognition. Template recognition can be treated as a text classification task, with features extracted from every sequence of words that was labeled in training documents as filling any slot from the template being detected. The usual set of features can be used: tokens, embeddings, word shapes, part-of-speech tags, syntactic chunk tags, and named entity tags.
+
+> `role-filler extraction`（角色填充值抽取）
+>
+> 释义：指为模板中的每个角色单独训练分类器，从文本中找出该角色对应填充值的任务。
+
+第二个系统承担角色填充值抽取的任务。一个单独的分类器会
+
+> The second system has the job of role-filler extraction. A separate classifier is
+被训练用来检测每个角色（LEAD-AIRLINE、AMOUNT 等）。它可以是运行在已解析输入句子的每个名词短语上的二值分类器，也可以是运行在词序列上的序列模型。每个角色分类器都在训练集中的标注数据上训练。同样可以使用通常的那组特征，但此时只针对单个名词短语或单个槽的填充值来训练。
+
+> trained to detect each role (LEAD-AIRLINE, AMOUNT, and so on). This can be a binary classifier that is run on every noun-phrase in the parsed input sentence, or a sequence model run over sequences of words. Each role classifier is trained on the labeled data in the training set. Again, the usual set of features can be used, but now trained only on an individual noun phrase or the fillers of a single slot.
+
+多个互不相同的文本片段可能被标注为同一个槽标签。例如在我们的示例文本中，字符串 United 或 United Airlines 都可能被标注为 LEAD AIRLINE。这些选择并不相互冲突，第 24 章介绍的共指消解技术可以提供一条解决途径。
+
+> Multiple non-identical text segments might be labeled with the same slot label. For example in our sample text, the strings United or United Airlines might be labeled as the LEAD AIRLINE. These are not incompatible choices and the coreference resolution techniques introduced in Chapter 24 can provide a path to a solution.
+
+已有多种标注集合被用来评估这类模板填充方法，包括招聘公告集、会议征文通知、餐馆指南和生物文本。一个关键的未决问题是在没有训练数据、甚至没有预定义模板的情况下抽取模板，即通过把模板归纳为相互链接的事件集合来实现（Chambers and Jurafsky, 2011）。
+
+> A variety of annotated collections have been used to evaluate this style of approach to template filling, including sets of job announcements, conference calls for papers, restaurant guides, and biological texts. A key open question is extracting templates in cases where there is no training data or even predefined templates, by inducing templates as sets of linked events (Chambers and Jurafsky, 2011).
+
+### 21.8.2 更早的有限状态模板填充系统
+
+> 21.8.2 Earlier Finite-State Template-Filling Systems
+
+上述模板相对简单。但请考虑这样一项任务：生成一个包含如下文本中全部信息的模板（Grishman and Sundheim, 1995）：
+
+> The templates above are relatively simple. But consider the task of producing a template that contained all the information in a text like this one (Grishman and Sundheim, 1995):
+
+普利司通运动公司（Bridgestone Sports Co.）周五表示，它已与一家当地企业和一家日本贸易行在台湾设立了一家合资企业，生产将运往日本的高尔夫球杆。这家合资企业普利司通运动台湾公司（Bridgestone Sports Taiwan Co.）注册资本 2000 万新台币，将于 1990 年 1 月开始生产，每月生产 2 万支铁杆和“金属木杆”球杆。
+
+> Bridgestone Sports Co. said Friday it has set up a joint venture in Taiwan with a local concern and a Japanese trading house to produce golf clubs to be shipped to Japan. The joint venture, Bridgestone Sports Taiwan Co., capitalized at 20 million new Taiwan dollars, will start production in January 1990 with production of 20,000 iron and “metal wood” clubs a month.
+
+MUC-5 的“合资企业”任务（消息理解会议（Message Understanding Conferences）是
+
+> The MUC-5 ‘joint venture’ task (the Message Understanding Conferences were
+由美国政府组织的一系列信息抽取评测）的目标是生成描述合资企业的、按层级链接的模板。图 21.19 展示了 FASTUS 系统生成的一个结构（Hobbs et al., 1997）。请注意，TIE-UP 模板中 ACTIVITY 槽的填充值本身就是一个带槽的模板。
+
+> a series of U.S. government-organized information-extraction evaluations) was to produce hierarchically linked templates describing joint ventures. Figure 21.19 shows a structure produced by the FASTUS system (Hobbs et al., 1997). Note how the filler of the ACTIVITY slot of the TIE-UP template is itself a template with slots.
+
+> Tie-up-1 Activity-1：RELATIONSHIP tie-up COMPANY 普利司通运动台湾公司
+>
+> *Tie-up-1 Activity-1: RELATIONSHIP tie-up COMPANY Bridgestone Sports Taiwan Co.*
+
+> ENTITIES 普利司通运动公司 PRODUCT 铁杆和“金属木杆”球杆
+>
+> *ENTITIES Bridgestone Sports Co. PRODUCT iron and “metal wood” clubs*
+
+> 一家当地企业 START DATE DURING：1990 年 1 月 一家日本贸易行
+>
+> *a local concern START DATE DURING: January 1990 a Japanese trading house*
+
+> JOINT VENTURE 普利司通运动台湾公司 ACTIVITY Activity-1 AMOUNT NT$20000000
+>
+> *JOINT VENTURE Bridgestone Sports Taiwan Co. ACTIVITY Activity-1 AMOUNT NT$20000000*
+
+*图 21.19 FASTUS 针对第 495 页的输入文本所生成的模板。*
+*Figure 21.19 The templates produced by FASTUS given the input text on page 495.*
+
+处理这些复杂模板的早期系统基于级联的
+
+> Early systems for dealing with these complex templates were based on cascades
+转换器，这些转换器建立在手写规则之上，如图 21.20 所示。
+
+> of transducers based on handwritten rules, as sketched in Fig. 21.20.
+
+前四个阶段使用手写的正则表达式和语法规则来
+
+> The first four stages use handwritten regular expression and grammar rules to
+完成基本的词元化、组块分析和句法分析。第 5 阶段随后用基于有限状态转换器（FST）的识别器识别实体和事件，并把识别出的对象插入模板中相应的槽。这个 FST 识别器基于
+
+> do basic tokenization, chunking, and parsing. Stage 5 then recognizes entities and events with a recognizer based on finite-state transducers (FSTs), and inserts the recognized objects into the appropriate slots in templates. This FST recognizer is based
+
+> 序号 步骤 说明 1 Tokens 对输入的字符流进行词元化 2 Complex Words 多词短语、数字和专有名词。3 Basic phrases 把句子切分为名词组和动词组 4 Complex phrases 识别复杂名词组和动词组 5 Semantic Patterns 识别实体和事件，插入模板。6 Merging 合并对同一实体或事件的指称
+>
+> *No. Step Description 1 Tokens Tokenize input stream of characters 2 Complex Words Multiword phrases, numbers, and proper names. 3 Basic phrases Segment sentences into noun and verb groups 4 Complex phrases Identify complex noun groups and verb groups 5 Semantic Patterns Identify entities and events, insert into templates. 6 Merging Merge references to the same entity or event*
+
+*图 21.20 FASTUS 中的处理层次（Hobbs 等，1997）。每一层抽取一种特定类型的信息，然后将其传递到上一层。*
+*Figure 21.20 Levels of processing in FASTUS (Hobbs et al., 1997). Each level extracts a specific type of information which is then passed on to the next higher level.*
+
+基于如下手工构建的正则表达式（NG 表示名词组，VG 表示动词组），它与上面那则新闻的第一句相匹配。
+
+> on hand-built regular expressions like the following (NG indicates Noun-Group and VG Verb-Group), which matches the first sentence of the news story above.
+
+> NG(Company/ies) VG(Set-up) NG(Joint-Venture) with NG(Company/ies)
+
+> VG(Produce) NG(Product)
+
+处理这两个句子后得到的结果是五个草拟模板（图 21.21）
+
+> The result of processing these two sentences is the five draft templates (Fig. 21.21)
+随后必须合并为图 21.19 所示的单一层次结构。
+
+> that must then be merged into the single hierarchical structure shown in Fig. 21.19.
+
+合并算法在执行共指消解之后，会把两个很可能在描述相同事件的活动合并起来。
+
+> The merging algorithm, after performing coreference resolution, merges two activities that are likely to be describing the same events.
+
+> # 模板／槽填充值 1 关系：TIE-UP 实体：Bridgestone Co.、一家本地企业、一家日本贸易公司 2 活动：
+>
+> *# Template/Slot Value 1 RELATIONSHIP: TIE-UP ENTITIES: Bridgestone Co., a local concern, a Japanese trading house 2 ACTIVITY:*
+
+> 生产
+>
+> *PRODUCTION*
+
+> 产品：“golf clubs”3 关系：TIE-UP 合资企业：“Bridgestone Sports Taiwan Co.” 金额：NT$20000000 4 活动：
+>
+> *PRODUCT: “golf clubs”3 RELATIONSHIP: TIE-UP JOINT VENTURE: “Bridgestone Sports Taiwan Co.”AMOUNT: NT$20000000 4 ACTIVITY:*
+
+> 生产
+>
+> *PRODUCTION*
+
+> 公司：“Bridgestone Sports Taiwan Co.” 起始日期：发生于：1990 年 1 月 5 活动：
+>
+> *COMPANY: “Bridgestone Sports Taiwan Co.”STARTDATE: DURING: January 1990 5 ACTIVITY:*
+
+> 生产
+>
+> *PRODUCTION*
+
+> 产品：“iron and “metal wood” clubs”
+>
+> *PRODUCT: “iron and “metal wood” clubs”*
+
+*图 21.21 FASTUS 第 5 阶段产生的五个部分模板。这些模板在第 6 阶段被合并，生成第 495 页图 21.19 所示的最终模板。*
+*Figure 21.21 The five partial templates produced by stage 5 of FASTUS. These templates are merged in stage 6 to produce the final template shown in Fig. 21.19 on page 495.*
+
+## 21.9 小结
+
+> 21.9 Summary
+
+本章探讨了从文本中抽取有限形式语义内容的各种技术。
+
+> This chapter has explored techniques for extracting limited forms of semantic content from texts.
+
+- 实体之间的关系可以通过基于模式的方法抽取；在有标注训练数据时，可以用有监督学习方法；在只有少量种子元组或种子模式时，可以用轻监督的自举（bootstrapping）方法；在有关系数据库时，可以用远程监督；此外还可以用无监督方法或 Open IE 方法。
+- 关于时间的推理可以通过时间表达式的检测与归一化来辅助完成。
+
+> Relations among entities can be extracted by pattern-based approaches, supervised learning methods when annotated training data is available, lightly supervised bootstrapping methods when small numbers of seed tuples or seed patterns are available, distant supervision when a database of relations is available, and unsupervised or Open IE methods.
+> Reasoning about time can be facilitated by detection and normalization of temporal expressions.
+
+- 利用序列模型以及在带时间和事件标注的数据（如 TimeBank 语料库）上训练的分类器，可以把事件按时间排序。
+- 模板填充应用能够识别文本中的典型情景，并把文本中的元素指派到以固定槽集合表示的角色上。
+
+> Events can be ordered in time using sequence models and classifiers trained on temporally- and event-labeled data like the TimeBank corpus.
+> Template-filling applications can recognize stereotypical situations in texts and assign elements from the text to roles represented as fixed sets of slots.
+
+## 历史注记
+
+> Historical Notes
+
+信息抽取最早的工作是在 Frump 系统（DeJong，1982）的背景下处理模板填充任务。后来的工作受到美国政府资助的 MUC 会议的推动（Sundheim 1991、Sundheim 1992、Sundheim 1993、Sundheim 1995）。早期的 MUC 系统，如 CIRCUS 系统（Lehnert 等，1991）和 SCISOR（Jacobs 与 Rau，1990），影响相当大，并启发了后来诸如 FASTUS（Hobbs 等，1997）这样的系统。Chinchor 等（1993）描述了 MUC 的评测技术。
+
+> The earliest work on information extraction addressed the template-filling task in the context of the Frump system (DeJong, 1982). Later work was stimulated by the U.S. government-sponsored MUC conferences (Sundheim 1991, Sundheim 1992, Sundheim 1993, Sundheim 1995). Early MUC systems like CIRCUS system (Lehnert et al., 1991) and SCISOR (Jacobs and Rau, 1990) were quite influential and inspired later systems like FASTUS (Hobbs et al., 1997). Chinchor et al. (1993) describe the MUC evaluation techniques.
+
+由于把系统从一个领域移植到另一个领域存在困难，注意力
+
+> Due to the difficulty of porting systems from one domain to another, attention
+转向了机器学习方法。早期用于信息抽取的有监督学习方法（Cardie 1993、Cardie 1994、Riloff 1993、Soderland 等 1995、Huffman 1996）关注的是把知识获取过程自动化，主要针对有限状态规则系统。这些方法的成功，以及此前基于 HMM 的语音识别的成功，促成了序列标注的使用（HMM：Bikel 等 1997；MEMM：McCallum 等 2000；CRF：Lafferty 等 2001），以及对特征的广泛探索（Zhou 等，2005）。随后，Collobert 等（2011）的开创性成果带来了神经网络方法，他们把 CRF 应用于卷积网络之上。
+
+> shifted to machine learning approaches. Early supervised learning approaches to IE (Cardie 1993, Cardie 1994, Riloff 1993, Soderland et al. 1995, Huffman 1996) focused on automating the knowledge acquisition process, mainly for finite-state rule-based systems. Their success, and the earlier success of HMM-based speech recognition, led to the use of sequence labeling (HMMs: Bikel et al. 1997; MEMMs McCallum et al. 2000; CRFs: Lafferty et al. 2001), and a wide exploration of features (Zhou et al., 2005). Neural approaches followed from the pioneering results of Collobert et al. (2011), who applied a CRF on top of a convolutional net.
+
+这一领域的进展持续受到正式评测的推动，这些评测使用共享的
+
+> Progress in this area continues to be stimulated by formal evaluations with shared
+基准数据集，包括 2000—2007 年针对命名实体识别、关系抽取和时间表达式1的自动内容抽取（ACE）评测，KBP（知识库填充，Knowledge Base Population）评测（Ji 等 2010、Surdeanu 2013）所评估的槽填充（抽取属性（“槽”）
+
+> benchmark datasets, including the Automatic Content Extraction (ACE) evaluations of 2000-2007 on named entity recognition, relation extraction, and temporal expressions1, the KBP (Knowledge Base Population) evaluations (Ji et al. 2010, Surdeanu 2013) of relation extraction tasks like slot filling (extracting attributes (‘slots’)
+
+> `KBP`（知识库填充（KBP））
+>
+> 释义：指知识库填充评测任务系列，用于衡量系统把实体属性、关系等填入知识库的能力。
+
+> `slot filling`（槽填充）
+>
+> 释义：指抽取给定实体在知识库中的属性值（如年龄、出生地、配偶）并填入对应槽的任务。
+
+如给定实体的年龄、出生地和配偶）以及一系列 SemEval 研讨会（Hendrickx 等，2009）。
+
+> like age, birthplace, and spouse for a given entity) and a series of SemEval workshops (Hendrickx et al., 2009).
+
+半监督关系抽取最早由 Hearst（1992b）提出，随后
+
+> Semisupervised relation extraction was first proposed by Hearst (1992b), and
+被 AutoSlog-TS（Riloff，1996）、DIPRE（Brin，1998）、SNOW-BALL（Agichtein 与 Gravano，2000）和 Jones 等（1999）这类系统所扩展。我们描述的远程监督算法取自 Mintz 等（2009），他们首次使用了“远程监督”这一术语（该术语由 Chris Manning 向他们建议），但类似的思想在更早的系统中就已出现，如 Craven 与 Kumlien（1999）和 Morgan 等（2004）以弱标注数据为名的工作，以及 Snow 等（2005）和 Wu 与 Weld（2007）。众多扩展工作包括 Wu 与 Weld（2010）、Riedel 等（2010）和 Ritter 等（2013）。开放式信息抽取系统包括 KNOWITALL（Etzioni 等，2005）、TextRunner（Banko 等，2007）和 REVERB（Fader 等，2011）。关于结合远程监督与开放式信息抽取二者优点的通用模式，参见 Riedel 等（2013）。
+
+> extended by systems like AutoSlog-TS (Riloff, 1996), DIPRE (Brin, 1998), SNOW-BALL (Agichtein and Gravano, 2000), and Jones et al. (1999). The distant supervision algorithm we describe was drawn from Mintz et al. (2009), who first used the term ‘distant supervision’ (which was suggested to them by Chris Manning) but similar ideas had occurred in earlier systems like Craven and Kumlien (1999) and Morgan et al. (2004) under the name weakly labeled data, as well as in Snow et al. (2005) and Wu and Weld (2007). Among the many extensions are Wu and Weld (2010), Riedel et al. (2010), and Ritter et al. (2013). Open IE systems include KNOWITALL Etzioni et al. (2005), TextRunner (Banko et al., 2007), and REVERB(Fader et al., 2011). See Riedel et al. (2013) for a universal schema that combines the advantages of distant supervision and Open IE.
+
+## 练习
+
+> Exercises
+
+21.1 缩略语展开（acronym expansion），即把一个短语与一个缩略语关联起来的过程，可以
+
+> 21.1 Acronym expansion, the process of associating a phrase with an acronym, can
+通过一种简单形式的关系分析来完成。请基于本章所描述的关系分析方法开发一个系统，用来填充一个缩略语展开数据库。如果你专注于英语三字母缩略语（TLA），可以把你的系统与 Wikipedia 的 TLA 页面进行比较，以此评估系统性能。
+
+> be accomplished by a simple form of relational analysis. Develop a system based on the relation analysis approaches described in this chapter to populate a database of acronym expansions. If you focus on English Three Letter Acronyms (TLAs) you can evaluate your system’s performance by comparing it to Wikipedia’s TLA page.
+
+21.2 获取 CMU seminar 语料库，并通过
+
+> 21.2 Acquire the CMU seminar corpus and develop a template-filling system by
+使用 21.8 节提到的任何一种技术来开发一个模板填充系统。分析你的系统与在该语料库上的最新水平结果相比表现如何。
+
+> using any of the techniques mentioned in Section 21.8. Analyze how well your system performs as compared with state-of-the-art results on this corpus.
+
+21.3 较新的电子邮件和日历应用中一项有用的功能，是能够
+
+> 21.3 A useful functionality in newer email and calendar applications is the ability
+把电子邮件中与事件相关的时间表达式（看医生预约、会议安排、聚会邀请等）与具体的日历条目关联起来。收集一个包含与事件安排有关的时间表达式的电子邮件语料库。这些表达式与我们在本章一直讨论的新闻文本中常见的那类表达式相比如何？
+
+> to associate temporal expressions connected with events in email (doctor’s appointments, meeting planning, party invitations, etc.) with specific calendar entries. Collect a corpus of email containing temporal expressions related to event planning. How do these expressions compare to the kinds of expressions commonly found in news text that we’ve been discussing in this chapter?
+
+21.4 对下列句子，给出能够刻画时间的
+
+> 21.4 For the following sentences, give FOL translations that capture the temporal
+事件之间关系的 FOL 译文。
+
+> relationships between the events.
+
+- 当 Mary 的航班起飞时，我吃了午饭。
+- 当 Mary 的航班起飞时，我已经吃过午饭了。
+
+> When Mary’s flight departed, I ate lunch.
+> When Mary’s flight departed, I had eaten lunch.

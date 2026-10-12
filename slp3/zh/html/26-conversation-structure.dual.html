@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 26 章 会话及其结构（中英对照）</title>
+<style>
+:root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
+* { box-sizing: border-box; }
+body { margin:0; background:#f6f7f9; color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+  line-height:1.85; font-size:16px; }
+.wrap { max-width:860px; margin:0 auto; background:var(--bg); min-height:100vh;
+  padding:48px 56px 120px; box-shadow:0 0 24px rgba(0,0,0,.06); }
+h1,h2,h3,h4 { line-height:1.35; margin:1.4em 0 .6em; }
+h1 { font-size:28px; border-bottom:2px solid var(--line); padding-bottom:.3em; }
+h2 { font-size:22px; } h3 { font-size:18px; } h4 { font-size:16px; }
+p { margin:0 0 .9em; text-align:justify; }
+ul { margin:.4em 0 1em 1.4em; } li { margin:.25em 0; }
+img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
+blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
+blockquote p { margin:.2em 0; }
+.term { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #b9c4d0; color:#4a4a4a; font-size:14px; }
+.term code { background:none; color:var(--accent); margin-right:.5em; }
+.term-zh { color:#333; margin-right:.5em; }
+.term-explain { color:#4a4a4a; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
+th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+th { background:#f3f5f7; font-weight:600; }
+code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
+hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
+.nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
+.nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
+footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
+  font-size:13px; color:var(--muted); }
+</style>
+</head><body><div class="wrap">
+<div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/26-conversation-structure.md">Markdown 源文件</a></div>
+<h1>第 26 章 会话及其结构</h1>
+<h3>第 26 章</h3>
+<blockquote><p>CHAPTER</p></blockquote>
+<h1>26 会话及其结构</h1>
+<blockquote><p>26 Conversation and its Structure</p></blockquote>
+<p>会话是一种精巧而复杂的联合活动，而会话是有结构的。所有会话都是如此，无论它们是人与人之间的会话，还是人与语言模型之间的会话。理解人类会话的结构是一项重要的社会科学与语言学任务。我们在研究人类会话时引入的这些概念，也可以成为分析人类与 LLM 会话的有用工具。</p>
+<blockquote><p>Conversation is an intricate and complex joint activity, and conversations have structure. This is true of all conversations, whether they are conversations between people or conversations between people and language models. Understanding the structure of human conversations is an important social science and linguistic task. The concepts we introduce in studying human conversation can also be a useful tool for analyzing human-LLM conversations.</p></blockquote>
+<p>[本稿是某一章的初始雏形，该章将介绍不同种类的</p>
+<blockquote><p>[This draft is the initial stub of a chapter that will introduce different kinds of</p></blockquote>
+<p>会话结构，以及如何用计算方式对它们进行标注。]</p>
+<blockquote><p>conversational structure and how to annotate them computationally.]</p></blockquote>
+<h2>26.1 人类会话的特性</h2>
+<blockquote><p>26.1 Properties of Human Conversation</p></blockquote>
+<p>当人与人彼此交谈时，会发生哪些会话现象？人与机器之间的会话是否不同？请思考图 26.1 中摘录的一位人类旅行代理人与一位人类客户之间对话中所发生的事。</p>
+<blockquote><p>What are the conversational phenomena that take place when humans converse with each other? Are conversations between humans and machines different? Consider what goes on in the conversation between a human travel agent and a human client excerpted in Fig. 26.1.</p></blockquote>
+<blockquote><p>C1: ……我需要在五月出行。 A2: 那么，你想在五月哪一天出行？ C3: 好的，呃，我需要到那里参加一个从 12 号到 15 号的会议。</p><p><em>C1: ...I need to travel in May. A2: And, what day in May did you want to travel? C3: OK uh I need to be there for a meeting that’s from the 12th to the 15th.</em></p></blockquote>
+<blockquote><p>A4: 你要飞往哪个城市？ C5: 西雅图。 A6: 你想什么时候离开匹兹堡？</p><p><em>A4: And you’re flying into what city? C5: Seattle. A6: And what time would you like to leave Pittsburgh?</em></p></blockquote>
+<blockquote><p>C7: 呃，嗯，我觉得直飞的选项不多。</p><p><em>C7: Uh hmm I don’t think there’s many options for non-stop.</em></p></blockquote>
+<blockquote><p>A8: 对。今天有三个直飞航班。 C9: 是哪几个？ A10: 第一个 10:00am 从 PGH 起飞，当地时间 12:05 抵达西雅图。</p><p><em>A8: Right. There’s three non-stops today. C9: What are they? A10: The first one departs PGH at 10:00am arrives Seattle at 12:05 their time.</em></p></blockquote>
+<blockquote><p>第二个航班 5:55pm 从 PGH 起飞，8pm 抵达西雅图。最后一个航班 8:15pm 从 PGH 起飞，10:28pm 抵达西雅图。</p><p><em>The second flight departs PGH at 5:55pm, arrives Seattle at 8pm. And the last flight departs PGH at 8:15pm arrives Seattle at 10:28pm.</em></p></blockquote>
+<blockquote><p>C11: 好的，我要 11 号前一天晚上那班 5 点左右的航班。</p><p><em>C11: OK I’ll take the 5ish flight on the night before on the 11th.</em></p></blockquote>
+<blockquote><p>A12: 11 号？好的。5:55pm 起飞，8pm 抵达西雅图，U.S. Air</p><p><em>A12: On the 11th? OK. Departing at 5:55pm arrives Seattle at 8pm, U.S. Air</em></p></blockquote>
+<blockquote><p>航班 115。</p><p><em>flight 115.</em></p></blockquote>
+<blockquote><p>C13: 好的。 A14: 你刚说是 5 月 15 号返回？ C15: 呃，对，在当天结束时。 A16: 好的。有 #两个直飞……#C17: #实……其实 #，15 号是星期几？</p><p><em>C13: OK. A14: And you said returning on May 15th? C15: Uh, yeah, at the end of the day. A16: OK. There’s #two non-stops ...#C17: #Act...actually #, what day of the week is the 15th?</em></p></blockquote>
+<blockquote><p>A18: 是星期五。 C19: 呃，嗯。我会考虑在那里多待一天，待到星期天。</p><p><em>A18: It’s a Friday. C19: Uh hmm. I would consider staying there an extra day til Sunday.</em></p></blockquote>
+<blockquote><p>A20: 好的……好的。星期天我有……</p><p><em>A20: OK...OK. On Sunday I have ...</em></p></blockquote>
+<p class="caption">图 26.1 一位人类旅行代理人（A）与一位人类客户（C）之间一段电话对话的片段。A16 和 C17 中由 # 标出的片段表示话语重叠。</p>
+<p class="caption">Figure 26.1 Part of a phone conversation between a human travel agent (A) and human client (C). The passages framed by # in A16 and C17 indicate overlaps in speech.</p>
+<h3>26.1.1 话轮</h3>
+<blockquote><p>26.1.1 Turns</p></blockquote>
+<p>对话是话轮的序列（C1、A2、C3，依此类推），每个话轮都是一次单独的贡献</p>
+<blockquote><p>A dialogue is a sequence of turns (C1, A2, C3, and so on), each a single contribution</p></blockquote>
+<aside class="term"><code>turn</code><span class="term-zh">话轮</span><span class="term-explain">对话中由一位说话者连续说出的一段内容，是构成对话序列的基本单位。</span></aside>
+<p>由一位说话者对对话做出的一次贡献（就像在游戏中：轮到我，然后轮到你，接着又是我，依此类推）。图 26.1 中有 20 个话轮。一个话轮可以由一个句子组成（如 C1），尽管它可能短至单个词（C13），也可能长达多个句子（A10）。</p>
+<blockquote><p>from one speaker to the dialogue (as if in a game: I take a turn, then you take a turn, then me, and so on). There are 20 turns in Fig. 26.1. A turn can consist of a sentence(like C1), although it might be as short as a single word (C13) or as long as multiple sentences (A10).</p></blockquote>
+<p>话轮结构对口语对话有重要影响。人类必须</p>
+<blockquote><p>Turn structure has important implications for spoken dialogue. A human has</p></blockquote>
+<p>知道何时停止说话；客户进行了打断（在 A16 和 C17 中），因此扮演这一角色的系统必须知道要停止说话（并且知道用户可能正在作出更正）。</p>
+<blockquote><p>to know when to stop talking; the client interrupts (in A16 and C17), so a system that was performing this role must know to stop talking (and that the user might be making a correction).</p></blockquote>
+<p>LLM 也会遇到同样的问题；系统还必须知道何时开始</p>
+<blockquote><p>The same issues come up for LLMs; a system also has to know when to start</p></blockquote>
+<p>说话。例如，在会话中大多数时候，说话者在另一位说话者说完之后几乎立刻开始自己的话轮，而没有很长的停顿，因为人们通常能够预测对方何时将要说完。</p>
+<blockquote><p>talking. For example, most of the time in conversation, speakers start their turns almost immediately after the other speaker finishes, without a long pause, because people are can usually predict when the other person is about to finish talking.</p></blockquote>
+<p>语音语言模型还必须检测用户是否已经说完，这样</p>
+<blockquote><p>Spoken language models must also detect whether a user is done speaking, so</p></blockquote>
+<p>它们才能处理该话语并作出回应。这项任务——称为断点检测——可能相当有挑战性，因为存在噪声，也因为人们常常在一个话轮中间停顿。</p>
+<blockquote><p>they can process the utterance and respond. This task—called endpointing or endpoint detection— can be quite challenging because of noise and because people often pause in the middle of turns.</p></blockquote>
+<aside class="term"><code>endpointing</code><span class="term-zh">断点检测</span><span class="term-explain">在口语对话中判断说话者是否已经说完、从而使系统可以开始回应的任务。</span></aside>
+<h3>26.1.2 言语行为</h3>
+<blockquote><p>26.1.2 Speech Acts</p></blockquote>
+<p>关于会话的一个关键洞见——最初由哲学家维特根斯坦（Wittgenstein，1953）提出，但由奥斯汀（Austin，1962）阐发得更为完整——是：对话中的每一句话语都是说话者正在执行的一种行动。这些行动通常被称为言语行为或对话行为：下面是包含 4 个</p>
+<blockquote><p>A key insight into conversation—due originally to the philosopher Wittgenstein(1953) but worked out more fully by Austin (1962)—is that each utterance in a dialogue is a kind of action being performed by the speaker. These actions are commonly called speech acts or dialogue acts: here’s one taxonomy consisting of 4</p></blockquote>
+<aside class="term"><code>speech acts</code><span class="term-zh">言语行为</span><span class="term-explain">说出某句话时所执行的一种行动，例如断言、请求或承诺。</span></aside>
+<p>主要类别的分类体系（巴赫（Bach）与哈尼什（Harnish），1979）：</p>
+<blockquote><p>major classes (Bach and Harnish, 1979):</p></blockquote>
+<p>断言类：使说话者承诺某事确实如此（回答、声称、</p>
+<blockquote><p>Constatives: committing the speaker to something’s being the case (answering, claiming,</p></blockquote>
+<p>确认、否认、不同意、陈述）</p>
+<blockquote><p>confirming, denying, disagreeing, stating)</p></blockquote>
+<p>指令类：说话者试图让受话者做某事的尝试（建议、询问、禁止、邀请、命令、请求）</p>
+<blockquote><p>Directives: attempts by the speaker to get the addressee to do something (advising, asking, forbidding, inviting, ordering, requesting)</p></blockquote>
+<p>承诺类：使说话者承诺未来采取某种行动（许诺、计划、</p>
+<blockquote><p>Commissives: committing the speaker to some future course of action (promising, planning,</p></blockquote>
+<p>立誓、打赌、反对）</p>
+<blockquote><p>vowing, betting, opposing)</p></blockquote>
+<p>回应类：就某种社会行为表达说话者对于听者的态度（道歉、问候、致谢、接受回应）</p>
+<blockquote><p>Acknowledgments: express the speaker’s attitude regarding the hearer with respect to some social action (apologizing, greeting, thanking, accepting an acknowledgment)</p></blockquote>
+<p>用户要求一个人或一个对话系统去做某事（“把音乐调大”），就是在发出指令类言语行为（DIRECTIVE）。提出一个需要回答的问题，也是发出指令类的一种方式：从某种意义上说，当系统说出（A2）“您想在五月的哪一天出行？”时，就好像系统在（非常礼貌地）命令用户作答。相比之下，用户陈述一条约束（如 C1“我需要在五月出行”），就是在发出断言类言语行为（CONSTATIVE）。用户感谢系统，则是在发出回应类言语行为（ACKNOWLEDGMENT）。言语行为表达了说话者（或写作者）在说出其所言时意图中的一个重要组成部分。</p>
+<blockquote><p>A user asking a person or a dialogue system to do something (‘Turn up the music’) is issuing a DIRECTIVE. Asking a question that requires an answer is also a way of issuing a DIRECTIVE: in a sense when the system says (A2) “what day in May did you want to travel?” it’s as if the system is (very politely) commanding the user to answer. By contrast, a user stating a constraint (like C1 ‘I need to travel in May’) is issuing a CONSTATIVE. A user thanking the system is issuing an ACKNOWLEDGMENT. The speech act expresses an important component of the intention of the speaker (or writer) in saying what they said.</p></blockquote>
+<h3>26.1.3 共同基础建立</h3>
+<blockquote><p>26.1.3 Grounding</p></blockquote>
+<p>对话并不只是一系列彼此独立的言语行为，而是由说话者和听者共同完成的一种集体行为。与所有集体行为一样，重要的是</p>
+<blockquote><p>A dialogue is not just a series of independent speech acts, but rather a collective act performed by the speaker and the hearer. Like all collective acts, it’s important for</p></blockquote>
+<aside class="term"><code>common ground</code><span class="term-zh">共同基础</span><span class="term-explain">对话参与者共同认可并共享的信息与信念集合，是双方得以顺利交流的前提。</span></aside>
+<p>参与者确立双方都认可的内容，即所谓的共同基础</p>
+<blockquote><p>the participants to establish what they both agree on, called the common ground</p></blockquote>
+<p>（斯泰尔内克，1978）。说话者通过为彼此的话语建立共同基础来做到这一点。建立共同基础意味着确认听者已经理解了说话者（克拉克，1996）。（人们在非语言行为上同样需要建立共同基础；电梯按钮被按下时会亮起，其目的正是确认电梯确实已被呼叫，实质上就是为你的按键动作建立共同基础（Norman，1988）。）当听者需要表明说话者未能成功完成某一行为时，建立共同基础同样重要。如果听者在理解上遇到困难，她必须把这些困难告知说话者，同样是为了最终实现相互理解。</p>
+<blockquote><p>(Stalnaker, 1978). Speakers do this by grounding each other’s utterances. Ground- ing means acknowledging that the hearer has understood the speaker (Clark, 1996).(People need grounding for non-linguistic actions as well; the reason an elevator button lights up when it’s pressed is to acknowledge that the elevator has indeed been called, essentially grounding your action of pushing the button (Norman, 1988).) Grounding is also important when the hearer needs to indicate that the speaker has not succeeded in performing an action. If the hearer has problems in understanding, she must indicate these problems to the speaker, again so that mutual understanding can eventually be achieved.</p></blockquote>
+<aside class="term"><code>grounding</code><span class="term-zh">共同基础建立</span><span class="term-explain">对话双方相互确认对方已理解自己话语的过程，是达成相互理解所必需的一环。</span></aside>
+<p>这种闭合是如何实现的？克拉克和谢弗（1989）提出，每一个</p>
+<blockquote><p>How is closure achieved? Clark and Schaefer (1989) introduce the idea that each</p></blockquote>
+<p>共同的语言行为或贡献都包含两个阶段，称为呈现（presentation）与接受（acceptance）。在第一阶段，说话者向听者呈现一段话语，执行某种言语行为。在接受阶段，听者必须为该话语建立共同基础，向说话者表明是否达成了理解。</p>
+<blockquote><p>joint linguistic act or contribution has two phases, called presentation and acceptance. In the first phase, a speaker presents the hearer with an utterance, performing a sort of speech act. In the acceptance phase, the hearer has to ground the utterance, indicating to the speaker whether understanding was achieved.</p></blockquote>
+<aside class="term"><code>contribution</code><span class="term-zh">贡献</span><span class="term-explain">由说话者与听者共同完成的一个联合语言行为单位，包含呈现与接受两个阶段。</span></aside>
+<p>听者 B 可以用哪些方法为说话者 A 的话语建立共同基础？克拉克</p>
+<blockquote><p>What methods can the hearer B use to ground the speaker A’s utterance? Clark</p></blockquote>
+<p>和谢弗（1989）讨论了一系列方法，按从最弱到最强的顺序排列：</p>
+<blockquote><p>and Schaefer (1989) discuss a continuum of methods ordered from weakest to strongest:</p></blockquote>
+<p>持续注意（Continued attention）：B 表现出她仍在继续关注，因此仍然对</p>
+<blockquote><p>Continued attention: B shows she is continuing to attend and therefore remains satisfied with</p></blockquote>
+<p>A 的呈现感到满意。</p>
+<blockquote><p>A’s presentation.</p></blockquote>
+<p>下一贡献（Next contribution）：B 开始进入下一个相关的贡献。</p>
+<blockquote><p>Next contribution: B starts in on the next relevant contribution.</p></blockquote>
+<p>确认（Acknowledgment）：B 点头，或说出 uh-huh、yeah 之类的继续信号，或说出“太棒了”那样的评价。</p>
+<blockquote><p>Acknowledgment: B nods or says a continuer like uh-huh, yeah, or the like, or an assessment like that’s great.</p></blockquote>
+<p>演示（Demonstration）：B 演示出她对 A 所表达意思的全部或部分理解，例如</p>
+<blockquote><p>Demonstration: B demonstrates all or part of what she has understood A to mean, for</p></blockquote>
+<p>通过重新表述（改述）A 的话语，或通过协作式地补全 A 的话语。</p>
+<blockquote><p>example, by reformulating (paraphrasing) A’s utterance or by collaborative completion of A’s utterance.</p></blockquote>
+<p>展示（Display）：B 逐字复现 A 所呈现内容的全部或部分。</p>
+<blockquote><p>Display: B displays verbatim all or part of A’s presentation.</p></blockquote>
+<p>这类共同基础建立的例子出现在旅行社代理人对话中。我们</p>
+<blockquote><p>Examples of these kind of grounding occur in the travel agent conversation. We</p></blockquote>
+<p>可以通过明确说出“OK”来建立共同基础，就像代理人在 A8 或 A10 中所做的那样。我们也可以通过重复对方所说的话来建立共同基础；在话语 A2 中，代理人重复了“五月”，向客户表明她的理解。或者注意，当客户回答一个问题时，代理人以“And”开头提出下一个问题。“And”意味着新问题是对旧问题的“补充”，再次向客户表明代理人已经成功理解了上一个问题的答案。</p>
+<blockquote><p>can ground by explicitly saying “OK”, as the agent does in A8 or A10. Or we can ground by repeating what the other person says; in utterance A2 the agent repeats“in May”, demonstrating her understanding to the client. Or notice that when the client answers a question, the agent begins the next question with “And”. The “And”implies that the new question is ‘in addition’ to the old question, again indicating to the client that the agent has successfully understood the answer to the last question.</p></blockquote>
+<p>这一特定片段中没有确认的例子，但</p>
+<blockquote><p>This particular fragment doesn’t have an example of an acknowledgment, but</p></blockquote>
+<p>另一个片段中有这样一个例子：</p>
+<blockquote><p>there’s an example in another fragment:</p></blockquote>
+<p>C: 他想从波士顿飞往巴尔的摩　A: Uh huh</p>
+<blockquote><p>C: He wants to fly from Boston to Baltimore A: Uh huh</p></blockquote>
+<table><tr><th>C:</th><th>他想从波士顿飞往巴尔的摩<br>He wants to fly from Boston to Baltimore</th></tr><tr><td>A:</td><td>Uh huh</td></tr></table>
+<p>这里的 uh-huh 一词是一个继续信号，也常被称为确认标记（acknowledgment token）或背信道。继续信号是一种（简短的）可选话语，它确认</p>
+<blockquote><p>The word uh-huh here is a continuer, also often called an acknowledgment token or a backchannel. A continuer is a (short) optional utterance that acknowledges</p></blockquote>
+<aside class="term"><code>continuer</code><span class="term-zh">继续信号</span><span class="term-explain">听者在对话中发出的简短可选话语，用来表示自己正在跟进，且无需对方回应。</span></aside>
+<aside class="term"><code>backchannel</code><span class="term-zh">背信道</span><span class="term-explain">对话中听者发出的简短反馈，表明自己在倾听，本身并不构成一个话轮。</span></aside>
+<p>对方话语的内容，且不需要对方加以确认（英格维，1970；杰斐逊，1984；谢格洛夫，1982；Ward 和 Tsukahara，2000）。</p>
+<blockquote><p>the content of the utterance of the other and that doesn’t require an acknowledgment by the other (Yngve, 1970; Jefferson, 1984; Schegloff, 1982; Ward and Tsukahara, 2000).</p></blockquote>
+<h3>26.1.4 子对话与对话结构</h3>
+<blockquote><p>26.1.4 Subdialogues and Dialogue Structure</p></blockquote>
+<p>对话是有结构的。例如，考虑如下局部结构，它存在于</p>
+<blockquote><p>Conversations have structure. Consider, for example, the local structure between</p></blockquote>
+<aside class="term"><code>conversation analysis</code><span class="term-zh">会话分析</span><span class="term-explain">研究真实对话中话轮组织、序列结构与修正机制的语言学与社会学分支。</span></aside>
+<p>会话分析领域所讨论的言语行为之间（萨克斯等，1974）。</p>
+<blockquote><p>speech acts discussed in the field of conversation analysis (Sacks et al., 1974).</p></blockquote>
+<p>问句（QUESTION）会为回答（ANSWER）建立起一种预期。提议（PROPOSAL）之后跟着接受（ACCEPTANCE，或拒绝 REJECTION）。称赞（COMPLIMENT，如“这件外套真好看！”）往往会引发谦虚回应（DOWNPLAYER，如“哦，这件旧衣服啊？”）。这些成对出现的现象称为邻接对，由第一部分与第二部分构成（谢格洛夫，1968），而这些预期可以帮助系统决定该采取什么行动。</p>
+<blockquote><p>QUESTIONS set up an expectation for an ANSWER. PROPOSALS are followed by ACCEPTANCE (or REJECTION). COMPLIMENTS (“Nice jacket!”) often give rise to DOWNPLAYERS (“Oh, this old thing?”). These pairs, called adjacency pairs, are composed of a first pair part and a second pair part (Schegloff, 1968), and these expectations can help systems decide what actions to take.</p></blockquote>
+<aside class="term"><code>adjacency pair</code><span class="term-zh">邻接对</span><span class="term-explain">成对出现的话语，第一部分为第二部分设定预期，如问与答、提议与接受。</span></aside>
+<p>然而，对话行为之后并不总是紧接着其第二</p>
+<blockquote><p>However, dialogue acts aren’t always followed immediately by their second pair</p></blockquote>
+<p>部分。这两个部分之间可以隔着一段旁支序列（杰斐逊 1972）或子对话。例如，话语 C17 到 A20 构成一个纠正子对话</p>
+<blockquote><p>part. The two parts can be separated by a side sequence (Jefferson 1972) or subdialogue. For example utterances C17 to A20 constitute a correction subdialogue</p></blockquote>
+<aside class="term"><code>side sequence subdialogue</code><span class="term-zh">旁支序列/子对话</span><span class="term-explain">插入在邻接对两部分之间、用于澄清或修正的一段从属对话，之后主序列再继续。</span></aside>
+<p>（利特曼 1985；利特曼和艾伦 1987；Chu-Carroll 和 Carberry 1998）：</p>
+<blockquote><p>(Litman 1985, Litman and Allen 1987, Chu-Carroll and Carberry 1998):</p></blockquote>
+<p>C17: #Act...actually#，15 号是星期几？</p>
+<blockquote><p>C17: #Act...actually#, what day of the week is the 15th?</p></blockquote>
+<p>A18：今天是周五。C19：呃嗯。我会考虑在那儿多待一天，待到周日。</p>
+<blockquote><p>A18: It’s a Friday. C19: Uh hmm. I would consider staying there an extra day til Sunday.</p></blockquote>
+<p>A20：好……好。周日我有……</p>
+<blockquote><p>A20: OK...OK. On Sunday I have ...</p></blockquote>
+<p>C17 中的提问打断了先前的对话，而在那段对话中，代理正在查找</p>
+<blockquote><p>The question in C17 interrupts the prior discourse, in which the agent was looking</p></blockquote>
+<p>5 月 15 日的返程航班。代理必须回答这个问题，同时还要意识到“我会考虑待到……周日”意味着客户很可能想更改计划，于是转回来查找返程航班，但日期改为 17 日。</p>
+<blockquote><p>for a May 15 return flight. The agent must answer the question and also realize that‘’I would consider staying...til Sunday” means that the client would probably like to change their plan, and now go back to finding return flights, but for the 17th.</p></blockquote>
+<p>另一种旁支序列是澄清性提问，它可以在 REQUEST 与 RESPONSE 之间构成一个子对话。这在对话系统中尤为常见：语音识别错误使系统不得不像下面这样请求澄清或要求重复：</p>
+<blockquote><p>Another side sequence is the clarification question, which can form a subdialogue between a REQUEST and a RESPONSE. This is especially common in dialogue systems where speech recognition errors causes the system to have to ask for clarifications or repetitions like the following:</p></blockquote>
+<p>用户：5 号有什么去 UNKNOWN WORD 的航班？</p>
+<blockquote><p>User: What do you have going to UNKNOWN WORD on the 5th?</p></blockquote>
+<p>系统：让我看看，5 号去哪里？用户：去香港。系统：好，这里有几趟航班……</p>
+<blockquote><p>System: Let’s see, going where on the 5th? User: Going to Hong Kong. System: OK, here are some flights...</p></blockquote>
+<p>除了旁支序列，提问往往还有前置序列，如下例所示：用户在提出请求之前，先问了一个关于系统能力的问题（“你能预订火车票吗”）。</p>
+<blockquote><p>In addition to side-sequences, questions often have presequences, like the following example where a user starts with a question about the system’s capabilities(“Can you make train reservations”) before making a request.</p></blockquote>
+<aside class="term"><code>presequence</code><span class="term-zh">前置序列</span><span class="term-explain">在真正提出请求之前先说出的那一问话轮，用来试探对方是否具备条件或意愿。</span></aside>
+<p>用户：你能预订火车票吗？系统：我能。用户：太好了，我想订一张下午 4 点去纽约的火车票。</p>
+<blockquote><p>User: Can you make train reservations? System: Yes I can. User: Great, I’d like to reserve a seat on the 4pm train to New York.</p></blockquote>
+<h3>26.1.5 主动权</h3>
+<blockquote><p>26.1.5 Initiative</p></blockquote>
+<p>有时一场对话完全由其中一方参与者掌控。例如，记者采访厨师时可能不断提问，而厨师作出回答。我们说在这种情况下，记者掌握着会话的主动权（Carbonell，1970；</p>
+<blockquote><p>Sometimes a conversation is completely controlled by one participant. For example a reporter interviewing a chef might ask questions, and the chef responds. We say that the reporter in this case has the conversational initiative (Carbonell, 1970;</p></blockquote>
+<aside class="term"><code>initiative</code><span class="term-zh">主动权</span><span class="term-explain">指对话由哪一方主导，谁在引导话题走向并决定下一步说什么。</span></aside>
+<p>Nickerson，1976）。然而在正常的人际对话中，更常见的情况是主动权在参与者之间来回转移：他们时而回答问题，时而提出问题，时而又把对话引向新的方向，有时则不然。你可能问我一个问题，而我回应时又请你澄清你说过的某句话，由此把对话引向各种方向。我们把这种互动称为混合主动权（Carbonell，1970）。</p>
+<blockquote><p>Nickerson, 1976). In normal human-human dialogue, however, it’s more common for initiative to shift back and forth between the participants, as they sometimes answer questions, sometimes ask them, sometimes take the conversations in new directions, sometimes not. You may ask me a question, and then I respond asking you to clarify something you said, which leads the conversation in all sorts of ways. We call such interactions mixed initiative (Carbonell, 1970).</p></blockquote>
+<p>完全混合主动权虽然是人际对话的常态，却可能</p>
+<blockquote><p>Full mixed initiative, while the norm for human-human conversations, can be</p></blockquote>
+<p>让对话系统难以做到。最原始的对话系统往往采用系统主导型主动权：系统提出一个问题，用户在回答之前什么也做不了；或者像简单搜索引擎那样采用用户主导型主动权：用户给出查询，系统被动地作出回应。即便是基于大语言模型的现代对话系统——它们已相当接近使用完全混合主动权——也常常不能完全自然地切换主动权。把这一点做对是现代系统的一个重要目标。</p>
+<blockquote><p>difficult for dialogue systems. The most primitive dialogue systems tend to use system-initiative, where the system asks a question and the user can’t do anything until they answer it, or user-initiative like simple search engines, where the user specifies a query and the system passively responds. Even modern large language model-based dialogue systems, which come much closer to using full mixed initiative, often don’t have completely natural initiative switching. Getting this right is an important goal for modern systems.</p></blockquote>
+<h3>26.1.6 推理与会话含义</h3>
+<blockquote><p>26.1.6 Inference and Implicature</p></blockquote>
+<p>推理在对话理解中同样重要。来看客户的回应 C3，此处重新列出：A2：那么，你想在 5 月的哪一天出行？C3：好呃，我得去那儿参加一个会议，会议从 12 号开到 15 号。</p>
+<blockquote><p>Inference is also important in dialogue understanding. Consider the client’s response C3, repeated here: A2: And, what day in May did you want to travel? C3: OK uh I need to be there for a meeting that’s from the 12th to the 15th.</p></blockquote>
+<p>注意，客户实际上并没有回答代理的问题。客户</p>
+<blockquote><p>Notice that the client does not in fact answer the agent’s question. The client</p></blockquote>
+<p>只是提到某个时间有一个会议。究竟是什么使得代理有理由推断：客户提起这个会议，是为了告知代理出行日期？</p>
+<blockquote><p>merely mentions a meeting at a certain time. What is it that licenses the agent to infer that the client is mentioning this meeting so as to inform the agent of the travel dates?</p></blockquote>
+<p>说话人似乎期待听话人作出某些推断；换句话</p>
+<blockquote><p>The speaker seems to expect the hearer to draw certain inferences; in other</p></blockquote>
+<p>说，说话人传达的信息比说出的话语表面上呈现的更多。这类例子由 Grice（1975，1978）在其会话含义理论中提出。会话含义指一类特定的、有依据的推断。Grice 提出，听话人之所以能作出这些推断，是因为会话受一整套准则引导，这些准则是具有普遍性的经验法则，在会话话语的解释中起指导作用。其中一条准则是关联准则，它要求说话人努力做到与话题相关，</p>
+<blockquote><p>words, the speaker is communicating more information than seems to be present in the uttered words. This kind of example was pointed out by Grice (1975, 1978) as part of his theory of conversational implicature. Implicature means a particular class of licensed inferences. Grice proposed that what enables hearers to draw these inferences is that conversation is guided by a set of maxims, general heuristics that play a guiding role in the interpretation of conversational utterances. One such maxim is the maxim of relevance which says that speakers attempt to be relevant,</p></blockquote>
+<aside class="term"><code>implicature</code><span class="term-zh">会话含义</span><span class="term-explain">话语字面意义之外、听话人依据会话准则推导出来的那层言外之意。</span></aside>
+<aside class="term"><code>relevance</code><span class="term-zh">关联</span><span class="term-explain">要求说话人所说的话与当前话题及对方期待相契合的一条会话准则。</span></aside>
+<p>他们不会只是随意地说出言语行为。当客户提到 12 号有一个会议时，代理会这样推理：“提起这个会议必定有某种关联。</p>
+<blockquote><p>they don’t just utter random speech acts. When the client mentions a meeting on the 12th, the agent reasons ‘There must be some relevance for mentioning this meeting.</p></blockquote>
+<p>那会是什么呢？”代理知道，开会的先决条件之一（至少在网络会议出现之前）是人要身处会议举行地，因此这个会议也许正是出行的理由；而若果真如此，那么既然人们通常喜欢在会议前一天到达，代理就应当推断航班应订在 11 号。</p>
+<blockquote><p>What could it be?’. The agent knows that one precondition for having a meeting(at least before Web conferencing) is being at the place where the meeting is held, and therefore that maybe the meeting is a reason for the travel, and if so, then since people like to arrive the day before a meeting, the agent should infer that the flight should be on the 11th.</p></blockquote>
+<p>人类对话的这些细微特征（话轮、言语行为、共同基础建立、对话结构、主动权以及会话含义）正是难以构建出能与人类进行自然对话的对话系统的原因之一。</p>
+<blockquote><p>These subtle characteristics of human conversations (turns, speech acts, grounding, dialogue structure, initiative, and implicature) are among the reasons it is difficult to build dialogue systems that can carry on natural conversations with humans.</p></blockquote>
+<p>这些挑战中的许多正是对话系统研究的活跃领域。</p>
+<blockquote><p>Many of these challenges are active areas of dialogue systems research.</p></blockquote>
+<h2>26.2 对话行为与语料库</h2>
+<blockquote><p>26.2 Dialog Acts and Corpora</p></blockquote>
+<p>言语行为与共同基础建立的思想被合并为一种单一的行为，称为对话行为，它是一个标签，表示被标注</p>
+<blockquote><p>The ideas of speech acts and grounding are combined in a single kind of action called a dialogue act, a tag which represents the interactive function of the sentence</p></blockquote>
+<aside class="term"><code>dialogue act</code><span class="term-zh">对话行为</span><span class="term-explain">用标签表示一句话在对话中所起的互动功能，如提问、确认或建议。</span></aside>
+<p>句子的互动功能。</p>
+<blockquote><p>being tagged.</p></blockquote>
+<p>对话行为可用于分析人际对话或人与 LLM 的</p>
+<blockquote><p>Dialog acts can be used to analyze human-human conversation or human-LLM</p></blockquote>
+<p>对话。参与者的性质以及对话的类型（基于任务或不基于任务）都会影响对话行为标记集的制定。</p>
+<blockquote><p>conversation. Both the nature of the participants and the type of dialogue (task-based or not task-based) influence the development of dialogue act tagsets.</p></blockquote>
+<p>图 26.2 给出了一个面向特定领域的标记集，用于两个人安排</p>
+<blockquote><p>Figure 26.2 shows a domain-specific tagset for the task of two people scheduling</p></blockquote>
+<p>会议这一任务。它既有日程安排领域特有的标签，如用于提出某个具体会面日期的 SUGGEST，以及用于接受或拒绝对某个日期所作提议的 ACCEPT 和 REJECT，也有功能更为一般的标签，如用于请求用户澄清某个含混提议的 CLARIFY。</p>
+<blockquote><p>meetings. It has tags specific to the domain of scheduling, such as SUGGEST, used for the proposal of a particular date to meet, and ACCEPT and REJECT, used for acceptance or rejection of a proposal for a date, but also tags that have a more general function, like CLARIFY, used to request a user to clarify an ambiguous proposal.</p></blockquote>
+<p>图 26.3 给出了一个餐馆推荐系统的标记集，图 26.4</p>
+<blockquote><p>Figure 26.3 shows a tagset for a restaurant recommendation system, and Fig. 26.4</p></blockquote>
+<p>则展示了用这些标签标注 HIS 系统（Young et al.，2010）中一段示例对话的结果。这个例子还展示了每个对话行为的内容，即被传递的槽填充值。</p>
+<blockquote><p>shows these tags labeling a sample dialogue from the HIS system (Young et al., 2010). This example also shows the content of each dialogue acts, which are the slot fillers being communicated.</p></blockquote>
+<p>还有若干更为通用、与领域无关的对话行为标记集。</p>
+<blockquote><p>There are a number of more general and domain-independent dialogue act tagsets.</p></blockquote>
+<p>在受其启发的 DAMSL（Dialogue Act Markup in Several Layers，多层对话行为标注）体系结构中，</p>
+<blockquote><p>In the DAMSL (Dialogue Act Markup in Several Layers) architecture inspired by</p></blockquote>
+<blockquote><p>标记 示例 THANK 谢谢 GREET 你好，Dan INTRODUCE 又是我 BYE 好的，再见 REQUEST-COMMENT 那看起来怎么样？SUGGEST 从 6 月 13 日到 17 日 REJECT 不行，周五我全天都排满了 ACCEPT 周六听起来可以 REQUEST-SUGGEST 一周中哪天对你合适？</p><p><em>Tag Example THANK Thanks GREET Hello Dan INTRODUCE It’s me again BYE Alright bye REQUEST-COMMENT How does that look? SUGGEST from thirteenth through seventeenth June REJECT No Friday I’m booked all day ACCEPT Saturday sounds fine REQUEST-SUGGEST What is a good day of the week for you?</em></p></blockquote>
+<blockquote><p>INIT 我想和你约个时间 GIVE REASON 因为我整个下午都有会 FEEDBACK 好的 DELIBERATE 让我先看一下日程 CONFIRM 好的，那太好了 CLARIFY 好的，你是指 23 号那个周二吗？DIGRESS [我们可以一起吃午饭]，再吃好多冰淇淋 MOTIVATE 我们应该去拜访我们在慕尼黑的分公司 GARBAGE 哎呀，我—</p><p><em>INIT I wanted to make an appointment with you GIVE REASON Because I have meetings all afternoon FEEDBACK Okay DELIBERATE Let me check my calendar here CONFIRM Okay, that would be wonderful CLARIFY Okay, do you mean Tuesday the 23rd? DIGRESS [we could meet for lunch] and eat lots of ice cream MOTIVATE We should go to visit our subsidiary in Munich GARBAGE Oops, I-</em></p></blockquote>
+<p class="caption">图 26.2 会议安排任务中的 18 个高层对话行为，来自 Verbmobil-1 系统（耶卡特等，1995）。</p>
+<p class="caption">Figure 26.2 The 18 high-level dialogue acts for a meeting scheduling task, from the Verbmobil-1 system (Jekat et al., 1995).</p>
+<blockquote><p>标记 Sys User 说明 HELLO(a = x,b = y,...) ✓ ✓ 开启对话并给出信息 a = x,b = y,...</p><p><em>Tag Sys User Description HELLO(a = x,b = y,...) ✓ ✓ Open a dialogue and give info a = x,b = y,...</em></p></blockquote>
+<blockquote><p>INFORM(a = x,b = y,...) ✓ ✓ 给出信息 a = x,b = y,...</p><p><em>INFORM(a = x,b = y,...) ✓ ✓ Give info a = x,b = y,...</em></p></blockquote>
+<blockquote><p>REQUEST(a,b = x,...) ✓ ✓ 在给定 b = x,... 时请求 a 的取值</p><p><em>REQUEST(a,b = x,...) ✓ ✓ Request value for a given b = x,...</em></p></blockquote>
+<blockquote><p>REQALTS(a = x,...) χ ✓ 请求以 a = x,... 为条件的备选方案</p><p><em>REQALTS(a = x,...) χ ✓ Request alternative with a = x,...</em></p></blockquote>
+<blockquote><p>CONFIRM(a = x,b = y,...) ✓ ✓ 明确确认 a = x,b = y,...</p><p><em>CONFIRM(a = x,b = y,...) ✓ ✓ Explicitly confirm a = x,b = y,...</em></p></blockquote>
+<blockquote><p>CONFREQ(a = x,...,d) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 SELECT(a = x,a = y) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 AFFIRM(a = x,b = y,...) ✓ ✓ 肯定并给出进一步信息 a = x,b = y,...</p><p><em>CONFREQ(a = x,...,d) ✓ χ Implicitly confirm a = x,... and request value of d SELECT(a = x,a = y) ✓ χ Implicitly confirm a = x,... and request value of d AFFIRM(a = x,b = y,...) ✓ ✓ Affirm and give further info a = x,b = y,...</em></p></blockquote>
+<blockquote><p>NEGATE(a = x) χ ✓ 否定并给出更正后的取值 a = x DENY(a = x) χ ✓ 否认 a = x BYE() ✓ ✓ 关闭对话</p><p><em>NEGATE(a = x) χ ✓ Negate and give corrected value a = x DENY(a = x) χ ✓ Deny that a = x BYE() ✓ ✓ Close a dialogue</em></p></blockquote>
+<p class="caption">图 26.3 扬等（2010）的 HIS 餐馆推荐系统所使用的对话行为。Sys 和 User 两列分别表示哪些行为可作为系统输出和用户输入。</p>
+<p class="caption">Figure 26.3 Dialogue acts used by the HIS restaurant recommendation system of Young et al. (2010). The Sys and User columns indicate which acts are valid as system outputs and user inputs, respectively.</p>
+<p>克拉克（Clark）和谢弗（Schaefer）（1989）、Allwood 等（1992）以及（Allwood，1995）的工作中，每个话语都被标注两类功能：前向功能，如言语行为功能；后向功能，如共同基础建立和回答，这类功能会“回指”对话者此前的话语（艾伦和 Core，1997；Walker 等，1996；Carletta 等，1997；Core 等，1999）。</p>
+<blockquote><p>the work of Clark and Schaefer (1989), Allwood et al. (1992), and (Allwood, 1995), each utterance is tagged for two types of functions, forward-looking functions like speech act functions, and backward-looking functions, like grounding and answering, which “look back” to the interlocutor’s previous utterance (Allen and Core, 1997; Walker et al., 1996; Carletta et al., 1997; Core et al., 1999).</p></blockquote>
+<blockquote><p>话语 对话行为</p><p><em>Utterance Dialogue act</em></p></blockquote>
+<blockquote><p>U: 你好，我想找个地方吃饭。hello(task = find,type=restaurant) S: 你在找一家餐馆。什么 confreq(type = restaurant, food)</p><p><em>U: Hi, I am looking for somewhere to eat. hello(task = find,type=restaurant) S: You are looking for a restaurant. What confreq(type = restaurant, food)</em></p></blockquote>
+<blockquote><p>类型的食物你喜欢？</p><p><em>type of food do you like?</em></p></blockquote>
+<blockquote><p>U: 我想要一家意大利餐馆，位置靠近 inform(food = Italian, near=museum)</p><p><em>U: I’d like an Italian somewhere near the inform(food = Italian, near=museum)</em></p></blockquote>
+<blockquote><p>博物馆。</p><p><em>museum.</em></p></blockquote>
+<blockquote><p>S: Roma 是一家不错的意大利餐馆，靠近 inform(name = &quot;Roma&quot;, type = restaurant,</p><p><em>S: Roma is a nice Italian restaurant near inform(name = &quot;Roma&quot;, type = restaurant,</em></p></blockquote>
+<blockquote><p>博物馆。food = Italian, near = museum)</p><p><em>the museum. food = Italian, near = museum)</em></p></blockquote>
+<blockquote><p>U: 价格合理吗？ confirm(pricerange = moderate) S: 是的，Roma 处于中等价位 affirm(name = &quot;Roma&quot;, pricerange =</p><p><em>U: Is it reasonably priced? confirm(pricerange = moderate) S: Yes, Roma is in the moderate price affirm(name = &quot;Roma&quot;, pricerange =</em></p></blockquote>
+<blockquote><p>区间。 moderate)</p><p><em>range. moderate)</em></p></blockquote>
+<blockquote><p>U: 电话号码是多少？ request(phone) S: Roma 的电话号码是 385456。 inform(name = &quot;Roma&quot;, phone = &quot;385456&quot;) U: 好的，谢谢，再见。 bye()</p><p><em>U: What is the phone number? request(phone) S: The number of Roma is 385456. inform(name = &quot;Roma&quot;, phone = &quot;385456&quot;) U: Ok, thank you goodbye. bye()</em></p></blockquote>
+<p class="caption">图 26.4 来自扬等（2010）HIS 系统的一段示例对话，其中使用了图 26.3 的对话行为。</p>
+<p class="caption">Figure 26.4 A sample dialogue from the HIS System of Young et al. (2010) using the dialogue acts in Fig. 26.3.</p>
+<table><tr><th>前向功能<br>Forward Looking Function</th><th></th><th></th></tr><tr><td>STATEMENT</td><td></td><td>说话人做出的一项断言<br>a claim made by the speaker</td></tr><tr><td>INFO-REQUEST</td><td></td><td>说话人提出的一个问题<br>a question by the speaker</td></tr><tr><td></td><td>CHECK</td><td>用于确认信息的问题<br>a question for confirming information</td></tr><tr><td>INFLUENCE-ON-ADDRESSEE</td><td></td><td>（=巴赫的指令类）<br>(=Bach’s directives)</td></tr><tr><td></td><td>OPEN-OPTION</td><td>较弱的建议或列出若干选项<br>a weak suggestion or listing of options</td></tr><tr><td></td><td>ACTION-DIRECTIVE</td><td>实际的命令<br>an actual command</td></tr><tr><td>INFLUENCE-ON-SPEAKER</td><td></td><td>（=奥斯汀的承诺类）<br>(=Austin’s commissives)</td></tr><tr><td></td><td>OFFER</td><td>说话人提出要做某事，<br>speaker offers to do something,</td></tr><tr><td></td><td></td><td>（须经确认）<br>(subject to confirmation)</td></tr><tr><td></td><td>COMMIT</td><td>说话人承诺做某事<br>speaker is committed to doing something</td></tr><tr><td>CONVENTIONAL</td><td></td><td>其他<br>other</td></tr><tr><td></td><td>OPENING</td><td>问候<br>greetings</td></tr><tr><td></td><td>CLOSING</td><td>告别<br>farewells</td></tr><tr><td></td><td>THANKING</td><td>致谢与回应致谢<br>thanking and responding to thanks</td></tr></table>
+<blockquote><p>INFLUENCE-ON-ADDRESSEE（=巴赫的指令类）</p><p><em>INFLUENCE-ON-ADDRESSEE (=Bach’s directives)</em></p></blockquote>
+<p>DAMSL 的后向功能关注一个话语与另一位说话人此前话语之间的关系。这类功能包括接受和拒绝提议（因为 DAMSL 关注的是面向任务的对话），以及共同基础建立和修复行为：</p>
+<blockquote><p>The backward looking function of DAMSL focuses on the relationship of an utterance to previous utterances by the other speaker. These include accepting and rejecting proposals (since DAMSL is focused on task-oriented dialogue), and grounding and repair acts:</p></blockquote>
+<table><tr><th>后向功能<br>Backward Looking Function</th><th></th><th></th></tr><tr><td>AGREEMENT</td><td></td><td>说话人对先前提议的回应<br>speaker’s response to previous proposal</td></tr><tr><td></td><td>ACCEPT</td><td>接受该提议<br>accepting the proposal</td></tr><tr><td></td><td>ACCEPT-PART</td><td>接受提议的某一部分<br>accepting some part of the proposal</td></tr><tr><td></td><td>MAYBE</td><td>既不接受也不拒绝该提议<br>neither accepting nor rejecting the proposal</td></tr><tr><td></td><td>REJECT-PART</td><td>拒绝提议的某一部分<br>rejecting some part of the proposal</td></tr><tr><td></td><td>REJECT</td><td>拒绝该提议<br>rejecting the proposal</td></tr><tr><td></td><td>HOLD</td><td>推迟回应，通常借助子对话<br>putting off response, usually via subdialogue</td></tr><tr><td>ANSWER</td><td></td><td>回答一个问题<br>answering a question</td></tr><tr><td>UNDERSTANDING</td><td></td><td>说话人是否理解了此前的话语<br>whether speaker understood previous</td></tr><tr><td></td><td>SIGNAL-NON-UNDER.</td><td>说话人没有理解<br>speaker didn’t understand</td></tr><tr><td></td><td>SIGNAL-UNDER.</td><td>说话人确实理解了<br>speaker did understand</td></tr><tr><td></td><td>ACK</td><td>通过继续信号或评价来体现<br>demonstrated via continuer or assessment</td></tr><tr><td></td><td>REPEAT-REPHRASE</td><td>通过重复或重新表述来体现<br>demonstrated via repetition or reformulation</td></tr><tr><td></td><td>COMPLETION</td><td>通过协作式补全来体现<br>demonstrated via collaborative completion</td></tr></table>
+<blockquote><p>SIGNAL-NON-UNDER. 说话人没有理解</p><p><em>SIGNAL-NON-UNDER. speaker didn’t understand</em></p></blockquote>
+<p>图 26.5 展示了使用若干 DAMSL 前向与后向标记变体，对我们示例对话中部分内容所做的标注。</p>
+<blockquote><p>Fig. 26.5 shows a labeling of parts of our sample conversation using versions of the DAMSL Forward and Backward tags.</p></blockquote>
+<p>[assert] C1: ...我需要在 5 月出行。[info-req,ack] A2: 那么，你想在 5 月的哪一天出行？[assert, answer] C3: 好的，呃，我得去那里参加一个会议，会议从 12 日到</p>
+<blockquote><p>[assert] C1: ...I need to travel in May.[info-req,ack] A2: And, what day in May did you want to travel?[assert, answer] C3: OK uh I need to be there for a meeting that’s from the 12th to the</p></blockquote>
+<p>15 日。</p>
+<blockquote><p>15th.</p></blockquote>
+<p>[info-req,ack] A4: 那你要飞往哪个城市？[assert,answer] C5: 西雅图。[info-req,ack] A6: 那你想几点离开匹兹堡？[check,hold] C7: 呃，嗯，我觉得直飞的选择不多。[accept,ack] A7: 对。[assert] 今天有三个直飞航班。[info-req] C8: 是哪几个？[assert, open-option] A9: 第一个航班上午 10:00 从 PGH 起飞，12:05 抵达西雅图，当地</p>
+<blockquote><p>[info-req,ack] A4: And you’re flying into what city?[assert,answer] C5: Seattle.[info-req,ack] A6: And what time would you like to leave Pittsburgh?[check,hold] C7: Uh hmm I don’t think there’s many options for non-stop.[accept,ack] A7: Right.[assert] There’s three non-stops today.[info-req] C8: What are they?[assert, open-option] A9: The first one departs PGH at 10:00am arrives Seattle at 12:05 their</p></blockquote>
+<p>时间。第二个航班下午 5:55 从 PGH 起飞，晚上 8 点抵达西雅图。最后一个航班晚上 8:15 从 PGH 起飞，晚上 10:28 抵达西雅图。</p>
+<blockquote><p>time. The second flight departs PGH at 5:55pm, arrives Seattle at 8pm. And the last flight departs PGH at 8:15pm arrives Seattle at 10:28pm.</p></blockquote>
+<p>[accept,ack] C10: 好的，我就订 11 号前一天晚上 5 点多那班。[check,ack] A11: 11 号？[assert,ack] 好的。下午 5:55 起飞，晚上 8 点抵达西雅图，U.S. Air 航班</p>
+<blockquote><p>[accept,ack] C10: OK I’ll take the 5ish flight on the night before on the 11th.[check,ack] A11: On the 11th?[assert,ack] OK. Departing at 5:55pm arrives Seattle at 8pm, U.S. Air flight</p></blockquote>
+<p>115。</p>
+<blockquote><p>115.</p></blockquote>
+<p>[ack] C12: 好的。</p>
+<blockquote><p>[ack] C12: OK.</p></blockquote>
+<p class="caption">图 26.5 对图 26.1 中对话片段开头的一种可能的 DAMSL 标注。</p>
+<p class="caption">Figure 26.5 A potential DAMSL labeling of the beginning of the conversational fragment in Fig. 26.1.</p>
+</div></body></html>

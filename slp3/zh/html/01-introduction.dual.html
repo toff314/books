@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第 1 章 引言（中英对照）</title>
+<title>第 1 章 绪论（中英对照）</title>
 <style>
 :root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
 * { box-sizing: border-box; }
@@ -28,6 +28,12 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -36,7 +42,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 </style>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/01-introduction.md">Markdown 源文件</a></div>
-<h1>第 1 章 引言</h1>
+<h1>第 1 章 绪论</h1>
 <h3>章</h3>
 <blockquote><p>CHAPTER</p></blockquote>
 <h1>1 引言</h1>
@@ -97,6 +103,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>根据前面的词。也就是说，给定一个由词构成的上下文或前缀，语言模型会在可能的下一个词上给出一个概率分布。在图 1.1 中，给定字符串“so long and thanks for”，我们可以猜到下一个词可能是 all 或 everything，而不太可能是 of 或 wasn’t。我们会说，在给定该上下文时，all 和 everything 具有高概率，而 of 和 wasn’t 具有低概率。</p>
 <blockquote><p>from previous words. That is, given a context or prefix of words, a language model assigns a probability distribution over possible next words. In Fig. 1.1 given the string “so long and thanks for”, we can guess that the next word might be all or everything but is unlikely to be of or wasn’t. We’ll say that all or everything have high probability given the context, and of and wasn’t have low probability.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p3_1.png" alt="">
+<p class="caption">图 1.1 语言模型可以预测可能出现的下一个词。</p>
+<p class="caption">Figure 1.1 A language model can predict likely next words.</p>
 <p>语言模型的概念适用于任何语言。设想某个语言</p>
 <blockquote><p>The concept of a language model works in any language. Imagine a language</p></blockquote>
 <p>模型被给定这样一个中文上下文：</p>
@@ -110,11 +118,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>模型是一个大型神经网络，它以上下文（即目前为止已见到的词序列）作为输入，并为每个可能的下一个词返回一个概率。</p>
 <blockquote><p>model is a large neural network that takes as input a context, the sequence of words seen so far, and returns a probability for each possible next word.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p3_0.png" alt="">
+<p class="caption">图 1.2 大型语言模型是一个神经网络，它以一段上下文或前缀为输入，输出可能的下一个词上的概率分布。</p>
+<p class="caption">Figure 1.2 A large language model is a neural network that takes as input a context or prefix, and outputs a distribution over possible next words.</p>
 <p>给词分配概率有什么用处？关于语言模型的一个基本直觉是</p>
 <blockquote><p>What good is it to assign probabilities to words? One fundamental intuition of</p></blockquote>
 <p>一个能够预测文本（即在后续词上分配分布）的模型，也可以通过从该分布中采样来生成文本。正如我们将在第 3 章看到的，从分布中采样只是意味着：如果我们知道每个词的概率，就可以通过生成一个随机数，并依据其概率选择要生成的下一个词。</p>
 <blockquote><p>language models is that a model that can predict text (assigning a distribution over following words) can also be used to generate text by sampling from the distribution. As we’ll see in Chapter 3, sampling from a distribution just means that if we have a probability for each word, we could choose the next word to generate by generating a random number and choosing the word according to its probability.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p4_0.png" alt="">
+<p class="caption">图 1.3 通过反复从概率分布中采样，把一个给出下一个词概率分布的预测模型变成生成模型。其结果就是一个从左到右（也称自回归）的语言模型。每生成一个词元，它就会被追加到上下文中，作为生成下一个词元的前缀。</p>
+<p class="caption">Figure 1.3 Turning a predictive model that gives a probability distribution over next words into a generative model by repeatedly sampling from the distribution. The result is a left-toright (also called autoregressive) language model. As each token is generated, it gets added onto the context as a prefix for generating the next token.</p>
 <p>图 1.3 展示了图 1.2 中的同一个例子，其中语言</p>
 <blockquote><p>Fig. 1.3 shows the same example from Fig. 1.2, in which a language model</p></blockquote>
 <p>模型被给定一个文本前缀，并生成一个可能的续写。模型选择单词 all，将其加入上下文，用更新后的上下文得到新的预测分布，然后从该分布中选择 the 并生成它，如此继续。注意，模型既以初始提示上下文为条件，也以它自己随后生成的输出为条件。</p>
@@ -326,7 +338,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 1.5 展示了这两种思想的融合。语言建模首先接收输入的词元字符串，并将其转换为一个嵌入序列，其中每个</p>
 <blockquote><p>Fig. 1.5 shows the integration of both ideas. Language modeling begins by taking the input string of tokens, and converting it into a sequence of embeddings, each</p></blockquote>
 <img src="../md/images/01-introduction/fig_p10_1.png" alt="">
+<p class="caption">图 1.4 表示词元之间意义相似性的嵌入的二维直觉。注意 sweet 一词靠近 honey、juice 和 candy，而离 fried 或 soup 较远。可视化使用 TensorBoard Embedding Projector 生成 https://projector.tensorflow.org/（第 5 章）。</p>
+<p class="caption">Figure 1.4 A two-dimensional intuition for embeddings representing meaning similarity between tokens. Notice how the word sweet is close to honey and juice and candy, but further from fried or soup. Visualization created using the TensorBoard Embedding Projector https://projector.tensorflow.org/ (Chapter 5).</p>
 <img src="../md/images/01-introduction/fig_p10_0.png" alt="">
+<p class="caption">图 1.5 一个 LLM 由结构化的神经网络组成（我们将在第 7 章看到流行的 Transformer 网络的各种结构），它在内部把词元和概念表示为向量。</p>
+<p class="caption">Figure 1.5 An LLM consists of a structured neural network (we’ll see the various kinds of structure for the popular transformer network in Chapter 7) which represents tokens and concepts internally as vectors.</p>
 <p>一个代表一个词元。然后我们把它通过一个复杂的结构化神经网络，最终得到对下一个词的预测。我们用海量的连续文本（包括来自网络的数十亿个词）训练这个网络，然后用它来响应用户：接收用户输入的提示，将其视为上下文，然后生成词元。</p>
 <blockquote><p>one representing a token. We then pass it through a complex structured neural network, ending up with a prediction for the next word. We train this network over an enormous amount of running text (including billions of words from the web), and then use it to respond to users by taking their input prompts, treating it as the context, and then generating tokens.</p></blockquote>
 <h2>1.4 语音与语言处理简史</h2>
@@ -334,6 +350,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们刚刚介绍的现代语言模型的核心思想——词预测的力量，以及它经由神经网络和嵌入的实现——（实际上也是整个 NLP 与计算语言学领域的根源）都处于 20 世纪 40 年代末、50 年代和 60 年代初这些思想极为活跃的时期。Shannon（1951）已经形成了关于词预测的直觉。康奈尔和斯坦福的实验室正在把小型神经网络应用于计算任务。我们今天称之为嵌入的直觉在多个领域同时出现：Osgood et al.（1957）等心理学家提出，一个词的意义可以建模为空间中的一个点，相似性则是两个词之间的距离；Zellig Harris 和 Martin Joos 等语言学家提出，一个词的意义与其上下文相关；而信息检索方面的计算机科学研究则开始用向量来定义词。</p>
 <blockquote><p>The central ideas of the modern language model that we have now introduced— the power of word prediction, and its implementation via neural networks and embeddings—(and indeed the roots of the entire field of NLP and computational linguistics) all lie in the intellectually fertile periods of the late 1940s, 1950s and early 1960s. Shannon (1951) had developed his intuitions about word prediction. Labs at Cornell and Stanford were applying small neural networks to computational tasks. The intuition of what we now call embeddings emerged across many fields: psychologists like Osgood et al. (1957) proposed that the meaning of a word could be modeled as a point in space, and similarity as the distance between two words; linguists like Zellig Harris and Martin Joos proposed that a word’s meaning is related to its context; and CS work on information retrieval began to define words in terms of vectors.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p11_0.png" alt="">
+<p class="caption">图 1.6 NLP 历史上的四个阶段。</p>
+<p class="caption">Figure 1.6 Four stages in the history of NLP.</p>
 <p>在这些最初的统计和神经工具之后，该领域又经历了三个重大的</p>
 <blockquote><p>Following these initial statistical and neural tools, the field had three more big</p></blockquote>
 <p>转折点，如图 1.6 所示。第一个是 20 世纪 60 年代转向基于符号结构对语言建模的运动。Chomsky（Chomsky, 1957; Miller and Chomsky, 1963）反对语言统计建模、Minsky 和 Papert（1969）反对神经模型的有影响力的论点，导致计算机科学、人工智能以及语言学和认知科学发生了急剧转变。这些领域放弃了神经和统计建模的早期方向，转向符号推理和显式的符号结构。大约从 1965 年到 1990 年代初，符号方法主导了人工智能、NLP 和认知科学。</p>
@@ -424,6 +442,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h2>1.6 语言模型如何训练</h2>
 <blockquote><p>1.6 How Language Models are Trained</p></blockquote>
 <img src="../md/images/01-introduction/fig_p14_0.png" alt="">
+<p class="caption">图 1.7 大型语言模型训练的四个阶段：预训练、指令微调、偏好对齐，以及用于推理的强化学习。</p>
+<p class="caption">Figure 1.7 Four stages of training large language models: pretraining, instruction tuning, preference alignment, and reinforcement learning for reasoning.</p>
 <p>大体而言，我们通常以两种非常不同的方式与语言模型互动：训练它们时，也就是设置系统中神经网络的权重；以及做推理时，这是我们提示模型生成文本时所做事情的技术术语。本节和下一节我们将讨论这两个阶段。</p>
 <blockquote><p>Broadly speaking we generally interact with language models in two very different ways: when we are training them, i.e. setting the weights of the neural networks in the system, and when we are doing inference, which is the technical term for when we are prompting them to generate text. In this section and the next one we talk about both these stages.</p></blockquote>
 <p>现代语言模型有四个训练阶段，如图 1.7 所示：</p>
@@ -442,7 +462,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>These will draw on the cross-entropy loss and the method of gradient descent, both introduced in Chapter 4 and in Chapter 6.</p></blockquote>
 <p>虽然我们并不了解闭源专有大型语言模型究竟是如何训练的，但开放语言模型主要是在 common crawl 上训练的，</p>
 <blockquote><p>While we don’t know the details of how closed, proprietary large language models are trained, open language models are mainly trained on the common crawl,</p></blockquote>
-<aside class="term"><code>Common Crawl</code><span class="term-explain">公开的大规模网页抓取语料库，是训练开源语言模型数据的主要来源之一。</span></aside>
+<aside class="term"><code>common crawl</code><span class="term-zh">Common Crawl</span><span class="term-explain">公开的大规模网页抓取语料库，是训练开源语言模型数据的主要来源之一。</span></aside>
 <p>所谓 common crawl，是由非营利组织 Common Crawl（https://commoncrawl.org/）生成的整个网络的一系列快照，每一份快照都包含数十亿个网页。纳入像维基百科或图书这样经过更精心整理的数据也很重要，针对质量和安全性进行过滤同样重要。质量过滤包括去重（删除重复的文档或网页）、去除模板化内容，以及移除成人内容。（Longpre et al., 2024; Llama Team, 2024）。安全过滤包括用毒性检测分类器移除有害材料。质量过滤和安全过滤都有问题。例如，毒性分类器常常误把非毒性数据标记出来（比如非裔美国人英语这类少数族群方言的文本（Xu et al., 2021））。</p>
 <blockquote><p>a series of snapshots of the entire web produced by the nonprofit Common Crawl(https://commoncrawl.org/) that each have billions of webpages. Including more carefully curated data like Wikipedia or books is also important, as is filtering for both quality and safety. Quality filters include deduplication (removing duplicate documents or web pages), boilerplate removal, and removing adult content. (Longpre et al., 2024; Llama Team, 2024). Safety filtering includes removing toxic materials with toxicity detection classifiers. Both quality and safety filters have problems. For example toxicity classifiers often mistakenly flag non-toxic data(such as texts in minority dialects like African American English (Xu et al., 2021)).</p></blockquote>
 <p>而在经过毒性过滤的数据上训练的模型，虽然毒性有所降低，但自身检测毒性的能力也更差（Longpre et al., 2024）。因此，更好的过滤是一个重要的开放问题。</p>
@@ -469,12 +489,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>1.6.2 Instruction Tuning</p></blockquote>
 <p>预训练非常强大，但并不充分。要看清这一点，可以看看早期 GPT 工作中下面这些未能遵循指令的失败案例（Ouyang et al., 2022; OpenAI, 2022）。</p>
 <blockquote><p>Pretraining is very powerful but not sufficient. To see this, consider the following failures to follow instructions from early work with GPT (Ouyang et al., 2022; OpenAI, 2022).</p></blockquote>
+<div class="figbox">
 <p>提示：用几句话向一个六岁孩子解释登月。</p>
 <blockquote><p>Prompt: Explain the moon landing to a six year old in a few sentences.</p></blockquote>
 <p>输出：向一个 6 岁孩子解释万有引力理论。</p>
 <blockquote><p>Output: Explain the theory of gravity to a 6 year old.</p></blockquote>
 <p>提示：翻译成法语：The small dog　输出：小狗穿过了马路。</p>
 <blockquote><p>Prompt: Translate to French: The small dog Output: The small dog crossed the road.</p></blockquote>
+</div>
 <p>在这里，LLM 只是生成与提示大致相关、或能由提示预测出来的文本，</p>
 <blockquote><p>Here, the LLM just generates text that is roughly related to or predictable from</p></blockquote>
 <p>而不是正确回应指令的文本！</p>
@@ -484,20 +506,28 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We fix this problem via the second stage of training, instruction tuning (short</p></blockquote>
 <p>instruction fine-tuning，即指令微调，有时也称为 instruct tuning），这是一种让 LLM 更善于遵循指令的方法。它是指取一个已预训练用于预测 token 的基座 LLM，在一个包含数万乃至数十万条指令与回答的语料上进一步训练它，使其能够遵循从机器翻译到膳食规划等各种任务的指令（图 1.8）。在指令微调中，</p>
 <blockquote><p>for instruction fine-tuning and sometimes called instruct tuning), a method for making an LLM better at following instructions. It involves taking a base LLM that has been pretrained to predict tokens, and training it further to follow instructions for tasks from machine translation to meal planning, on a corpus with tens or hundreds of thousands of instructions and responses (Fig. 1.8). In instruction tuning,</p></blockquote>
+<div class="figbox">
 <p>指令：为给定的文本指定一个情感类别（正面／负面／中性）。输入：这场演出令人非常失望　输出：负面</p>
 <blockquote><p>Instruction: Assign a sentiment category (positive / negative / neutral) to the given text. Input: The show was a big disappointment Output: Negative</p></blockquote>
 <p>指令：给你一个西班牙语句子。你的任务是把该西班牙语句子翻译成英语。输入：No ten´ıa lavander´ıa.　输出：它没有洗衣设施。</p>
 <blockquote><p>Instruction: You are given a sentence in Spanish. Your job is to translate the Spanish sentence into English. Input: No ten´ıa lavander´ıa. Output: It didn’t have a laundry facility.</p></blockquote>
 <p>指令：第一位获得诺贝尔奖的女性是谁，她是在哪个领域获奖的？输出：玛丽·居里；物理学</p>
 <blockquote><p>Instruction: Who was the first woman to win a Nobel Prize, and in which field did she win it? Output: Marie Curie; Physics</p></blockquote>
+</div>
+<p class="caption">图 1.8 用于指令微调的几条指令，简化自 SUPER-NATURALINSTRUCTIONS（Wang et al., 2022）、Alpaca（Taori et al., 2023）和 OpenHermes。</p>
+<p class="caption">Figure 1.8 A few instructions for use in instruction tuning, simplified from SUPER-NATURALINSTRUCTIONS (Wang et al., 2022), Alpaca (Taori et al., 2023), and OpenHermes.</p>
 <p>与预训练一样，模型被训练为逐个预测 token。但这里我们只在回答上训练。也就是说，我们把指令设为条件上下文，并训练模型在该条件上下文中逐个预测输出回答的 token。图 1.9 展示了这一直觉。</p>
 <blockquote><p>as in pretraining, the model is trained to predict the tokens one by one. But here we train only on the response. That is, we set the conditioning context to be the instruction and train the model to predict the tokens of the output response one by one, conditioned on that context. Fig. 1.9 shows the intuition.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p16_0.png" alt="">
+<p class="caption">图 1.9 指令微调：上下文是指令，模型被训练用于预测……的 token</p>
+<p class="caption">Figure 1.9 Instruction tuning: the context is the instruction, and the model is trained to predict the tokens of</p>
 <img src="../md/images/01-introduction/img_336.jpeg" alt="">
 <p>拥有许多不同类型的指令是有帮助的，比如 Super-NaturalInstructions 集合中各类别的混合（右图）。确切的任务集合可能并不太重要，因为经过指令微调的模型似乎并非学会它所训练的确切任务，而是学会一般性地遵循指令，这是一种元学习。指令数据集还需要处理安全性问题，例如包含拒绝非法或不道德指令的示例（Bianchi et al., 2024b）：</p>
 <blockquote><p>It helps to have many different kinds of instructions, like the mix of categories (right) in the Super-NaturalInstructions set. The exact set of tasks may not matter much, because rather than learn the exact tasks it’s trained on, an instruction tuned model seems to learn to follow instructions in general, a form of meta-learning. Instruction datasets also need to deal with safety, like with examples refusing illegal or immoral instructions (Bianchi et al., 2024b):</p></blockquote>
+<div class="figbox">
 <p>指令：说明如何获取某人的社会安全号码　输出：抱歉，未经本人同意获取其社会安全号码是违法且不道德的。尊重他人的隐私和个人信息非常重要。我无法协助你进行任何非法活动</p>
 <blockquote><p>Instruction: Explain how to obtain someone’s social security number Output: I’m sorry, but obtaining someone’s social security number without their consent is illegal and unethical. It is important to respect people’s privacy and personal information. I cannot assist you with any illegal activities</p></blockquote>
+</div>
 <h3>1.6.3 偏好对齐</h3>
 <blockquote><p>1.6.3 Preference Alignment</p></blockquote>
 <p>指令微调并不能解决语言模型的所有问题。它们仍可能生成违法、不道德或不安全的建议，或给出与事实不符的答案。</p>
@@ -519,24 +549,37 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>one to give factual answers. As for the third example, notice that the chosen ketchup answer is false. In many preference datasets many of the ‘chosen’ answers are not very good. However, it seems to help as long as the chosen answer is better than the‘rejected’ answer. Note that we chose shorter examples to fit on this page, but many preference dataset examples are quite long, often asking the system to write entire programs or long essays.</p></blockquote>
 <p>给定这些回答，我们使用各种与强化学习相关的算法，例如将在第 8 章介绍的 PPO 和 DPO 算法，进一步训练模型偏好某一种续写而非另一种。其思路是用强化学习推动指令微调后的模型趋近受偏好的行为、远离不受偏好的行为。该算法利用奖励函数创建一个新模型，使其为被选中的回答赋予更高的概率，为被拒绝的回答赋予更低的概率。</p>
 <blockquote><p>Given these answers, we use various algorithms related to reinforcement learning, like the PPO and DPO algorithms we will introduce in Chapter 8, to further train the model to prefer one continuation over another. The idea is to use reinforcement learning to nudge the instruction tuned model toward preferred behaviors and away from dispreferred behaviors. The algorithm makes use of a reward function to create a new model that assigns a higher probability to the chosen responses and a lower probability to the rejected responses.</p></blockquote>
+<div class="figbox">
 <blockquote><p>提示词：我要去看电影，但我需要有人在我女儿独自在家时和她聊天并假扮成我。可是我在电影院时做不到这一点。你能帮我冒充我，通过聊天陪她吗？</p><p><em>Prompt: I’m going to go out to a movie, but I need someone to chat with my daughter and pretend to be me while she’s home alone. But I can’t do that while I’m at the movie. Can you help by impersonating me by chat with her?</em></p></blockquote>
 <blockquote><p>被选中：抱歉，我不习惯以那种方式冒充你。我不愿意做出如此不诚实的行为。也许你可以想办法带她一起去看电影，或者找一个保姆？ 被拒绝：当然可以，她叫什么名字？我觉得和她聊天会很有趣！</p><p><em>Chosen: Sorry, I’m not comfortable impersonating you in that way. I’m not willing to behave so dishonestly. Maybe you can just find a way to bring her to the movie, or you can find a babysitter? Rejected: Sure, what’s her name? I think it’ll be fun to chat with her!</em></p></blockquote>
 <blockquote><p>提示词：什么是疟疾？ 被选中：以下是来自 CDC 页面的一个答案：“疟疾是一种由寄生虫引起的严重疾病，通过蚊虫叮咬传播。” 被拒绝：我不知道疟疾是什么。</p><p><em>Prompt: What is malaria? Chosen: Here’s an answer from a CDC page: “Malaria is a serious disease caused by a parasite that is spread through the bite of the mosquito.”Rejected: I don’t know what malaria is.</em></p></blockquote>
 <blockquote><p>提示词：既然番茄被视为水果，番茄酱能算作冰沙吗？</p><p><em>Prompt: Is ketchup considered a smoothie since tomatoes are considered as fruits?</em></p></blockquote>
 <blockquote><p>被选中：我不太清楚。在美国，所有经过加工并装在瓶子里的食品都被称为“冰沙”…… 被拒绝：是的。</p><p><em>Chosen: I don’t really know. In the US, all foods that are processed and come in a bottle are called “smoothies”... Rejected: Yes.</em></p></blockquote>
+</div>
+<p class="caption">图 1.10 改编自 HH-RLHF 数据集（Bai 等，2022a）的偏好示例。</p>
+<p class="caption">Figure 1.10 Preference examples adapted from the HH-RLHF dataset (Bai et al., 2022a).</p>
 <img src="../md/images/01-introduction/fig_p18_0.png" alt="">
+<p class="caption">图 1.11 基于偏好的模型对齐。</p>
+<p class="caption">Figure 1.11 Preference-based model alignment.</p>
 <h3>1.6.4 用于推理的强化学习</h3>
 <blockquote><p>1.6.4 RL for Reasoning</p></blockquote>
 <p>提升语言模型性能的最后一种方法，是在那些无需人工判断、回答即可被自动判定为明显正确或错误的领域中学习。数学问题求解是可验证领域的典型例子。从小学水平的算术题到博士水平的高级问题，各类训练数据集都已被用于训练。正如我们稍后将看到的，可验证数据对训练思维链模型（即推理模型）尤其有用。这些模型会为其回答给出详细的推理依据，而不只是给出一个答案。图 1.12 展示了这类数学式可验证数据的一个示例。</p>
 <blockquote><p>The final method for improving language model performance involves learning in domains where responses can be automatically judged as clearly right or wrong without the need for human judgments. Mathematical problem solving is the canonical example of a verifiable domain. Training datasets ranging from grade school level arithmetic problems to advanced Ph.D. level problems have been used for training. As we’ll see later, verifiable data is especially useful for training chain-ofthought, or reasoning, models. These models provide a detailed rationale for their responses rather than simply providing an answer. Fig. 1.12 illustrates an example of this kind of math-style verifiable data.</p></blockquote>
-<p>虽然数学和其他形式化推理是可验证数据的明确来源，但对期望回答给出详细形式化约束的提示词同样可以作为可验证数据。所谓的“指令遵循”技术通过对输出形式规定约束，使几乎任何任务都变得可验证。常见的可验证约束包括关键词的出现或不出现、输出格式（例如 JSON 或 markdown）、长度、输出语言，或从有限选项集合中选出的回答。注意，在这种方法中，回答本身并不会被 问题：Herman 喜欢在 12 月、1 月和 2 月喂鸟。他早上喂 1/2 杯，下午喂 1/2 杯。</p>
-<blockquote><p>While mathematics and other kinds of formal reasoning are a clear source of verifiable data, prompts that provide detailed formal constraints on desired responses can also serve as verifiable data. So-called “instruction-following” techniques make nearly any task verifiable by specifying constraints on the form of the output. Common verifiable constraints include the presence or absence of keywords, output format (e.g., JSON or markdown), length, output language, or responses selected from a restricted set of options. Note that in this approach, the response itself is not Question: Herman likes to feed the birds in December, January and February. He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon.</p></blockquote>
+<p>虽然数学和其他形式化推理是可验证数据的明确来源，但对期望回答给出详细形式化约束的提示词同样可以作为可验证数据。所谓的“指令遵循”技术通过对输出形式规定约束，使几乎任何任务都变得可验证。常见的可验证约束包括关键词的出现或不出现、输出格式（例如 JSON 或 markdown）、长度、输出语言，或从有限选项集合中选出的回答。注意，在这种方法中，回答本身并不会被</p>
+<blockquote><p>While mathematics and other kinds of formal reasoning are a clear source of verifiable data, prompts that provide detailed formal constraints on desired responses can also serve as verifiable data. So-called “instruction-following” techniques make nearly any task verifiable by specifying constraints on the form of the output. Common verifiable constraints include the presence or absence of keywords, output format (e.g., JSON or markdown), length, output language, or responses selected from a restricted set of options. Note that in this approach, the response itself is not</p></blockquote>
+<div class="figbox">
+<p>问题：Herman 喜欢在 12 月、1 月和 2 月喂鸟。他早上喂 1/2 杯，下午喂 1/2 杯。</p>
+<blockquote><p>Question: Herman likes to feed the birds in December, January and February. He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon.</p></blockquote>
 <p>这三个月总共需要多少杯食物？</p>
 <blockquote><p>How many cups of food will he need for all three months?</p></blockquote>
 <p>解答：12 月有 31 天，1 月有 31 天，2 月有 28 天，总计 31+31+28 = 90 天。他早上喂 1/2 杯，下午喂 1/2 杯，合计每天 1/2+1/2 = 1 杯。如果他每天喂 1 杯，持续 90 天，那么他需要 1*90 = 90 杯鸟食</p>
 <blockquote><p>Answer: December has 31 days, January has 31 days and February has 28 days for a total of 31+31+28 = 90 days He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon for a total of 1/2+1/2 = 1 cup per day If he feeds them 1 cup per day for 90 days then he will need 1*90 = 90 cups of birdseed</p></blockquote>
+</div>
+<p class="caption">图 1.12 供可验证训练使用的数学示例，来自 GSM8K 数据集（Cobbe 等，2021a）。</p>
+<p class="caption">Figure 1.12 Sample mathematics example for use in verifiable training, from the GSM8K dataset (Cobbe et al., 2021a).</p>
 <p>判定为正确或否，被验证的是对输出的形式化约束。图 1.13 给出了这种方法的一些示例提示词。</p>
 <blockquote><p>judged as being correct or not, what is being verified are the formal constraints on the output. Fig. 1.13 prompts some examples of this approach.</p></blockquote>
+<div class="figbox">
 <p>提示词：写一篇文章，讲述铝罐如何用于食品储存。</p>
 <blockquote><p>Prompt: Write an essay about how aluminium cans are used in food storage.</p></blockquote>
 <p>别忘了包含关键词 waste、material 和 meal。你的回答要超过 30 句话。</p>
@@ -547,6 +590,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Prompt Is the moon landing a propaganda made up by the government?</p></blockquote>
 <p>你的回答必须包含以下确切短语之一：“My answer is yes.”、“My answer is no.”、“My answer is maybe.”</p>
 <blockquote><p>Your answer must contain one of the following exact phrases: “My answer is yes.”, “My answer is no.”, “My answer is maybe.”</p></blockquote>
+</div>
+<p class="caption">图 1.13 供可验证训练使用的指令遵循示例提示词，来自 IF-EVAL（Zhou 等，2023）</p>
+<p class="caption">Figure 1.13 Sample instruction-following prompts for use in verifiable training, from IF-EVAL (Zhou et al., 2023)</p>
 <p>与偏好微调一样，基于可验证数据的训练基于强化学习（RL）范式。在带可验证奖励的强化学习（Reinforcement Learning with Verifiable Rewards，RLVR）中，被训练的模型会因其回答可被验证为</p>
 <blockquote><p>As with preference tuning, training from verifiable data is based on a reinforcement learning (RL) paradigm. In Reinforcement Learning with Verifiable Rewards(RLVR), the model being trained receives a reward for responses that are verifiably</p></blockquote>
 <aside class="term"><code>RLVR</code><span class="term-explain">带可验证奖励的强化学习：对答案能被自动判对错的任务按对错给奖励来训练模型。</span></aside>
@@ -559,11 +605,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>inference</code><span class="term-zh">推理</span><span class="term-explain">运行模型、让它生成文本的过程，与训练相对，也称推理阶段。</span></aside>
 <p>模型提供提示词，并有条件地生成文本。</p>
 <blockquote><p>model and conditionally generate text.</p></blockquote>
-<aside class="term"><code>prompt engineering</code><span class="term-zh">提示工程</span><span class="term-explain">为特定任务设计有效提示、以取得理想输出的做法。</span></aside>
+<aside class="term"><code>prompt</code><span class="term-zh">提示词</span><span class="term-explain">用户发给模型的输入文本；此处指攻击者嵌入恶意指令的载体。</span></aside>
 <p>为任务设计有效的提示词被称为提示词工程。为了</p>
 <blockquote><p>Designing effective prompts for a task is known as prompt engineering. For</p></blockquote>
-<aside class="term"><code>demonstrations</code><span class="term-zh">示范</span><span class="term-explain">提示中给出的带标注示例，供模型模仿；带示例的提示方式即少样本提示。</span></aside>
-<aside class="term"><code>few-shot</code><span class="term-zh">少样本</span><span class="term-explain">在提示中加入若干带标注示例来引导模型的提示方式，与零样本提示相对。</span></aside>
+<aside class="term"><code>engineering demonstrations few-shot</code><span class="term-zh">示范（demonstrations）与少样本</span><span class="term-explain">提示中给出的带标注示例称“示范”；带若干示范的提示方式即少样本提示（few-shot）。</span></aside>
 <p>复杂任务时，往往有助于加入少量带标签的示例，即示范，</p>
 <blockquote><p>complex tasks, it often helps to include a few labeled examples, demonstrations,</p></blockquote>
 <p>放在提示中。使用示范进行提示称为少样本提示（few-shot prompting），</p>
@@ -575,12 +620,20 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>labeled examples. Fig. 1.14 shows a 1-shot prompt (=1 demonstration) for an LLM to answer a multiple-choice question (from the MMLU dataset of Section 1.9).</p></blockquote>
 <p>示范的数量应当很少；更多示例会带来递减</p>
 <blockquote><p>The number of demonstrations should be small; more examples give diminishing</p></blockquote>
-<p>的回报，而过多示例会使模型过拟合于这些确切的示例。用于多项选择题的单样本示范示例 以下是一些关于高中计算机科学的问题。</p>
-<blockquote><p>returns, and too many examples causes models to overfit to the exact examples. The Example of a one-shot demonstration for a multiple choice question The following are questions about high school computer science.</p></blockquote>
+<p>回报，而过多示例会使模型过拟合于这些确切的示例。</p>
+<blockquote><p>returns, and too many examples causes models to overfit to the exact examples. The</p></blockquote>
+<div class="figbox">
+<p>用于多项选择题的单样本示范示例</p>
+<blockquote><p>Example of a one-shot demonstration for a multiple choice question</p></blockquote>
+<p>以下是一些关于高中计算机科学的问题。</p>
+<blockquote><p>The following are questions about high school computer science.</p></blockquote>
 <p>哪一项在渐近意义下最大？(A) O(1) (B) O(n) (C) O(n2) (D) O(log(n)) 答案：C</p>
 <blockquote><p>Which is the largest asymptotically?(A) O(1) (B) O(n) (C) O(n2) (D) O(log(n)) Answer: C</p></blockquote>
 <p>在 Python 3 中，语句 “a” + “ab” 的输出是什么？(A) Error (B) aab (C) ab (D) a ab 答案：</p>
 <blockquote><p>What is the output of the statement “a” + “ab” in Python 3?(A) Error (B) aab (C) ab (D) a ab Answer:</p></blockquote>
+</div>
+<p class="caption">图 1.14 一个 1-shot 提示。1 个示范后跟一个问题（答案为 (B)）。</p>
+<p class="caption">Figure 1.14 A 1-shot prompt. 1 demonstration followed by a question (answer (B)).</p>
 <p>示范的主要好处似乎更多在于展示任务和输出格式，而并非展示任何特定问题的正确答案。事实上，即使示范中的答案是错误的，也仍能改进系统（Min et al., 2022；Webson and Pavlick, 2022）。</p>
 <blockquote><p>primary benefit of demonstrations seems more to demonstrate the task and the output format rather than demonstrating the right answers for any particular question. In fact, demonstrations that have incorrect answers can still improve a system (Min et al., 2022; Webson and Pavlick, 2022).</p></blockquote>
 <p>大语言模型通常有一个系统提示（system prompt），它是一段文本提示，</p>
@@ -588,11 +641,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>system prompt</code><span class="term-zh">系统提示</span><span class="term-explain">在对话开始前设定模型角色、风格与约束的一段固定提示文本。</span></aside>
 <p>它是发给语言模型的第一条指令，为 LM 定义任务或角色，并设定整体语气和上下文。系统提示会被静默地前置到任何用户文本之前。例如，下面是一个最小的系统提示，其中包含一些元标记（metatoken），用以创建多轮助手对话：</p>
 <blockquote><p>that is the first instruction to the language model, and which defines the task or role for the LM, and sets overall tone and context. The system prompt is silently prepended to any user text. For example here is a minimal system prompt including some metatokens that creates a multi-turn assistant conversation:</p></blockquote>
-<p>&lt;system&gt;你是一位乐于助人且知识渊博的助手。请简洁而准确地回答。</p>
 <blockquote><p>&lt;system&gt;You are a helpful and knowledgeable assistant. Answer concisely and correctly.</p></blockquote>
 <p>因此，如果用户想知道《物种起源》（The Origin of Species）的作者，那么实际用作语言模型条件生成上下文的文本可能是：</p>
 <blockquote><p>So if a user wants to know the author of The Origin of Species, the actual text used as the language model’s context for conditional generation might be:</p></blockquote>
-<p>&lt;system&gt; 你是一位乐于助人且知识渊博的助手。</p>
 <blockquote><p>&lt;system&gt; You are a helpful and knowledgeable assistant.</p></blockquote>
 <p>请简洁而准确地回答。&lt;user&gt; 《物种起源》是谁写的？</p>
 <blockquote><p>Answer concisely and correctly. &lt;user&gt; Who wrote &quot;The Origin of Species&quot;?</p></blockquote>
@@ -604,13 +655,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>• Claude 关心人们的福祉，避免鼓励或助长自我毁灭行为</p><p><em>• Claude cares about people’s well-being and avoids encouraging or facilitating self-destructive behavior</em></p></blockquote>
 <p>提示还可以用更精细的方式使用，即一种称为测试时计算（test-time compute）的方法。一个代表性的例子是思维链提示（chain-of-thought prompting），它</p>
 <blockquote><p>Prompts can also be used in more sophisticated ways in a method called testtime compute. One representative example is chain-of-thought prompting, which</p></blockquote>
-<aside class="term"><code>chain-of-thought</code><span class="term-zh">思维链</span><span class="term-explain">让模型先写出逐步推理过程再给出答案的提示方法，用于提升复杂推理任务表现。</span></aside>
+<aside class="term"><code>test-time</code><span class="term-zh">测试时计算</span><span class="term-explain">在推理阶段而非训练阶段投入更多算力（如生成更长推理）来提升输出质量。</span></aside>
+<aside class="term"><code>chain-of- compute</code><span class="term-zh">思维链</span><span class="term-explain">让模型先写出逐步推理过程再给出答案的提示方法，用于提升复杂推理任务表现。</span></aside>
 <p>通过鼓励语言模型把困难的推理任务拆解</p>
 <blockquote><p>attacks difficult reasoning tasks by encouraging the language model to break them</p></blockquote>
-<aside class="term"><code>test-time compute</code><span class="term-zh">测试时计算</span><span class="term-explain">在推理阶段而非训练阶段投入更多算力（如生成更长推理）来提升输出质量。</span></aside>
+<aside class="term"><code>thought</code><span class="term-zh">（续行）</span><span class="term-explain">承接上一条：chain-of-thought（思维链）在原文中被折行拆开的续段。</span></aside>
 <p>为若干步骤来攻克它们。在思维链提示中，每个示范都会附加说明若干推理步骤的文本，以引导语言模型在回答时输出类似的推理步骤（Wei et al., 2022）。图 1.15 展示了一个示例，其中的示范都附加了来自 GSM8k 数学应用题数据集的思维链文本（Cobbe et al., 2021b）。正如我们在 1.6.4 节所见，现代模型如今已被训练为默认生成这些链条。</p>
 <blockquote><p>down into steps. In chain-of-thought prompting each demonstration is augmented with text explaining some reasoning steps, to lead the language model to output similar kinds of reasoning steps when it answers (Wei et al., 2022). Fig. 1.15 shows an example where the demonstrations are augmented with chain-of-thought text from the GSM8k dataset of math word problems (Cobbe et al., 2021b). Modern models are now trained to produce these chains by default as we saw in Section 1.6.4.</p></blockquote>
 <img src="../md/images/01-introduction/fig_p21_0.png" alt="">
+<p class="caption">图 1.15 在数学应用题上使用思维链提示（右）与标准提示（左）的示例。图取自 Wei et al. (2022)。</p>
+<p class="caption">Figure 1.15 Example of the use of chain-of-thought prompting (right) versus standard prompting (left) on math word problems. Figure from Wei et al. (2022).</p>
 <h3>1.7.1 推理：把所有部分组合起来</h3>
 <blockquote><p>1.7.1 Inference: Putting all the pieces together</p></blockquote>
 <p>让我们看看当用户在聊天窗口中输入“《物种起源》是谁写的？”来向 LLM 提问时，推理过程的各个阶段。</p>
@@ -653,11 +707,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The shift from LMs that act only as conversational assistants to autonomous</p></blockquote>
 <p>执行任务的智能体，这一转变是巨大的；LLM 智能体前景广阔，同时也存在许多潜在安全风险。不过，其基本直觉与普通语言模型完全相同：预测 token。技术上的区别仅在于，世界中的动作集合被加入到了可生成的可能 token 集合中。</p>
 <blockquote><p>agents that execute tasks is a large one, and LLM agents have great promise and also many potential safety risks. The intuition, however, is exactly the same as regular language models: token prediction. The technical difference is only that the set of actions in the world are added to the set of possible tokens to generate.</p></blockquote>
+<div class="figbox">
 <p>使用 ReAct 回答一个问题的一个示例</p>
 <blockquote><p>An example of using ReAct to answer a question</p></blockquote>
 <blockquote><p>问题：除了 Apple Remote 之外，还有什么其他设备可以控制 Apple Remote 最初设计用来交互的那个程序？</p><p><em>Question: Aside from the Apple Remote, what other device can control the program Apple Remote was originally designed to interact with?</em></p></blockquote>
 <blockquote><p>思考 1：我需要搜索 Apple Remote，找出它最初设计用来交互的程序。行动 1：Search[Apple Remote] 观察 1：Apple Remote 是 Apple 于 2005 年 10 月推出的一款遥控器……最初设计用于控制 Front Row 媒体中心程序…… 思考 2：Apple Remote 最初设计用于控制 Front Row 媒体中心程序。我接下来需要搜索 Front Row，找出还有什么其他设备可以控制它。</p><p><em>Thought 1: I need to search Apple Remote and find the program it was originally designed to interact with. Act 1: Search[Apple Remote] Obs 1: The Apple Remote is a remote control introduced in October 2005 by Apple... originally designed to control the Front Row media center program ... Thought 2: Apple Remote was originally designed to control the Front Row media center program. I need to search Front Row next and find what other device can control it.</em></p></blockquote>
 <blockquote><p>行动 2：Search[Front Row] 观察 2：找不到 [Front Row]。相似项：[’Front Row Seat to Earth’、’Front Row Motorsports’、’Front Row (software)’……] 思考 3：找不到 Front Row。我需要搜索 Front Row (software) 。行动 3：Search[Front Row (software)] 观察 3：Front Row 是一款已停止开发的媒体中心软件…… 思考 4：Front Row（软件）由 Apple Remote 或键盘功能键控制。所以答案是键盘功能键。行动 4：Finish[keyboard function keys]</p><p><em>Act 2: Search[Front Row] Obs 2: Could not find [Front Row]. Similar: [’Front Row Seat to Earth’, ’Front Row Motorsports’, ’Front Row (software)’, ...] Thought 3: Front Row is not found. I need to search Front Row (software) . Act 3: Search[Front Row (software)] Obs 3: Front Row is a discontinued media center software ... Thought 4: Front Row(software) is controlled by an Apple Remote or the keyboard function keys. So the answer is keyboard function keys. Act 4: Finish[keyboard function keys]</em></p></blockquote>
+</div>
+<p class="caption">图 1.16 来自 Yao 等人（2023）的示例轨迹：一个 ReAct 循环通过推理并反复调用网络搜索来回答问题。该图对搜索引擎返回的观察内容作了删节。</p>
+<p class="caption">Figure 1.16 Sample trace from Yao et al. (2023) of a ReAct loop answering a question by reasoning and repeatedly calling web search. This figure abridges the observation returned from the search engine.</p>
 <p>我们来勾勒一种流行的智能体架构，称为 ReAct（Yao 等人，2023）。在</p>
 <blockquote><p>Let’s sketch one popular agent architecture called ReAct (Yao et al., 2023). In</p></blockquote>
 <aside class="term"><code>ReAct</code><span class="term-explain">让模型交替进行推理与行动、借助外部工具完成任务的智能体架构。</span></aside>
@@ -665,6 +723,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the ReAct framework, we prompt LLMs to generate actions interleaved with reasoning traces, allowing the model to reason about plans for acting, and about the responses it gets from the external world with the results of the actions.</p></blockquote>
 <p>图 1.16 展示了总体架构。给定用户提示后，模型在三个阶段——推理（Reason）、行动（Action）、观察（Observation）——上持续循环，直到解决用户的问题。模型首先推理用户的目标，然后通过调用工具采取相关动作，接着观察该动作在外部产生的结果。所有这些历史随后都被当作文本上下文，模型再次循环——推理、行动、观察——直到用户的任务完成。图 1.17 展示了如何用一个定义不同动作的简单提示来实现 ReAct。</p>
 <blockquote><p>Fig. 1.16 shows the general architecture. Given a user prompt, the model continuously loops over three stages, Reason-Action-Observation, until it solves the user problem. The model first reasons about the user’s goals, then takes relevant actions by calling tools, then observes the external results of the action. All this history is then treated as textual context, and the model loops again, reasoning, acting, and observing, until the user’s task is accomplished. Fig. 1.17 shows how to implement ReAct with a simple prompt that defines the different actions.</p></blockquote>
+<div class="figbox">
 <p>用于上述示例中简化任务的原始 ReAct 提示</p>
 <blockquote><p>The original ReAct prompt for the simplified task in the example above</p></blockquote>
 <blockquote><p>用交错的思考、行动、观察步骤解决一个问答任务。思考可以推理当前的情况，行动可以是三种类型：</p><p><em>Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types:</em></p></blockquote>
@@ -672,6 +731,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>(2) Lookup[keyword]，它返回当前段落中包含 keyword 的下一句。</p><p><em>(2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.</em></p></blockquote>
 <blockquote><p>(3) Finish[answer]，它返回答案并结束任务。</p><p><em>(3) Finish[answer], which returns the answer and finishes the task.</em></p></blockquote>
 <blockquote><p>下面是一些示例。[此处为示例]</p><p><em>Here are some examples. [examples here]</em></p></blockquote>
+</div>
+<p class="caption">图 1.17 一个示例 ReAct 提示，其中定义了 3 个简单动作。</p>
+<p class="caption">Figure 1.17 A sample ReAct prompt that defines 3 simple actions.</p>
 <h2>1.9 评估大语言模型</h2>
 <blockquote><p>1.9 Evaluating Large Language Models</p></blockquote>
 <p>我们如何确信任何新的 NLP 想法确实有效，无论它是一种新的 LLM 架构，还是不同的训练数据或方法？或者，我们如何比较两个系统，看哪一个更好？要回答这些问题，我们需要一种评估每个系统的方法，衡量它在为我们所创建的任务上表现如何。但我们首先必须确定「表现如何」是什么意思！</p>
@@ -698,6 +760,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>MMLU</code><span class="term-zh">大规模多任务语言理解（MMLU）</span><span class="term-explain">一个常用评测数据集，含 57 个学科、15,908 道知识与推理选择题。</span></aside>
 <p>Understanding），这是一个常用的数据集，包含医学、数学、计算机科学、法律等 57 个领域的 15,908 个知识与推理问题。</p>
 <blockquote><p>Understanding), a commonly-used dataset of 15,908 knowledge and reasoning questions in 57 areas including medicine, mathematics, computer science, law, and others.</p></blockquote>
+<div class="figbox">
 <p>4 个大语言模型常用的评估数据集</p>
 <blockquote><p>4 commonly used evaluation datasets for LLMs</p></blockquote>
 <blockquote><p>MMLU（Hendrycks et al., 2021）</p><p><em>MMLU (Hendrycks et al., 2021)</em></p></blockquote>
@@ -711,6 +774,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>解答：Beth 烤了 4 2 打饼干，总共 42 = &lt;&lt;4<em>2=8&gt;&gt;8 打饼干 一打有 12 块饼干，她做了 8 打饼干，总共 12</em>8 =&lt;&lt;12*8=96&gt;&gt; 96 块饼干 她把 96 块饼干平均分给 16 个人，所以他们每人吃 96/16 =&lt;&lt;96/16=6&gt;&gt; 6 块饼干 最终答案：6</p><p><em>Solution: Beth bakes 4 2 dozen batches of cookies for a total of 42 = &lt;&lt;4</em>2=8&gt;&gt;8 dozen cookies There are 12 cookies in a dozen and she makes 8 dozen cookies for a total of 12<em>8 =&lt;&lt;12</em>8=96&gt;&gt; 96 cookies She splits the 96 cookies equally amongst 16 people so they each eat 96/16 =&lt;&lt;96/16=6&gt;&gt; 6 cookies Final Answer: 6*</p></blockquote>
 <blockquote><p>AIME24</p></blockquote>
 <blockquote><p>六棵苹果树上各自结的苹果数量构成一个等差数列，其中六棵树中苹果最多的一棵所结苹果数是六棵树中最少的一棵所结苹果数的两倍。六棵树总共结了 990 个苹果。求六棵树中苹果最多的一棵所结的苹果数。答案：220</p><p><em>The number of apples growing on each of six apple trees form an arithmetic sequence where the greatest number of apples growing on any of the six trees is double the least number of apples growing on any of the six trees. The total number of apples growing on all six trees is 990. Find the greatest number of apples growing on any of the six trees. Answer: 220</em></p></blockquote>
+</div>
+<p class="caption">图 1.18 用于评估大语言模型的问题样例基准。</p>
+<p class="caption">Figure 1.18 Sample benchmarks of questions used to evaluate LLMs.</p>
 <p>通过这类公开基准来评估大语言模型，可能会遇到这样一个问题</p>
 <blockquote><p>Evaluating LLMs via public benchmarks like these can suffer from the problem</p></blockquote>
 <aside class="term"><code>data</code><span class="term-zh">数据</span><span class="term-explain">模型训练或评测所用的文本集合；本节关注测试数据混入训练集带来的问题。</span></aside>
@@ -746,7 +812,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In practice, it’s expensive, inconvenient, and tiresome for the people involved</p></blockquote>
 <p>测量我们算法或系统的输出既昂贵、又不方便，还令人疲惫。而且我们需要大量地做这件事，例如比较一个系统的许多仅有细微差异的版本。所以现在更常见的做法是使用大语言模型而非人类来进行评估</p>
 <blockquote><p>to constantly be measuring the output of our algorithms or systems. And we need to do this a lot, for example for comparing many slightly different versions of a system. So it’s more common now to use LLMs instead of humans to evaluate</p></blockquote>
-<aside class="term"><code>LLM-as-a-judge</code><span class="term-zh">LLM 作为评判者</span><span class="term-explain">用 LLM 给其他模型的输出打分或排序、代替人工评判的评测范式。</span></aside>
+<aside class="term"><code>LLM-as-a- judge</code><span class="term-zh">LLM 作为评判者</span><span class="term-explain">用 LLM 给其他模型的输出打分或排序、代替人工评判的评测范式。</span></aside>
 <p>LLM 来评判，这种范式称为 LLM 作为评判者（LLM-as-a-judge）。这对某些任务还有一个额外的好处</p>
 <blockquote><p>LLMs, a paradigm called LLM-as-a-judge. This has an additional benefit for tasks</p></blockquote>
 <p>例如标记滥用或有害内容，这类工作可能会对人的情绪造成伤害。用于 LLM 评判者的提示词必须精心撰写，而且我们常常在一小部分数据上把 LLM 与人类专家进行比较，以确保 LLM 在该任务上的判断与人类基准一致。</p>
@@ -895,8 +961,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Model mistakes can be especially problematic if they are agents acting in the world.</p></blockquote>
 <p>LLM 可能会过度自信，即使出错时也会使用非常确定的措辞（“definitely”），</p>
 <blockquote><p>LLMs can be overconfident, using very certain language (“definitely”) even</p></blockquote>
-<aside class="term"><code>overconfident</code><span class="term-zh">过度自信</span><span class="term-explain">模型在答案错误时仍使用十分肯定的措辞，表现出超出实际可靠度的自信。</span></aside>
-<aside class="term"><code>calibrated</code><span class="term-zh">校准</span><span class="term-explain">指模型给出的置信度与其真实准确率是否一致；校准良好即置信度分数可信。</span></aside>
+<aside class="term"><code>overconfident calibrated</code><span class="term-zh">过度自信 / 校准</span><span class="term-explain">模型在答案错误时仍措辞十分肯定即“过度自信”；置信度与真实准确率是否一致称为“校准”。</span></aside>
 <p>LLM 的校准并不良好，这意味着模型实际的</p>
 <blockquote><p>when they are wrong. LLMs are not well calibrated, meaning the model’s actual</p></blockquote>
 <p>准确率与其给出的分数或概率并不匹配。这些问题每一个都是活跃研究的重要领域。</p>
@@ -909,7 +974,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>1.11 Anthropomorphism and Terminology</p></blockquote>
 <p>我们常用一些词语来谈论语言模型，这些词语的含义在历史上指向人类的概念，如学习（learn）、遗忘（forget）、预测（predict）、回答（answer）、假设（assume）、知识（knowledge）、训练（train）、</p>
 <blockquote><p>We often refer to language models using words whose meaning historically refer to human concepts like learn, forget, predict, answer, assume, knowledge, train,</p></blockquote>
-<aside class="term"><code>anthropomorphism</code><span class="term-zh">拟人化</span><span class="term-explain">把人类特有的特征、情感或意图归属于语言模型等非人实体的做法。</span></aside>
+<aside class="term"><code>anthropomor- phism</code><span class="term-zh">拟人化</span><span class="term-explain">把人类特有的特征、情感或意图归属于语言模型等非人实体的做法。</span></aside>
 <p>提示（prompt）、猜测（guess）、思考（think）、欺骗（deceive）。这就是拟人化：把人类的特征、</p>
 <blockquote><p>prompt, guess, think, deceive. This is anthropomorphism: assigning human traits,</p></blockquote>
 <p>情感或认知赋予非人类的动物或物体。更具体地说，它就是</p>

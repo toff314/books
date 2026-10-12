@@ -1,0 +1,1471 @@
+# 第 22 章 语义角色标注
+
+### 第 22 章
+
+> CHAPTER
+
+# 22 语义角色标注
+
+> 22 Semantic Role Labeling
+
+“谁、什么、何处、何时、用什么、为什么、如何”
+
+> “Who, What, Where, When, With what, Why, How”
+
+> 七种情境，与 Hermagoras 和 Aristotle 相关联（Sloan, 2010）
+>
+> *The seven circumstances, associated with Hermagoras and Aristotle (Sloan, 2010)*
+
+在公元前 7 世纪到公元前 4 世纪之间的某个时候，印度语法学家 P¯an.ini1
+
+> Sometime between the 7th and 4th centuries BCE, the Indian grammarian P¯an.ini1
+撰写了著名的梵语语法论著 As.t.¯adhy¯ay¯ı（‘8 卷’），这部论著被称为“人类智慧最伟大的丰碑之一”（Bloomfield, 1933, 11）。该书以 3959 条经文的形式描述梵语的语言学，每一条都极为高效地（因为它必须被记住！）表达了一个形式化规则系统的一部分，而该系统出色地预示了现代形式语言理论的机制（Penn and Kiparsky, 2012）。其中一组规则描述 k¯arakas，即动词与名词论元之间的语义关系，诸如施事、工具或目的地这样的角色。P¯an.ini 的著作是我们所知最早对事件及其参与者的语言实现进行建模的工作。这项理解参与者如何与事件相关联的任务——即能够回答“谁对谁做了什么”（或许还包括“何时与何地”）这一问题——是自然语言处理的一个核心问题。
+
+> wrote a famous treatise on Sanskrit grammar, the As.t.¯adhy¯ay¯ı (‘8 books’), a treatise that has been called “one of the greatest monuments of human intelligence” (Bloomfield, 1933, 11). The work describes the linguistics of the Sanskrit language in the form of 3959 sutras, each very efficiently (since it had to be memorized!) expressing part of a formal rule system that brilliantly prefigured modern mechanisms of formal language theory (Penn and Kiparsky, 2012). One set of rules describes the k¯arakas, semantic relationships between a verb and noun arguments, roles like agent, instrument, or destination. P¯an.ini’s work was the earliest we know of that modeled the linguistic realization of events and their participants. This task of understanding how participants relate to events—being able to answer the question “Who did what to whom” (and perhaps also “when and where”)—is a central question of natural language processing.
+
+![](images/22-semantic-role-labeling/img_28.png)
+
+让我们向前推进 2500 年，来到当下，考虑一个极其平凡的
+
+> Let’s move forward 2.5 millennia to the present and consider the very mundane
+目标：理解关于 XYZ Corporation 购买股票的文本。这一购买事件及其参与者可以由多种多样的表层形式来描述。事件可以用动词（sold、bought）或名词（purchase）来描述，而 XYZ Corp 可以是句法主语（bought 的）、间接宾语（sold 的），或处于属格或名词复合关系之中（与名词 purchase 一起），尽管在所有这些形式中它在概念上扮演着相同的角色：
+
+> goal of understanding text about a purchase of stock by XYZ Corporation. This purchasing event and its participants can be described by a wide variety of surface forms. The event can be described by a verb (sold, bought) or a noun (purchase), and XYZ Corp can be the syntactic subject (of bought), the indirect object (of sold), or in a genitive or noun compound relation (with the noun purchase) despite having notionally the same role in all of them:
+
+- XYZ corporation 买入了该股票。
+- 他们把该股票卖给了 XYZ corporation。
+- 该股票被 XYZ corporation 买入。
+- XYZ corporation 对该股票的购买……
+- XYZ corporation 的股票购买……
+
+> XYZ corporation bought the stock.
+> They sold the stock to XYZ corporation.
+> The stock was bought by XYZ corporation.
+> The purchase of the stock by XYZ corporation...
+> The stock purchase by XYZ corporation...
+
+在本章中，我们引入一种表征层次，它捕捉这些句子之间的共性：存在一个购买事件，参与者是 XYZ Corp 和某只股票，而 XYZ Corp 是买方。这些浅层语义表征，即语义角色，表达了谓词的论元在事件中所扮演的角色，而这些角色被编纂在诸如 PropBank 和 FrameNet 之类的数据库中。我们将介绍语义角色标注，即为句子中的片段指派角色的任务，以及选择限制，即谓词对其论元所表达的偏好，例如 eat 的主题通常是可以食用的东西这一事实。
+
+> In this chapter we introduce a level of representation that captures the commonality between these sentences: there was a purchase event, the participants were XYZ Corp and some stock, and XYZ Corp was the buyer. These shallow semantic representations , semantic roles, express the role that arguments of a predicate take in the event, codified in databases like PropBank and FrameNet. We’ll introduce semantic role labeling, the task of assigning roles to spans in sentences, and selectional restrictions, the preferences that predicates express about their arguments, such as the fact that the theme of eat is generally something edible.
+
+## 22.1 语义角色
+
+> 22.1 Semantic Roles
+
+考虑下面两个句子中论元 Sasha、Pat、窗户和门的意义。
+
+> Consider the meanings of the arguments Sasha, Pat, the window, and the door in these two sentences.
+
+（22.1）Sasha 打破了窗户。（22.2）Pat 打开了门。
+
+> (22.1) Sasha broke the window.(22.2) Pat opened the door.
+
+主语 Sasha 和 Pat，我们可以称之为打破窗户事件的打破者和开门事件的开启者，二者有某些共同之处。它们都是意愿性的施动者，通常是有生命的，并且对其所涉事件负有直接的因果责任。
+
+> The subjects Sasha and Pat, what we might call the breaker of the windowbreaking event and the opener of the door-opening event, have something in common. They are both volitional actors, often animate, and they have direct causal responsibility for their events.
+
+题元角色是捕捉打破者与开启者之间这种语义共性的一种方式。我们说这两个动词的主语都是施事。因此，
+
+> Thematic roles are a way to capture this semantic commonality between breakers and openers. We say that the subjects of both these verbs are agents. Thus,
+
+> `thematic roles`（题元角色）
+>
+> 释义：用于刻画谓词各论元在事件中所扮演角色的语义类别，如施事、受事、工具等。
+
+> `agents`（施事）
+>
+> 释义：指事件中有意愿、并直接导致事件发生的施动参与者，常为有生命之物。
+
+施事是表示诸如意愿性致使这类抽象概念的题元角色。类似地，这两个动词的直接宾语，即 BrokenThing 和 OpenedThing，典型地都是以某种方式受到动作影响的无生命物体。
+
+> AGENT is the thematic role that represents an abstract idea such as volitional causation. Similarly, the direct objects of both these verbs, the BrokenThing and OpenedThing, are both prototypically inanimate objects that are affected in some way by the action.
+
+这些参与者的语义角色是主题。
+
+> The semantic role for these participants is theme.
+
+> `theme`（主题）
+>
+> 释义：指受动作影响最直接、或处于某种状态之中的参与者角色。
+
+> 题元角色定义
+>
+> *Thematic Role Definition*
+
+> 事件的意愿性致事
+>
+> *The volitional causer of an event*
+
+> 施事
+>
+> *AGENT*
+
+> 事件的经历者
+>
+> *The experiencer of an event*
+
+> 经历者
+>
+> *EXPERIENCER*
+
+> 事件的非意愿性致事
+>
+> *The non-volitional causer of the event*
+
+> 外力
+>
+> *FORCE*
+
+> 受事件影响最直接的参与者
+>
+> *The participant most directly affected by an event*
+
+> 主题
+>
+> *THEME*
+
+> 事件的最终产物
+>
+> *The end product of an event*
+
+> 结果
+>
+> *RESULT*
+
+> 命题或命题性事件的内容
+>
+> *The proposition or content of a propositional event*
+
+> 内容
+>
+> *CONTENT*
+
+> 事件中所使用的工具
+>
+> *An instrument used in an event*
+
+> 工具
+>
+> *INSTRUMENT*
+
+> 事件的受益者
+>
+> *The beneficiary of an event*
+
+> 受益者
+>
+> *BENEFICIARY*
+
+> 转移事件中对象的来源
+>
+> *The origin of the object of a transfer event*
+
+> 来源
+>
+> *SOURCE*
+
+> 转移事件中对象的目的地
+>
+> *The destination of an object of a transfer event*
+
+> 目标
+>
+> *GOAL*
+
+*图 22.1 一些常用的题元角色及其定义。*
+*Figure 22.1 Some commonly used thematic roles with their definitions.*
+
+尽管题元角色是最古老的语言学模型之一，但正如上文所见，
+
+> Although thematic roles are one of the oldest linguistic models, as we saw above,
+它们的现代表述归功于 Fillmore (1968) 和 Gruber (1965)。尽管并不存在普遍公认的角色集合，图 22.1 和图 22.2 仍列出了一些在各种计算语言学论文中使用过的题元角色，并附有粗略的定义和示例。大多数题元角色集合包含十几个角色，但我们会看到角色数量更少、含义更加抽象的集合，以及角色数量非常多、针对具体情境的集合。我们将用统称“语义角色”来指代所有这类角色集合，无论其规模大小。
+
+> their modern formulation is due to Fillmore (1968) and Gruber (1965). Although there is no universally agreed-upon set of roles, Figs. 22.1 and 22.2 list some thematic roles that have been used in various computational papers, together with rough definitions and examples. Most thematic role sets have about a dozen roles, but we’ll see sets with smaller numbers of roles with even more abstract meanings, and sets with very large numbers of roles that are specific to situations. We’ll use the general term semantic roles for all sets of roles, whether small or large.
+
+> `semantic roles`（语义角色）
+>
+> 释义：统称各种规模的题元角色集合，刻画谓词论元在句中承担的意义功能。
+
+## 22.2 语态交替
+
+> 22.2 Diathesis Alternations
+
+计算系统使用语义角色的主要原因是，它可以充当一种浅层意义表示，使我们能够做出仅凭词语表面字符串、甚至句法分析树都无法做出的简单推理。继续用前面的例子说明，如果某篇文档说 Company A 收购了 Company B，我们希望能知道这回答了查询“Company B 是否被收购？”——尽管这两个句子在表层句法上差别很大。类似地，这种浅层语义在机器翻译中可能充当一种有用的中间语言。
+
+> The main reason computational systems use semantic roles is to act as a shallow meaning representation that can let us make simple inferences that aren’t possible from the pure surface string of words, or even from the parse tree. To extend the earlier examples, if a document says that Company A acquired Company B, we’d like to know that this answers the query Was Company B acquired? despite the fact that the two sentences have very different surface syntax. Similarly, this shallow semantics might act as a useful intermediate language in machine translation.
+
+> 题元角色 示例
+>
+> *Thematic Role Example*
+
+> 服务员把汤洒了。
+>
+> *The waiter spilled the soup.*
+
+> 施事
+>
+> *AGENT*
+
+> John 头疼。
+>
+> *John has a headache.*
+
+> 经历者
+>
+> *EXPERIENCER*
+
+> 风把购物中心的碎片吹进我们的院子。
+>
+> *The wind blows debris from the mall into our yards.*
+
+> 外力
+>
+> *FORCE*
+
+> 只有在 Benjamin Franklin 打破冰层之后……
+>
+> *Only after Benjamin Franklin broke the ice...*
+
+> 主题
+>
+> *THEME*
+
+> 该市修建了一个符合规定尺寸的棒球场……
+>
+> *The city built a regulation-size baseball diamond...*
+
+> 结果
+>
+> *RESULT*
+
+> Mona 问道：“你在超市遇见了 Mary Ann？”
+>
+> *Mona asked “You met Mary Ann at a supermarket?”*
+
+> 内容
+>
+> *CONTENT*
+
+> 他用电击装置将鲶鱼击昏后偷捕……
+>
+> *He poached catfish, stunning them with a shocking device...*
+
+> 工具
+>
+> *INSTRUMENT*
+
+> 每当 Ann Callahan 为她的老板预订酒店……
+>
+> *Whenever Ann Callahan makes hotel reservations for her boss...*
+
+> 受益者
+>
+> *BENEFICIARY*
+
+> 我从 Boston 飞来。
+>
+> *I flew in from Boston.*
+
+> 来源
+>
+> *SOURCE*
+
+> 我开车去了 Portland。
+>
+> *I drove to Portland.*
+
+> 目标
+>
+> *GOAL*
+
+*图 22.2 各种题元角色的一些典型示例。*
+*Figure 22.2 Some prototypical examples of various thematic roles.*
+
+因此，语义角色有助于对谓词论元的不同表层实现方式加以概括。例如，虽然施事常常实现为句子的主语，但在其他情况下主题也可以作主语。考虑动词 break 的题元论元可能出现的以下几种实现方式：
+
+> Semantic roles thus help generalize over different surface realizations of predicate arguments. For example, while the AGENT is often realized as the subject of the sentence, in other cases the THEME can be the subject. Consider these possible realizations of the thematic arguments of the verb break:
+
+(22.3) John 打破了窗户。
+
+> (22.3) John broke the window.
+
+> 施事 主题
+>
+> *AGENT THEME*
+
+(22.4) John 用一块石头打破了窗户。
+
+> (22.4) John broke the window with a rock.
+
+> 施事 主题 工具
+>
+> *AGENT THEME INSTRUMENT*
+
+(22.5) 石头打破了窗户。
+
+> (22.5) The rock broke the window.
+
+> 工具 主题
+>
+> *INSTRUMENT THEME*
+
+(22.6) 窗户破了。
+
+> (22.6) The window broke.
+
+> 主题
+>
+> *THEME*
+
+(22.7) 窗户被 John 打破了。
+
+> (22.7) The window was broken by John.
+
+> 主题 施事
+>
+> *THEME AGENT*
+
+这些例子表明，break 具有（至少）以下可能的论元：施事、
+
+> These examples suggest that break has (at least) the possible arguments AGENT,
+主题和工具。一个动词所带的题元角色论元集合通常称为题元网格、θ-grid 或格框架。我们可以看到，
+
+> THEME, and INSTRUMENT. The set of thematic role arguments taken by a verb is often called the thematic grid, θ-grid, or case frame. We can see that there are
+
+> `thematic grid case frame`（题元网格；格框架）
+>
+> 释义：指一个动词所能支配的题元角色论元集合，用于刻画该动词的论元结构。
+
+（以及其他情形）这些论元的以下实现可能性：
+
+> (among others) the following possibilities for the realization of these arguments of
+
+break：
+
+> break:
+
+施事/主语，主题/宾语 施事/主语，主题/宾语，工具/介词短语 with 工具/主语，主题/宾语 主题/主语
+
+> AGENT/Subject, THEME/Object AGENT/Subject, THEME/Object, INSTRUMENT/PPwith INSTRUMENT/Subject, THEME/Object THEME/Subject
+事实证明，许多动词允许其题元角色实现于各种各样的
+
+> It turns out that many verbs allow their thematic roles to be realized in various
+句法位置。例如，像 give 这样的动词可以用两种不同的方式实现主题和目标论元：
+
+> syntactic positions. For example, verbs like give can realize the THEME and GOAL arguments in two different ways:
+
+(22.8) a. Doris gave the book to Cary.
+
+> 施事 主题 目标
+>
+> *AGENT THEME GOAL*
+
+- Doris gave Cary the book.
+
+> 施事 目标 主题
+>
+> *AGENT GOAL THEME*
+
+这些多重的论元结构实现（即 break 可以带施事、
+
+> These multiple argument structure realizations (the fact that break can take AGENT,
+工具或主题作主语，而 give 可以把其主题和目标实现于
+
+> INSTRUMENT, or THEME as subject, and give can realize its THEME and GOAL in
+
+> `verb`（动词）
+>
+> 释义：表示动作或状态的词类，在句中通常充当谓词并支配若干论元。
+
+任意顺序）称为动词交替或语态交替。这种交替
+
+> either order) are called verb alternations or diathesis alternations. The alternation
+
+> `alternation dative`（交替；与格交替）
+>
+> 释义：指同一动词的论元在不同句法位置之间换位实现的现象，如与格交替中主题与目标互换结构位置。
+
+我们上文为 give 展示的这种交替，即与格交替，似乎只出现在特定的动词语义类别中，包括“将来拥有”类动词（advance、allocate、offer、owe）、“发送”类动词（forward、hand、mail）、“投掷”类动词（kick、pass、throw）等等。Levin (1993) 列出了 3100 个英语动词所属的语义类别（47 个高层类别，又细分为 193 个更具体的类别）以及它们所参与的各种交替。这些动词类别列表已被纳入在线资源 VerbNet (Kipper et al., 2000)，该资源把每个动词同时链接到 WordNet 和 FrameNet 条目。
+
+> we showed above for give, the dative alternation, seems to occur with particular semantic classes of verbs, including “verbs of future having” (advance, allocate, offer, owe), “send verbs” (forward, hand, mail), “verbs of throwing” (kick, pass, throw), and so on. Levin (1993) lists for 3100 English verbs the semantic classes to which they belong (47 high-level classes, divided into 193 more specific classes) and the various alternations in which they participate. These lists of verb classes have been incorporated into the online resource VerbNet (Kipper et al., 2000), which links each verb to both WordNet and FrameNet entries.
+
+## 22.3 语义角色：题元角色的问题
+
+> 22.3 Semantic Roles: Problems with Thematic Roles
+
+在题元角色层面表示意义，看似应当有助于处理诸如语态交替这样的复杂问题。然而事实证明，提出一套标准角色集相当困难，为施事、主题或工具这类角色给出形式化定义也同样困难。
+
+> Representing meaning at the thematic role level seems like it should be useful in dealing with complications like diathesis alternations. Yet it has proved quite difficult to come up with a standard set of roles, and equally difficult to produce a formal definition of roles like AGENT, THEME, or INSTRUMENT.
+
+例如，试图定义角色集的研究者常常发现，他们需要
+
+> For example, researchers attempting to define role sets often find they need to
+把施事或主题这样的角色拆分成许多具体角色。Levin and Rappaport Hovav (2005) 总结了许多此类情形，例如工具似乎至少有两种，即可充当主语的居间工具和不能充当主语的使能工具：
+
+> fragment a role like AGENT or THEME into many specific roles. Levin and Rappaport Hovav (2005) summarize a number of such cases, such as the fact there seem to be at least two kinds of INSTRUMENTS, intermediary instruments that can appear as subjects and enabling instruments that cannot:
+
+(22.9) a. Shelly cut the banana with a knife.
+
+- The knife cut the banana.
+
+(22.10) a. Shelly ate the sliced banana with a fork.
+
+- *The fork ate the sliced banana.
+
+除了碎片化问题之外，还有一些情形，我们希望
+
+> In addition to the fragmentation problem, there are cases in which we’d like to
+对语义角色进行推理并跨角色泛化，但有限的离散角色列表让我们无法做到这一点。
+
+> reason about and generalize across semantic roles, but the finite discrete lists of roles don’t let us do this.
+
+最后，为题元角色给出形式化定义也被证明是困难的。考虑
+
+> Finally, it has proved difficult to formally define the thematic roles. Consider the
+施事角色；大多数施事都是有生命的、有意志的、有感知的、有致使性的，但任何一个具体名词短语未必表现出所有这些性质。
+
+> AGENT role; most cases of AGENTS are animate, volitional, sentient, causal, but any individual noun phrase might not exhibit all of these properties.
+
+这些问题催生了替代性的语义角色模型，它们要么使用
+
+> These problems have led to alternative semantic role models that use either
+
+> `semantic role`（语义角色）
+>
+> 释义：指谓词所支配的参与者相对谓词承担的意义功能，如施事、受事等。
+
+数量少得多或数量多得多的角色。
+
+> many fewer or many more roles.
+
+第一种选择是定义概括性的语义角色，这些角色抽象
+
+> The first of these options is to define generalized semantic roles that abstract
+于具体的题元角色之上。例如，原型施事和原型受事
+
+> over the specific thematic roles. For example, PROTO-AGENT and PROTO-PATIENT
+
+> `proto-agent proto-patient`（原型施事；原型受事）
+>
+> 释义：以一组启发式特征刻画“更像施事”或“更像受事”程度的概括性角色类别。
+
+是概括性角色，表达大致像施事、大致像受事的含义。这些角色不是由充分必要条件定义的，而是由一组伴随“更像施事”或“更像受事”含义的启发式特征定义的。因此，一个论元表现出的施事性特征越多（自愿参与事件、引发事件或另一参与者的状态变化、有感知或有意参与、移动），它被标注为原型施事的可能性就越大。受事性特征越多（经历状态变化、受到另一参与者的因果影响、相对于其他参与者静止不动等），它被标注为原型受事的可能性就越大。
+
+> are generalized roles that express roughly agent-like and roughly patient-like meanings. These roles are defined, not by necessary and sufficient conditions, but rather by a set of heuristic features that accompany more agent-like or more patient-like meanings. Thus, the more an argument displays agent-like properties (being volitionally involved in the event, causing an event or a change of state in another participant, being sentient or intentionally involved, moving) the greater the likelihood that the argument can be labeled a PROTO-AGENT. The more patient-like the properties (undergoing change of state, causally affected by another participant, stationary relative to other participants, etc.), the greater the likelihood that the argument can be labeled a PROTO-PATIENT.
+
+第二种方向则是定义特定于
+
+> The second direction is instead to define semantic roles that are specific to a
+某一个动词、或某一组语义相关的动词或名词的语义角色。
+
+> particular verb or a particular group of semantically related verbs or nouns.
+
+在接下来的两节中，我们介绍两种常用的词汇资源，它们
+
+> In the next two sections we describe two commonly used lexical resources that
+利用这些不同版本的语义角色。PropBank 同时使用原型角色和动词特有的语义角色。FrameNet 使用的语义角色则针对一个称为框架的一般语义概念。
+
+> make use of these alternative versions of semantic roles. PropBank uses both protoroles and verb-specific semantic roles. FrameNet uses semantic roles that are specific to a general semantic idea called a frame.
+
+## 22.4 命题库
+
+> 22.4 The Proposition Bank
+
+命题库（The Proposition Bank，通常简称 PropBank）是一个由标注了语义角色的句子构成的资源。英语 PropBank 标注 Penn TreeBank 中的所有句子；中文 PropBank 标注 Penn Chinese TreeBank 中的句子。由于定义一套通用的题元角色十分困难，PropBank 中的语义角色是相对于单个动词义项来定义的。
+
+> The Proposition Bank, generally referred to as PropBank, is a resource of sentences annotated with semantic roles. The English PropBank labels all the sentences in the Penn TreeBank; the Chinese PropBank labels sentences in the Penn Chinese TreeBank. Because of the difficulty of defining a universal set of thematic roles, the semantic roles in PropBank are defined with respect to an individual verb sense.
+
+> `PropBank`
+>
+> 释义：标注了语义角色的英语与中文句子资源库，其角色按单个动词义项定义并命名为 Arg0、Arg1 等。
+
+因此每个动词的每个义项都有一组特定的角色，这些角色只用数字而非名称表示：Arg0、Arg1、Arg2 等等。一般而言，Arg0 表示原型施事，Arg1 表示原型受事。其他角色的语义则不那么一致，往往针对每个动词单独定义。尽管如此，仍存在一些概括：Arg2 常为受益者、工具、属性或结束状态，Arg3 为起始点、受益者、工具或属性，Arg4 为终点。
+
+> Each sense of each verb thus has a specific set of roles, which are given only numbers rather than names: Arg0, Arg1, Arg2, and so on. In general, Arg0 represents the PROTO-AGENT, and Arg1, the PROTO-PATIENT. The semantics of the other roles are less consistent, often being defined specifically for each verb. Nonetheless there are some generalization; the Arg2 is often the benefactive, instrument, attribute, or end state, the Arg3 the start point, benefactive, instrument, or attribute, and the Arg4 the end point.
+
+下面给出稍作简化的 PropBank 条目，分别对应
+
+> Here are some slightly simplified PropBank entries for one sense each of the
+动词 agree 和 fall 的某个义项。这类 PropBank 条目称为框架文件；请注意，框架文件中每个角色的定义（“Other entity agreeing”“Extent, amount fallen”）是供人阅读的非正式释义，而非形式化定义。
+
+> verbs agree and fall. Such PropBank entries are called frame files; note that the definitions in the frame file for each role (“Other entity agreeing”, “Extent, amount fallen”) are informal glosses intended to be read by humans, rather than being formal definitions.
+
+(22.11) agree.01
+Arg0: 同意者 Arg1: 命题 Arg2: 其他表示同意的实体
+
+> Arg0: Agreer Arg1: Proposition Arg2: Other entity agreeing
+Ex1: [Arg0 The group] agreed [Arg1 it wouldn’t make an offer].
+
+Ex2: [ArgM-TMP Usually] [Arg0 John] agrees [Arg2 with Mary]
+[Arg1 on everything].
+
+(22.12) fall.01
+Arg1: 逻辑主语、受事、下落之物 Arg2: 幅度、落下的量 Arg3: 起始点 Arg4: 终点、arg1 的结束状态 Ex1: [Arg1 Sales] fell [Arg4 to $25 million] [Arg3 from $27 million].
+
+> Arg1: Logical subject, patient, thing falling Arg2: Extent, amount fallen Arg3: start point Arg4: end point, end state of arg1 Ex1: [Arg1 Sales] fell [Arg4 to $25 million] [Arg3 from $27 million].
+
+Ex2: [Arg1 The average junk bond] fell [Arg2 by 4.2%].
+
+注意 fall 没有 Arg0 角色，因为 fall 的常规主语是
+
+> Note that there is no Arg0 role for fall, because the normal subject of fall is a
+原型受事。
+
+> PROTO-PATIENT.
+
+PropBank 语义角色有助于恢复关于动词论元的浅层语义信息。以动词 increase 为例：
+
+> The PropBank semantic roles can be useful in recovering shallow semantic information about verbal arguments. Consider the verb increase:
+
+(22.13) increase.01 “go up incrementally”
+
+Arg0: 增加的致使者 Arg1: 增加之物 Arg2: 增加量、EXT 或 MNR Arg3: 起始点 Arg4: 终点
+
+> Arg0: causer of increase Arg1: thing increasing Arg2: amount increased by, EXT, or MNR Arg3: start point Arg4: end point
+PropBank 语义角色标注能够让我们推断出以下三例在
+
+> A PropBank semantic role labeling would allow us to infer the commonality in
+事件结构上的共同之处，即在每一例中，尽管表层形式不同，Big Fruit Co. 都是施事，而香蕉的价格都是主题。
+
+> the event structures of the following three examples, that is, that in each case Big Fruit Co. is the AGENT and the price of bananas is the THEME, despite the differing surface forms.
+
+(22.14) [Arg0 Big Fruit Co. ] increased [Arg1 the price of bananas].(22.15) [Arg1 The price of bananas] was increased again [Arg0 by Big Fruit Co. ](22.16) [Arg1 The price of bananas] increased [Arg2 5%].
+
+PropBank 还有一些不带编号的论元，称为 ArgM（ArgM-
+
+> PropBank also has a number of non-numbered arguments called ArgMs, (ArgM-
+TMP、ArgM-LOC 等），它们表示修饰或附加语意义。这些论元在不同谓词之间相对稳定，因此不会逐一列在每个框架文件中。用这些修饰语标注的数据有助于训练系统跨谓词检测时间、地点或方向修饰。部分 ArgM 包括：
+
+> TMP, ArgM-LOC, etc.) which represent modification or adjunct meanings. These are relatively stable across predicates, so aren’t listed with each frame file. Data labeled with these modifiers can be helpful in training systems to detect temporal, location, or directional modification across predicates. Some of the ArgMs include:
+
+TMP 何时？ yesterday evening, now LOC 何地？ at the museum, in San Francisco DIR 去往/来自何处？ down, to Bangkok MNR 如何？ clearly, with much enthusiasm PRP/CAU 为什么？ because ... , in response to the ruling REC 自身、彼此 ADV 其他 PRD 次级述谓 ……ate the meat raw
+
+> TMP when? yesterday evening, now LOC where? at the museum, in San Francisco DIR where to/from? down, to Bangkok MNR how? clearly, with much enthusiasm PRP/CAU why? because ... , in response to the ruling REC themselves, each other ADV miscellaneous PRD secondary predication ...ate the meat raw
+PropBank 关注动词，而一个相关项目 NomBank（Meyers et al.,
+
+> While PropBank focuses on verbs, a related project, NomBank (Meyers et al.,
+
+> `NomBank`
+>
+> 释义：为名词谓词添加语义角色标注的资源，使标注器也能处理名词性谓词的论元。
+
+2004）则为名词谓词添加标注。例如 Apple’s agreement with IBM 中的名词 agreement 会被标注为 Apple 是 Arg0、IBM 是 Arg2。这使语义角色标注器能够为动词谓词和名词谓词的论元都分配标签。
+
+> 2004) adds annotations to noun predicates. For example the noun agreement in Apple’s agreement with IBM would be labeled with Apple as the Arg0 and IBM as the Arg2. This allows semantic role labelers to assign labels to arguments of both verbal and nominal predicates.
+
+## 22.5 FrameNet
+
+虽然对含 increase 的不同句子之间的语义共同点进行推断很有用，但如果能在更多情形中、跨不同动词、甚至在动词与名词之间做出这样的推断，就会更有用。例如，我们希望提取以下三个句子之间的相似性：
+
+> While making inferences about the semantic commonalities across different sentences with increase is useful, it would be even more useful if we could make such inferences in many more situations, across different verbs, and also between verbs and nouns. For example, we’d like to extract the similarity among these three sentences:
+
+(22.17) [Arg1 The price of bananas] increased [Arg2 5%].(22.18) [Arg1 The price of bananas] rose [Arg2 5%].(22.19) There has been a [Arg2 5%] rise [Arg1 in the price of bananas].
+
+注意第二个例子使用了不同的动词 rise，而第三个例子
+
+> Note that the second example uses the different verb rise, and the third example
+使用的是名词而非动词 rise。我们希望系统能够识别出，香蕉的价格是上升之物，5% 是其上升的量，无论 5% 是作为动词 increased 的宾语出现，还是作为名词 rise 的名词修饰语出现。
+
+> uses the noun rather than the verb rise. We’d like a system to recognize that the price of bananas is what went up, and that 5% is the amount it went up, no matter whether the 5% appears as the object of the verb increased or as a nominal modifier of the noun rise.
+
+FrameNet 项目是另一个语义角色标注项目，它试图
+
+> The FrameNet project is another semantic-role-labeling project that attempts
+
+> `FrameNet`
+>
+> 释义：按框架而非单个动词定义语义角色的标注项目，用框架元素标注动词与名词等词元的论元。
+
+解决正是这类问题（Baker et al. 1998, Fillmore et al. 2003, Fillmore and Baker 2009, Ruppenhofer et al. 2016）。PropBank 项目中的角色特定于单个动词，而 FrameNet 项目中的角色特定于框架。
+
+> to address just these kinds of problems (Baker et al. 1998, Fillmore et al. 2003, Fillmore and Baker 2009, Ruppenhofer et al. 2016). Whereas roles in the PropBank project are specific to an individual verb, roles in the FrameNet project are specific to a frame.
+
+什么是框架？请看下面这组词：
+
+> What is a frame? Consider the following set of words:
+
+reservation, flight, travel, buy, price, cost, fare, rates, meal, plane
+这些词之间存在许多个别的词汇关系，如下义、同义等等
+
+> There are many individual lexical relations of hyponymy, synonymy, and so on
+出现在这个列表中的许多词之间。然而，由此得到的关系集合并不能构成关于这些词如何相互关联的完整说明。它们显然都是相对于一块连贯的、关于航空旅行的常识背景信息而定义的。
+
+> between many of the words in this list. The resulting set of relations does not, however, add up to a complete account of how these words are related. They are clearly all defined with respect to a coherent chunk of common-sense background information concerning air travel.
+
+我们把将这些词联结在一起的整体背景知识称为框架（frame）(Fillmore, 1985)。词群是相对于某种背景信息而定义的这个思想，在人工智能和认知科学中十分普遍；在这些领域里，除了框架之外，我们还能看到与之相关的工作，例如模型（model）(Johnson-Laird, 1983)，或者
+
+> We call the holistic background knowledge that unites these words a frame (Fillmore, 1985). The idea that groups of words are defined with respect to some background information is widespread in artificial intelligence and cognitive science, where besides frame we see related works like a model (Johnson-Laird, 1983), or
+甚至还有脚本（script）(Schank and Abelson, 1977)。
+
+> even script (Schank and Abelson, 1977).
+
+> 框架
+>
+> *frame*
+
+> 模型
+>
+> *model*
+
+> 脚本
+>
+> *script*
+
+FrameNet 中的框架是一种背景知识结构，它定义了一组
+
+> A frame in FrameNet is a background knowledge structure that defines a set of
+特定于该框架的语义角色，称为框架元素，并且包含一组使用这些角色的谓词。每个词都会唤起一个框架，并凸显该框架及其元素的某个方面。FrameNet 数据集包含一组框架和框架元素、与每个框架相关联的词汇单元，以及一组带有标注的例句。例如，change position on a scale 框架的定义如下：
+
+> frame-specific semantic roles, called frame elements, and includes a set of predicates that use these roles. Each word evokes a frame and profiles some aspect of the frame and its elements. The FrameNet dataset includes a set of frames and frame elements, the lexical units associated with each frame, and a set of labeled example sentences. For example, the change position on a scale frame is defined as follows:
+
+> 框架元素
+>
+> *frame elements*
+
+该框架由这样一些词组成：它们表示一个对象在标度上的位置（即属性）从起点（初始值）到终点（最终值）的变化。
+
+> This frame consists of words that indicate the change of an Item’s position on a scale (the Attribute) from a starting point (Initial value) to an end point (Final value).
+
+该框架中的一些语义角色（框架元素）的定义如下，见
+
+> Some of the semantic roles (frame elements) in the frame are defined as in
+图 22.3。请注意，这些角色被分为核心角色，即特定于具体框架的角色，以及
+
+> Fig. 22.3. Note that these are separated into core roles, which are frame specific, and
+非核心角色，它们更像是 PropBank 中的 Arg-M 论元，表达
+
+> non-core roles, which are more like the Arg-M arguments in PropBank, expressing
+时间、地点等更为一般的属性。
+
+> more general properties of time, location, and so on.
+
+> 核心角色
+>
+> *core roles*
+
+> 非核心角色
+>
+> *non-core roles*
+
+> 核心角色
+>
+> *Core Roles*
+
+> 属性 属性是对象所拥有的标量性质。
+>
+> *ATTRIBUTE The ATTRIBUTE is a scalar property that the ITEM possesses.*
+
+> 差值 对象在标度上改变其位置的距离。
+>
+> *DIFFERENCE The distance by which an ITEM changes its position on the scale.*
+
+> 最终状态 一种将对象在属性值发生变化之后的状态
+>
+> *FINAL STATE A description that presents the ITEM’s state after the change in the ATTRIBUTE’s*
+
+> 作为独立述谓呈现出来的描述。
+>
+> *value as an independent predication.*
+
+> 最终值 对象最终所处的标度位置。
+>
+> *FINAL VALUE The position on the scale where the ITEM ends up.*
+
+> 初始状态 一种将对象在属性值发生变化之前的状态
+>
+> *INITIAL STATE A description that presents the ITEM’s state before the change in the AT-*
+
+> 作为独立述谓呈现出来的描述。
+>
+> *TRIBUTE’s value as an independent predication.*
+
+> 初始值 对象离开的标度上的初始位置。
+>
+> *INITIAL VALUE The initial position on the scale from which the ITEM moves away.*
+
+> 对象 在标度上具有位置的实体。取值范围 标度的一部分，通常由其端点确定，
+>
+> *ITEM The entity that has a position on the scale. VALUE RANGE A portion of the scale, typically identified by its end points, along which the*
+
+> 属性的取值在其中波动。
+>
+> *values of the ATTRIBUTE fluctuate.*
+
+> 一些非核心角色
+>
+> *Some Non-Core Roles*
+
+> 持续时间 变化发生所持续的时间长度。
+>
+> *DURATION The length of time over which the change takes place.*
+
+> 速度 取值的变化率。群体 对象在其中以指定方式改变
+>
+> *SPEED The rate of change of the VALUE. GROUP The GROUP in which an ITEM changes the value of an*
+
+> 属性取值的群体。
+>
+> *ATTRIBUTE in a specified way.*
+
+*图 22.3 FrameNet 标注者指南（Ruppenhofer et al., 2016）中 change position on a scale 框架的框架元素。*
+*Figure 22.3 The frame elements in the change position on a scale frame from the FrameNet Labelers Guide (Ruppenhofer et al., 2016).*
+
+以下是一些例句：
+
+> Here are some example sentences:
+
+(22.20) [对象 Oil] rose [属性 in price] [差值 by 2%]。(22.21) [对象 It] has increased [最终状态 to having them 1 day a month]。(22.22) [对象 Microsoft shares] fell [最终值 to 7 5/8]。(22.23) [对象 Colon cancer incidence] fell [差值 by 50%] [群体 among
+
+> (22.20) [ITEM Oil] rose [ATTRIBUTE in price] [DIFFERENCE by 2%].(22.21) [ITEM It] has increased [FINAL STATE to having them 1 day a month].(22.22) [ITEM Microsoft shares] fell [FINAL VALUE to 7 5/8].(22.23) [ITEM Colon cancer incidence] fell [DIFFERENCE by 50%] [GROUP among
+men]。
+
+> men].
+
+(22.24) a steady increase [初始值 from 9.5] [最终值 to 14.3] [对象
+
+> (22.24) a steady increase [INITIAL VALUE from 9.5] [FINAL VALUE to 14.3] [ITEM
+in dividends]
+(22.25) a [差值 5%] [对象 dividend] increase...
+
+> (22.25) a [DIFFERENCE 5%] [ITEM dividend] increase...
+
+从这些例句中可以注意到，该框架包含像 rise、
+
+> Note from these example sentences that the frame includes target words like rise,
+fall 和 increase 这样的目标词。事实上，完整的框架由下列词组成：
+
+> fall, and increase. In fact, the complete frame consists of the following words:
+
+> 动词：dwindle move soar escalation shift advance edge mushroom swell explosion tumble
+>
+> *VERBS: dwindle move soar escalation shift advance edge mushroom swell explosion tumble*
+
+| 动词：<br>VERBS: | dwindle | move | soar | escalation | shift |
+| --- | --- | --- | --- | --- | --- |
+| advance | edge | mushroom | swell | explosion | tumble |
+| climb | explode | plummet | swing | fall |  |
+| decline | fall | reach | triple | fluctuation | 副词：<br>ADVERBS: |
+| decrease | fluctuate | rise | tumble | gain | increasingly |
+| diminish | gain | rocket |  | growth |  |
+| dip | grow | shift | 名词：<br>NOUNS: | hike |  |
+| double | increase | skyrocket | decline | increase |  |
+| drop | jump | slide | decrease | rise |  |
+
+> decline fall reach triple fluctuation 副词：decrease fluctuate rise tumble gain increasingly
+>
+> *decline fall reach triple fluctuation ADVERBS: decrease fluctuate rise tumble gain increasingly*
+
+> dip grow shift 名词：hike
+>
+> *dip grow shift NOUNS: hike*
+
+FrameNet 还对框架之间的关系进行编码，使框架能够继承
+
+> FrameNet also codes relationships between frames, allowing frames to inherit
+彼此，或表示框架之间的关系，如因果关系（不同框架中框架元素之间的概括同样可以用继承来表示）。因此，存在一个 Cause change of position on a scale 框架，它通过 cause 关系与 Change of position on a scale 框架相连，但它增加了一个施事角色，用于如下使役例句：(22.26) [施事 They] raised [对象 the price of their soda] [差值 by 2%]。
+
+> from each other, or representing relations between frames like causation (and generalizations among frame elements in different frames can be represented by inheritance as well). Thus, there is a Cause change of position on a scale frame that is linked to the Change of position on a scale frame by the cause relation, but that adds an AGENT role and is used for causative examples such as the following:(22.26) [AGENT They] raised [ITEM the price of their soda] [DIFFERENCE by 2%].
+
+这两个框架合在一起，将使理解系统能够抽取
+
+> Together, these two frames would allow an understanding system to extract the
+所有动词性和名词性、使役和非使役用法的共同事件语义。
+
+> common event semantics of all the verbal and nominal causative and non-causative usages.
+
+FrameNet 也已被开发用于许多其他语言，包括西班牙语、德语、日语、葡萄牙语、意大利语和中文。
+
+> FrameNets have also been developed for many other languages including Spanish, German, Japanese, Portuguese, Italian, and Chinese.
+
+## 22.6 语义角色标注
+
+> 22.6 Semantic Role Labeling
+
+> `semantic role labeling`（语义角色标注）
+>
+> 释义：自动判定句子中每个谓词的每个论元所担任的角色，通常基于 FrameNet、PropBank 等标注资源做有监督学习。
+
+语义角色标注（有时缩写为 SRL）是一项自动
+
+> Semantic role labeling (sometimes shortened as SRL) is the task of automatically
+找出句子中每个谓词的每个论元的语义角色的任务。当前的语义角色标注方法基于监督机器学习，通常使用 FrameNet 和 PropBank 资源来规定什么算作谓词、定义任务中使用的角色集合，并提供训练集和测试集。
+
+> finding the semantic roles of each argument of each predicate in a sentence. Current approaches to semantic role labeling are based on supervised machine learning, often using the FrameNet and PropBank resources to specify what counts as a predicate, define the set of roles used in the task, and provide training and test sets.
+
+回忆一下，这两种语义角色模型之间的区别在于
+
+> Recall that the difference between these two models of semantic roles is that
+FrameNet（22.27）使用许多特定于框架的框架元素作为角色，而 PropBank（22.28）使用数量较少的带编号的论元标签（可解释为特定于动词的标签），以及更一般的 ARGM 标签。一些例子：
+
+> FrameNet (22.27) employs many frame-specific frame elements as roles, while Prop-Bank (22.28) uses a smaller number of numbered argument labels that can be interpreted as verb-specific labels, along with the more general ARGM labels. Some examples:
+
+> [你] 不能 [责怪] [这个程序] [无法识别它]
+>
+> *[You] can’t [blame] [the program] [for being unable to identify it]*
+
+(22.27)
+
+> COGNIZER TARGET EVALUEE REASON
+
+> [The San Francisco Examiner] 发布了 [一份特刊] [昨天]
+>
+> *[The San Francisco Examiner] issued [a special edition] [yesterday]*
+
+(22.28)
+
+> ARG0 ARG1 ARGM-TMP
+
+> TARGET
+
+### 22.6.1 一种基于特征的语义角色标注算法
+
+> 22.6.1 A Feature-based Algorithm for Semantic Role Labeling
+
+图 22.4 给出了一个简化的基于特征的语义角色标注算法。
+
+> A simplified feature-based semantic role labeling algorithm is sketched in Fig. 22.4.
+
+基于特征的算法——从 (Simmons, 1973) 这类最早的系统开始——先进行句法分析，用覆盖广泛的句法分析器为输入字符串指派句法分析结果。
+
+> Feature-based algorithms—from the very earliest systems like (Simmons, 1973)—begin by parsing, using broad-coverage parsers to assign a parse to the input string.
+
+图 22.5 展示了上文 (22.28) 的一个句法分析树。随后遍历该分析树，找出所有作为谓词的词。
+
+> Figure 22.5 shows a parse of (22.28) above. The parse is then traversed to find all words that are predicates.
+
+对于这些谓词中的每一个，算法检查句法分析树中的每个节点
+
+> For each of these predicates, the algorithm examines each node in the parse
+，并使用监督分类来判定它对该谓词所扮演的语义角色（如果有的话）。给定 PropBank 或 FrameNet 之类的带标注训练集，使用下一小节描述的特征模板为每个节点抽取一个特征向量。然后训练一个 1-of-N 分类器，根据这些特征为每个成分预测语义角色，其中 N 是潜在语义角色的数量，再加上一个用于非角色成分的额外 NONE 角色。可以使用任何标准分类算法。最后，对于每个待标注的测试句子，对每个相关成分运行该分类器。
+
+> tree and uses supervised classification to decide the semantic role (if any) it plays for this predicate. Given a labeled training set such as PropBank or FrameNet, a feature vector is extracted for each node, using feature templates described in the next subsection. A 1-of-N classifier is then trained to predict a semantic role for each constituent given these features, where N is the number of potential semantic roles plus an extra NONE role for non-role constituents. Any standard classification algorithms can be used. Finally, for each test sentence to be labeled, the classifier is run on each relevant constituent.
+
+![](images/22-semantic-role-labeling/fig_p9_1.png)
+
+*图 22.4 一个通用的语义角色标注算法。CLASSIFYNODE 是一个 1-of-N 分类器，它指派语义角色（对非角色成分则指派 NONE），并在 FrameNet 或 PropBank 之类的带标注数据上训练。*
+*Figure 22.4 A generic semantic-role-labeling algorithm. CLASSIFYNODE is a 1-of-N classifier that assigns a semantic role (or NONE for non-role constituents), trained on labeled data such as FrameNet or PropBank.*
+
+![](images/22-semantic-role-labeling/fig_p9_0.png)
+
+*图 22.5 一个 PropBank 句子的句法分析树，展示了 PropBank 的论元标签。虚线表示 ARG0（即 NP-SBJ 成分 The San Francisco Examiner）的路径特征 NP↑S↓VP↓VBD。*
+*Figure 22.5 Parse tree for a PropBank sentence, showing the PropBank argument labels. The dotted line shows the path feature NP↑S↓VP↓VBD for ARG0, the NP-SBJ constituent The San Francisco Examiner.*
+
+与图 22.5 中训练单阶段分类器不同，节点级分类任务可以分解为多个步骤：
+
+> Instead of training a single-stage classifier as in Fig. 22.5, the node-level classification task can be broken down into multiple steps:
+
+- 剪枝：由于句子中只有少数成分是任一给定谓词的论元，许多系统使用简单的启发式方法剪去不太可能成为论元的成分。
+- 识别：对每个节点做二元分类，判定它是待标注的论元还是 NONE。
+- 分类：对上一阶段被标注为论元的所有成分做 1-of-N 分类
+
+> Pruning: Since only a small number of the constituents in a sentence are arguments of any given predicate, many systems use simple heuristics to prune unlikely constituents.
+> Identification: a binary classification of each node as an argument to be labeled or a NONE.
+> Classification: a 1-of-N classification of all the constituents that were labeled as arguments by the previous stage
+
+把识别与分类分开，可能带来更好的特征利用（不同特征可能对这两项任务有用），也可能带来计算效率上的好处。
+
+> The separation of identification and classification may lead to better use of features (different features may be useful for the two tasks) or to computational efficiency.
+
+全局优化
+
+> Global Optimization
+图 22.5 的分类算法对每个论元分别（‘局部地’）分类，作了一个简化假设：谓词的每个论元都可以独立标注。这一假设是错误的；论元之间存在相互作用，需要对成分进行更‘全局’的标签指派。例如，FrameNet 和 PropBank 中要求成分互不重叠。更重要的是，成分的语义角色并非相互独立。例如 PropBank 不允许存在多个完全相同的论元；同一个动词的两个成分不能都被标注为 ARG0。
+
+> The classification algorithm of Fig. 22.5 classifies each argument separately (‘locally’), making the simplifying assumption that each argument of a predicate can be labeled independently. This assumption is false; there are interactions between arguments that require a more ‘global’ assignment of labels to constituents. For example, constituents in FrameNet and PropBank are required to be non-overlapping. More significantly, the semantic roles of constituents are not independent. For example PropBank does not allow multiple identical arguments; two constituents of the same verb cannot both be labeled ARG0 .
+
+因此，角色标注系统常常增加第四步，来处理全局一致性
+
+> Role labeling systems thus often add a fourth step to deal with global consistency
+，即句子中各个标签之间的一致性。例如，局部分类器可以为每个成分返回一个带有概率的可能标签列表，再用第二遍 Viterbi 解码或重排序方法来选出最佳的共识标签。整数线性规划（ILP）是另一种常见做法，用于选出最符合多重约束的解。
+
+> across the labels in a sentence. For example, the local classifiers can return a list of possible labels associated with probabilities for each constituent, and a second-pass Viterbi decoding or re-ranking approach can be used to choose the best consensus label. Integer linear programming (ILP) is another common way to choose a solution that conforms best to multiple constraints.
+
+语义角色标注的特征
+
+> Features for Semantic Role Labeling
+大多数系统使用 Gildea and Jurafsky (2000) 提出的那组核心特征的一些推广。常见的基本特征模板（在图 22.5 中以 NP-SBJ 成分 The San Francisco Examiner 为例演示）包括：
+
+> Most systems use some generalization of the core set of features introduced by Gildea and Jurafsky (2000). Common basic features templates (demonstrated on the NP-SBJ constituent The San Francisco Examiner in Fig. 22.5) include:
+
+- 支配谓词，在本例中是动词 issued。谓词是一个关键特征，因为标签只有相对于某个特定谓词才有定义。
+- 成分的短语类型，在本例中是 NP（或 NP-SBJ）。有些语义角色倾向于以 NP 出现，另一些则以 S 或 PP 出现，依此类推。
+- 成分的中心词 Examiner。成分的中心词可以用标准的中心词规则计算，例如图 19.17 中附录 F 给出的那些规则。某些中心词（如代词）会对它们可能充当的语义角色施加很强的约束。
+- 成分中心词的词性 NNP。
+- 从该成分到谓词在句法分析树中的路径。这条路径在图 22.5 中用虚线标出。依照 Gildea and Jurafsky (2000)，我们可以使用该路径的简单线性表示 NP↑S↓VP↓VBD。↑ 和 ↓ 分别表示在树中向上和向下移动。该路径作为一种紧凑表示非常有用，可表示成分与谓词之间多种语法功能关系。
+- 成分所在小句的语态，在本例中是主动语态（与被动语态相对）。与主动句相比，被动句在语义角色到表层形式的连接方式上往往差别很大。
+- 成分相对于谓词的二值线性位置，即在谓词之前或之后。
+- 谓词的次范畴化，即出现在动词短语中的预期论元集合。我们可以通过使用展开谓词直接父节点的短语结构规则来抽取这一信息；对于图 22.5 中的谓词，该规则是 VP →VBD NP PP。
+- 成分的命名实体类型。
+
+> The governing predicate, in this case the verb issued. The predicate is a crucial feature since labels are defined only with respect to a particular predicate.
+> The phrase type of the constituent, in this case, NP (or NP-SBJ). Some semantic roles tend to appear as NPs, others as S or PP, and so on.
+> The headword of the constituent, Examiner. The headword of a constituent can be computed with standard head rules, such as those given in Appendix F in Fig. 19.17. Certain headwords (e.g., pronouns) place strong constraints on the possible semantic roles they are likely to fill.
+> The headword part of speech of the constituent, NNP.
+> The path in the parse tree from the constituent to the predicate. This path is marked by the dotted line in Fig. 22.5. Following Gildea and Jurafsky (2000), we can use a simple linear representation of the path, NP↑S↓VP↓VBD. ↑and↓represent upward and downward movement in the tree, respectively. The path is very useful as a compact representation of many kinds of grammatical function relationships between the constituent and the predicate.
+> The voice of the clause in which the constituent appears, in this case, active(as contrasted with passive). Passive sentences tend to have strongly different linkings of semantic roles to surface form than do active ones.
+> The binary linear position of the constituent with respect to the predicate, either before or after.
+> The subcategorization of the predicate, the set of expected arguments that appear in the verb phrase. We can extract this information by using the phrasestructure rule that expands the immediate parent of the predicate; VP →VBD NP PP for the predicate in Fig. 22.5.
+> The named entity type of the constituent.
+
+- 该成分的第一个词和最后一个词。
+
+> The first words and the last word of the constituent.
+
+因此，下面的特征向量表示我们例子中的第一个 NP（回忆一下
+
+> The following feature vector thus represents the first NP in our example (recall
+大多数观测值的取值为 NONE，而不是例如 ARG0，因为句法分析树中的大多数成分并不承载语义角色）：
+
+> that most observations will have the value NONE rather than, for example, ARG0, since most constituents in the parse tree will not bear a semantic role):
+
+> ARG0：[issued, NP, Examiner, NNP, NP↑S↓VP↓VBD, active, before, VP →NP PP, ORG, The, Examiner]
+>
+> *ARG0: [issued, NP, Examiner, NNP, NP↑S↓VP↓VBD, active, before, VP →NP PP, ORG, The, Examiner]*
+
+此外还经常使用其他特征，例如位于
+
+> Other features are often used in addition, such as sets of n-grams inside the
+成分内部的 n-gram 集合，或路径特征的更复杂版本（路径的上半部分或下半部分，或路径中是否出现特定节点）。
+
+> constituent, or more complex versions of the path features (the upward or downward halves, or whether particular nodes occur in the path).
+
+也可以使用依存句法分析代替成分句法分析，作为
+
+> It’s also possible to use dependency parses instead of constituency parses as the
+特征的基础，例如使用依存句法分析路径代替成分句法分析路径。
+
+> basis of features, for example using dependency parse paths instead of constituency paths.
+
+### 22.6.2 语义角色标注的神经算法
+
+> 22.6.2 A Neural Algorithm for Semantic Role Labeling
+
+一种简单的 SRL 神经方法把它视为与命名实体识别类似的序列标注任务，采用 BIO 方法。假设已经给定谓词，任务只是检测并标注片段。回忆一下，使用 BIO 标注时，每个可能的角色都有一个开始标签和一个结束标签（B-ARG0、I-ARG0；B-ARG1、I-ARG1，等等），再加一个外部标签 O。
+
+> A simple neural approach to SRL is to treat it as a sequence labeling task like namedentity recognition, using the BIO approach. Let’s assume that we are given the predicate and the task is just detecting and labeling spans. Recall that with BIO tagging, we have a begin and end tag for each possible role (B-ARG0, I-ARG0; B-ARG1, I-ARG1, and so on), plus an outside tag O.
+
+![](images/22-semantic-role-labeling/fig_p11_0.png)
+
+*图 22.6 一种用于语义角色标注的简单神经方法。输入句子后面跟着 [SEP] 以及针对谓词的一个额外输入，本例中是 love。编码器的输出与一个指示变量拼接，该变量对谓词取 1，对其他所有词取 0。改编自 He et al. (2017) 与 Shi and Lin (2019)。*
+*Figure 22.6 A simple neural approach to semantic role labeling. The input sentence is followed by [SEP] and an extra input for the predicate, in this case love. The encoder outputs are concatenated to an indicator variable which is 1 for the predicate and 0 for all other words After He et al. (2017) and Shi and Lin (2019).*
+
+与所有标注器一样，目标是在给定输入词序列 w 的情况下，计算概率最高的标签序列 ŷ：
+
+> As with all the taggers, the goal is to compute the highest probability tag sequence ˆy, given the input sequence of words w:
+
+ˆy = argmax P(y|w)
+图 22.6 展示了 He et al. (2017) 中一个标准算法的示意图。这里每个输入词被映射为预训练嵌入，然后每个词元与谓词嵌入拼接，再通过一个带 softmax 的前馈网络，输出每个 SRL 标签上的分布。解码时，可以用 CRF 层代替 biLSTM 输出之上的 MLP 层来做全局推断，但在实践中这似乎并没有带来多少好处。
+
+> Fig. 22.6 shows a sketch of a standard algorithm from He et al. (2017). Here each input word is mapped to pretrained embeddings, and then each token is concatenated with the predicate embedding and then passed through a feedforward network with a softmax which outputs a distribution over each SRL label. For decoding, a CRF layer can be used instead of the MLP layer on top of the biLSTM output to do global inference, but in practice this doesn’t seem to provide much benefit.
+
+> y∈T
+
+### 22.6.3 语义角色标注的评估
+
+> 22.6.3 Evaluation of Semantic Role Labeling
+
+语义角色标注的标准评估要求每个论元标签必须被指派到完全正确的词序列或句法分析成分上，然后计算精确率、召回率和 F 值。识别与分类也可以分别评估。用于评估的两个常用数据集是 CoNLL-2005（Carreras and M`arquez, 2005）和 CoNLL-2012（Pradhan et al., 2013）。
+
+> The standard evaluation for semantic role labeling is to require that each argument label must be assigned to the exactly correct word sequence or parse constituent, and then compute precision, recall, and F-measure. Identification and classification can also be evaluated separately. Two common datasets used for evaluation are CoNLL-2005 (Carreras and M`arquez, 2005) and CoNLL-2012 (Pradhan et al., 2013).
+
+## 22.7 选择限制
+
+> 22.7 Selectional Restrictions
+
+本节我们转向另一种表示谓词与论元之间关系事实的方式。选择限制是一种语义类型约束
+
+> We turn in this section to another way to represent facts about the relationship between predicates and arguments. A selectional restriction is a semantic type con-
+
+> `selectional restriction`（选择限制）
+>
+> 释义：动词对其论元角色所允许填充的概念类型施加的语义约束，用来排除语义上不合理的解读。
+
+，即动词对其论元角色所允许填充的概念种类施加的约束。考虑与下面例子相关的两种含义：
+
+> straint that a verb imposes on the kind of concepts that are allowed to fill its argument roles. Consider the two meanings associated with the following example:
+
+(22.29) 我想在附近吃点东西。
+
+> (22.29) I want to eat someplace nearby.
+
+这个句子有两种可能的句法分析和语义解释。在合理的解释中，eat 是不及物动词，短语 someplace nearby 是给出进食事件地点的附加语。在荒谬的“说话者是哥斯拉”的解释中，eat 是及物动词，短语 someplace nearby 是直接宾语，也是进食的主题，就像下面句子中的 NP Malaysian food 一样：
+
+> There are two possible parses and semantic interpretations for this sentence. In the sensible interpretation, eat is intransitive and the phrase someplace nearby is an adjunct that gives the location of the eating event. In the nonsensical speaker-as-Godzilla interpretation, eat is transitive and the phrase someplace nearby is the direct object and the THEME of the eating, like the NP Malaysian food in the following sentences:
+
+(22.30) 我想吃马来西亚食物。
+
+> (22.30) I want to eat Malaysian food.
+
+我们怎么知道 someplace nearby 在这个句子中不是直接宾语呢？
+
+> How do we know that someplace nearby isn’t the direct object in this sentence?
+
+一个有用的线索是一个语义事实：EATING 事件的主题往往是可以食用的东西。动词 eat 对其主题论元的填充项所施加的这一限制就是选择限制。
+
+> One useful cue is the semantic fact that the THEME of EATING events tends to be something that is edible. This restriction placed by the verb eat on the filler of its THEME argument is a selectional restriction.
+
+选择限制与词义相关联，而不是与整个词位相关联。我们可以
+
+> Selectional restrictions are associated with senses, not entire lexemes. We can
+在下面关于词位 serve 的例子中看到这一点：
+
+> see this in the following examples of the lexeme serve:
+
+(22.31) 这家餐厅供应绿唇贻贝。(22.32) 哪些航空公司提供飞往丹佛的服务？
+
+> (22.31) The restaurant serves green-lipped mussels.(22.32) Which airlines serve Denver?
+
+例 (22.31) 说明了 serve 的“提供食物”义项，该义项通常把其主题限制为某种食物。例 (22.32) 说明了 serve 的“向……提供商业服务”义项，该义项把其主题约束为某种合适的地点。
+
+> Example (22.31) illustrates the offering-food sense of serve, which ordinarily restricts its THEME to be some kind of food Example (22.32) illustrates the provides a commercial service to sense of serve, which constrains its THEME to be some type of appropriate location.
+
+选择限制在具体程度上差异很大。动词 imagine，
+
+> Selectional restrictions vary widely in their specificity. The verb imagine, for
+例如，对其施事角色施加严格的要求（限制为人类及其他有生命实体），但对其主题角色几乎不施加语义要求。而像 diagonalize 这样的动词则对其主题角色的填充项施加非常具体的约束：它必须是一个矩阵，而形容词 odorless 的论元则被限制为可能具有气味的那些概念：
+
+> example, imposes strict requirements on its AGENT role (restricting it to humans and other animate entities) but places very few semantic requirements on its THEME role. A verb like diagonalize, on the other hand, places a very specific constraint on the filler of its THEME role: it has to be a matrix, while the arguments of the adjective odorless are restricted to concepts that could possess an odor:
+
+(22.33) 在排练时，我常请乐手们想象一场网球比赛。(22.34) 氡是一种无味的气体，人的感官无法察觉。
+
+> (22.33) In rehearsal, I often ask the musicians to imagine a tennis game.(22.34) Radon is an odorless gas that can’t be detected by human senses.
+
+(22.35) 对一个矩阵做对角化，就是求它的特征值。
+
+> (22.35) To diagonalize a matrix is to find its eigenvalues.
+
+这些例子表明，我们需要用来表示选择限制的概念集合
+
+> These examples illustrate that the set of concepts we need to represent selectional
+（是矩阵、能够具有气味等）是相当开放的。
+
+> restrictions (being a matrix, being able to possess an odor, etc) is quite open ended.
+
+这使选择限制区别于表示词汇知识的其他特征，例如词性，后者的数量相当有限。
+
+> This distinguishes selectional restrictions from other features for representing lexical knowledge, like parts-of-speech, which are quite limited in number.
+
+### 22.7.1 选择限制的表示
+
+> 22.7.1 Representing Selectional Restrictions
+
+刻画选择限制语义的一种方式是使用并扩展附录 H 的事件表示。回忆一下，事件的新戴维森表示由一个代表该事件的变量、一个表示事件种类的谓词，以及事件角色的变量和关系构成。忽略 λ 结构的问题，并使用题元角色而不是深层事件角色，像 eat 这样的动词的语义贡献可能如下所示：
+
+> One way to capture the semantics of selectional restrictions is to use and extend the event representation of Appendix H. Recall that the neo-Davidsonian representation of an event consists of a single variable that stands for the event, a predicate denoting the kind of event, and variables and relations for the event roles. Ignoring the issue of the λ-structures and using thematic roles rather than deep event roles, the semantic contribution of a verb like eat might look like the following:
+
+∃e,x,y Eating(e)∧Agent(e,x)∧Theme(e,y)
+在这种表示下，关于 y，也就是主题角色的填充项，我们所知道的只是它通过 Theme 关系与一个 Eating 事件相关联。为了规定 y 必须是可食用之物的这一选择限制，我们只需添加一个表达此意的新项：
+
+> With this representation, all we know about y, the filler of the THEME role, is that it is associated with an Eating event through the Theme relation. To stipulate the selectional restriction that y must be something edible, we simply add a new term to that effect:
+
+∃e,x,y Eating(e)∧Agent(e,x)∧Theme(e,y)∧EdibleThing(y)
+当遇到 ate a hamburger 这样的短语时，语义分析器可以形成如下形式的表示：
+
+> When a phrase like ate a hamburger is encountered, a semantic analyzer can form the following kind of representation:
+
+∃e,x,y Eating(e)∧Eater(e,x)∧Theme(e,y)∧EdibleThing(y)∧Hamburger(y)
+这一表示完全合理，因为 y 属于 Hamburger 这一类别与它属于 EdibleThing 这一类别是一致的，前提是知识库中有一组合理的事实。相应地，像 ate a takeoff 这样的短语的表示则是不合式的，因为属于 Takeoff 这样的事件性类别与属于 EdibleThing 类别是不一致的。
+
+> This representation is perfectly reasonable since the membership of y in the category Hamburger is consistent with its membership in the category EdibleThing, assuming a reasonable set of facts in the knowledge base. Correspondingly, the representation for a phrase such as ate a takeoff would be ill-formed because membership in an event-like category such as Takeoff would be inconsistent with membership in the category EdibleThing.
+
+尽管这一方法充分捕捉到了选择限制的语义，
+
+> While this approach adequately captures the semantics of selectional restrictions,
+但直接使用它存在两个问题。首先，用 FOL 来完成施加选择限制这样简单的任务属于杀鸡用牛刀。其他简单得多的形式化方法能以低得多的计算代价完成这项工作。第二个问题在于，这一方法预设了一个庞大的、逻辑化的知识库，其中包含关于构成选择限制的那些概念的事实。遗憾的是，尽管这类常识知识库正在被构建，但目前没有任何一个具备该任务所需的覆盖范围。
+
+> there are two problems with its direct use. First, using FOL to perform the simple task of enforcing selectional restrictions is overkill. Other, far simpler, formalisms can do the job with far less computational cost. The second problem is that this approach presupposes a large, logical knowledge base of facts about the concepts that make up selectional restrictions. Unfortunately, although such common-sense knowledge bases are being developed, none currently have the kind of coverage necessary to the task.
+
+一种更实用的做法是用 WordNet
+
+> A more practical approach is to state selectional restrictions in terms of WordNet
+的义项集来表述选择限制，而不是用逻辑概念。每个谓词只需为其每个论元指定一个 WordNet 义项集作为选择限制。如果角色填充词是该义项集的下位词（下义词），那么这个意义表示就是合式的。
+
+> synsets rather than as logical concepts. Each predicate simply specifies a WordNet synset as the selectional restriction on each of its arguments. A meaning representation is well-formed if the role filler word is a hyponym (subordinate) of this synset.
+
+例如，对于我们那个 ate a hamburger 的例子，我们可以把选择
+
+> For our ate a hamburger example, for instance, we could set the selectional
+限制设为动词 eat 的 THEME 角色对应于义项集 {food, nutrient}，其释义为可被动物代谢以提供能量并构建组织的任何物质。幸运的是，图 22.7 中给出的 hamburger 的上位词链表明，汉堡包确实属于 food。同样，角色的填充词不必与限制义项集完全匹配；它只需以该义项集作为其上位词之一即可。
+
+> restriction on the THEME role of the verb eat to the synset {food, nutrient}, glossed as any substance that can be metabolized by an animal to give energy and build tissue. Luckily, the chain of hypernyms for hamburger shown in Fig. 22.7 reveals that hamburgers are indeed food. Again, the filler of a role need not match the restriction synset exactly; it just needs to have the synset as one of its superordinates.
+
+我们可以把这一方法应用于前面讨论过的动词 imagine、lift 和 diagonalize 的 THEME 角色。我们把 imagine 的 THEME 限制为义项集 {entity}，把 lift 的 THEME 限制为 {physical entity}，把 diagonalize 限制为 {matrix}。这一安排正确地允许 imagine a hamburger 和 lift a hamburger，同时也正确地排除了 diagonalize a hamburger。
+
+> We can apply this approach to the THEME roles of the verbs imagine, lift, and diagonalize, discussed earlier. Let us restrict imagine’s THEME to the synset {entity}, lift’s THEME to {physical entity}, and diagonalize to {matrix}. This arrangement correctly permits imagine a hamburger and lift a hamburger, while also correctly ruling out diagonalize a hamburger.
+
+![](images/22-semantic-role-labeling/fig_p14_0.png)
+
+*图 22.7 来自 WordNet 的证据，表明汉堡包是可食用的。*
+*Figure 22.7 Evidence from WordNet that hamburgers are edible.*
+
+### 22.7.2 选择偏好
+
+> 22.7.2 Selectional Preferences
+
+在最早的实现中，选择限制被视为对谓词所能携带的论元种类的严格约束（Katz and Fodor 1963, Hirst 1987）。例如，动词 eat 可能要求其 THEME 论元为 [+FOOD]。早期的词义消歧系统利用这一思想来排除那些违反其支配谓词的选择限制的义项。
+
+> In the earliest implementations, selectional restrictions were considered strict constraints on the kind of arguments a predicate could take (Katz and Fodor 1963, Hirst 1987). For example, the verb eat might require that its THEME argument be[+FOOD]. Early word sense disambiguation systems used this idea to rule out senses that violated the selectional restrictions of their governing predicates.
+
+然而，人们很快就清楚地认识到，这些选择限制
+
+> Very quickly, however, it became clear that these selectional restrictions were
+用偏好来表述比用严格约束更合适（Wilks 1975b, Wilks 1975a）。例如，违反选择限制的情况（如 eat 的不可食用论元）常常出现在合式的句子中，比如因为它们被否定了（22.36），或者因为选择限制被过度表述了（22.37）：
+
+> better represented as preferences rather than strict constraints (Wilks 1975b, Wilks 1975a). For example, selectional restriction violations (like inedible arguments of eat) often occur in well-formed sentences, for example because they are negated(22.36), or because selectional restrictions are overstated (22.37):
+
+（22.36）但它在 1931 年崩溃了，也许是因为人们意识到，你不能吃
+
+> (22.36) But it fell apart in 1931, perhaps because people realized you can’t eat
+金子当午餐，如果你饿了。
+
+> gold for lunch if you’re hungry.
+
+（22.37）在他的两次冠军赛中，Kulkarni 先生空着
+
+> (22.37) In his two championship trials, Mr. Kulkarni ate glass on an empty
+肚子吃下了玻璃，只配着水和茶。
+
+> stomach, accompanied only by water and tea.
+
+因此，现代的选择偏好系统用某种软约束来刻画谓词与其可能论元之间的关系。
+
+> Modern systems for selectional preferences therefore specify the relation between a predicate and its possible arguments with soft constraints of some kind.
+
+选择关联
+
+> Selectional Association
+其中最具影响力的之一就是 Resnik 的选择关联模型
+
+> One of the most influential has been the selectional association model of Resnik
+
+> `selectional preference strength`（选择偏好强度）
+>
+> 释义：衡量一个谓词能在多大程度上告诉我们其论元所属语义类别的信息量。
+
+（1993）。Resnik 把选择偏好强度这一概念定义为
+
+> (1993). Resnik defines the idea of selectional preference strength as the general
+一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38)
+
+> amount of information that a predicate tells us about the semantic class of its arguments. For example, the verb eat tells us a lot about the semantic class of its direct objects, since they tend to be edible. The verb be, by contrast, tells us less about its direct objects. The selectional preference strength can be defined by the difference in information between two distributions: the distribution of expected semantic classes P(c) (how likely is it that a direct object will fall into class c) and the distribution of expected semantic classes for the particular verb P(c|v) (how likely is it that the direct object of the specific verb v will fall into semantic class c). The greater the difference between these distributions, the more information the verb is giving us about possible objects. The difference between these two distributions can be quantified by relative entropy, or the Kullback-Leibler divergence (Kullback and Leibler, 1951). The Kullback-Leibler or KL divergence D(P||Q) expresses the difference between two probability distributions P and Q X P(x)log P(x) D(P||Q) = (22.38)
+Q(x)
+选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。
+
+> The selectional preference SR(v) uses the KL divergence to express how much information, in bits, the verb v expresses about the possible semantic class of its argument.
+
+> x
+
+SR(v) = D(P(c|v)||P(c))
+X P(c|v)log P(c|v)
+= P(c) (22.39)
+
+> c
+
+> `selectional association`（选择关联）
+>
+> 释义：衡量某个语义类别对谓词整体选择偏好贡献大小的度量。
+
+接着，Resnik 把某个特定类别与动词的选择关联定义为
+
+> Resnik then defines the selectional association of a particular class and verb as the
+该类别对该动词总体选择偏好的相对贡献：
+
+> relative contribution of that class to the general selectional preference of the verb:
+
+SR(v)P(c|v)log P(c|v) 1
+AR(v,c) = (22.40)
+P(c)
+因此，选择关联是对谓词与支配该谓词论元的某个类别之间关联强度的一种概率度量。
+
+> The selectional association is thus a probabilistic measure of the strength of association between a predicate and a class dominating the argument to the predicate.
+
+Resnik 通过对语料库进行句法分析、统计每个谓词与每个论元词共现的所有次数，并假定每个词都是对包含该词的所有 WordNet 概念的部分观测，来估计这些关联的概率。下面这张取自 Resnik (1996) 的表给出了若干动词与其直接宾语的一些 WordNet 语义类别之间的高、低选择关联样例。
+
+> Resnik estimates the probabilities for these associations by parsing a corpus, counting all the times each predicate occurs with each argument word, and assuming that each word is a partial observation of all the WordNet concepts containing the word. The following table from Resnik (1996) shows some sample high and low selectional associations for verbs and some WordNet semantic classes of their direct objects.
+
+|  | 直接宾语<br>Direct Object |  | 直接宾语<br>Direct Object |  |
+| --- | --- | --- | --- | --- |
+| 动词<br>Verb | 语义类别<br>Semantic Class | 关联度<br>Assoc | 语义类别<br>Semantic Class | 关联度<br>Assoc |
+| read | WRITING | 6.80 | ACTIVITY | -.20 |
+| write | WRITING | 7.26 | COMMERCE | 0 |
+| see | ENTITY | 5.79 | METHOD | -0.01 |
+
+动词 语义类别 关联度 语义类别 关联度
+
+> Verb Semantic Class Assoc Semantic Class Assoc
+通过条件概率获得的选择偏好
+
+> Selectional Preference via Conditional Probability
+除了使用动词与其论元的 WordNet 类别之间的选择关联之外，另一种做法是使用给定谓词动词时论元词的条件概率，直接对一个动词（谓词）与一个名词（论元）之间关联的强度进行建模。
+
+> An alternative to using selectional association between a verb and the WordNet class of its arguments is to use the conditional probability of an argument word given a predicate verb, directly modeling the strength of association of one verb (predicate) with one noun (argument).
+
+条件概率模型可以通过分析一个非常庞大的语料库（数十亿词）并计算共现计数来得到：即某个给定动词在某种给定关系中与某个给定名词共同出现的频率。于是，在特定关系下给定动词时论元名词的条件概率 P(n|v,r) 就可以用作该词对的选择偏好度量（Brockmann and Lapata 2003, Keller and Lapata 2003）：
+
+> The conditional probability model can be computed by parsing a very large corpus (billions of words), and computing co-occurrence counts: how often a given verb occurs with a given noun in a given relation. The conditional probability of an argument noun given a verb for a particular relation P(n|v,r) can then be used as a selectional preference metric for that pair of words (Brockmann and Lapata 2003, Keller and Lapata 2003):
+
+（
+
+> (
+P(n|v,r) = 若 C(n,v,r) > 0
+
+> P(n|v,r) = if C(n,v,r) > 0
+否则为 0
+
+> 0 otherwise
+在某些情况下，逆向概率 P(v|n,r) 被发现具有更好的表现（Brockmann and Lapata, 2003）：
+
+> The inverse probability P(v|n,r) was found to have better performance in some cases(Brockmann and Lapata, 2003):
+
+> C(n,v,r)
+
+> C(v,r)
+
+（
+
+> (
+P(v|n,r) = 若 C(n,v,r) > 0
+
+> P(v|n,r) = if C(n,v,r) > 0
+否则为 0。一个更为简单的做法是使用谓词与论元的简单对数共现频率 logcount(v,n,r) 来替代条件概率；对于抽取句法主语而非宾语的选择偏好，这种做法似乎效果更好（Brockmann and Lapata, 2003）。
+
+> 0 otherwise An even simpler approach is to use the simple log co-occurrence frequency of the predicate with the argument logcount(v,n,r) instead of conditional probability; this seems to do better for extracting preferences for syntactic subjects rather than objects (Brockmann and Lapata, 2003).
+
+评估选择偏好
+
+> Evaluating Selectional Preferences
+评估选择偏好模型的一种方法是使用伪词（Gale
+
+> One way to evaluate models of selectional preferences is to use pseudowords (Gale
+
+> `pseudowords`（伪词）
+>
+> 释义：把某个上下文中的测试词与一个干扰词拼接起来造出的人造词，用于检验模型能否从中辨认出原来的那个词。
+
+et al. 1992b, Sch¨utze 1992a）。伪词是把某个上下文中的测试词（比如 banana）与一个干扰词（比如 door）拼接起来（构成 banana-door）而造出的人造词。系统的任务是判断这两个词中哪一个是原来的词。为了评估选择偏好模型（例如评估动词与直接宾语之间的关系），我们取一个测试语料库并选出所有动词词例。对于每个动词词例（比如 drive），我们选出它的直接宾语（例如 car），再与一个干扰词拼接，该干扰词是它的最近邻，即频率与原词最接近的名词（比如 house），从而构成 car/house）。随后我们用选择偏好模型判断 car 与 house 中哪一个更可能是 drive 更受偏好的宾语，并计算模型选中正确的原宾语（例如 car）的频率（Chambers and Jurafsky, 2010）。
+
+> et al. 1992b, Sch¨utze 1992a). A pseudoword is an artificial word created by concatenating a test word in some context (say banana) with a confounder word (say door) to create banana-door). The task of the system is to identify which of the two words is the original word. To evaluate a selectional preference model (for example on the relationship between a verb and a direct object) we take a test corpus and select all verb tokens. For each verb token (say drive) we select the direct object (e.g., car), concatenated with a confounder word that is its nearest neighbor, the noun with the frequency closest to the original (say house), to make car/house). We then use the selectional preference model to choose which of car and house are more preferred objects of drive, and compute how often the model chooses the correct original object (e.g., car) (Chambers and Jurafsky, 2010).
+
+另一种评估指标是获取人类对一组测试用动词—论元对的偏好，让他们对其合理程度进行评分。这通常通过量级估计这一心理物理学技术来完成，即受试者参照一个模量项对一个论元的合理性按比例评分。随后可以根据选择偏好模型与人类偏好之间的相关性来评估该模型（Keller and Lapata, 2003）。
+
+> Another evaluation metric is to get human preferences for a test set of verbargument pairs, and have them rate their degree of plausibility. This is usually done by using magnitude estimation, a technique from psychophysics, in which subjects rate the plausibility of an argument proportional to a modulus item. A selectional preference model can then be evaluated by its correlation with the human preferences (Keller and Lapata, 2003).
+
+## 22.8 谓词的基元分解
+
+> 22.8 Primitive Decomposition of Predicates
+
+对本节所讨论的语义角色，一种理解方式是：它们帮助我们以一种分解的方式、基于有限的题元角色列表（施事、受事、工具、原型施事、原型受事等）来定义论元所扮演的角色。这种把意义分解为若干基元语义
+
+> One way of thinking about the semantic roles we have discussed through the chapter is that they help us define the roles that arguments play in a decompositional way, based on finite lists of thematic roles (agent, patient, instrument, proto-agent, protopatient, etc.). This idea of decomposing meaning into sets of primitive semantic
+
+> `componential analysis`（成分分析）
+>
+> 释义：把词义拆解为若干基元语义特征之集合的一种意义分析方法，与基元分解同义。
+
+元素或特征的做法被称为基元分解或成分分析，
+
+> elements or features, called primitive decomposition or componential analysis,
+这一做法已被推进得更远，并特别聚焦于谓词。
+
+> has been taken even further, and focused particularly on predicates.
+
+请看动词 kill 的以下例子：
+
+> Consider these examples of the verb kill:
+
+（22.41）Jim 杀死了他的喜林芋。
+
+> (22.41) Jim killed his philodendron.
+
+（22.42）Jim 做了某件事，使他的喜林芋变得不再活着。
+
+> (22.42) Jim did something to cause his philodendron to become not alive.
+
+从真值条件（“命题语义学”）的角度看，这两个句子具有相同的意义。假设这种等价性成立，我们就可以把 kill 的意义表示为：
+
+> There is a truth-conditional (‘propositional semantics’) perspective from which these two sentences have the same meaning. Assuming this equivalence, we could represent the meaning of kill as:
+
+（22.43）KILL(x,y) ⇔CAUSE(x, BECOME(NOT(ALIVE(y))))，这样就使用了 do、cause、become not 和 alive 之类的语义基元。
+
+> (22.43) KILL(x,y) ⇔CAUSE(x, BECOME(NOT(ALIVE(y)))) thus using semantic primitives like do, cause, become not, and alive.
+
+事实上，确实有这样一组潜在的语义基元曾被用来解释
+
+> Indeed, one such set of potential semantic primitives has been used to account
+第 22.2 节中讨论的某些动词交替现象（Lakoff 1965, Dowty 1979）。请看以下例子。
+
+> for some of the verbal alternations discussed in Section 22.2 (Lakoff 1965, Dowty 1979). Consider the following examples.
+
+（22.44）John 打开了门。⇒CAUSE(John, BECOME(OPEN(door)))（22.45）门开了。⇒BECOME(OPEN(door)) （22.46）门是开着的。⇒OPEN(door) 分解式方法断言，这些例子背后都存在一个与 open 相关联的、类似状态的单一谓词。这些例子的意义差异，源于该单一谓词与基元 CAUSE 和 BECOME 的组合。
+
+> (22.44) John opened the door. ⇒CAUSE(John, BECOME(OPEN(door)))(22.45) The door opened. ⇒BECOME(OPEN(door)) (22.46) The door is open. ⇒OPEN(door) The decompositional approach asserts that a single state-like predicate associated with open underlies all of these examples. The differences among the meanings of these examples arises from the combination of this single predicate with the primitives CAUSE and BECOME.
+
+虽然这种基元分解方法能够解释状态与动作之间、或使役与非使役谓词之间的相似性，但它仍然依赖于拥有大量像 open 这样的谓词。更激进的做法则选择把这些谓词也进一步拆解。其中一种在早期自然语言系统中发挥过作用的动词谓词分解方法，叫作概念依存（CD），它由十个基元谓词组成，如图 22.8 所示。
+
+> While this approach to primitive decomposition can explain the similarity between states and actions or causative and non-causative predicates, it still relies on having a large number of predicates like open. More radical approaches choose to break down these predicates as well. One such approach to verbal predicate decomposition that played a role in early natural language systems is conceptual dependency (CD), a set of ten primitive predicates, shown in Fig. 22.8.
+
+> `conceptual dependency`（概念依存）
+>
+> 释义：一种用十个基元谓词（如 ATRANS、PTRANS、MTRANS 等）表示句子意义的早期语义表示方法。
+
+> 基元 定义 ATRANS 占有权或控制权从一个实体到
+>
+> *Primitive Definition ATRANS The abstract transfer of possession or control from one entity to*
+
+> 另一个实体的抽象转移
+>
+> *another*
+
+> PTRANS 一个对象从一个位置到另一个位置的物理转移 MTRANS 心理概念在实体之间或在
+>
+> *PTRANS The physical transfer of an object from one location to another MTRANS The transfer of mental concepts between entities or within an*
+
+> 一个实体内部的转移
+>
+> *entity*
+
+> MBUILD 在一个实体内部创造新信息 PROPEL 施加物理力以移动一个对象 MOVE 动物对自身某一部分的整体运动 INGEST 动物摄入某种物质 EXPEL 动物排出某物 SPEAK 发出声音的动作 ATTEND 使某一感觉器官聚焦的动作
+>
+> *MBUILD The creation of new information within an entity PROPEL The application of physical force to move an object MOVE The integral movement of a body part by an animal INGEST The taking in of a substance by an animal EXPEL The expulsion of something from an animal SPEAK The action of producing a sound ATTEND The action of focusing a sense organ*
+
+*图 22.8 一组概念依存基元。*
+*Figure 22.8 A set of conceptual dependency primitives.*
+
+下面是一个例句及其 CD 表示。动词 brought
+
+> Below is an example sentence along with its CD representation. The verb brought
+被翻译为两个基元 ATRANS 和 PTRANS，以表示服务员既把账单在实体上递给了 Mary，也把对它的控制权交给了她。注意，CD 还为每个基元关联一组固定的题元角色，以表示动作中的各个参与者。
+
+> is translated into the two primitives ATRANS and PTRANS to indicate that the waiter both physically conveyed the check to Mary and passed control of it to her. Note that CD also associates a fixed set of thematic roles with each primitive to represent the various participants in the action.
+
+(22.47) 服务员把账单递给了 Mary。
+
+> (22.47) The waiter brought Mary the check.
+
+∃x,y Atrans(x)∧Actor(x,Waiter)∧Object(x,Check)∧To(x,Mary)
+∧Ptrans(y)∧Actor(y,Waiter)∧Object(y,Check)∧To(y,Mary)
+
+## 22.9 小结
+
+> 22.9 Summary
+
+- 语义角色是对论元在谓词所描述的事件中所扮演角色的一种抽象模型。
+- 题元角色是一种基于单一有限角色清单的语义角色模型。其他语义角色模型包括按动词划分的语义角色清单和原型施事/原型受事，二者都在 PropBank 中实现，以及按框架划分的角色清单，在 FrameNet 中实现。
+- 语义角色标注是为一句话的成分赋予语义角色标签的任务。该任务通常被视为一项监督式机器学习任务，模型在 PropBank 或 FrameNet 上训练。算法一般先对句子进行句法分析，然后自动为每个
+
+> Semantic roles are abstract models of the role an argument plays in the event described by the predicate.
+> Thematic roles are a model of semantic roles based on a single finite list of roles. Other semantic role models include per-verb semantic role lists and proto-agent/proto-patient, both of which are implemented in PropBank, and per-frame role lists, implemented in FrameNet.
+> Semantic role labeling is the task of assigning semantic role labels to the constituents of a sentence. The task is generally treated as a supervised machine learning task, with models trained on PropBank or FrameNet. Algorithms generally start by parsing a sentence and then automatically tag each
+
+句法分析树节点标注一个语义角色。神经模型则直接从词端到端地映射。
+
+> parse tree node with a semantic role. Neural models map straight from words end-to-end.
+
+- 语义选择限制使词（尤其是谓词）能够对其论元词的语义属性施加约束。选择偏好模型（如选择关联或简单的条件概率）可以为谓词与某个论元词或论元类之间的关联赋予权重或概率。
+
+> Semantic selectional restrictions allow words (particularly predicates) to post constraints on the semantic properties of their argument words. Selectional preference models (like selectional association or simple conditional probability) allow a weight or probability to be assigned to the association between a predicate and an argument word or class.
+
+## 历史注记
+
+> Historical Notes
+
+尽管语义角色的思想可以追溯到 P¯an.ini，它是由 Gruber (1965)、Fillmore (1966) 和 Fillmore (1968) 重新引入现代语言学的。Fillmore 是在研读 Lucien Tesni`ere 的开创性著作 ´El´ements de Syntaxe Structurale (Tesni`ere, 1959) 时对论元结构产生兴趣的，该书引入了“dependency”这一术语，并为依存语法奠定了基础。沿用 Tesni`ere 的术语，Fillmore 起初把论元角色称为 actants (Fillmore, 1966)，但很快改用了 case 这一术语（见 Fillmore (2003)），并提出了一份通用的语义角色或格（Agent、Patient、Instrument 等）清单，谓词的论元可以承担这些角色。动词会连同其格框架一起列入词典，格框架即其必需的（或可选的）格论元清单。
+
+> Although the idea of semantic roles dates back to P¯an.ini, they were re-introduced into modern linguistics by Gruber (1965), Fillmore (1966) and Fillmore (1968). Fillmore had become interested in argument structure by studying Lucien Tesni`ere’s groundbreaking ´El´ements de Syntaxe Structurale (Tesni`ere, 1959) in which the term‘dependency’ was introduced and the foundations were laid for dependency grammar. Following Tesni`ere’s terminology, Fillmore first referred to argument roles as actants (Fillmore, 1966) but quickly switched to the term case, (see Fillmore (2003)) and proposed a universal list of semantic roles or cases (Agent, Patient, Instrument, etc.), that could be taken on by the arguments of predicates. Verbs would be listed in the lexicon with their case frame, the list of obligatory (or optional) case arguments.
+
+语义角色能够提供一个中间层次的语义
+
+> The idea that semantic roles could provide an intermediate level of semantic
+表示，用以帮助从句法分析结构映射到更深层、规定更充分的意义表示，这一想法很快被自然语言处理领域采纳，人们为机器翻译 (Wilks, 1973)、问答 (Hendrix et al., 1973)、口语处理 (Nash-Webber, 1975) 和对话系统 (Bobrow et al., 1977) 构建了提取格框架的系统。通用型语义角色标注器也被开发出来。最早的标注器 (Simmons, 1973) 先用 ATN（增广转移网络）分析器对句子进行句法分析。
+
+> representation that could help map from syntactic parse structures to deeper, more fully-specified representations of meaning was quickly adopted in natural language processing, and systems for extracting case frames were created for machine translation (Wilks, 1973), question-answering (Hendrix et al., 1973), spoken-language processing (Nash-Webber, 1975), and dialogue systems (Bobrow et al., 1977). Generalpurpose semantic role labelers were developed. The earliest ones (Simmons, 1973) first parsed a sentence by means of an ATN (Augmented Transition Network) parser.
+
+每个动词随后都有一组规则，规定应如何把句法分析结果映射到语义角色。这些规则主要参照语法功能（主语、宾语、特定介词的补足语），但也会检查成分的内部特征，如中心名词的生命度。后来的系统则从预先构建好的句法分析树出发分配角色，同样借助带有动词专属格框架的词典 (Levin 1977, Marcus 1980)。
+
+> Each verb then had a set of rules specifying how the parse should be mapped to semantic roles. These rules mainly made reference to grammatical functions (subject, object, complement of specific prepositions) but also checked constituent internal features such as the animacy of head nouns. Later systems assigned roles from prebuilt parse trees, again by using dictionaries with verb-specific case frames (Levin 1977, Marcus 1980).
+
+到 1977 年，格表示已被广泛使用，并在人工智能和自然语言处理课程中讲授，
+
+> By 1977 case representation was widely used and taught in AI and NLP courses,
+并在 Winston 1977 年教科书 Artificial Intelligence 的第一版中被描述为自然语言处理的一项标准。
+
+> and was described as a standard of natural language processing in the first edition of Winston’s 1977 textbook Artificial Intelligence.
+
+20 世纪 80 年代，Fillmore 提出了他的框架语义学模型，后来这样描述
+
+> In the 1980s Fillmore proposed his model of frame semantics, later describing
+其中的直觉：
+
+> the intuition as follows:
+
+“框架语义学背后的想法是，说话者会意识到可能相当复杂的情境类型，即一整套相互关联的预期，它们有各种名称——框架、图式、情景、脚本、文化叙事、模因——而我们语言中的词正是在以这些框架作为预设背景的情况下被理解的。” (Fillmore, 2012, p. 712)
+
+> “The idea behind frame semantics is that speakers are aware of possibly quite complex situation types, packages of connected expectations, that go by various names—frames, schemas, scenarios, scripts, cultural narratives, memes—and the words in our language are understood with such frames as their presupposed background.” (Fillmore, 2012, p. 712)
+框架一词似乎与其他相关概念一样风行一时，Minsky (1974)、Hymes (1974) 和 Goffman (1974) 在大约同一时期提出了一系列相关概念，此外还有一些用别的名称表述的相关概念，如脚本 (Schank and Abelson, 1975) 和图式 (Bobrow and Norman, 1975)（比较见 Tannen (1979)）。
+
+> The word frame seemed to be in the air for a suite of related notions proposed at about the same time by Minsky (1974), Hymes (1974), and Goffman (1974), as well as related notions with other names like scripts (Schank and Abelson, 1975) and schemata (Bobrow and Norman, 1975) (see Tannen (1979) for a comparison).
+
+Fillmore 还受到语义场理论家的影响，以及一次对 Yale 人工智能实验室的访问的影响，在那里他注意到早期信息抽取系统（如 DeJong (1982) 以及 Schank and Abelson (1977)）所使用的槽位与填充项清单。20 世纪 90 年代，Fillmore 借助这些洞见启动了 FrameNet 语料库标注项目。
+
+> Fillmore was also influenced by the semantic field theorists and by a visit to the Yale AI lab where he took notice of the lists of slots and fillers used by early information extraction systems like DeJong (1982) and Schank and Abelson (1977). In the 1990s Fillmore drew on these insights to begin the FrameNet corpus annotation project.
+
+与此同时，Beth Levin 借助她早期的格框架词典 (Levin,
+
+> At the same time, Beth Levin drew on her early case frame dictionaries (Levin,
+1977)，撰写了她的著作，该书总结了由共同论元实现方式所定义的各类动词 (Levin, 1993)。VerbNet 项目在这项工作的基础上发展起来 (Kipper et al., 2000)，此后不久便促成了由 Martha Palmer 及其同事创建的 PropBank 语义角色标注语料库 (Palmer et al., 2005)。
+
+> 1977) to develop her book which summarized sets of verb classes defined by shared argument realizations (Levin, 1993). The VerbNet project built on this work (Kipper et al., 2000), leading soon afterwards to the PropBank semantic-role-labeled corpus created by Martha Palmer and colleagues (Palmer et al., 2005).
+
+FrameNet 与 PropBank 所体现的丰富语言标注与基于语料库方法的结合，带来了语义角色标注自动方法的复兴，先是基于 FrameNet (Gildea and Jurafsky, 2000)，随后基于 PropBank 数据 (Gildea and Palmer, 2002, inter alia)。这个在 20 世纪 70 年代最初用人工编写规则来处理的问题，如今普遍被重新表述为一项由大规模且一致的数据库所支撑的监督式机器学习问题。角色标注所用的许多常用特征在 Gildea and Jurafsky (2002)、Surdeanu et al.(2003)、Xue and Palmer (2004)、Pradhan et al. (2005)、Che et al. (2009) 和 Zhao et al. (2009) 中都有定义。使用依存句法分析而非成分句法分析的做法是在 CoNLL-2008 共享任务中引入的 (Surdeanu et al., 2008)。综述可参见 Palmer et al. (2010) 和 M`arquez et al. (2008)。
+
+> The combination of rich linguistic annotation and corpus-based approach instantiated in FrameNet and PropBank led to a revival of automatic approaches to semantic role labeling, first on FrameNet (Gildea and Jurafsky, 2000) and then on PropBank data (Gildea and Palmer, 2002, inter alia). The problem first addressed in the 1970s by handwritten rules was thus now generally recast as one of supervised machine learning enabled by large and consistent databases. Many popular features used for role labeling are defined in Gildea and Jurafsky (2002), Surdeanu et al.(2003), Xue and Palmer (2004), Pradhan et al. (2005), Che et al. (2009), and Zhao et al. (2009). The use of dependency rather than constituency parses was introduced in the CoNLL-2008 shared task (Surdeanu et al., 2008). For surveys see Palmer et al. (2010) and M`arquez et al. (2008).
+
+将神经方法用于语义角色标注由 Collobert et al. (2011) 开创，他们在卷积网络之上应用了 CRF。像 Foland, Jr. and Martin (2015) 这样的早期工作专注于使用依存特征。后来的工作则完全避开了句法特征；Zhou and Xu (2015b) 引入了堆叠的（6-8 层）biLSTM 架构，而 (He et al., 2017) 展示了如何用高速公路网络增强 biLSTM 架构，并用 A* 解码替代 CRF，从而可以在 SRL 解码中施加各种各样的全局约束。
+
+> The use of neural approaches to semantic role labeling was pioneered by Collobert et al. (2011), who applied a CRF on top of a convolutional net. Early work like Foland, Jr. and Martin (2015) focused on using dependency features. Later work eschewed syntactic features altogether; Zhou and Xu (2015b) introduced the use of a stacked (6-8 layer) biLSTM architecture, and (He et al., 2017) showed how to augment the biLSTM architecture with highway networks and also replace the CRF with A* decoding that make it possible to apply a wide variety of global constraints in SRL decoding.
+
+大多数语义角色标注方案只在单个句子内工作，聚焦于动词性（或在 NomBank 的情况下为名词性）谓词的对象。
+
+> Most semantic role labeling schemes only work within a single sentence, focusing on the object of the verbal (or nominal, in the case of NomBank) predicate.
+
+然而，在许多情况下，动词性或名词性谓词可能有一个隐式论元：它只出现在上下文的句子中，或者可能根本不出现，而必须
+
+> However, in many cases, a verbal or nominal predicate may have an implicit argument: one that appears only in a contextual sentence, or perhaps not at all and must
+
+> `implicit argument`（隐式论元）
+>
+> 释义：指未在谓词所在句中显式出现、只出现在上下文句子中或完全缺失，需要读者或系统自行推断出的论元。
+
+被推断出来。在 This house has a new owner. The sale was finalized 10 days ago. 这两个句子中，第二句里的 the sale 没有 ARG1，但一个讲道理的读者会推断出 Arg1 应当是前一句中提到的那座房子。寻找这类论元的工作，即隐式论元检测（有时缩写为 iSRL）
+
+> be inferred. In the two sentences This house has a new owner. The sale was finalized 10 days ago. the sale in the second sentence has no ARG1, but a reasonable reader would infer that the Arg1 should be the house mentioned in the prior sentence. Finding these arguments, implicit argument detection (sometimes shortened as iSRL)
+
+> `iSRL`
+>
+> 释义：implicit semantic role labeling 的缩写，指跨句子寻找未显式出现、需要推断的谓词论元的任务。
+
+由 Gerber and Chai (2010) 和 Ruppenhofer et al. (2010) 提出。更新的神经模型可参见 Do et al. (2017)。
+
+> was introduced by Gerber and Chai (2010) and Ruppenhofer et al. (2010). See Do et al. (2017) for more recent neural models.
+
+为避免需要庞大的标注训练集，面向
+
+> To avoid the need for huge labeled training sets, unsupervised approaches for
+语义角色标注的无监督方法试图通过对论元进行聚类来归纳出语义角色集合。该任务由 Riloff and Schmelzenbach (1998) 和 Swier and Stevenson (2004) 开创；参见 Grenager and Manning (2006)、Titov and Klementiev(2012)、Lang and Lapata (2014)、Woodsend and Lapata (2015) 和 Titov and Khoddam (2014)。
+
+> semantic role labeling attempt to induce the set of semantic roles by clustering over arguments. The task was pioneered by Riloff and Schmelzenbach (1998) and Swier and Stevenson (2004); see Grenager and Manning (2006), Titov and Klementiev(2012), Lang and Lapata (2014), Woodsend and Lapata (2015), and Titov and Khoddam (2014).
+
+框架标注方面的近期创新包括内涵框架，它标记
+
+> Recent innovations in frame labeling include connotation frames, which mark
+关于谓词论元的更丰富信息。内涵框架（Connotation frames）标记作者或读者对论元的情感倾向（例如，在 he survived a bombing 中使用动词 survive，表达了作者对主语 he 的同情，以及对 the bombing 的负面情感。更多细节见第 23 章。
+
+> richer information about the argument of predicates. Connotation frames mark the sentiment of the writer or reader toward the arguments (for example using the verb survive in he survived a bombing expresses the writer’s sympathy toward the subject he and negative sentiment toward the bombing. See Chapter 23 for more details.
+
+除 Resnik (1993) 和 Resnik (1996) 的选择关联模型之外，选择偏好（selectional preference）已被广泛研究。所用方法包括聚类（Rooth et al., 1999）、判别式学习（Bergsma et al., 2008a）与主题模型（S´eaghdha 2010, Ritter et al. 2010），约束既可在词这一层面表达，也可在类这一层面表达（Agirre and Martinez, 2001）。选择偏好也已被成功集成到语义角色标注之中（Erk 2007, Zapirain et al. 2013, Do et al. 2017）。
+
+> Selectional preference has been widely studied beyond the selectional association models of Resnik (1993) and Resnik (1996). Methods have included clustering(Rooth et al., 1999), discriminative learning (Bergsma et al., 2008a), and topic models (S´eaghdha 2010, Ritter et al. 2010), and constraints can be expressed at the level of words or classes (Agirre and Martinez, 2001). Selectional preferences have also been successfully integrated into semantic role labeling (Erk 2007, Zapirain et al. 2013, Do et al. 2017).
+
+## 练习
+
+> Exercises

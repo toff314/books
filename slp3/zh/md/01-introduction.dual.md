@@ -1,4 +1,4 @@
-# 第 1 章 引言
+# 第 1 章 绪论
 
 ### 章
 
@@ -853,7 +853,7 @@ B：哪一个？
 
 > While we don’t know the details of how closed, proprietary large language models are trained, open language models are mainly trained on the common crawl,
 
-> `Common Crawl`
+> `common crawl`（Common Crawl）
 >
 > 释义：公开的大规模网页抓取语料库，是训练开源语言模型数据的主要来源之一。
 
@@ -905,6 +905,7 @@ B：哪一个？
 
 > Pretraining is very powerful but not sufficient. To see this, consider the following failures to follow instructions from early work with GPT (Ouyang et al., 2022; OpenAI, 2022).
 
+<!--figbox-->
 提示：用几句话向一个六岁孩子解释登月。
 
 > Prompt: Explain the moon landing to a six year old in a few sentences.
@@ -916,6 +917,7 @@ B：哪一个？
 提示：翻译成法语：The small dog　输出：小狗穿过了马路。
 
 > Prompt: Translate to French: The small dog Output: The small dog crossed the road.
+<!--/figbox-->
 
 在这里，LLM 只是生成与提示大致相关、或能由提示预测出来的文本，
 
@@ -934,9 +936,12 @@ B：哪一个？
 instruction fine-tuning，即指令微调，有时也称为 instruct tuning），这是一种让 LLM 更善于遵循指令的方法。它是指取一个已预训练用于预测 token 的基座 LLM，在一个包含数万乃至数十万条指令与回答的语料上进一步训练它，使其能够遵循从机器翻译到膳食规划等各种任务的指令（图 1.8）。在指令微调中，
 
 > for instruction fine-tuning and sometimes called instruct tuning), a method for making an LLM better at following instructions. It involves taking a base LLM that has been pretrained to predict tokens, and training it further to follow instructions for tasks from machine translation to meal planning, on a corpus with tens or hundreds of thousands of instructions and responses (Fig. 1.8). In instruction tuning,
+
+<!--figbox-->
 指令：为给定的文本指定一个情感类别（正面／负面／中性）。输入：这场演出令人非常失望　输出：负面
 
 > Instruction: Assign a sentiment category (positive / negative / neutral) to the given text. Input: The show was a big disappointment Output: Negative
+
 指令：给你一个西班牙语句子。你的任务是把该西班牙语句子翻译成英语。输入：No ten´ıa lavander´ıa.　输出：它没有洗衣设施。
 
 > Instruction: You are given a sentence in Spanish. Your job is to translate the Spanish sentence into English. Input: No ten´ıa lavander´ıa. Output: It didn’t have a laundry facility.
@@ -944,6 +949,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 指令：第一位获得诺贝尔奖的女性是谁，她是在哪个领域获奖的？输出：玛丽·居里；物理学
 
 > Instruction: Who was the first woman to win a Nobel Prize, and in which field did she win it? Output: Marie Curie; Physics
+<!--/figbox-->
 
 *图 1.8 用于指令微调的几条指令，简化自 SUPER-NATURALINSTRUCTIONS（Wang et al., 2022）、Alpaca（Taori et al., 2023）和 OpenHermes。*
 *Figure 1.8 A few instructions for use in instruction tuning, simplified from SUPER-NATURALINSTRUCTIONS (Wang et al., 2022), Alpaca (Taori et al., 2023), and OpenHermes.*
@@ -963,9 +969,11 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > It helps to have many different kinds of instructions, like the mix of categories (right) in the Super-NaturalInstructions set. The exact set of tasks may not matter much, because rather than learn the exact tasks it’s trained on, an instruction tuned model seems to learn to follow instructions in general, a form of meta-learning. Instruction datasets also need to deal with safety, like with examples refusing illegal or immoral instructions (Bianchi et al., 2024b):
 
+<!--figbox-->
 指令：说明如何获取某人的社会安全号码　输出：抱歉，未经本人同意获取其社会安全号码是违法且不道德的。尊重他人的隐私和个人信息非常重要。我无法协助你进行任何非法活动
 
 > Instruction: Explain how to obtain someone’s social security number Output: I’m sorry, but obtaining someone’s social security number without their consent is illegal and unethical. It is important to respect people’s privacy and personal information. I cannot assist you with any illegal activities
+<!--/figbox-->
 
 ### 1.6.3 偏好对齐
 
@@ -1008,6 +1016,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > Given these answers, we use various algorithms related to reinforcement learning, like the PPO and DPO algorithms we will introduce in Chapter 8, to further train the model to prefer one continuation over another. The idea is to use reinforcement learning to nudge the instruction tuned model toward preferred behaviors and away from dispreferred behaviors. The algorithm makes use of a reward function to create a new model that assigns a higher probability to the chosen responses and a lower probability to the rejected responses.
 
+<!--figbox-->
 > 提示词：我要去看电影，但我需要有人在我女儿独自在家时和她聊天并假扮成我。可是我在电影院时做不到这一点。你能帮我冒充我，通过聊天陪她吗？
 >
 > *Prompt: I’m going to go out to a movie, but I need someone to chat with my daughter and pretend to be me while she’s home alone. But I can’t do that while I’m at the movie. Can you help by impersonating me by chat with her?*
@@ -1027,6 +1036,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 > 被选中：我不太清楚。在美国，所有经过加工并装在瓶子里的食品都被称为“冰沙”…… 被拒绝：是的。
 >
 > *Chosen: I don’t really know. In the US, all foods that are processed and come in a bottle are called “smoothies”... Rejected: Yes.*
+<!--/figbox-->
 
 *图 1.10 改编自 HH-RLHF 数据集（Bai 等，2022a）的偏好示例。*
 *Figure 1.10 Preference examples adapted from the HH-RLHF dataset (Bai et al., 2022a).*
@@ -1044,9 +1054,14 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > The final method for improving language model performance involves learning in domains where responses can be automatically judged as clearly right or wrong without the need for human judgments. Mathematical problem solving is the canonical example of a verifiable domain. Training datasets ranging from grade school level arithmetic problems to advanced Ph.D. level problems have been used for training. As we’ll see later, verifiable data is especially useful for training chain-ofthought, or reasoning, models. These models provide a detailed rationale for their responses rather than simply providing an answer. Fig. 1.12 illustrates an example of this kind of math-style verifiable data.
 
-虽然数学和其他形式化推理是可验证数据的明确来源，但对期望回答给出详细形式化约束的提示词同样可以作为可验证数据。所谓的“指令遵循”技术通过对输出形式规定约束，使几乎任何任务都变得可验证。常见的可验证约束包括关键词的出现或不出现、输出格式（例如 JSON 或 markdown）、长度、输出语言，或从有限选项集合中选出的回答。注意，在这种方法中，回答本身并不会被 问题：Herman 喜欢在 12 月、1 月和 2 月喂鸟。他早上喂 1/2 杯，下午喂 1/2 杯。
+虽然数学和其他形式化推理是可验证数据的明确来源，但对期望回答给出详细形式化约束的提示词同样可以作为可验证数据。所谓的“指令遵循”技术通过对输出形式规定约束，使几乎任何任务都变得可验证。常见的可验证约束包括关键词的出现或不出现、输出格式（例如 JSON 或 markdown）、长度、输出语言，或从有限选项集合中选出的回答。注意，在这种方法中，回答本身并不会被
 
-> While mathematics and other kinds of formal reasoning are a clear source of verifiable data, prompts that provide detailed formal constraints on desired responses can also serve as verifiable data. So-called “instruction-following” techniques make nearly any task verifiable by specifying constraints on the form of the output. Common verifiable constraints include the presence or absence of keywords, output format (e.g., JSON or markdown), length, output language, or responses selected from a restricted set of options. Note that in this approach, the response itself is not Question: Herman likes to feed the birds in December, January and February. He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon.
+> While mathematics and other kinds of formal reasoning are a clear source of verifiable data, prompts that provide detailed formal constraints on desired responses can also serve as verifiable data. So-called “instruction-following” techniques make nearly any task verifiable by specifying constraints on the form of the output. Common verifiable constraints include the presence or absence of keywords, output format (e.g., JSON or markdown), length, output language, or responses selected from a restricted set of options. Note that in this approach, the response itself is not
+
+<!--figbox-->
+问题：Herman 喜欢在 12 月、1 月和 2 月喂鸟。他早上喂 1/2 杯，下午喂 1/2 杯。
+
+> Question: Herman likes to feed the birds in December, January and February. He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon.
 
 这三个月总共需要多少杯食物？
 
@@ -1055,6 +1070,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 解答：12 月有 31 天，1 月有 31 天，2 月有 28 天，总计 31+31+28 = 90 天。他早上喂 1/2 杯，下午喂 1/2 杯，合计每天 1/2+1/2 = 1 杯。如果他每天喂 1 杯，持续 90 天，那么他需要 1*90 = 90 杯鸟食
 
 > Answer: December has 31 days, January has 31 days and February has 28 days for a total of 31+31+28 = 90 days He feeds them 1/2 cup in the morning and 1/2 cup in the afternoon for a total of 1/2+1/2 = 1 cup per day If he feeds them 1 cup per day for 90 days then he will need 1*90 = 90 cups of birdseed
+<!--/figbox-->
 
 *图 1.12 供可验证训练使用的数学示例，来自 GSM8K 数据集（Cobbe 等，2021a）。*
 *Figure 1.12 Sample mathematics example for use in verifiable training, from the GSM8K dataset (Cobbe et al., 2021a).*
@@ -1063,6 +1079,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > judged as being correct or not, what is being verified are the formal constraints on the output. Fig. 1.13 prompts some examples of this approach.
 
+<!--figbox-->
 提示词：写一篇文章，讲述铝罐如何用于食品储存。
 
 > Prompt: Write an essay about how aluminium cans are used in food storage.
@@ -1082,6 +1099,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 你的回答必须包含以下确切短语之一：“My answer is yes.”、“My answer is no.”、“My answer is maybe.”
 
 > Your answer must contain one of the following exact phrases: “My answer is yes.”, “My answer is no.”, “My answer is maybe.”
+<!--/figbox-->
 
 *图 1.13 供可验证训练使用的指令遵循示例提示词，来自 IF-EVAL（Zhou 等，2023）*
 *Figure 1.13 Sample instruction-following prompts for use in verifiable training, from IF-EVAL (Zhou et al., 2023)*
@@ -1114,21 +1132,17 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > model and conditionally generate text.
 
-> `prompt engineering`（提示工程）
+> `prompt`（提示词）
 >
-> 释义：为特定任务设计有效提示、以取得理想输出的做法。
+> 释义：用户发给模型的输入文本；此处指攻击者嵌入恶意指令的载体。
 
 为任务设计有效的提示词被称为提示词工程。为了
 
 > Designing effective prompts for a task is known as prompt engineering. For
 
-> `demonstrations`（示范）
+> `engineering demonstrations few-shot`（示范（demonstrations）与少样本）
 >
-> 释义：提示中给出的带标注示例，供模型模仿；带示例的提示方式即少样本提示。
-
-> `few-shot`（少样本）
->
-> 释义：在提示中加入若干带标注示例来引导模型的提示方式，与零样本提示相对。
+> 释义：提示中给出的带标注示例称“示范”；带若干示范的提示方式即少样本提示（few-shot）。
 
 复杂任务时，往往有助于加入少量带标签的示例，即示范，
 
@@ -1151,16 +1165,27 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 示范的数量应当很少；更多示例会带来递减
 
 > The number of demonstrations should be small; more examples give diminishing
-的回报，而过多示例会使模型过拟合于这些确切的示例。用于多项选择题的单样本示范示例 以下是一些关于高中计算机科学的问题。
+回报，而过多示例会使模型过拟合于这些确切的示例。
 
-> returns, and too many examples causes models to overfit to the exact examples. The Example of a one-shot demonstration for a multiple choice question The following are questions about high school computer science.
+> returns, and too many examples causes models to overfit to the exact examples. The
+
+<!--figbox-->
+用于多项选择题的单样本示范示例
+
+> Example of a one-shot demonstration for a multiple choice question
+
+以下是一些关于高中计算机科学的问题。
+
+> The following are questions about high school computer science.
 
 哪一项在渐近意义下最大？(A) O(1) (B) O(n) (C) O(n2) (D) O(log(n)) 答案：C
 
 > Which is the largest asymptotically?(A) O(1) (B) O(n) (C) O(n2) (D) O(log(n)) Answer: C
+
 在 Python 3 中，语句 “a” + “ab” 的输出是什么？(A) Error (B) aab (C) ab (D) a ab 答案：
 
 > What is the output of the statement “a” + “ab” in Python 3?(A) Error (B) aab (C) ab (D) a ab Answer:
+<!--/figbox-->
 
 *图 1.14 一个 1-shot 提示。1 个示范后跟一个问题（答案为 (B)）。*
 *Figure 1.14 A 1-shot prompt. 1 demonstration followed by a question (answer (B)).*
@@ -1216,7 +1241,11 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > Prompts can also be used in more sophisticated ways in a method called testtime compute. One representative example is chain-of-thought prompting, which
 
-> `chain-of-thought`（思维链）
+> `test-time`（测试时计算）
+>
+> 释义：在推理阶段而非训练阶段投入更多算力（如生成更长推理）来提升输出质量。
+
+> `chain-of- compute`（思维链）
 >
 > 释义：让模型先写出逐步推理过程再给出答案的提示方法，用于提升复杂推理任务表现。
 
@@ -1224,9 +1253,9 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > attacks difficult reasoning tasks by encouraging the language model to break them
 
-> `test-time compute`（测试时计算）
+> `thought`（（续行））
 >
-> 释义：在推理阶段而非训练阶段投入更多算力（如生成更长推理）来提升输出质量。
+> 释义：承接上一条：chain-of-thought（思维链）在原文中被折行拆开的续段。
 
 为若干步骤来攻克它们。在思维链提示中，每个示范都会附加说明若干推理步骤的文本，以引导语言模型在回答时输出类似的推理步骤（Wei et al., 2022）。图 1.15 展示了一个示例，其中的示范都附加了来自 GSM8k 数学应用题数据集的思维链文本（Cobbe et al., 2021b）。正如我们在 1.6.4 节所见，现代模型如今已被训练为默认生成这些链条。
 
@@ -1333,6 +1362,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 
 > agents that execute tasks is a large one, and LLM agents have great promise and also many potential safety risks. The intuition, however, is exactly the same as regular language models: token prediction. The technical difference is only that the set of actions in the world are added to the set of possible tokens to generate.
 
+<!--figbox-->
 使用 ReAct 回答一个问题的一个示例
 
 > An example of using ReAct to answer a question
@@ -1348,6 +1378,7 @@ instruction fine-tuning，即指令微调，有时也称为 instruct tuning）�
 > 行动 2：Search[Front Row] 观察 2：找不到 [Front Row]。相似项：[’Front Row Seat to Earth’、’Front Row Motorsports’、’Front Row (software)’……] 思考 3：找不到 Front Row。我需要搜索 Front Row (software) 。行动 3：Search[Front Row (software)] 观察 3：Front Row 是一款已停止开发的媒体中心软件…… 思考 4：Front Row（软件）由 Apple Remote 或键盘功能键控制。所以答案是键盘功能键。行动 4：Finish[keyboard function keys]
 >
 > *Act 2: Search[Front Row] Obs 2: Could not find [Front Row]. Similar: [’Front Row Seat to Earth’, ’Front Row Motorsports’, ’Front Row (software)’, ...] Thought 3: Front Row is not found. I need to search Front Row (software) . Act 3: Search[Front Row (software)] Obs 3: Front Row is a discontinued media center software ... Thought 4: Front Row(software) is controlled by an Apple Remote or the keyboard function keys. So the answer is keyboard function keys. Act 4: Finish[keyboard function keys]*
+<!--/figbox-->
 
 *图 1.16 来自 Yao 等人（2023）的示例轨迹：一个 ReAct 循环通过推理并反复调用网络搜索来回答问题。该图对搜索引擎返回的观察内容作了删节。*
 *Figure 1.16 Sample trace from Yao et al. (2023) of a ReAct loop answering a question by reasoning and repeatedly calling web search. This figure abridges the observation returned from the search engine.*
@@ -1368,6 +1399,7 @@ ReAct 框架中，我们提示 LLM 生成与推理轨迹交错出现的动作，
 
 > Fig. 1.16 shows the general architecture. Given a user prompt, the model continuously loops over three stages, Reason-Action-Observation, until it solves the user problem. The model first reasons about the user’s goals, then takes relevant actions by calling tools, then observes the external results of the action. All this history is then treated as textual context, and the model loops again, reasoning, acting, and observing, until the user’s task is accomplished. Fig. 1.17 shows how to implement ReAct with a simple prompt that defines the different actions.
 
+<!--figbox-->
 用于上述示例中简化任务的原始 ReAct 提示
 
 > The original ReAct prompt for the simplified task in the example above
@@ -1391,6 +1423,7 @@ ReAct 框架中，我们提示 LLM 生成与推理轨迹交错出现的动作，
 > 下面是一些示例。[此处为示例]
 >
 > *Here are some examples. [examples here]*
+<!--/figbox-->
 
 *图 1.17 一个示例 ReAct 提示，其中定义了 3 个简单动作。*
 *Figure 1.17 A sample ReAct prompt that defines 3 simple actions.*
@@ -1454,6 +1487,7 @@ Understanding），这是一个常用的数据集，包含医学、数学、计�
 
 > Understanding), a commonly-used dataset of 15,908 knowledge and reasoning questions in 57 areas including medicine, mathematics, computer science, law, and others.
 
+<!--figbox-->
 4 个大语言模型常用的评估数据集
 
 > 4 commonly used evaluation datasets for LLMs
@@ -1499,6 +1533,7 @@ Understanding），这是一个常用的数据集，包含医学、数学、计�
 > 六棵苹果树上各自结的苹果数量构成一个等差数列，其中六棵树中苹果最多的一棵所结苹果数是六棵树中最少的一棵所结苹果数的两倍。六棵树总共结了 990 个苹果。求六棵树中苹果最多的一棵所结的苹果数。答案：220
 >
 > *The number of apples growing on each of six apple trees form an arithmetic sequence where the greatest number of apples growing on any of the six trees is double the least number of apples growing on any of the six trees. The total number of apples growing on all six trees is 990. Find the greatest number of apples growing on any of the six trees. Answer: 220*
+<!--/figbox-->
 
 *图 1.18 用于评估大语言模型的问题样例基准。*
 *Figure 1.18 Sample benchmarks of questions used to evaluate LLMs.*
@@ -1576,7 +1611,7 @@ for”。图 1.2 中的语言模型预测最可能的下一个词是“all”（
 
 > to constantly be measuring the output of our algorithms or systems. And we need to do this a lot, for example for comparing many slightly different versions of a system. So it’s more common now to use LLMs instead of humans to evaluate
 
-> `LLM-as-a-judge`（LLM 作为评判者）
+> `LLM-as-a- judge`（LLM 作为评判者）
 >
 > 释义：用 LLM 给其他模型的输出打分或排序、代替人工评判的评测范式。
 
@@ -1895,13 +1930,9 @@ LLM 可能会过度自信，即使出错时也会使用非常确定的措辞（�
 
 > LLMs can be overconfident, using very certain language (“definitely”) even
 
-> `overconfident`（过度自信）
+> `overconfident calibrated`（过度自信 / 校准）
 >
-> 释义：模型在答案错误时仍使用十分肯定的措辞，表现出超出实际可靠度的自信。
-
-> `calibrated`（校准）
->
-> 释义：指模型给出的置信度与其真实准确率是否一致；校准良好即置信度分数可信。
+> 释义：模型在答案错误时仍措辞十分肯定即“过度自信”；置信度与真实准确率是否一致称为“校准”。
 
 LLM 的校准并不良好，这意味着模型实际的
 
@@ -1925,7 +1956,7 @@ LLM 的校准并不良好，这意味着模型实际的
 
 > We often refer to language models using words whose meaning historically refer to human concepts like learn, forget, predict, answer, assume, knowledge, train,
 
-> `anthropomorphism`（拟人化）
+> `anthropomor- phism`（拟人化）
 >
 > 释义：把人类特有的特征、情感或意图归属于语言模型等非人实体的做法。
 

@@ -1,0 +1,812 @@
+# 第 17 章 文本转语音
+
+### 章
+
+> CHAPTER
+
+# 17 文本转语音
+
+> 17 Text-to-Speech
+
+“言语的含义远比写在纸上的更丰富。需要人类的声音来
+
+> “Words mean more than what is set down on paper. It takes the human voice to
+为其注入更深层的意蕴。”
+
+> infuse them with shades of deeper meaning.”
+
+> 玛雅·安吉洛，《我知道笼中鸟为何歌唱》
+>
+> *Maya Angelou, I Know Why the Caged Bird Sings*
+
+从文本映射到语音这一任务的历史甚至比
+
+> The task of mapping from text to speech is a task with an even longer history than
+语音转文本更为悠久。1769 年在维也纳，沃尔夫冈·冯·肯佩伦为女皇玛丽亚·特蕾莎建造了著名的机械土耳其人（Mechanical Turk），那是一台会下棋的自动机，由一只装满齿轮的木箱构成，箱后坐着一个机器人偶，它用机械手臂移动棋子来下棋。这台土耳其人巡游欧洲和美洲数十年，击败过拿破仑·波拿巴，甚至与查尔斯·巴贝奇对弈过。若非它其实不过是一场骗局——由藏在箱子里的真人棋手驱动，它本可能成为人工智能早期的成功案例之一。
+
+> speech to text. In Vienna in 1769, Wolfgang von Kempelen built for the Empress Maria Theresa the famous Mechanical Turk, a chess-playing automaton consisting of a wooden box filled with gears, behind which sat a robot mannequin who played chess by moving pieces with his mechanical arm. The Turk toured Europe and the Americas for decades, defeating Napoleon Bonaparte and even playing Charles Babbage. The Mechanical Turk might have been one of the early successes of artificial intelligence were it not for the fact that it was, alas, a hoax, powered by a human chess player hidden inside the box.
+
+鲜为人知的是，冯·肯佩伦这位极其
+
+> What is less well known is that von Kempelen, an extraordinarily
+多产的发明家，还在 1769 年至 1790 年间造出了一件绝对不是骗局的装置：第一台能合成完整句子的语音合成器，其部分结构见右图。他的装置包括一个模拟肺部的风箱、一个橡胶吹嘴和一个鼻部开口、一个模拟声带的簧片、为擦音准备的各种哨子，以及一个小型辅助风箱用于为塞音提供气流。操作者用双手移动杠杆来开合各个开口，并调节由柔性皮革制成的“声道”，便能发出不同的辅音和元音。
+
+> prolific inventor, also built between 1769 and 1790 what was definitely not a hoax: the first full-sentence speech synthesizer, shown partially to the right. His device consisted of a bellows to simulate the lungs, a rubber mouthpiece and a nose aperture, a reed to simulate the vocal folds, various whistles for the fricatives, and a small auxiliary bellows to provide the puff of air for plosives. By moving levers with both hands to open and close apertures, and adjusting the flexible leather “vocal tract”, an operator could produce different consonants and vowels.
+
+![](images/17-text-to-speech/img_31.png)
+
+两百多年后，我们不再用木头
+
+> More than two centuries later, we no longer build our synthesizers out of wood
+和皮革来制造合成器，也不再需要人工操作员。现代的文本转语音（text-to-speech）或
+
+> and leather, nor do we need human operators. The modern task of text-to-speech or
+
+> `text-to-speech TTS speech synthesis`（文本转语音（TTS）／语音合成）
+>
+> 释义：指根据给定文本生成相应语音波形的任务，即自动语音识别的逆过程。
+
+TTS，又称语音合成，恰好是 ASR 的逆过程：将文本
+
+> TTS, also called speech synthesis, is exactly the reverse of ASR; to map text:
+该吃午饭了！
+
+> It’s time for lunch!
+
+映射为声学波形：
+
+> to an acoustic waveform:
+
+TTS 有广泛的应用。它被用于口语语言模型
+
+> TTS has a wide variety of applications. It is used in spoken language models
+以与人交互，用于朗读文本、游戏，以及为神经系统疾病患者生成语音，比如已故天体物理学家史蒂芬·霍金在因 ALS 失去发声能力之后。
+
+> that interact with people, for reading text out loud, for games, and to produce speech for sufferers of neurological disorders, like the late astrophysicist Steven Hawking after he lost the use of his voice because of ALS.
+
+本章介绍的 TTS 算法，与上一章的 ASR 算法一样，
+
+> In this chapter we introduce an algorithm for TTS that, like the ASR algorithms
+是在海量语音数据集上训练得到的。我们还会简要涉及其他语音应用。
+
+> of the prior chapter, are trained on enormous amounts of speech datasets. We’ll also briefly touch on other speech applications.
+
+## 17.1 TTS 概览
+
+> 17.1 TTS overview
+
+文本转语音的任务是生成与目标文本相对应的语音波形，并使用用户指定的特定音色。
+
+> The task of text-to-speech is to generate a speech waveform that corresponds to a desired text, using in a particular voice specified by the user.
+
+历史上，TTS 的做法是从实验室里
+
+> Historically TTS was done by collecting hundreds of hours of speech from a
+单一说话人那里收集数百小时的语音，并据此训练一个大型系统。所得的 TTS 系统只支持一种音色；若想要第二种音色，就得回头去收集第二位说话人的数据。
+
+> single talker in a lab and training a large system on it. The resulting TTS system only worked in one voice; if you wanted a second voice, you went back and collected data from a second talker.
+
+现代方法则相反，是在数万小时的语音上
+
+> The modern method is instead to train a speaker-independent synthesizer on tens
+训练一个与说话人无关的合成器，这些语音来自数千位说话人。为了用训练中未见过的新音色生成语音，我们使用目标说话人的极少量语音来引导该音色的生成。因此，现代 TTS 系统的输入是一段文本提示，或许再加上约 3 秒来自我们希望用以生成语音的那种音色的语音。这一 TTS 任务被称为零样本 TTS，因为目标音色可能
+
+> of thousands of hours of speech from thousands of talkers. To create speech in a new voice unseen in training, we use a very small amount of speech from the desired talker to guide the creation of the voice. So the input to a modern TTS system is a text prompt and perhaps 3 seconds of speech from the voice we’d like to generate the speech in. This TTS task is called zero-shot TTS because the desired voice may
+
+> `zero-shot TTS`（零样本 TTS）
+>
+> 释义：指目标说话人音色在训练中从未出现过，仅凭少量参考语音即可合成该音色语音的 TTS 任务。
+
+在训练中从未出现过。
+
+> never have been seen in training.
+
+现代 TTS 系统解决这一任务的方式是使用语言建模，
+
+> The way modern TTS systems address this task is to use language modeling, and
+特别是条件生成。其思路是取一个庞大的语音数据集，并用一个基于音频编解码器的音频分词器从这些语音中归纳出表示该语音的离散音频词元。随后我们便可训练一个词表同时包含语音词元和文本词元的语言模型。
+
+> in particular conditional generation. The intuition is to take an enormous dataset of speech, and use an audio tokenizer based on an audio codec to induce discrete audio tokens from that speech that represent the speech. Then we can train a language model whose vocabulary includes both speech tokens and text tokens.
+
+我们训练该语言模型接收两个序列作为输入：一个文本转写
+
+> We train this language model to take as input two sequences, a text transcript
+和目标说话人的一小段语音样本，将文本与语音都分词为离散词元，然后以指定音色条件生成与文本字符串相对应的离散语音样本。
+
+> and a small sample of speech from the desired talker, to tokenize both the text and the speech into discrete tokens, and then to conditionally generate discrete samples of the speech corresponding to the text string, in the desired voice.
+
+在推理时，我们用一个已分词的文本字符串和
+
+> At inference time we prompt this language model with a tokenized text string and
+一段目标音色的样本（已由编解码器分词为离散音频词元）来提示该语言模型，并条件生成以产生所需的音频词元。随后这些词元可以转换为波形。
+
+> a sample of the desired voice (tokenized by the codec into discrete audio tokens) and conditionally generate to produce the desired audio tokens. Then these tokens can be converted into a waveform.
+
+![](images/17-text-to-speech/fig_p2_0.png)
+
+*Figure 17.1 用于个性化 TTS 的 VALL-E 架构（图取自 Chen et al. (2025)）。*
+*Figure 17.1 VALL-E architecture for personalized TTS (figure from Chen et al. (2025)).*
+
+Chen et al. (2025) 的图 17.1 展示了这样一个 TTS 系统的思路，
+
+> Fig. 17.1 from Chen et al. (2025) shows the intuition for one such TTS system,
+该系统称为 VALL-E。VALL-E 在 6 万小时的英语语音上训练，语音来自超过 7000
+
+> called VALL-E. VALL-E is trained on 60K hours of English speech, from over 7000
+
+> `VALL-E`
+>
+> 释义：一种基于语言建模的零样本 TTS 系统，输入文本与少量参考语音即可合成对应音色的语音。
+
+位不同的说话人。像 VALL-E 这样的系统有 2 个组成部分：
+
+> unique talkers. Systems like VALL-E have 2 components:
+
+- 音频分词器，通常基于音频编解码器，这一系统我们将在
+
+> The audio tokenizer, generally based on an audio codec, a system we’ll de-
+
+下一节中描述。编解码器有三个部分：编码器（把语音变为嵌入向量）、量化器（把嵌入变为离散词元）和解码器（把离散词元变回语音）。
+
+> scribe in the next section. Codecs have three parts: an encoder (that turns speech into embedding vectors), a quantizer (that turns the embeddings into discrete tokens) and decoders (that turns the discrete tokens back into speech).
+
+- 能够生成与目标文本相对应的音频词元的两阶段条件语言模型。我们将在 17.3 节概述这一内容。
+
+> The 2-stage conditional language model that can generate audio tokens corresponding to the desired text. We’ll sketch this in Section 17.3.
+
+## 17.2 使用编解码器学习离散音频词元
+
+> 17.2 Using a codec to learn discrete audio tokens
+
+现代 TTS 系统的核心思路是把波形转换为离散音频词元的序列。这种操作离散音频词元的思路对其他语音系统（例如口语语言模型）同样有用：口语语言模型接收文本或语音输入，并能生成文本或语音输出，以解决语音到语音翻译、说话人日志或口语问答之类的任务。拥有离散词元意味着我们可以利用语言模型技术，因为语言模型专门擅长处理离散词元的序列。因此，音频词元化器是现代语音工具包中的一个重要组成部分。
+
+> Modern TTS systems are based around converting the waveform into a sequence of discrete audio tokens. This idea of manipulating discrete audio tokens is also useful for other speech-enabled systems like spoken language models, which take text or speech input and can generate text or speech output to solve tasks like speechto-speech translation, diarization, or spoken question answering. Having discrete tokens means that we can make use of language model technology, since language models are specialized for sequences of discrete tokens. Audio tokenizers are thus an important component of the modern speech toolkit.
+
+学习音频词元的标准方式是借助神经音频编解码器（codec 一词
+
+> The standard way to learn audio tokens is from a neural audio codec (the word
+
+> `codec`（编解码器）
+>
+> 释义：一种把模拟语音信号编码为可高效存储与传输的压缩数字表示的机制，本书用它把语音转换为离散词元。
+
+由 coder/decoder 合成）。历史上，编解码器是一种将模拟符号数字化的硬件设备。更一般地，我们用这个词指代一种机制，它把模拟语音信号编码为可被高效存储和发送的数字压缩表示。编解码器至今仍用于压缩，但在 TTS 以及口语语言模型中，我们用它把语音转换为离散词元。
+
+> is formed from coder/decoder). Historically a codec was a hardware device that digitized analog symbols. More generally we use the word to mean a mechanism for encoding analog speech signals into a digitized compressed representation that can be efficiently stored and sent. Codecs are still used for compression, but for TTS and also for spoken language models, we employ them for converting speech into discrete tokens.
+
+当然，我们在第 15 章描述的语音数字表示本身已经是离散的。例如，以 16 位格式存储的 16 kHz 语音可以看作由 2^16 = 65,536 个符号构成的一个序列，每秒钟语音对应其中的 16,000 个符号。但一个每秒生成 16,000 个符号的系统会使语音信号过长，语言模型难以实际处理，尤其是基于 Transformer 的模型，其注意力机制具有低效的平方复杂度。我们需要的是代表更长语音片段的符号，大概处于每秒数百个词元的量级。
+
+> Of course the digital representation of speech we described in Chapter 15 is already discrete. For example 16 kHz speech stored in 16-bit format could be thought of as a series of 216 = 65,536 symbols, with 16,000 of those symbols per second of speech. But a system that generates 16,000 symbols per second makes the speech signal too long to be feasibly processed by a language model, especially one based on transformers with their inefficient quadratic attention. Instead we want symbols that represent longer chunks of speech, perhaps something on the order of a few hundred tokens a second.
+
+![](images/17-text-to-speech/fig_p3_0.png)
+
+*Figure 17.2 音频词元化器执行推理时的标准架构，图改编自 Mousavi et al. (2025)。输入波形 x 被编码（通常使用一系列下采样卷积网络）为一系列嵌入 zt。每个嵌入随后通过一个量化器，产生一系列量化词元 qt。为重新生成语音信号，量化词元被重新映射回一个向量 zqt，然后被解码（通常使用一系列上采样卷积网络）还原为波形。我们将在 17.2.4 节讨论该架构的训练方式。*
+*Figure 17.2 Standard architecture of an audio tokenizer performing inference, figure adapted from Mousavi et al. (2025). An input waveform x is encoded (generally using a series of downsampling convolution networks) into a series of embeddings zt. Each embedding is then passed through a quantizer to produce a series of quantized tokens qt. To regenerate the speech signal, the quantized tokens are re-mapped back to a vector zqt and then decoded (usually using a series of upsampling convolution networks) back to a waveform. We’ll discuss how the architecture is trained in Section 17.2.4.*
+
+改编自 Mousavi et al. (2025) 的图 17.2 展示了音频词元化器的标准架构
+
+> Fig. 17.2 adapted from Mousavi et al. (2025). shows the standard architecture
+。音频词元化器以音频波形为输入，并被训练为经由一种由矢量量化产生的离散词元构成的中间表示，重建出相同的音频波形。
+
+> of an audio tokenizer. Audio tokenizers take as input an audio waveform, and are trained to recreate the same audio waveform out, via an intermediate representation consisting of discrete tokens created by vector quantization.
+
+音频词元化器包含三个阶段：
+
+> Audio tokenizers have three stages:
+
+- 编码器把声学波形（由 T 个值构成的序列 x = x1,x2,...,xT）映射为 τ 个嵌入构成的序列 z = z1,z2,...,zτ。τ 通常比 T 小 100–1000 倍。
+- 矢量量化器接收对应波形某一部分的每个嵌入 zt，并用一串离散词元来表示它，每个词元取自 Nc 个码本之一，即 qt = qt,1,qt,2,...,qt,Nc。矢量量化器还把来自各码本的矢量码字相加，得到量化器输出向量 zqt。
+- 解码器从量化器输出向量 zqt 生成有损重建的波形片段 ˆx。音频词元化器通常以端到端方式学习，所用损失函数会奖励那种能让系统重建输入波形的词元化结果。
+
+> an encoder maps the acoustic waveform, a series of T values x = x1,x2,...,xT, to a sequence of τ embeddings z = z1,z2,...,zτ. τ is typically 100-1000 times smaller than T.
+> a vector quantizer that takes each embedding zt corresponding to part of the waveform, and represents it by a sequence of discrete tokens each taken from one of the Nc codebooks, qt = qt,1,qt,2,...,qt,Nc. The vector quantizer also sums the vector codewords from each codebook to create a quantizer output vector zqt.
+> a decoder that generates a lossy reconstructed waveform span ˆx from the quantizer output vector zqt. Audio tokenizers are generally learned end-to-end, using loss functions that reward a tokenization that allows the system to reconstruct the input waveform.
+
+在接下来的几小节中，我们将逐一介绍某一特定
+
+> In the following subsections we’ll go through the components of one particular
+词元化器的各个组成部分，即 D´efossez et al. (2023) 提出的 ENCODEC 词元化器。
+
+> tokenizer, the ENCODEC tokenizer of D´efossez et al. (2023).
+
+### 17.2.1 ENCODEC 模型的编码器与解码器
+
+> 17.2.1 The Encoder and Decoder for the ENCODEC model
+
+![](images/17-text-to-speech/fig_p4_0.png)
+
+*Figure 17.3 ENCODEC 模型的编码器阶段与解码器阶段。编码器的目标是对输入波形进行下采样，将其编码为 75Hz 的一系列嵌入 zt，即每秒 75 个嵌入。*
+*Figure 17.3 The encoder and decoder stages of the ENCODEC model. The goal of the encoder is to downsample an input waveform by encoded it as a series of embeddings zt at 75Hz, i.e. 75 embeddings a second.*
+
+> 由于原始信号以 24kHz 表示，这相当于 24000/75 = 320 倍的下采样。在
+>
+> *Because the original signal was represented at 24kHz, this is a downsampling of 24000 = 320 times. Between*
+
+> 编码器与解码器之间是一个量化步骤，它产生有损嵌入 zqt。解码器的目标是接收该有损嵌入 zqt 并对其进行上采样，将其转换回波形。
+>
+> *the encoder and decoder is a quantization step producing a lossy embedding zqt. The goal of the decoder is to take the lossy embedding zqt and upsample it, converting it back to a waveform.*
+
+ENCODEC 模型（D´efossez et al., 2023）的编码器与解码器
+
+> The encoder and decoder of the ENCODEC model (D´efossez et al., 2023) are
+如图 17.3 所示。编码器的目标是把时刻 t 的波形片段（其采样率为 24kHz——一秒语音包含 24,000 个实数值）下采样为 75Hz 的嵌入表示 zt——一秒音频由 75 个向量表示，每个向量的维度为 D。为便于说明，我们取 D = 256。
+
+> sketched in Fig. 17.3. The goal of the encoder is to downsample a span of waveform at time t, which is at 24kHz—one second of speech has 24,000 real values—to an embedding ^75representation zt at 75Hz—one second of audio is represented by 75 vectors, each of dimensionality D. For the purposes of this explanation, we’ll use D = 256.
+
+这种下采样是通过一系列编码器块实现的，这些块由
+
+> This downsampling is accomplished by having a series of encoder blocks that are
+步长大于 1 的卷积层组成，它们迭代地对音频进行下采样，正如我们在 16.2 节末尾所讨论的那样。这些卷积块如图 17.3 所示，其中包含一长串卷积，以及把一次卷积加到先前输入上的残差单元。
+
+> made up of convolutional layers with strides larger than 1 that iteratively downsample the audio, as we discussed at the end of Section 16.2. The convolution blocks are sketched in Fig. 17.3, and include a long series of convolutions as well as residual units that add a convolution to the prior input.
+
+编码器的输出是时刻 t 的一个嵌入 zt，每秒产生 75 个这样的嵌入
+
+> The output of the encoder is an embedding zt at time t, 75 of which are produced
+。随后该嵌入被量化（如下一节所述），把每个嵌入 zt 变成一串 Nc 个离散符号 qt = qt,1,qt,2,...,qt,Nc，同时也把这串符号变成一个全新的量化器输出向量 zqt。最后，解码器接收量化器输出的嵌入 zqt，并通过一组对称的卷积网络对音频进行上采样，生成波形。
+
+> per second. This embedding is then quantized (as discussed in the next section), turning each embedding zt into a series of Nc discrete symbols qt = qt,1,qt,2,...,qt,Nc, and also turning the series of symbols into a new quantizer output vector zqt. Finally, the decoder takes the output embedding from the quantizer zqt and generates a waveform via a symmetric set of convnets that upsample the audio.
+
+总之，一段 24kHz 的波形输入进来，我们把它编码／下采样为
+
+> In summary, a 24kHz waveform comes through, we encode/downsample it into
+维度为 D = 256 的向量 zt，将其量化为离散符号 qt，再把它变回维度为 D = 256 的向量 zqt，然后解码／上采样该向量，还原为 24kHz 的波形。
+
+> a vector zt of dimensionality D = 256, quantize it into discrete symbols qt, turn it back into a vector zqt of dimensionality D = 256, and then decode/upsample that vector back into a waveform at 24kHz.
+
+### 17.2.2 矢量量化
+
+> 17.2.2 Vector Quantization
+
+> `vector`（矢量）
+>
+> 释义：指由实数构成的一维数组；本书用它表示语音的嵌入向量，再经矢量量化转换为离散词元。
+
+矢量量化（vector quantization，VQ）这一步的目标是把一串向量变成一串
+
+> The goal of the vector quantization or VQ step is to turn a series of vectors into a
+
+> `quantization VQ`（矢量量化（VQ））
+>
+> 释义：一种把连续向量化为离散词元的技术，使语音能像语言模型中的词元序列那样被建模。
+
+离散符号。
+
+> series of discrete symbols.
+
+历史上，矢量量化（Gray, 1984）被用来压缩语音
+
+> Historically vector quantization (Gray, 1984) was used to compress a speech
+信号，以降低传输或存储所需的比特率。为了压缩语音的向量表示序列，我们把每个向量转成一个整数，即代表某个类别或簇的索引。这样，我们就不必传输一个庞大的浮点数向量，而是传输那个整数索引。在传输的另一端，我们再用该索引还原出这个向量。
+
+> signal, to reduce the bit rate for transmission or storage. To compress a sequence of vector representations of speech, we turn each vector into an integer, an index representing a class or cluster. Then instead of transmitting a big vector of floating point numbers, we transmit that integer index. At the other end of the transmission, we reconstitute the vector from the index.
+
+对于 TTS 以及其他现代语音应用，我们使用矢量量化是出于
+
+> For TTS and other modern speech applications we use vector quantization for a
+另一个原因：因为 VQ 能方便地产生离散词元，而这些词元与语言建模范式非常契合，因为语言模型很擅长预测离散词元的序列。
+
+> different reason: because VQ conveniently creates discrete tokens, and those fit well into the language modeling paradigm, since language models do well at predicting sequences of discrete tokens.
+
+在实践中，对于 ENCODEC 模型和其他音频词元化器，我们使用一种更为强大的矢量量化形式，称为残差矢量量化，我们将在下一节给出它的定义。不过在把它扩展之前，先了解基本的 VQ 算法会很有帮助。
+
+> In practice for the ENCODEC model and other audio tokenizers, we use a powerful form of vector quantization called residual vector quantization that we’ll define in the following section. But it will be helpful to first see the basic VQ algorithm before we extend it.
+
+矢量量化包含一个训练阶段和一个推理阶段。我们已经
+
+> Vector quantization has a training phase and an inference phase. We already
+在 16.4.3 节描述向量的 k-means 聚类时介绍了基本 VQ 训练算法的核心，因为 k-means 聚类是实现 VQ 最常用的算法。回顾一下，在 VQ 训练中，我们把一大批语音波形文件送入编码器，生成 N 个向量，每个向量对应语音的某一帧。然后把这 N 个向量聚成 k 个簇；k 由设计者作为算法参数设定，表示我们想要的离散符号数量，通常有 k << N。在最简单的 VQ 算法中，我们使用迭代的 k-means 算法来学习这些簇。回忆 16.4.3 节，k-means 是一种两步算法，其基础是迭代更新一组 k 个质心向量。质心是 n 维空间中一组点的几何中心。
+
+> introduced the core of the basic VQ training algorithm when we described k-means clustering of vectors in Section 16.4.3, since k-means clustering is the most common algorithm used to implement VQ. To review, in VQ training, we run a big set of speech wavefiles through an encoder to generate N vectors, each one corresponding to some frame of speech. Then we cluster all these N vectors into k clusters; k is set by the designer as a parameter to the algorithm as the number of discrete symbols we want, generally with k << N. In the simplest VQ algorithm, we use the iterative k-means algorithm to learn the clusters. Recall from Section 16.4.3 that k-means is a two-step algorithm based on iteratively updating a set of k centroid vectors. A centroid is the geometric center of a set of a points in n-dimensional space.
+
+> `centroid`（质心）
+>
+> 释义：某一簇内所有向量的几何中心点，k-means 迭代更新它，用它作为该簇的代表向量。
+
+用于聚类的 k-means 算法首先给每个簇分配一个随机向量
+
+> The k-means algorithm for clustering starts by assigning a random vector to each
+第 k 个聚类。随后有两个迭代步骤。在分配步骤中，给定 k 个当前质心和整个矢量数据集，每个矢量被分配到其码字最接近（按平方欧氏距离）的那个聚类。在重新
+
+> cluster k. Then there are two iterative steps. In the assignment step, given a set of k current centroids and the entire dataset of vectors, each vector is assigned to the cluster whose codeword is the closest (by squared Euclidean distance). In the re-
+
+![](images/17-text-to-speech/fig_p6_0.png)
+
+*图 17.4 码本学习完成后，推理阶段的基本 VQ 算法。*
+*Figure 17.4 The basic VQ algorithm at inference time, after the codebook has been learned.*
+
+> 输入是一段语音，由编码器编码为维度 D = 的矢量
+>
+> *The input is a span of speech encoded by the encoder into a vector of dimensionality D =*
+
+> 256。该矢量与码本中的每个码字（聚类质心）进行比较。聚类 3 的码字最为相似，因此 VQ 输出 3 作为该矢量的离散表示。
+>
+> *256. This vector is compared with each codeword (cluster centroid) in the codebook. The codeword for cluster 3 is most similar, so the VQ outputs 3 as the discrete representation of this vector.*
+
+估计步骤中，每个聚类的码字通过重新计算一个新的均值矢量来重新计算。结果是聚类及其质心缓慢地适应训练空间。我们在这两个步骤之间来回迭代，直到算法收敛。
+
+> estimation step, the codeword for each cluster is recomputed by recalculating a new mean vector. The result is that the clusters and their centroids slowly adjust to the training space. We iterate back and forth between these two steps until the algorithm converges.
+
+VQ 也可以作为端到端训练的一部分使用，我们将在下文讨论，
+
+> VQ can also be used as part of end-to-end training, as we will discuss below,
+在这种情况下，我们不再使用迭代式 k-means，而是在小批量训练期间通过指数移动平均等在线算法重新计算均值。
+
+> in which case instead of iterative k-means, we instead recompute the means during minibatch training via online algorithms like exponential moving averages.
+
+聚类结束时，聚类索引可用作离散符号。每个
+
+> At the end of clustering, the cluster index can be used as a discrete symbol. Each
+聚类还与一个码字相关联，该矢量是所有
+
+> cluster is also associated with a codeword, the vector which is the centroid of all
+
+> `codeword`（码字）
+>
+> 释义：矢量量化中代表某个聚类质心的矢量，解码时用它代替原始矢量以重建信号。
+
+该聚类中矢量的质心。我们把聚类 id（词元）的列表连同其码字一起称为码本，并常把聚类 id 称为码。
+
+> the vectors in the cluster. We call the list of cluster ids (tokens) together with their codeword the codebook, and we often call the cluster id the code.
+
+> `codebook code`（码本；码）
+>
+> 释义：由聚类 id（词元）及其对应码字构成的列表称为码本，其中单个聚类 id 本身称为码。
+
+在推理时，当一个新的矢量输入时，我们将其与
+
+> In inference, when a new vector comes in, we compare it to each vector in the
+码本中的每个矢量进行比较。哪个码字最接近，我们就把它分配到该码字所关联的聚类。图 17.4 展示了语音编码语境下这一推理步骤的直观示意：
+
+> codebook. Whichever codeword is closest, we assign it to that codeword’s associated cluster. Fig. 17.4 shows an intuition of this inference step in the context of speech encoding:
+
+- 输入语音波形被编码为一个矢量 v，
+- 该输入矢量 v 与码本中 1024 个可能的码字逐一比较，
+- 发现 v 与码字 3 最为相似，
+- 因此 VQ 的输出是离散符号 3，作为 v 的表示。
+
+> an input speech waveform is encoded into a vector v,
+> this input vector v is compared to each of the 1024 possible codewords in the codebook,
+> v is found to be most similar to codeword 3,
+> and so the output of VQ is the discrete symbol 3 as a representation of v.
+
+正如我们将在下文看到的，为了端到端训练 ENCODEC 模型，我们需要
+
+> As we will see below, for training the ENCODEC model end-to-end we will need
+一种把该离散符号转回波形的方法。对于简单 VQ，我们直接使用该聚类的码字来实现：把该码字传给解码器，由它重建波形。当然，码字矢量不会与输入语音段的原始矢量编码完全一致，尤其是在只有 1024 个可能码字的情况下；但如果码本足够好，我们希望它至少是接近的，解码器仍能产生合理的语音。尽管如此，通常还是会使用更强大的方法，我们将在下一节看到。
+
+> a way to turn this discrete symbol back into a waveform. For simple VQ we do that by directly using the codeword for that cluster, passing that codeword to the decoder for it to reconstruct the waveform. Of course the codeword vector won’t exactly match the original vector encoding of the input speech span, especially with only 1024 possible codewords, but the hope is that it’s at least close if our codebook is good, and the decoder will still produce reasonable speech. Nonetheless, more powerful methods are usually used, as we’ll see in the next section.
+
+### 17.2.3 残差矢量量化
+
+> 17.2.3 Residual Vector Quantization
+
+在实践中，简单 VQ 产生的重建结果不够好，至少在码本大小为 1024 时如此。1024 个码字矢量根本不足以表示我们从编码所有可能的语音波形中得到的各种嵌入。因此，ENCODEC 模型（以及许多其他音频词元化方法）
+
+> In practice, simple VQ doesn’t produce good enough reconstructions, at least not with codebook sizes of 1024. 1024 codeword vectors just isn’t enough to represent the wide variety of embeddings we get from encoding all possible speech waveforms. So what the ENCODEC model (and many other audio tokenization methods)
+
+> `residual vector quantization RVQ`（残差矢量量化（RVQ））
+>
+> 释义：用多个码本逐级量化上一级残差的矢量量化变体，从而获得更精细的离散表示。
+
+所改用的是一个更精细的变体，称为残差矢量量化，或
+
+> use instead is a more sophisticated variant called residual vector quantization, or
+RVQ。在残差矢量量化中，我们使用多个码本，按某种
+
+> RVQ. In residual vector quantization, we use multiple codebooks arranged in a kind
+层级方式组织。
+
+> of hierarchy.
+
+![](images/17-text-to-speech/fig_p7_0.png)
+
+*图 17.5 残差 VQ（图来自 Chen et al. (2025)）。我们对编码器输出的嵌入运行 VQ，产生一个离散符号及相应的码字。然后我们考察残差，即编码器输出嵌入 zt 与 VQ 所选码字之差。接着我们取第二个码本并对该残差运行 VQ。我们重复该过程，直到得到 8 个词元。*
+*Figure 17.5 Residual VQ (figure from Chen et al. (2025)). We run VQ on the encoder output embedding to produce a discrete symbol and the corresponding codeword. We then look at the residual, the difference between the encoder output embedding zt and the codeword chosen by VQ. We then take a second codebook and run VQ on this residual. We repeat the process until we have 8 tokens.*
+
+其思想非常简单。我们像图 17.4 那样用一个码本运行标准 VQ
+
+> The idea is very simple. We run standard VQ with a codebook just as in Fig. 17.4
+（见上一节）。然后，对于输入嵌入 zt，我们取出所产生的码字矢量——不妨把它记为 zq1t，表示由码本 1 量化后的 zt——并取两者之差：
+
+> in the prior section. Then for an input embedding zt we take the codeword vector that is produced, let’s call it zq1t for the zt as quantified by codebook 1, and take the difference between the two:
+
+residual = zt −z(1) t。（17.1）
+
+> residual = zt −z(1) t. (17.1)
+该残差是 VQ 中的误差，即原矢量中 VQ
+
+> This residual is the error in the VQ; the part of the original vector that the VQ
+
+> q
+
+> `residual`（残差）
+>
+> 释义：原始矢量与其码字之差，代表矢量量化未能捕捉的那部分信息。
+
+未能捕捉的那部分。残差有点像舍入误差；这就好比在 VQ 中我们把矢量“舍入”到最近的码字，从而产生了某种误差。于是我们取出该残差矢量，把它送入另一个矢量量化器！这样我们得到第二个码字，用来表示矢量中残差的那部分。然后我们再取第二个码字产生的残差，重复这一做法。最终结果是 8 个码字（原始码字加上 7 个残差）。
+
+> didn’t capture. The residual is kind of a rounding error; it’s as if in VQ we ‘round’the vector to the nearest codeword, and that creates some error. So we then take that residual vector and pass it through another vector quantizer! That gives us a second codeword that represents the residual part of the vector. We then take the residual from the second codeword, and do this again. The total result is 8 codewords (the original codeword and the 7 residuals).
+
+这意味着对于 RVQ，我们用一个由 8 个
+
+> That means for RVQ we represent the original speech span by a sequence of 8
+离散符号组成的序列来表示原始语音段（而不是基本 VQ 中的 1 个离散符号）。图 17.5 展示了其直观示意。
+
+> discrete symbols (instead of 1 discrete symbol in basic VQ). Fig. 17.5 shows the intuition.
+
+当我们想要重建语音时该怎么做？其方法
+
+> What do we do when we want to reconstruct the speech? The method used in
+在 ENCODEC RVQ 中同样简单：我们取出这 8 个码字并把它们相加！
+
+> ENCODEC RVQ is again simple: we take the 8 codewords and add them together!
+
+得到的矢量 zqt 随后被送入解码器以生成波形。
+
+> The resulting vector zqt is then passed through the decoder to generate a waveform.
+
+。
+
+> .
+
+### 17.2.4 训练音频词元的 ENCODEC 模型
+
+> 17.2.4 Training the ENCODEC model of audio tokens
+
+ENCODEC 模型（与类似的音频词元化模型一样）是端到端训练的。
+
+> The ENCODEC model (like similar audio tokenizer models) is trained end to end.
+
+输入是一个波形，即从更长的原始波形中截取的一段约 1 秒或 10 秒的语音。期望的输出是同一个波形段，因为该模型是一种学习映射到自身的自编码器。该模型在大规模语音数据集上训练完成这种重建，例如 Common Voice（Ardila et al., 2020）（133 种语言、超过 30,000 小时的语音），以及诸如 Audio Set（Gemmeke et al., 2017）等其他音频数据（170 万段来自 YouTube 视频的 10 秒片段，其标签来自一个大型本体，涵盖自然声、动物声和机械声、音乐等）。
+
+> The input is a waveform, a span of speech of perhaps 1 or 10 seconds extracted from a longer original waveform. The desired output is the same waveform span, since the model is a kind of autoencoder that learns to map to itself. The model is trained to do this reconstruction on large speech datasets like Common Voice (Ardila et al., 2020) (over 30,000 hours of speech in 133 languages) as well as other audio data like Audio Set (Gemmeke et al., 2017) (1.7 million 10 sec excerpts from YouTube videos labeled from a large ontology including natural, animal, and machine sounds, music, and so on).
+
+![](images/17-text-to-speech/fig_p8_0.png)
+
+*Figure 17.6 音频分词器的训练架构，图改编自 Mousavi et al.(2025)。音频分词器使用多种损失函数的加权组合进行训练，这些损失函数在图中进行了概述，并在下文予以描述。*
+*Figure 17.6 Architecture of audio tokenizer training, figure adapted from Mousavi et al.(2025). The audio tokenizer is trained with a weighted combination of various loss functions, summarized in the figure and described below.*
+
+ENCODEC 模型与大多数音频分词器一样，使用若干
+
+> The ENCODEC model, like most audio tokenizers, is trained with a number of
+
+> `reconstruction loss`（重构损失）
+>
+> 释义：衡量重构波形与输入波形相似程度的损失，差值越小表示重构出的音频越接近原始音频。
+
+损失函数进行训练，如图 17.6 所示。重构损失 Lreconstruction 衡量输出波形与输入波形的相似程度，例如通过原始音频与重构音频之间的平方和差值来度量：
+
+> loss functions, as suggested in Fig. 17.6. The reconstruction loss Lreconstruction measures how similar the output waveform is to the input waveform, for example by the sum-squared difference between the original and reconstructed audio:
+
+> T
+
+X
+Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)
+此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。
+
+> Similarity can additionally be measured in the frequency domain, by comparing the original and reconstructed mel-spectrogram, again using sum-squared (L2) distance or L1 distance or some combination.
+
+> t=1
+
+另一类损失是对抗损失 LGAN。对于该损失，我们训练一个
+
+> Another kind of loss is the adversarial loss LGAN. For this loss we train a
+
+> `adversarial loss`（对抗损失）
+>
+> 释义：让生成器与判别器相互博弈来训练模型，使生成音频尽可能逼真、难以与真实音频区分。
+
+生成对抗网络，其中包含一个生成器和一个二分类判别器 D，判别器是一个用于区分真实波形文件 x 与生成波形的分类器。我们希望训练模型去欺骗该判别器，因此判别器越好，我们的重构就必须越差，于是我们把判别器的成功程度用作损失函数。我们还可以引入来自生成器的各种特征。
+
+> generative adversarial network, a generator and a binary discriminator D, which is a classifier to distinguish between the true wavefile x and a generated one. We want to train the model to fool this discriminator, so the better the discriminator, the worse our reconstruction must be, and so we use the discriminator’s success as a loss function, We can also incorporate various features from the generator.
+
+最后，我们还需要一个针对量化器的损失。这是因为把量化器放在
+
+> Finally, we need a loss for the quantizer. This is because having a quantizer in
+端到端训练的中间，会在训练的反向传播过程中造成梯度传播问题，因为量化步骤是不可微的。
+
+> the middle of end-to-end training causes problems in propagation of the gradient in the backward pass of training, because the quantization step is not differentiable.
+
+我们用两种方式处理这个问题。首先，在反向传播中忽略量化步骤。取而代之，我们把梯度从量化器的输出（zqt）直接复制回量化器的输入（zt），这种方法称为直通估计器（straight-through estimator）（Van Den Oord et al., 2017）。
+
+> We deal with this problem in two ways. First, we ignore the quantization step in the backward pass. Instead we copy the gradients from the output of the quantizer(zqt) back to the input of the quantizer (zt), a method called the straight-through estimator (Van Den Oord et al., 2017).
+
+但这样一来，我们需要一种方法来确保矢量量化器中的码字
+
+> But then we need a method to make sure the code words in the vector quantizer
+步骤在训练期间得到更新。一种方法是先使用 k-means 对向量 zt 进行聚类，得到初始的聚类。然后我们可以添加一个损失分量 LVQ，它将是编码器输出向量 zt 与量化后的重构向量 zqt（即码字）之差的函数，并在所有 Nc 个码本与残差上求和。
+
+> step get updated during training. One method is to start these off using k-means clustering of the vectors zt to get an initial clustering. Then we can add to a loss component, LVQ, which will be a function of the difference between the encoder output vector zt and the reconstructed vector after the quantization zqt, i.e. the codeword, summed over all the Nc codebooks and residuals.
+
+> T Nc
+
+X X
+LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)
+于是，总损失函数可以简单地为这些损失的加权和：
+
+> The total loss function can then just be a weighted sum of these losses:
+
+> t=1 c=1
+
+L(x, ˆx) = λ1Lreconstruction(x, ˆx)+λ2LGAN(x, ˆx)+λ3LVQ(x, ˆx) (17.4)
+
+## 17.3 VALL-E：用两阶段语言模型生成音频
+
+> 17.3 VALL-E: Generating audio with 2-stage LM
+
+正如我们在引言中所总结的，像 VALL-E 这样的 TTS 系统的结构是：以待合成的文本和待使用的声音样本作为输入，并对二者进行分词，其中文本使用 BPE，语音使用音频编解码器。然后我们使用一个语言模型，以文本提示为条件，用该语音样本的音色有条件地生成与文本提示相对应的离散音频词元。
+
+> As we summarized in the introduction, the structure of TTS systems like VALL-E is to take as input a text to be synthesized and a sample of the voice to be used, and tokenize both, using BPE for the text and an audio codec for the speech. We then use a language model to conditionally generate discrete audio tokens corresponding to the text prompt, in the voice of the speech sample.
+
+![](images/17-text-to-speech/fig_p9_0.png)
+
+*Figure 17.7 VALL-E 的两阶段语言建模方法，展示了自回归 Transformer 的推理阶段，以及 7 个非自回归 Transformer 中的前 3 个。离散音频编码的输出序列分两个阶段生成。首先，自回归语言模型从左到右生成第一个量化器的全部编码。随后，非自回归模型被调用 7 次，以前一个量化器的全部编码为条件生成其余编码，其中也包括对右侧编码的条件依赖。*
+*Figure 17.7 The 2-stage language modelling approach for VALL-E, showing the inference stage for the autoregressive transformer and the first 3 of the 7 non-autoregressive transformers. The output sequence of discrete audio codes is generated in two stages. First the autoregressive LM generates all the codes for the first quantizer from left to right. Then the non-autoregressive model is called 7 times to generate the remaining codes conditioned on all the codes from the preceding quantizer, including conditioning on the codes to the right.*
+
+VALL-E 没有用单个自回归语言模型来完成这种条件生成，而是使用两个不同的语言模型，通过两阶段过程进行条件生成。这一架构选择受到生成音频词元的 RVQ 量化器分层特性的影响。第一个 RVQ 量化器的输出是对最终语音最重要的词元，而后续量化器向最终信号贡献的残差信息越来越少。因此，语言模型分两个阶段生成声学编码。首先，一个自回归语言模型在给定输入文本与注册音频的情况下，为整个输出序列生成第一个量化器的编码。然后，在给定这些编码的情况下，一个非自回归语言模型被运行 7 次，每次以初始自回归编码的输出以及前一个非自回归量化器的输出作为输入，从而逐个生成其余量化器的编码。图 17.7 展示了该推理步骤的直观示意。
+
+> Instead of doing this conditional generation with a single autoregressive language model, VALL-E does the conditional generation in a 2-stage process, using two distinct language models. This architectural choice is influenced by the hierarchical nature of the RVQ quantizer that generates the audio tokens. The output of the first RVQ quantizer is the most important token to the final speech, while the subsequent quantizers contribute less and less residual information to the final signal. So the language model generates the acoustic codes in two stages. First, an autoregressive LM generates the first-quantizer codes for the entire output sequence, given the input text and enrolled audio. Then given those codes, a non-autoregressive LM is run 7 times, each time taking as input the output of the initial autoregressive codes and the prior non-autoregressive quantizer and thus generating the codes from the remaining quantizers one by one. Fig. 17.7 shows the intuition for the inference step.
+
+现在我们稍微详细地看一下该架构。在训练时，给定
+
+> Now let’s see the architecture in a bit more detail. For training, we are given
+一个音频样本 y 及其分词后的文本转写 x = [x0,x1,...,xL]。我们使用预训练的 ENCODEC 将 y 转换为编码矩阵 C。设 T 为 ENCODEC 输出的下采样向量个数，每个向量有 8 个编码。于是，我们可以将编码器输出表示为
+
+> an audio sample y and its tokenized text transcription x = [x0,x1,...,xL]. We use a pretrained ENCODEC to convert y into a code matrix C. Let T be the number of downsampled vectors output by ENCODEC, with 8 codes per vector. Then we can represent the encoder output as
+CT×8 = ENCODEC(y) (17.5)
+这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。
+
+> Here C is a two-dimensional acoustic code matrix that has T ×8 entries, where the columns represent time and the rows represent different quantizers. That is, the row vector ct,: of the matrix contains the 8 codes for the t-th frame, and the column vector c:,j contains the code sequence from the j-th vector quantizer where j ∈[1,...,8].
+
+给定文本 x 与音频 C，我们把 TTS 训练为一个条件编码语言
+
+> Given the text x and audio C, we train the TTS as a conditional code language
+模型，以最大化在给定 x 条件下 C 的似然：
+
+> model to maximize the likelihood of C conditioned on x:
+
+L = −log p(C|x)
+TY
+= −log p(c<t,:,x) (17.6)
+
+> t=0
+
+![](images/17-text-to-speech/fig_p10_0.png)
+
+*Figure 17.8 VALL-E 的训练过程。给定文本提示，首先训练自回归 Transformer 以自回归方式生成第一个量化器编码序列中的每一个编码。随后，非自回归 Transformer 生成其余的编码。图引自 Chen et al. (2025)。*
+*Figure 17.8 Training procedure for VALL-E. Given the text prompt, the autoregressive transformer is first trained to generate each code of the first-quantizer code sequence, autoregressively The the non-autoregressive transformer generates the rest of the codes. Figure from Chen et al. (2025).*
+
+图 17.8 展示了其直观示意。左侧，我们有一个音频样本及其
+
+> Fig. 17.8 shows the intuition. On the left, we have an audio sample and its
+转写文本，二者都经过分词。然后我们在 x 后附加一个 [EOS] 和一个 [BOS] 词元，并在 C 的末尾附加一个 [EOS] 词元，训练自回归 Transformer 预测声学词元，从 c0,1 开始，直到 [EOS] 为止，再由非自回归 Transformer 填充其余的词元。
+
+> transcription, and both are tokenized. Then we append an [EOS] and [BOS] token to x and an [EOS] token to the end of C and train the autoregressive transformer to predict the acoustic tokens, starting with c0,1, until [EOS], and then the nonautoregressive transformers to fill in the other tokens.
+
+在推理阶段，给定一段待朗读的文本序列以及 y′，即来自某个未见说话人的注册语音样本，我们拥有它的转写 transcript(y′)。我们首先运行编解码器，得到 y′ 的声学码矩阵，记为 CP = C:T ′,: = [c0,:,c1,:,...cT ′,: :]。接着，我们把 y′ 的转写与待朗读的文本序列拼接起来，构成总输入文本 x，并将其送入文本分词器。到此阶段，我们便得到了分词后的文本 x 和分词后的音频提示 CP。
+
+> During inference, we are given a text sequence to be spoken as well as y′, an enrolled speech sample from some unseen speaker, for which we have the transcription transcript(y′). We first run the codec to get an acoustic code matrix for y′, which will be CP = C:T ′,: = [c0,:,c1,:,...cT ′,: :]. Next we concatenate the transcription of y′ to the text sequence to be spoken to create the total input text x, which we pass through a text tokenizer. At this stage we thus have a tokenized text x and a tokenized audio prompt CP.
+
+然后，我们以文本序列 x 和提示 CP 为条件，生成 CT = C>T ′,: = [cT ′+1,:,...cT,:]：
+
+> Then we generate CT = C>T ′,: = [cT ′+1,:,...cT,:] conditioned on the text sequence x and the prompt CP:
+
+CT = argmax p(CT|CP,x)
+TY
+= argmax p(ct,:|c<t,:,x) (17.7)
+随后，生成的词元 CT 可由 ENCODEC 解码器转换为
+
+> Then the generated tokens CT can be converted by the ENCODEC decoder into
+一段波形。Fig. 17.9 展示了其直观思路。
+
+> a waveform. Fig. 17.9 shows the intuition.
+
+> CT
+
+> CT t=T ′+1
+
+![](images/17-text-to-speech/fig_p11_0.png)
+
+*Figure 17.9 VALL-E 的推理流程。图源自 Chen et al. (2025)。首先把 3 秒注册语音的转写前置到待生成的文本之前，并对语音和文本分别进行分词。接着，自回归 transformer 以转写和声学提示为条件，开始生成第一个码 ct′+1,1。*
+*Figure 17.9 Inference procedure for VALL-E. Figure from Chen et al. (2025). The transcript for the 3 seconds of enrolled speech is first prepended to the text to be generated, and both the speech and text are tokenized. Next the autoregressive transformer starts generating the first codes ct′+1,1 conditioned on the transcript and acoustic prompt.*
+
+关于 transformer 组件以及其他方面的更多细节，参见 Chen et al. (2025)，
+
+> See Chen et al. (2025) for more details on the transformer components and other
+训练的细节见同一文献。
+
+> details of training.
+
+## 17.4 TTS 评估
+
+> 17.4 TTS Evaluation
+
+TTS 系统由人类来评估：向听者播放一段话语，请他们给出平均意见得分（MOS），即对合成
+
+> TTS systems are evaluated by humans, by playing an utterance to listeners and asking them to give a mean opinion score (MOS), a rating of how good the synthesized
+
+> `MOS`
+>
+> 释义：平均意见得分的缩写，指听者对合成语音质量按 1–5 分打分并取平均后得到的评价指标。
+
+话语好坏的评分，通常采用 1–5 分的量表。随后，我们可以通过比较各系统在相同句子上的 MOS 得分来比较它们（例如使用配对 t 检验来检验是否存在显著差异）。
+
+> utterances are, usually on a scale from 1–5. We can then compare systems by comparing their MOS scores on the same sentences (using, e.g., paired t-tests to test for significant differences).
+
+如果我们要比较的恰好是两个系统（也许是为了考察某项特定的改动
+
+> If we are comparing exactly two systems (perhaps to see if a particular change
+是否真的改进了该系统），我们也可以使用 CMOS（比较
+
+> actually improved the system), we can also compare using CMOS (Comparative
+
+> `CMOS`
+>
+> 释义：比较平均意见得分，指让听者在两个系统的合成语音之间表达偏好，得分范围从 -3 到 3。
+
+MOS）来比较，即让用户表达他们更偏好两段话语中的哪一段。
+
+> MOS). where users give their preference on which of the two utterances is better.
+
+CMOS 得分的范围从 -3（该系统比参考系统差得多）到 3（该系统优于参考系统）。这里我们播放由两个不同系统合成的同一个句子。人类听者选择他们更喜欢两段话语中的哪一段。我们对比如 50 个句子（以随机顺序呈现）进行这一操作，并比较每个系统被偏好的句子数量。
+
+> CMOS scores range from -3 (the system is much worse than the reference) to 3 (the system is better than the reference) Here we play the same sentence synthesized by two different systems. The human listeners choose which of the two utterances they like better. We do this for say 50 sentences (presented in random order) and compare the number of sentences preferred for each system.
+
+尽管语音合成系统最好由人类听者来评估，但一些
+
+> Although speech synthesis systems are best evaluated by human listeners, some
+自动指标可以用来补充更多信息。例如，我们可以把输出送入 ASR 系统并计算词错误率（WER），以考察合成输出的稳健程度。或者，为了衡量 TTS 系统的语音输出与注册语音的匹配程度，我们可以把该任务当作说话人验证来处理：将两个语音送入说话人验证系统，并把得到的得分用作相似度得分。
+
+> automatic metrics can be used to add more information. For example we can run the output through an ASR system and compute the word error rate (WER) to see how robust the synthesized output is. Or for measuring how well the voice output of the TTS system matches the enrolled voice, we can treat the task as if it were speaker verification, passing the two voices to a speaker verification system and using the resulting score as a similarity score.
+
+## 17.5 其他语音任务
+
+> 17.5 Other speech tasks
+
+还有许多其他与语音相关的任务。
+
+> There are a wide variety of other speech-related tasks.
+
+> `speaker`（说话人）
+>
+> 释义：指语音中的发言个体；本书用它指代需要被区分或识别的不同讲话人身份。
+
+说话人日志是在一段较长的
+
+> Speaker diarization is the task of determining ‘who spoke when’ in a long
+
+> `diarization`（日志）
+>
+> 释义：与前面的 speaker 合为 speaker diarization（说话人日志），即判定长音频中每位说话人发言起止时刻的任务。
+
+多说话人音频录音中判定「谁在何时说话」的任务，即标出交互中每位说话人发言轮次的起点和终点。这对于转写会议、课堂发言或医疗交互很有用。说话人日志系统常常使用语音活动检测（VAD）来找出连续语音片段，提取说话人嵌入向量，并对这些向量进行聚类，从而把很可能来自同一说话人的片段归为一组。较新的工作正在研究端到端算法，直接从输入语音映射到每一帧的说话人标签序列。
+
+> multi-speaker audio recording, marking the start and end of each speaker’s turns in the interaction. This can be useful for transcribing meetings, classroom speech, or medical interactions. Often diarization systems use voice activity detection (VAD) to find segments of continuous speech, extract speaker embedding vectors, and cluster the vectors to group together segments likely from the same speaker. More recent work is investigating end-to-end algorithms to map directly from input speech to a sequence of speaker labels for each frame.
+
+> `speaker`（说话人）
+>
+> 释义：此处引出 speaker recognition（说话人识别）这一任务族，即根据语音判断说话人是谁。
+
+说话人识别是辨识说话人的任务。我们通常区分出说话人验证这一子任务，它做出的是二值判定（是否为
+
+> Speaker recognition, is the task of identifying a speaker. We generally distinguish the subtasks of speaker verification, where we make a binary decision (is
+
+> `recognition speaker verification`（识别 / 说话人验证）
+>
+> 释义：指 speaker recognition（说话人识别）及其子任务 speaker verification（说话人验证，即判断某段语音是否属于某个特定说话人）。
+
+说话人 X？），例如通过电话访问个人信息时的安全验证；以及说话人辨识，它做出的是 N 选 1 的判定，即试图把某人的语音与包含众多说话人的数据库进行匹配。
+
+> this speaker X or not?), such as for security when accessing personal information over the telephone, and speaker identification, where we make a one of N decision trying to match a speaker’s voice against a database of many speakers.
+
+> `language`（语种）
+>
+> 释义：与后面的 identification 合为 language identification（语种识别），即判断一段音频中所使用的语言。
+
+在语种识别任务中，我们给定一个波形文件，必须判断
+
+> In the task of language identification, we are given a wavefile and must identify
+
+> `identification`（识别）
+>
+> 释义：与前面的 language 合指「语种识别」，即根据输入音频判断其中所说的是哪一种语言。
+
+其中说的是哪一种语言；这是构建多语言模型、创建数据集的重要环节，甚至在在线系统中也发挥作用。
+
+> which language is being spoken; this is an important part of building multilingual models, creating datasets, and even plays a role in online systems.
+
+唤醒词检测的任务是检测一个词或短语，通常
+
+> The task of wake word detection is to detect a word or short phrase, usually in
+
+> `wake word`（唤醒词）
+>
+> 释义：用于唤醒 Alexa、Siri 或 Google Assistant 等语音助手的一个词或短语。
+
+是为了唤醒 Alexa、Siri 或 Google Assistant 这类语音助手。
+
+> order to wake up a voice-enable assistant like Alexa, Siri, or the Google Assistant.
+
+唤醒词的目标是把检测功能内建到计算边缘的小型设备中，通过将传往云端服务器的用户语音降到最少来保护隐私。因此唤醒词检测器需要是速度快、占用空间小的软件，能够装入嵌入式设备。唤醒词检测器通常使用我们在 ASR 中见过的相同前端特征提取，其后往往接一个整词分类器。
+
+> The goal with wake words is build the detection into small devices at the computing edge, to maintain privacy by transmitting the least amount of user speech to a cloudbased server. Thus wake word detectors need to be fast, small footprint software that can fit into embedded devices. Wake word detectors usually use the same frontend feature extraction we saw for ASR, often followed by a whole-word classifier.
+
+## 17.6 口语语言模型
+
+> 17.6 Spoken Language Models
+
+待定
+
+> TBD
+
+## 17.7 小结
+
+> 17.7 Summary
+
+本章介绍了文本转语音（TTS）的基本算法。
+
+> This chapter introduced the fundamental algorithms of text-to-speech (TTS).
+
+- 现代 TTS 的一种常见算法是：在由编解码器模型学到的音频词元上，使用语言模型进行条件生成。
+- 神经音频编解码器（neural audio codec，codec 是 coder/decoder 的缩写）是一种将模拟语音信号编码为数字化、离散的压缩表示以实现压缩的系统。
+- 编解码器作为其压缩表示所产出的离散符号，可以充当用于语言建模的离散编码。
+- 编解码器包含：一个使用卷积网络把语音下采样为降采样嵌入的编码器；一个把该嵌入转换为一系列离散词元的量化器；以及一个使用卷积网络把词元/嵌入上采样回有损重构波形的解码器。
+- 矢量量化（VQ）是一种把一系列矢量转换为一系列离散符号的方法。这可以借助 k-means 聚类来实现，然后创建一本码本，其中每个编码由位于各聚类质心的矢量表示，称为码字。输入矢量可以分配到最近的码字聚类。
+- 残差矢量量化（RVQ）是矢量量化的一种层级版本，它通过先把矢量量化到一本码本，然后对残差（码字与输入矢量之差）进行量化，如此迭代，为一个输入矢量产生多个编码。
+- 像 VALL-E 这样的 TTS 系统接收待合成的文本和待使用的音色样本，用 BPE（文本）和音频编解码器（语音）进行词元化，然后使用一个语言模型，以语音样本的音色，条件生成与文本提示对应的离散音频词元。
+- TTS 的评估方式是向人类听者播放一个句子，让他们给出平均意见得分（MOS）。
+
+> A common modern algorithm for TTS is to use conditional generation with a language model over audio tokens learned by a codec model.
+> A neural audio codec, short for coder/decoder, is a system that encodes analog speech signals into a digitized, discrete compressed representation for compression.
+> The discrete symbols that a codec produces as its compressed representation can be used as discrete codes for language modeling.
+> A codec includes an encoder that uses convnets to downsample speech into a downsampled embedding, a quantizer that converts the embedding into a series of discrete tokens, and a decoder that uses convnets to upsample the tokens/embedding back into a lossy reconstructed waveform.
+> Vector Quantization (VQ) is a method for turning a series of vectors into a series of discrete symbols. This can be done by using k-means clustering, and then creating a codebook in which each code is represented by a vector at the centroid of each cluster, called a codeword. Input vector can be assigned the nearest codeword cluster.
+> Residual Vector Quantization (RVQ) is a hierarchical version of vector quantization that produces multiple codes for an input vector by first quantizing a vector into a codebook, and then quantizing the residual (the difference between the codeword and the input vector) and then iterating.
+> TTS systems like VALL-E take a text to be synthesized and a sample of the voice to be used, tokenize with BPE (text) and an audio codec (speech) and then use an LM to conditionally generate discrete audio tokens corresponding to the text prompt, in the voice of the speech sample.
+> TTS is evaluated by playing a sentence to human listeners and having them give a mean opinion score (MOS).
+
+## 历史注记
+
+> Historical Notes
+
+正如我们在本章开头所指出的，语音合成是语音与语言处理最早的领域之一。18 世纪出现了若干针对发音过程的物理模型，包括上文提到的 von Kempelen 模型，以及 1773 年哥本哈根的 Kratzenstein 使用管风琴管制作的元音模型。
+
+> As we noted at the beginning of the chapter, speech synthesis is one of the earliest fields of speech and language processing. The 18th century saw a number of physical models of the articulation process, including the von Kempelen model mentioned above, as well as the 1773 vowel model of Kratzenstein in Copenhagen using organ pipes.
+
+20 世纪 50 年代初见证了三种早期波形
+
+> The early 1950s saw the development of three early paradigms of waveform
+合成范式的诞生：共振峰合成、发音合成和拼接合成。
+
+> synthesis: formant synthesis, articulatory synthesis, and concatenative synthesis.
+
+共振峰合成器最初的灵感来自于模仿人类
+
+> Formant synthesizers originally were inspired by attempts to mimic human
+语音的尝试，方法是生成人工频谱图。Haskins 实验室的模式回放机（Pattern Playback Machine）通过在移动的透明带上绘制频谱图图案，并利用反射率对波形的谐波进行滤波来生成声波（Cooper et al., 1951）；其他非常早期的共振峰合成器还包括 Lawrence (1953) 和 Fant (1951) 的合成器。也许最著名的共振峰合成器是 Klatt 共振峰合成器及其后继系统，包括 MITalk 系统（Allen et al., 1987）以及美国数字设备公司（Digital Equipment Corporation）的 DECtalk 中使用的 Klattalk 软件（Klatt, 1982）。细节可参见 Klatt (1975)。
+
+> speech by generating artificial spectrograms. The Haskins Laboratories Pattern Playback Machine generated a sound wave by painting spectrogram patterns on a moving transparent belt and using reflectance to filter the harmonics of a waveform (Cooper et al., 1951); other very early formant synthesizers include those of Lawrence (1953) and Fant (1951). Perhaps the most well-known of the formant synthesizers were the Klatt formant synthesizer and its successor systems, including the MITalk system (Allen et al., 1987) and the Klattalk software used in Digital Equipment Corporation’s DECtalk (Klatt, 1982). See Klatt (1975) for details.
+
+第二种早期范式——拼接合成——似乎最早由贝尔实验室的 Harris (1953) 提出；他确实把对应音素的磁带片段拼接在一起。不久之后，Peterson et al. (1958) 提出了一个基于双音素的理论模型，其中包括一个数据库，每个双音素都有多个具有不同韵律的副本，每个副本都标注了包括 F0、重音和时长在内的韵律特征，并使用基于相邻单元之间 F0 和共振峰距离的连接代价。但这类双音素合成模型直到几十年后才真正实现（Dixon and Maxey 1968, Olive 1977）。20 世纪 80 年代和 90 年代出现了单元选择合成，它基于长度不均匀的更大单元，并使用目标代价（Sagisaka 1988, Sagisaka et al. 1992, Hunt and Black 1996, Black and Taylor 1994, Syrdal et al. 2000）。
+
+> A second early paradigm, concatenative synthesis, seems to have been first proposed by Harris (1953) at Bell Laboratories; he literally spliced together pieces of magnetic tape corresponding to phones. Soon afterwards, Peterson et al. (1958) proposed a theoretical model based on diphones, including a database with multiple copies of each diphone with differing prosody, each labeled with prosodic features including F0, stress, and duration, and the use of join costs based on F0 and formant distance between neighboring units. But such diphone synthesis models were not actually implemented until decades later (Dixon and Maxey 1968, Olive 1977). The 1980s and 1990s saw the invention of unit selection synthesis, based on larger units of non-uniform length and the use of a target cost, (Sagisaka 1988, Sagisaka et al. 1992, Hunt and Black 1996, Black and Taylor 1994, Syrdal et al. 2000).
+
+第三种范式——发音合成器——试图通过
+
+> A third paradigm, articulatory synthesizers attempt to synthesize speech by
+把声道建模为一根开口管来合成语音。有代表性的模型包括 Stevens et al. (1953)、Flanagan et al. (1975) 和 Fant (1986)。更多细节可参见 Klatt (1975) 和 Flanagan (1972)。
+
+> modeling the physics of the vocal tract as an open tube. Representative models include Stevens et al. (1953), Flanagan et al. (1975), and Fant (1986). See Klatt(1975) and Flanagan (1972) for more details.
+
+大多数早期 TTS 系统使用音素作为输入；TTS 的文本分析组件发展得稍晚一些，借鉴了 NLP。事实上，第一个真正的文本转语音系统似乎是 Umeda 和 Teranishi 的系统（Umeda et al. 1968, Teranishi and Umeda 1968, Umeda 1976），它包含一个分配韵律边界以及重音和重读的句法分析器。
+
+> Most early TTS systems used phonemes as input; development of the text analysis components of TTS came somewhat later, drawing on NLP. Indeed the first true text-to-speech system seems to have been the system of Umeda and Teranishi(Umeda et al. 1968, Teranishi and Umeda 1968, Umeda 1976), which included a parser that assigned prosodic boundaries, as well as accent and stress.
+
+编解码器的历史和神经 TTS 的现代史待定。
+
+> History of codecs and modern history of neural TTS TBD.
+
+## 练习
+
+> Exercises

@@ -1,0 +1,1631 @@
+# 第 5 章 嵌入
+
+### 章
+
+> CHAPTER
+
+# 5 嵌入
+
+> 5 Embeddings
+
+荃者所以在鱼，得鱼而忘荃 网是用来捕鱼的；
+
+> 荃者所以在鱼，得鱼而忘荃Nets are for fish;
+
+捕到了鱼，就可以忘掉网。
+
+> Once you get the fish, you can forget the net.
+
+言者所以在意，得意而忘言 言语是用来表达意思的；
+
+> 言者所以在意，得意而忘言Words are for meaning;
+
+领会了意思，就可以忘掉言语。
+
+> Once you get the meaning, you can forget the words
+
+> 庄子（Zhuangzi），第 26 章
+>
+> *庄子(Zhuangzi), Chapter 26*
+
+洛杉矶以沥青闻名，而这些沥青主要出现在它的高速公路上。但
+
+> The asphalt that Los Angeles is famous for occurs mainly on its freeways. But
+在城市中央还有另一片沥青，即拉布雷亚沥青坑，这片沥青保存了来自更新世冰期最后阶段数以百万计的化石骨骼。其中一件化石是 Smilodon，也就是剑齿虎，凭其长长的犬齿一眼即可辨认。大约五百万年前，一种完全不同的剑齿虎——名为 Thylacosmilus——生活在阿根廷和南美洲的其他地区。Thylacosmilus 是有袋类动物，而 Smilodon 是胎盘哺乳动物，但 Thylacosmilus 同样有长长的上犬齿，并且和 Smilodon 一样，在下颌上有一块起保护作用的骨突。这两种哺乳动物的相似性是平行演化或趋同演化的众多例子之一，在趋同演化中，特定的语境或环境导致不同物种演化出非常相似的结构（Gould, 1980）。
+
+> in the middle of the city is another patch of asphalt, the La Brea tar pits, and this asphalt preserves millions of fossil bones from the last of the Ice Ages of the Pleistocene Epoch. One of these fossils is the Smilodon, or saber-toothed tiger, instantly recognizable by its long canines. Five million years ago or so, a completely different saber-tooth tiger called Thylacosmilus lived in Argentina and other parts of South America. Thylacosmilus was a marsupial whereas Smilodon was a placental mammal, but Thylacosmilus had the same long upper canines and, like Smilodon, had a protective bone flange on the lower jaw. The similarity of these two mammals is one of many examples of parallel or convergent evolution, in which particular contexts or environments lead to the evolution of very similar structures in different species (Gould, 1980).
+
+![](images/img_84.jpeg)
+
+在一种生物学意味较弱的相似性中，语境的作用同样重要
+
+> The role of context is also important in the similarity of a less biological kind
+这类有机体身上：即词。出现在相似语境中的词往往具有相似的含义。词在分布方式上的相似性与
+
+> of organism: the word. Words that occur in similar contexts tend to have similar meanings. This link between similarity in how words are distributed and similarity
+
+> `distributional hypothesis`（分布假设）
+>
+> 释义：该假设认为，出现在相似语境中的词往往具有相似的含义，是向量语义与词嵌入的理论基础。
+
+它们在含义上的相似性之间的联系，被称为分布假设。这一假设
+
+> in what they mean is called the distributional hypothesis. The hypothesis was
+由 Joos（1950）、Harris（1954）和 Firth（1957）等语言学家于 20 世纪 50 年代首次提出，他们注意到，互为同义词的词（如 oculist 与 eye-doctor）往往出现在相同的环境里（例如出现在 eye 或 examined 这类词附近），而两个词之间意义的差异程度“大致对应于它们环境差异的程度”（Harris, 1954, p. 157）。
+
+> first formulated in the 1950s by linguists like Joos (1950), Harris (1954), and Firth(1957), who noticed that words which are synonyms (like oculist and eye-doctor) tended to occur in the same environment (e.g., near words like eye or examined) with the amount of meaning difference between two words “corresponding roughly to the amount of difference in their environments” (Harris, 1954, p. 157).
+
+在本章中，我们介绍嵌入，它是词义的一种向量表示
+
+> In this chapter we introduce embeddings, vector representations of the meaning
+
+> `embeddings`（嵌入）
+>
+> 释义：把词表示为低维实数向量、并直接从文本中词的分布中学习得到的表示方法，是现代自然语言处理的基础。
+
+，这些表示直接从文本中词的分布学习而来。嵌入是大型语言模型及其他现代应用的核心。我们在此介绍的静态嵌入，是第 7 章和第 9 章将要见到的 BERT 等更强大的动态嵌入或上下文嵌入的基础。
+
+> of words that are learned directly from word distributions in texts. Embeddings lie at the heart of large language models and other modern applications. The static embeddings we introduce here underlie the more powerful dynamic or contextualized embeddings like BERT that we will see in Chapter 7 and Chapter 9.
+
+研究嵌入及其含义的语言学领域被称为向量
+
+> The linguistic field that studies embeddings and their meanings is called vector
+
+> `vector`（向量）
+>
+> 释义：用一列实数表示词或文本的数学对象，本书借助它来计算和度量词义之间的相似关系。
+
+语义。嵌入也是本书中表示学习的第一个例子
+
+> semantics. Embeddings are also the first example in this book of representation
+
+> `representation semantics learning`（表示学习）
+>
+> 释义：指自动从输入文本中学习有用的表示，而不是依靠特征工程手工构造表示，是现代自然语言处理的一条重要原则。
+
+，即自动学习输入文本的有用表示。寻找
+
+> learning, automatically learning useful representations of the input text. Finding
+这类自监督地学习语言表示的方法，而不是通过特征工程手工构造表示，是现代自然语言处理的一条重要原则（Bengio et al., 2013）。
+
+> such self-supervised ways to learn representations of language, instead of creating representations by hand via feature engineering, is an important principle of modern NLP (Bengio et al., 2013).
+
+## 5.1 词汇语义
+
+> 5.1 Lexical Semantics
+
+我们先来介绍词义的一些基本原理。我们应当如何表示一个词的含义呢？在第 3 章的 n-gram 模型以及经典的自然语言处理应用中，我们对一个词唯一的表示就是一串字母，或词汇表中的一个索引。这种表示与哲学中的一种传统并没有太大差别，也许你在逻辑学入门课上见过这种传统，即仅用小型大写字母拼写一个词来表示其意义：把“dog”的意义表示为 DOG，把“cat”表示为 CAT，或者再加上撇号（DOG’）。
+
+> Let’s begin by introducing some basic principles of word meaning. How should we represent the meaning of a word? In the n-gram models of Chapter 3, and in classical NLP applications, our only representation of a word is as a string of letters, or an index in a vocabulary list. This representation is not that different from a tradition in philosophy, perhaps you’ve seen it in introductory logic classes, in which the meaning of words is represented by just spelling the word with small capital letters; representing the meaning of “dog” as DOG, and “cat” as CAT, or by using an apostrophe (DOG’).
+
+用大写字母来表示一个词的意义，是一种相当不能令人满意的
+
+> Representing the meaning of a word by capitalizing it is a pretty unsatisfactory
+模型。你可能见过一个笑话的某个版本，它最初出自语义学家 Barbara Partee（Carlson, 1977）：
+
+> model. You might have seen a version of a joke due originally to semanticist Barbara Partee (Carlson, 1977):
+
+问：生命的意义是什么？答：LIFE’
+
+> Q: What’s the meaning of life? A: LIFE’
+我们肯定能做得比这更好！毕竟，我们希望词义模型
+
+> Surely we can do better than this! After all, we’ll want a model of word meaning
+来为我们做各种各样的事情。它应当告诉我们，有些词意义相似（cat 与 dog 相似），有些词互为反义词（cold 与 hot 相反），有些词带有正面内涵（happy），而另一些词带有负面内涵（sad）。它应当表示出这样一个事实：buy、sell 和 pay 的意义为同一个底层的购买事件提供了不同的视角。（如果我向你买了某物，你很可能把它卖给了我，而我多半付了钱给你。）更一般地说，词义模型应当使我们能够进行推理，以完成问答或对话这类与意义相关的任务。
+
+> to do all sorts of things for us. It should tell us that some words have similar meanings (cat is similar to dog), others are antonyms (cold is the opposite of hot), some have positive connotations (happy) while others have negative connotations (sad). It should represent the fact that the meanings of buy, sell, and pay offer differing perspectives on the same underlying purchasing event. (If I buy something from you, you’ve probably sold it to me, and I likely paid you.) More generally, a model of word meaning should allow us to draw inferences to address meaning-related tasks like question-answering or dialogue.
+
+本节我们总结其中一些期望，借鉴
+
+> In this section we summarize some of these desiderata, drawing on results in the
+
+> `lexical`（词汇的）
+>
+> 释义：指与词本身相关的层面，词汇语义学研究的就是词的意义以及词与词之间的意义关系。
+
+语言学界对词义的研究成果，这一研究叫做词汇语义学；我们将
+
+> linguistic study of word meaning, which is called lexical semantics; we’ll return to
+
+> `semantics`（语义）
+>
+> 释义：指语言形式所表达的意义；在本书中它与词汇层面结合，构成词汇语义这一研究领域。
+
+在附录 I 和第 22 章中回到这一清单并加以扩展。
+
+> and expand on this list in Appendix I and Chapter 22.
+
+词元与词义 我们先来看看一个词（我们选择 mouse）在词典中可能如何被定义（简化自在线词典 WordNet）：
+
+> Lemmas and Senses Let’s start by looking at how one word (we’ll choose mouse) might be defined in a dictionary (simplified from the online dictionary WordNet):
+
+> mouse（N）
+>
+> *mouse (N)*
+
+> 1. 众多小型啮齿动物中的任何一种……
+>
+> *1. any of numerous small rodents...*
+
+> 2. 一种用手操作、用于控制光标的设备……
+>
+> *2. a hand-operated device that controls a cursor...*
+
+在这里，形式 mouse 就是词元，也称为引用形式。形式
+
+> Here the form mouse is the lemma, also called the citation form. The form
+
+> `lemma`（词元）
+>
+> 释义：词典中作为词条收录、代表一组屈折形式的词，如 mouse 代表 mice。
+
+mouse 也是 mice 一词的词元；词典不会为
+
+> mouse would also be the lemma for the word mice; dictionaries don’t have separate
+
+> `citation form`（引用形式）
+>
+> 释义：词典中为词条选定的规范书写形式，如名词取单数、动词在多数语言中取不定式。
+
+像 mice 这样的屈折形式单独给出定义。同样，sing 是 sing、sang、sung 的词元。在许多语言中，动词以不定式形式充当词元，因此西班牙语 dormir“睡觉”是 duermes“你睡觉”的词元。sung、carpets、sing 或 duermes 这些具体形式称为词形。
+
+> definitions for inflected forms like mice. Similarly sing is the lemma for sing, sang, sung. In many languages the infinitive form is used as the lemma for the verb, so Spanish dormir “to sleep” is the lemma for duermes “you sleep”. The specific forms sung or carpets or sing or duermes are called wordforms.
+
+> `wordform`（词形）
+>
+> 释义：某个词元在句子中实际出现的具体屈折形式，如 sung、carpets、duermes。
+
+如上例所示，每个词元都可以有多个含义；
+
+> As the example above shows, each lemma can have multiple meanings; the
+
+词元 mouse 既可以指啮齿动物，也可以指光标控制设备。我们把 mouse 含义中的每一个这样的侧面称为一个词义。词元可以多义（具有多个词义），这一事实会使理解变得困难（搜索“mouse info”的人是想找宠物还是想找控件？）。第 9 章和附录 I 将讨论多义性问题，并介绍词义消歧，即判定某个词在特定上下文中使用哪个词义的任务。
+
+> lemma mouse can refer to the rodent or the cursor control device. We call each of these aspects of the meaning of mouse a word sense. The fact that lemmas can be polysemous (have multiple senses) can make interpretation difficult (is someone who searches for “mouse info” looking for a pet or a widget?). Chapter 9 and Appendix I will discuss the problem of polysemy, and introduce word sense disambiguation, the task of determining which sense of a word is being used in a particular context.
+
+同义关系　词义的一个重要组成部分是词义之间的关系。例如，当一个词的某个词义与另一个词的某个词义相同或几乎相同时，我们说这两个词的这两个词义是同义的。同义词包括这样的词对：
+
+> Synonymy One important component of word meaning is the relationship between word senses. For example when one word has a sense whose meaning is identical to a sense of another word, or nearly identical, we say the two senses of those two words are synonyms. Synonyms include such pairs as
+
+> `synonym`（同义词）
+>
+> 释义：两个词各自的某个词义相同或几乎相同时，这两个词之间的关系。
+
+长沙发/沙发 呕吐/吐 榛子/榛果 汽车/机动车
+
+> couch/sofa vomit/throw up filbert/hazelnut car/automobile
+对同义关系（指词与词之间，而不是词义之间）更形式化的定义是：
+
+> A more formal definition of synonymy (between words rather than senses) is that
+
+如果两个词在任何句子中都可以相互替换，而不改变该句的真值条件，也就是不改变该句为真的那些情境，那么这两个词就是同义的。
+
+> two words are synonymous if they are substitutable for one another in any sentence without changing the truth conditions of the sentence, the situations in which the sentence would be true.
+
+虽然 car/automobile 或 water/H2O 这类词对之间的替换能够保持真值，但这些词在意义上仍然并不相同。事实上，可能没有哪两个词在意义上绝对相同。语义学的一条根本
+
+> While substitutions between some pairs of words like car / automobile or water / H2O are truth preserving, the words are still not identical in meaning. Indeed, probably no two words are absolutely identical in meaning. One of the fundamental
+
+> `principle of contrast`（对比原则）
+>
+> 释义：语义学的一条根本原则：语言形式上的任何差异都对应着某种意义差异。
+
+原则，称为对比原则（Girard 1718，Bréal 1897，Clark
+
+> tenets of semantics, called the principle of contrast (Girard 1718, Br´eal 1897, Clark
+1987），它指出，语言形式上的差异总是与某种意义差异相关联。例如，H2O 一词用于科学语境，用在徒步指南中就不合适——用“水”更恰当——这种体裁差异也是该词意义的一部分。因此，在实践中，同义词一词用来描述一种近似的、粗略的同义关系。
+
+> 1987), states that a difference in linguistic form is always associated with some difference in meaning. For example, the word H2O is used in scientific contexts and would be inappropriate in a hiking guide—water would be more appropriate— and this genre difference is part of the meaning of the word. In practice, the word synonym is therefore used to describe a relationship of approximate or rough synonymy.
+
+词语相似度　虽然词没有多少同义词，但大多数词确实有许多相似的词。Cat 不是 dog 的同义词，但 cat 和 dog 无疑是相似的词。在从同义关系转向相似度时，把讨论从词义之间的关系（如同义关系）转移到词与词之间的关系（如相似度）会很有用。以词为单位来处理，可以不必承诺词义的某种特定表示，而这最终会简化我们的任务。
+
+> Word Similarity While words don’t have many synonyms, most words do have lots of similar words. Cat is not a synonym of dog, but cats and dogs are certainly similar words. In moving from synonymy to similarity, it will be useful to shift from talking about relations between word senses (like synonymy) to relations between words (like similarity). Dealing with words avoids having to commit to a particular representation of word senses, which will turn out to simplify our task.
+
+词语相似度的概念在更大的语义任务中非常有用。知道
+
+> The notion of word similarity is very useful in larger semantic tasks. Knowing
+
+> `similarity`（相似度）
+>
+> 释义：衡量两个词的意义接近程度的度量；相似的词之间不必意义相同，cat 与 dog 即为一例。
+
+两个词有多相似，有助于计算两个短语或句子的意义有多相似，而这是问答、复述和摘要等任务中非常重要的组成部分。获得词语相似度数值的一种办法是让人来判断一个词与另一个词有多相似。这类实验已经产生了若干数据集。例如，SimLex-999 数据集（Hill et al., 2015）给出 0 到 10 之间的分值，如下面的例子所示，从近乎同义的词对（vanish、disappear）到几乎看不出有什么共同之处的词对（hole、agreement）：
+
+> how similar two words are can help in computing how similar the meaning of two phrases or sentences are, a very important component of tasks like question answering, paraphrasing, and summarization. One way of getting values for word similarity is to ask humans to judge how similar one word is to another. A number of datasets have resulted from such experiments. For example the SimLex-999 dataset (Hill et al., 2015) gives values on a scale from 0 to 10, like the examples below, which range from near-synonyms (vanish, disappear) to pairs that scarcely seem to have anything in common (hole, agreement):
+
+| 消失<br>vanish | 不见<br>disappear | 9.8 |
+| --- | --- | --- |
+| 信念<br>belief | 印象<br>impression | 5.95 |
+| 肌肉<br>muscle | 骨头<br>bone | 3.65 |
+| 谦逊<br>modest | 灵活<br>flexible | 0.98 |
+| 洞<br>hole | 一致<br>agreement | 0.3 |
+
+信念 印象 5.95 肌肉 骨头 3.65 谦逊 灵活 0.98
+
+> belief impression 5.95 muscle bone 3.65 modest flexible 0.98
+词语关联性　两个词的意义可以以相似之外的方式相互关联。其中一类联系称为词语关联性（Budanitsky
+
+> Word Relatedness The meaning of two words can be related in ways other than similarity. One such class of connections is called word relatedness (Budanitsky
+
+> `relatedness association`（关联性（联想））
+>
+> 释义：词之间除相似之外的意义联系，如因共同参与同一事件而关联，心理学中称为联想。
+
+和 Hirst, 2006），在心理学中传统上也被称为词语联想。
+
+> and Hirst, 2006), also traditionally called word association in psychology.
+
+看看 coffee 和 cup 这两个词的意义。coffee 与 cup 并不相似；
+
+> Consider the meanings of the words coffee and cup. Coffee is not similar to cup;
+
+它们几乎不共享任何特征（coffee 是一种植物或一种饮品，而 cup 是一件具有特定形状的人造物品）。但 coffee 和 cup 显然是相关的；它们因共同参与一个日常事件（从杯子中喝咖啡这一事件）而相互关联。同样，scalpel 和 surgeon 并不相似，但它们在事件层面相关（外科医生往往要使用手术刀）。
+
+> they share practically no features (coffee is a plant or a beverage, while a cup is a manufactured object with a particular shape). But coffee and cup are clearly related; they are associated by co-participating in an everyday event (the event of drinking coffee out of a cup). Similarly scalpel and surgeon are not similar but are related eventively (a surgeon tends to make use of a scalpel).
+
+词与词之间常见的一类关联，是它们属于同一个
+
+> One common kind of relatedness between words is if they belong to the same
+语义场。语义场是一组覆盖某个特定语义领域、彼此之间存在有结构的关系的词。例如，词可以因为同属医院这一语义场（surgeon、scalpel、nurse、anesthetic、hospital）而相关，也可以同属餐馆（waiter、menu、plate、food、chef）或住宅（door、roof、kitchen、family、bed）的语义场。语义场还与一种称为主题模型的形式化方法有关，例如潜在狄利克雷分配（Latent Dirichlet Allocation, LDA），它对大量文本施加无监督学习，从文本中归纳出成组的关联词。语义场和主题模型是发现文档中主题结构的非常有用的工具。
+
+> semantic field. A semantic field is a set of words which cover a particular semantic domain and bear structured relations with each other. For example, words might be related by being in the semantic field of hospitals (surgeon, scalpel, nurse, anesthetic, hospital), restaurants (waiter, menu, plate, food, chef), or houses (door, roof, kitchen, family, bed). Semantic fields are also related to a formalism called topic models, like Latent Dirichlet Allocation, LDA, which apply unsupervised learning on large sets of texts to induce sets of associated words from text. Semantic fields and topic models are very useful tools for discovering topical structure in documents.
+
+> `topic models`（主题模型）
+>
+> 释义：对大量文本做无监督学习、从文本中归纳出成组关联词的形式化方法，LDA 即其一例。
+
+在附录 I 中，我们将介绍词义之间更多种关系，如上位关系或
+
+> In Appendix I we’ll introduce more relations between senses like hypernymy or
+IS-A 关系、反义关系（对立）和部分-整体关系（meronymy）。
+
+> IS-A, antonymy (opposites) and meronymy (part-whole relations).
+
+内涵　最后，词还具有情感意义或内涵。connotation
+
+> Connotation Finally, words have affective meanings or connotations. The word
+
+> `connotations`（内涵）
+>
+> 释义：词义中与作者或读者的情感、情绪、观点和评价相关的那些方面，分正面与负面。
+
+一词在不同领域有不同的含义，但在这里我们用它来指一个词的意义中与作者或读者的情感、情绪、观点或评价相关的那些方面。例如，有些词带有正面内涵（wonderful），另一些词带有负面内涵（dreary）。即便在别的方面意义相似的词，内涵也可能不同；想想 fake、knockoff、forgery 与 copy、replica、reproduction 这两组词在内涵上的差别，或者 innocent（正面内涵）与 naive（负面内涵）的差别。有些词表达正面评价（great、love），另一些词表达负面评价（terrible、hate）。表达正面或负面评价的语言称为情感，而词的情感在诸如情感
+
+> connotation has different meanings in different fields, but here we use it to mean the aspects of a word’s meaning that are related to a writer or reader’s emotions, sentiment, opinions, or evaluations. For example some words have positive connotations (wonderful) while others have negative connotations (dreary). Even words whose meanings are similar in other ways can vary in connotation; consider the difference in connotations between fake, knockoff, forgery, on the one hand, and copy, replica, reproduction on the other, or innocent (positive connotation) and naive (negative connotation). Some words describe positive evaluation (great, love) and others negative evaluation (terrible, hate). Positive or negative evaluation language is called sentiment, and word sentiment plays a role in important tasks like sentiment
+
+> `sentiment`（情感）
+>
+> 释义：语言所表达的正面或负面评价态度，词的情感倾向用于情感分析、立场检测等任务。
+
+分析、立场检测，以及自然语言处理在政治话语和消费者评论中的应用等重要任务中发挥作用。
+
+> analysis, stance detection, and applications of NLP to the language of politics and consumer reviews.
+
+关于情感意义的早期研究（Osgood et al., 1957）发现，词在
+
+> Early work on affective meaning (Osgood et al., 1957) found that words varied
+情感意义的三个重要维度上有所不同：
+
+> along three important dimensions of affective meaning:
+
+效价：刺激的愉悦程度
+
+> valence: the pleasantness of the stimulus
+唤醒度：刺激所引发情绪的强度
+
+> arousal: the intensity of emotion provoked by the stimulus
+支配度：刺激所施加的控制程度
+
+> dominance: the degree of control exerted by the stimulus
+因此，像 happy 或 satisfied 这样的词效价高，而 unhappy 或 annoyed 效价低。Excited 唤醒度高，而 calm 唤醒度低。
+
+> Thus words like happy or satisfied are high on valence, while unhappy or annoyed are low on valence. Excited is high on arousal, while calm is low on arousal.
+
+Controlling 支配度高，而 awed 或 influenced 支配度低。
+
+> Controlling is high on dominance, while awed or influenced are low on dominance.
+
+因此，每个词都由三个数字表示，分别对应该词在三个维度上各自的取值：
+
+> Each word is thus represented by three numbers, corresponding to its value on each of the three dimensions:
+
+效价 唤醒度 支配度
+
+> Valence Arousal Dominance
+
+|  | 效价<br>Valence | 唤醒度<br>Arousal | 支配度<br>Dominance |
+| --- | --- | --- | --- |
+| courageous | 8.0 | 5.5 | 7.4 |
+| music | 7.7 | 5.6 | 6.5 |
+| heartbreak | 2.5 | 5.7 | 3.6 |
+| cub | 6.7 | 4.0 | 4.2 |
+
+courageous 8.0 5.5 7.4
+Osgood 等人（1957）注意到，在用这三个数字表示
+
+> Osgood et al. (1957) noticed that in using these 3 numbers to represent the
+词义时，该模型是把每个词表示为三维空间中的一个点，即一个向量，其三个维度分别对应该词在三个量表上的评分。词义可以表示为空间中的一个点（例如，heartbreak 的一部分含义可以表示为点 [2.5,5.7,3.6]）这一革命性思想，正是我们接下来将要介绍的向量语义模型的最早表达。
+
+> meaning of a word, the model was representing each word as a point in a threedimensional space, a vector whose three dimensions corresponded to the word’s rating on the three scales. This revolutionary idea that word meaning could be represented as a point in space (e.g., that part of the meaning of heartbreak can be represented as the point [2.5,5.7,3.6]) was the first expression of the vector semantics models that we introduce next.
+
+## 5.2 向量语义：直观理解
+
+> 5.2 Vector Semantics: The Intuition
+
+> `vector`（向量）
+>
+> 释义：在本书中指表示词义的一串实数，可看作多维语义空间中的一个点。
+
+向量语义是 NLP 中表示词义的标准方式，它有助于
+
+> Vector semantics is the standard way to represent word meaning in NLP, helping
+
+> `semantics`（语义）
+>
+> 释义：在本书中指词语的意义，尤其是可由词在语言使用中的分布来刻画的那部分含义。
+
+我们为上一节中看到的词义的许多方面建模。该模型的根源可追溯到 20 世纪 50 年代，当时两大思想交汇：上文提到的 Osgood 于 1957 年提出的用三维空间中的一个点表示词的内涵的思想，以及 Joos（1950）、Harris（1954）和 Firth（1957）等语言学家提出的、根据词在语言使用中的分布来定义词义的主张，这里的分布即指该词的邻接词或语法环境。他们的观点是，两个出现在非常相似分布中的词（即邻接词相似的词）具有相似的意义。
+
+> us model many of the aspects of word meaning we saw in the previous section. The roots of the model lie in the 1950s when two big ideas converged: Osgood’s 1957 idea mentioned above to use a point in three-dimensional space to represent the connotation of a word, and the proposal by linguists like Joos (1950), Harris (1954), and Firth (1957) to define the meaning of a word by its distribution in language use, meaning its neighboring words or grammatical environments. Their idea was that two words that occur in very similar distributions (whose neighboring words are similar) have similar meanings.
+
+例如，假设你不知道 ongchoi 这个词（一个较新的粤语借词）的意思，但你在以下语境中看到了它：
+
+> For example, suppose you didn’t know the meaning of the word ongchoi (a recent borrowing from Cantonese) but you see it in the following contexts:
+
+（5.1）Ongchoi 用大蒜炒一下就很美味。
+
+> (5.1) Ongchoi is delicious sauteed with garlic.
+
+（5.2）Ongchoi 浇在米饭上味道极佳。
+
+> (5.2) Ongchoi is superb over rice.
+
+（5.3）……ongchoi 的叶子配咸味酱汁……
+
+> (5.3) ...ongchoi leaves with salty sauces...
+
+再假设你在其他语境中见过其中许多上下文词：
+
+> And suppose that you had seen many of these context words in other contexts:
+
+（5.4）……菠菜用大蒜炒过、浇在米饭上……
+
+> (5.4) ...spinach sauteed with garlic over rice...
+
+（5.5）……莙荙菜的茎和叶很好吃……
+
+> (5.5) ...chard stems and leaves are delicious...
+
+（5.6）……羽衣芥蓝以及其他带咸味的绿叶蔬菜
+
+> (5.6) ...collard greens and other salty leafy greens
+ongchoi 会与米饭、大蒜、美味这类词一同出现，
+
+> The fact that ongchoi occurs with words like rice and garlic and delicious and
+咸味也是如此，就像菠菜、莙荙菜和羽衣芥蓝这些词一样，这或许表明 ongchoi 是一种与这些绿叶蔬菜相似的绿叶蔬菜。1 我们可以通过在 ongchoi 的上下文中简单地统计词语，以计算的方式实现同样的直观想法。
+
+> salty, as do words like spinach, chard, and collard greens might suggest that ongchoi is a leafy green similar to these other leafy greens.1 We can implement the same intuition computationally by just counting words in the context of ongchoi.
+
+![](images/fig_p5_0.png)
+
+*图 5.1 对与 sweet 一词相近的若干词的 200 维 word2vec 嵌入所做的二维（t-SNE）可视化，表明意义相似的词在空间中彼此邻近。可视化使用 TensorBoard Embedding Projector 制作，https://projector.tensorflow.org/。*
+*Figure 5.1 A two-dimensional (t-SNE) visualization of 200-dimensional word2vec embeddings for some words close to the word sweet, showing that words with similar meanings are nearby in space. Visualization created using the TensorBoard Embedding Projector https://projector.tensorflow.org/.*
+
+向量语义的思想是把一个词表示为多维语义空间中的一个点，该空间（以我们将看到的不同方式）由词的邻接词分布导出。用于表示词的向量称为嵌入。
+
+> The idea of vector semantics is to represent a word as a point in a multidimensional semantic space that is derived (in different ways we’ll see) from the distributions of word neighbors. Vectors for representing words are called embeddings.
+
+> `embeddings`（嵌入）
+>
+> 释义：在本书中指由语料库中词的邻接分布学习得到、用来表示词的稠密数值向量。
+
+> 它实际上是 Ipomoea aquatica，即牵牛花的近缘植物，英文中有时称为 water spinach。
+>
+> *It’s in fact Ipomoea aquatica, a relative of morning glory sometimes called water spinach in English.*
+
+“嵌入”一词在历史上源自其数学含义，即从一个空间或结构到另一个空间或结构的映射，尽管其含义已经发生了变化；参见本章末尾。
+
+> The word “embedding” derives historically from its mathematical sense as a mapping from one space or structure to another, although the meaning has shifted; see the end of the chapter.
+
+图 5.1 展示了由 word2vec 算法学习得到的嵌入的可视化，
+
+> Fig. 5.1 shows a visualization of embeddings learned by the word2vec algorithm,
+其中展示了选定的词（“sweet”的邻居）从 200 维空间投影到二维空间后的位置。注意 sweet 的最近邻是 honey、candy、juice、chocolate 等语义相关的词。相似词在高维空间中彼此邻近这一思想，为语言模型和其他 NLP 应用提供了巨大的能力。例如，第 4 章的情感分类器依赖于训练集和测试集中出现相同的词。但通过把词表示为嵌入，分类器只要见到一些意义相似的词就能判定情感。而正如我们将看到的，像图 5.1 所示的这类向量语义模型可以在无监督的情况下从文本中自动学习得到。
+
+> showing the location of selected words (neighbors of “sweet”) projected down from 200-dimensional space into a 2-dimensional space. Note that the nearest neighbors of sweet are semantically related words like honey, candy, juice, chocolate. This idea that similar words are neighbors in high-dimensional space offers enormous power to language models and other NLP applications. For example the sentiment classifiers of Chapter 4 depend on the same words appearing in the training and test sets. But by representing words as embeddings, a classifier can assign sentiment as long as it sees some words with similar meanings. And as we’ll see, vector semantic models like the ones showed in Fig. 5.1 can be learned automatically from text without supervision.
+
+本章我们将从一个简单的教学用嵌入模型开始，
+
+> In this chapter we’ll begin with a simple pedagogical model of embeddings in
+其中词的意义由一个装有邻近词计数的向量来定义。
+
+> which the meaning of a word is defined by a vector with the counts of nearby words.
+
+我们引入这个模型，是为了帮助理解向量这一概念，以及一个向量作为词义表示究竟意味着什么；但像我们将在第 11 章介绍的 tf-idf 模型这类更精细的变体，也是你应该了解的重要方法。我们将看到，这种方法会产生非常长的稀疏向量，即大部分分量为零（因为大多数词根本不会出现在彼此的上下文中）。随后我们将介绍 word2vec 模型族，用于构造更短、更稠密、且具有更有用语义性质的向量。
+
+> We introduce this model as a helpful way to understand the concept of vectors and what it means for a vector to be a representation of word meaning, but more sophisticated variants like the tf-idf model we will introduce in Chapter 11 are important methods you should understand. We will see that this method results in very long vectors that are sparse, i.e. mostly zeros (since most words simply never occur in the context of others). We’ll then introduce the word2vec model family for constructing short, dense vectors that have even more useful semantic properties.
+
+我们还将介绍余弦，即使用嵌入计算语义相似度的标准方法，可用于计算两个词、两个句子或两篇文档之间的相似度，这是实际应用中一项重要的工具。
+
+> We’ll also introduce the cosine, the standard way to use embeddings to compute semantic similarity, between two words, two sentences, or two documents, an important tool in practical applications.
+
+## 5.3 简单的基于计数的嵌入
+
+> 5.3 Simple count-based embeddings
+
+“三维空间中一个向量最重要的属性是 {位置, 位置, 位置}”
+
+> “The most important attributes of a vector in 3-space are {Location, Location, Location}”
+
+> Randall Munroe，来自 https://xkcd.com/2358/ 的悬停文字
+>
+> *Randall Munroe, the hover from https://xkcd.com/2358/*
+
+现在我们来介绍计算词向量嵌入的第一种方法。这种最简单的词义向量模型基于共现矩阵，即一种表示词与词共现频率的方式。我们将定义一种特定类型的共现
+
+> Let’s now introduce the first way to compute word vector embeddings. This simplest vector model of meaning is based on the co-occurrence matrix, a way of representing how often words co-occur. We’ll define a particular kind of co-occurrence
+
+> `word-context matrix`（词-上下文矩阵）
+>
+> 释义：一种以行表示词汇表中的目标词、以列表示在其附近出现的上下文词的共现计数矩阵，每一行构成该词的一个表示。
+
+这个矩阵称为词-上下文矩阵，其中矩阵的每一行表示词汇表中的一个词
+
+> matrix, the word-context matrix, in which each row in the matrix represents a word
+每一列表示词汇表中其他每个词在其附近出现的频率。因此该矩阵的维度为 |V| × |V|，每个单元格记录行（目标）词与列（上下文）词在某个训练语料库中附近共现的次数。
+
+> in the vocabulary and each column represents how often each other word in the vocabulary appears nearby. This matrix is thus of dimensionality |V| × |V| and each cell records the number of times the row (target) word and the column (context) word co-occur nearby in some training corpus.
+
+我们所说的“附近”是什么意思？我们可以采用各种方法，但让我们
+
+> What do we mean by ‘nearby’? We could implement various methods, but let’s
+先从一个非常简单的方法开始：在词周围取一个上下文窗口，比如左侧 4 个词、右侧 4 个词。这样做之后，每个单元格将表示（在某个训练语料库中）列词出现在行词周围的这种 ±4 词窗口中的次数。
+
+> start with a very simple one: a context window around the word, let’s say of 4 words to the left and 4 words to the right. If we do that, each cell will represent the number of times (in some training corpus) the column word occurs in such a±4-word window around the row word.
+
+让我们看看这对 4 个词是如何运作的：cherry、strawberry、digital 和 information。对每个词，我们从语料库中取一个实例，并展示该实例的 ±4 词窗口：
+
+> Let’s see how this works for 4 words: cherry, strawberry, digital, and information. For each word we took a single instance from a corpus, and we show the ±4 word window from that instance:
+
+传统上后面接着 cherry pie，一种传统甜点
+
+> is traditionally followed by cherry pie, a traditional dessert
+常常混合，例如 strawberry rhubarb pie。Apple pie
+
+> often mixed, such as strawberry rhubarb pie. Apple pie
+计算机外设和个人 digital 助理。这些设备通常
+
+> computer peripherals and personal digital assistants. These devices usually
+一台 computer。这包括 internet 上可获取的 information
+
+> a computer. This includes information available on the internet
+如果我们随后取一个大型语料库中每个词的每一次出现，并统计
+
+> If we then take every occurrence of each word in a large corpus and count the
+其周围的上下文词，就得到一个词-上下文共现矩阵。完整的词-上下文共现矩阵非常庞大，因为对词汇表（大小为 |V|）中的每个词，我们都必须统计它与词汇表中每一个其他词共现的频率，因此维度为 |V|×|V|。所以我们不妨改为在更小的规模上勾勒这一过程。设想我们只考察这 4 个词，并且只考虑以下 3 个上下文词：a、computer 和 pie。此外，假设我们只统计上述迷你语料库中的出现次数。
+
+> context words around it, we get a word-context co-occurrence matrix. The full wordcontext co-occurrence matrix is very large, because for each word in the vocabulary(of size |V|) we have to count how often it occurs with every other word in the vocabulary, hence dimensionality |V|×|V|. Let’s therefore instead sketch the process on a smaller scale. Imagine that we are going to look at only the 4 words, and only consider the following 3 context words: a, computer, and pie. Furthermore let’s assume we only count occurrences in the mini-corpus above.
+
+所以在看图 5.2 之前，请手算出这 3 个上下文词
+
+> So before looking at Fig. 5.2, compute by hand the counts for these 3 context
+对于 cherry、strawberry、digital 和 information 这四个词的计数。
+
+> words for the four words cherry, strawberry, digital, and information.
+
+|  | a | computer | pie |
+| --- | --- | --- | --- |
+| cherry | 1 | 0 | 1 |
+| strawberry | 0 | 0 | 2 |
+| digital | 0 | 1 | 0 |
+| information | 1 | 1 | 0 |
+
+*图 5.2 四个词的共现向量，计数来自上述 4 个窗口，仅展示潜在上下文词维度中的 3 个。cherry 的向量用红色标出。注意，真实的向量会有多得多的维度，因而更加稀疏。*
+*Figure 5.2 Co-occurrence vectors for four words with counts from the 4 windows above, showing just 3 of the potential context word dimensions. The vector for cherry is outlined in red. Note that a real vector would have vastly more dimensions and thus be even sparser.*
+
+希望你的计数与图 5.2 所示一致，即每个单元格表示某个特定词（由行确定）在某个特定上下文（由词列确定）中出现的次数。
+
+> Hopefully your count matches what is shown in Fig. 5.2, so that each cell represents the number of times a particular word (defined by the row) occurs in a particular context (defined by the word column).
+
+于是，每一行都是一个表示某个词的向量。为复习一些基本的线性
+
+> Each row, then, is a vector representing a word. To review some basic linear
+代数，向量本质上只是一个数字的列表或数组。因此 cherry 表示为
+
+> algebra, a vector is, at heart, just a list or array of numbers. So cherry is represented
+
+> `vector`（向量）
+>
+> 释义：一串按固定顺序排列的数值，每个数值对应一个维度；词的意义由这些数值的分布模式来刻画。
+
+为列表 [1,0,1]（图 5.2 中的第一个行向量），而 information 表示为列表 [1,1,0]（第四个行向量）。
+
+> as the list [1,0,1] (the first row vector in Fig. 5.2) and information is represented as the list [1,1,0] (the fourth row vector).
+
+向量空间是向量的集合，并由其维度来刻画。
+
+> A vector space is a collection of vectors, and is characterized by its dimension.
+
+> `vector space dimension`（向量空间维度）
+>
+> 释义：指该空间中每个向量所含数值的个数，也就是刻画这些词时可用的坐标轴数量。
+
+3 维向量空间中的向量对空间的每个维度都有一个元素
+
+> Vectors in a 3-dimensional vector space have an element for each dimension of the
+。我们将不严格地把 3 维空间中的向量称为 3 维向量，其每个维度上有一个元素。在图 5.2 的例子中，我们特意让词向量的维度为 3，只是为了能放在页面上；在真实的词-词矩阵中，向量的维度会是 |V|，即词汇表大小。
+
+> space. We will loosely refer to a vector in a 3-dimensional space as a 3-dimensional vector, with one element along each dimension. In the example in Fig. 5.2, we’ve chosen to make the word vectors of dimension 3, just so they fit on the page; in real word-word matrices, the vectors would have dimensionality |V|, the vocabulary size.
+
+向量空间中数值的顺序指示了词所变化的不同维度
+
+> The ordering of the numbers in a vector space indicates the different dimensions
+。所有这些向量的第三个维度对应于 pie 在上下文中出现的次数。它们之中的第二个维度都对应于 computer 一词出现的次数。注意，information 和 digital 的向量在这个“computer”维度上取值相同（1）。
+
+> on which words vary. The third dimension for all these vectors corresponds to the number of times pie occurs in the context. The second dimension for all of them corresponds to the number of times the word computer occurs. Notice that the vectors for information and digital have the same value (1) for this “computer” dimension.
+
+实际上，我们并不在单个上下文窗口上计算词向量。相反，
+
+> In reality, we don’t compute word vectors on a single context window. Instead,
+我们在整个语料库上计算它们。让我们看看一些真实计数是什么样子。
+
+> we compute them over an entire corpus. Let’s see what some real counts look like.
+
+让我们看一些按这种方式计算出的向量。图 5.3 展示了这四个词的词-词共现矩阵的一个子集；同样，因为不可能在本教科书的页面上可视化全部 |V| 个可能的上下文词，我们只展示 6 个维度的子集，其计数由 Wikipedia 语料库计算得到（Davies, 2015）。
+
+> Let’s look at some vectors computed in this way. Fig. 5.3 shows a subset of the word-word co-occurrence matrix for these four words, where, again because it’s impossible to visualize all |V| possible context words on the page of this textbook, we show a subset of 6 of the dimensions, with counts computed from the Wikipedia corpus (Davies, 2015).
+
+注意图 5.3 中 cherry 和 strawberry 这两个词彼此更为相似
+
+> Note in Fig. 5.3 that the two words cherry and strawberry are more similar to
+
+> aardvark ... computer data result pie sugar ...
+
+> cherry 0 ... 2 8 9 442 25 ... strawberry 0 ... 0 0 1 60 19 ... digital 0 ... 1670 1683 85 5 4 ... information 0 ... 3325 3982 378 5 13 ...
+
+*图 5.3 Wikipedia 语料库中四个词的共现向量，展示其中 6 个维度（为教学目的手工挑选）。digital 的向量用红色标出。注意，真实的向量会有多得多的维度，因而稀疏得多，即在大多数维度上取值为零。*
+*Figure 5.3 Co-occurrence vectors for four words in the Wikipedia corpus, showing six of the dimensions (hand-picked for pedagogical purposes). The vector for digital is outlined in red. Note that a real vector would have vastly more dimensions and thus be much sparser, i.e. would have zero values in most dimensions.*
+
+彼此（pie 和 sugar 都倾向于出现在它们的窗口中），而与其他词如 digital 的相似度较低；反过来，digital 和 information 彼此之间的相似度要高于它们与 strawberry 之类的词的相似度。
+
+> each other (both pie and sugar tend to occur in their window) than they are to other words like digital; conversely, digital and information are more similar to each other than, say, to strawberry.
+
+我们可以把某个词的向量看作 |V| 维空间中的一个点；因此
+
+> We can think of the vector for a word as a point in |V|-dimensional space; thus
+图 5.3 中的词是 6 维空间中的点。图 5.4 展示了 2 维的空间可视化。
+
+> the words in Fig. 5.3 are points in 6-dimensional space. Fig. 5.4 shows a spatial visualization in 2 dimensions.
+
+![](images/fig_p8_0.png)
+
+*图 5.4 digital 和 information 的词向量空间可视化，仅展示其中两个维度，分别对应于 data 和 computer 这两个词。*
+*Figure 5.4 A spatial visualization of word vectors for digital and information, showing just two of the dimensions, corresponding to the words data and computer.*
+
+注意，|V| 即向量的维度，通常等于词汇表的大小，往往在 10,000 到 50,000 个词之间（使用训练语料库中最频繁的词；保留排在最频繁的 50,000 个词之后的词通常没有帮助）。由于这些数值大多是零，所以它们是稀疏向量表示；存在高效的算法来存储和运算稀疏矩阵。
+
+> Note that |V|, the dimensionality of the vector, is generally the size of the vocabulary, often between 10,000 and 50,000 words (using the most frequent words in the training corpus; keeping words after about the most frequent 50,000 or so is generally not helpful). Since most of these numbers are zero these are sparse vector representations; there are efficient algorithms for storing and computing with sparse matrices.
+
+也可以对计数应用各种类型的加权函数
+
+> It’s also possible to apply various kinds of weighting functions to the counts
+填入这些单元格。这类加权中最常用的是 tf-idf，我们将在第 11 章介绍它，但历史上曾出现过多种多样的其他加权方式。
+
+> in these cells. The most popular such weighting is tf-idf, which we’ll introduce in Chapter 11, but there have historically been a wide variety of other weightings.
+
+既然已经建立了一些直觉，接下来我们就来看计算词语相似度的细节。
+
+> Now that we have some intuitions, let’s move on to examine the details of computing word similarity.
+
+## 5.4 用余弦度量相似度
+
+> 5.4 Cosine for Measuring Similarity
+
+要度量两个目标词 v 和 w 之间的相似度，我们需要一个度量指标，它接收两个向量（两者维度必须相同，或都以词为维度、因而长度为 |V|，或都以文档为维度、长度为 |D|），并给出它们相似程度的度量值。目前最常见的相似度指标是向量夹角的余弦。
+
+> To measure similarity between two target words v and w, we need a metric that takes two vectors (of the same dimensionality, either both with words as dimensions, hence of length |V|, or both with documents as dimensions, of length |D|) and gives a measure of their similarity. By far the most common similarity metric is the cosine of the angle between the vectors.
+
+余弦——如同 NLP 中使用的大多数向量相似度度量一样——基于
+
+> The cosine—like most measures for vector similarity used in NLP—is based on
+线性代数中的点积算子，它也称为内积：
+
+> the dot product operator from linear algebra, also called the inner product:
+
+> `dot product inner product`（点积、内积）
+>
+> 释义：把两个同维向量对应分量相乘后求和所得的数，是本书中向量相似度度量的基础。
+
+> N
+
+X
+dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)
+点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。
+
+> The dot product acts as a similarity metric because it will tend to be high just when the two vectors have large values in the same dimensions. Alternatively, vectors that have zeros in different dimensions—orthogonal vectors—will have a dot product of 0, representing their strong dissimilarity.
+
+> i=1
+
+然而，作为相似度度量，这个原始点积存在一个问题：它偏爱
+
+> This raw dot product, however, has a problem as a similarity metric: it favors
+长向量。向量长度定义为
+
+> long vectors. The vector length is defined as
+
+> `vector length`（向量长度）
+>
+> 释义：向量各维取值平方和的平方根，衡量向量在空间中的大小，本书用它来归一化点积。
+
+v u
+u t X
+v2 (5.8)
+|v| =
+向量越长、各维取值越大，点积就越高。
+
+> The dot product is higher if a vector is longer, with higher values in each dimension.
+
+> N
+
+> i
+
+> i=1
+
+更频繁出现的词往往与更多词共现，并且与其中每个词都有更高的共现值，因此它们的向量更长。于是，原始点积对高频词会更高。但这是个问题；我们希望的相似度度量应当告诉我们两个词有多相似，而不受其词频影响。
+
+> More frequent words have longer vectors, since they tend to co-occur with more words and have higher co-occurrence values with each of them. The raw dot product thus will be higher for frequent words. But this is a problem; we’d like a similarity metric that tells us how similar two words are regardless of their frequency.
+
+我们对点积加以修改，用除以向量长度的方式对它做归一化，即将
+
+> We modify the dot product to normalize for the vector length by dividing the
+点积除以两个向量各自的长度。这样归一化后的点积恰好等于两个向量夹角的余弦，这可由向量 a 与 b 之间点积的定义导出：
+
+> dot product by the lengths of each of the two vectors. This normalized dot product turns out to be the same as the cosine of the angle between the two vectors, following from the definition of the dot product between two vectors a and b:
+
+a·b = |a||b|cosθ|a||b| = cosθ a·b (5.9)
+因此，两个向量 v 和 w 之间的余弦相似度指标可以按如下方式计算：
+
+> The cosine similarity metric between two vectors v and w thus can be computed as:
+
+> `cosine`（余弦）
+>
+> 释义：两个向量夹角的余弦值，等于长度归一化后的点积，是本书标准的向量相似度度量。
+
+> N
+
+X
+viwi
+cosine(v,w) = v ·w (5.10)
+|v||w| = v u v u
+u t X u t X
+v2 w2
+对于某些应用，我们会预先对每个向量做归一化，即用它除以自身的长度，从而得到一个长度为 1 的单位向量。因此，我们可以由 a 计算出单位向量，方法是
+
+> For some applications we pre-normalize each vector, by dividing it by its length, creating a unit vector of length 1. Thus we could compute a unit vector from a by
+
+> i=1
+
+> N N
+
+> i i
+
+> i=1 i=1
+
+> `unit vector`（单位向量）
+>
+> 释义：长度为 1 的向量，由任一向量除以其自身长度得到；对它而言点积与余弦相等。
+
+用它除以 |a|。对于单位向量，点积与余弦相同。
+
+> dividing it by |a|. For unit vectors, the dot product is the same as the cosine.
+
+余弦值的取值范围为：同向向量为 1，经过
+
+> The cosine value ranges from 1 for vectors pointing in the same direction, through
+正交向量的 0，到反向向量的 -1。但由于原始频次值是非负的，这些向量的余弦取值范围为 0–1。
+
+> 0 for orthogonal vectors, to -1 for vectors pointing in opposite directions. But since raw frequency values are non-negative, the cosine for these vectors ranges from 0–1.
+
+下面我们看看余弦如何计算出 樱桃 或 数字化 这两个词中哪一个
+
+> Let’s see how the cosine computes which of the words cherry or digital is closer
+在含义上更接近 信息，这里仅使用下面这个缩减表格中的原始计数：
+
+> in meaning to information, just using raw counts from the following shortened table:
+
+> 馅饼 数据 计算机
+>
+> *pie data computer*
+
+> 樱桃 442 8 2
+>
+> *cherry 442 8 2*
+
+442∗5+8∗3982+2∗3325
+cos(cherry,information) = √ 4422 +82 +22√ 52 +39822 +33252 = .018
+5∗5+1683∗3982+1670∗3325
+cos(digital,information) = √ 52 +16832 +16702√ 52 +39822 +33252 = .996
+该模型判定 信息 与 数字化 的接近程度远高于它与 樱桃 的接近程度，这一
+
+> The model decides that information is way closer to digital than it is to cherry, a
+结果看起来是合理的。图 5.5 给出了一个可视化。
+
+> result that seems sensible. Fig. 5.5 shows a visualization.
+
+![](images/fig_p10_0.png)
+
+*图 5.5 余弦相似度的一个（粗略）图形演示，展示了三个词（樱桃、数字化和信息）的向量，它们位于由近旁词计算机与馅饼的计数所定义的二维空间中。该图并未画出余弦，而是突出了角度；注意，数字化与信息之间的夹角小于樱桃与信息之间的夹角。两个向量越相似，余弦越大而夹角越小；当两个向量之间的夹角最小时（0◦），余弦取最大值（1）；其他所有夹角的余弦都小于 1。*
+*Figure 5.5 A (rough) graphical demonstration of cosine similarity, showing vectors for three words (cherry, digital, and information) in the two dimensional space defined by counts of the words computer and pie nearby. The figure doesn’t show the cosine, but it highlights the angles; note that the angle between digital and information is smaller than the angle between cherry and information. When two vectors are more similar, the cosine is larger but the angle is smaller; the cosine has its maximum (1) when the angle between two vectors is smallest(0◦); the cosine of all other angles is less than 1.*
+
+余弦相似度可用于估计词语相似度，服务于诸如查找
+
+> Cosine similarity can be used to estimate word similarity, for tasks like finding
+词语释义、追踪词义变化，或自动发现不同语料库中词语的含义等任务。例如，我们可以通过计算 w 与其余 |V|−1 个词中每一个之间的余弦，排序后取前 10，来找出与任意目标词 w 最相似的 10 个词。
+
+> word paraphrases, tracking changes in word meaning, or automatically discovering meanings of words in different corpora. For example, we can find the 10 most similar words to any target word w by computing the cosines between w and each of the |V|−1 other words, sorting, and looking at the top 10.
+
+## 5.5 Word2vec
+
+在前面几节中，我们看到了如何把一个词表示为一个稀疏的长向量，其各个维度对应词表中的词。现在我们引入一种更强大的词语表示：嵌入，即短的稠密向量。与我们目前见到的向量不同，嵌入很短，其维度数 d 的取值范围为 50-1000，而不是大得多的词表大小 |V|。这 d 个维度没有明确的解释。而且这些向量是稠密的：向量元素不再是稀疏的、大多为零的计数或计数的函数，其取值将是可为负的实数值。
+
+> In the previous sections we saw how to represent a word as a sparse, long vector with dimensions corresponding to words in the vocabulary. We now introduce a more powerful word representation: embeddings, short dense vectors. Unlike the vectors we’ve seen so far, embeddings are short, with number of dimensions d ranging from 50-1000, rather than the much larger vocabulary size |V|. These d dimensions don’t have a clear interpretation. And the vectors are dense: instead of vector entries being sparse, mostly-zero counts or functions of counts, the values will be realvalued numbers that can be negative.
+
+事实证明，在每一项 NLP 任务中，稠密向量都比稀疏向量效果更好。
+
+> It turns out that dense vectors work better in every NLP task than sparse vectors.
+
+虽然我们并不完全理解其中的全部原因，但有一些直觉性的认识。把词表示为 300 维的稠密向量，与把词表示为 50,000 维向量相比，要求分类器学习的权重少得多，而更小的参数空间可能有助于泛化并避免过拟合。稠密向量也可能更好地捕捉同义关系。例如，在稀疏向量表示中，car 与 automobile 这类同义词对应的维度是彼此不同且无关的；因此，稀疏向量可能无法捕捉到以 car 为邻近词的词与以 automobile 为邻近词的词之间的相似性。
+
+> While we don’t completely understand all the reasons for this, we have some intuitions. Representing words as 300-dimensional dense vectors requires our classifiers to learn far fewer weights than if we represented words as 50,000-dimensional vectors, and the smaller parameter space possibly helps with generalization and avoiding overfitting. Dense vectors may also do a better job of capturing synonymy. For example, in a sparse vector representation, dimensions for synonyms like car and automobile are distinct and unrelated; sparse vectors may thus fail to capture the similarity between a word with car as a neighbor and a word with automobile as a neighbor.
+
+在本节中，我们介绍一种计算嵌入的方法：skip-gram
+
+> In this section we introduce one method for computing embeddings: skip-gram
+
+> `skip-gram`
+>
+> 释义：word2vec 中的一种算法，用目标词预测其上下文词，并以学到的权重作为词向量。
+
+配合负采样，有时称为 SGNS。skip-gram 算法是
+
+> with negative sampling, sometimes called SGNS. The skip-gram algorithm is one
+
+> `SGNS`
+>
+> 释义：“skip-gram with negative sampling”的缩写，指带负采样的 skip-gram 方法。
+
+名为 word2vec 的软件包中两种算法之一，因此有时该
+
+> of two algorithms in a software package called word2vec, and so sometimes the
+
+> `word2vec`
+>
+> 释义：包含 skip-gram 与 CBOW 两种算法的软件包，用于训练静态词嵌入。
+
+算法被宽泛地称为 word2vec（Mikolov et al. 2013a, Mikolov et al. 2013b）。word2vec 方法速度快、训练效率高，并且可以在网上轻松获取代码和预训练嵌入。word2vec 嵌入属于静态嵌入，也就是说，该方法为词表中的每个词学习一个固定的嵌入，
+
+> algorithm is loosely referred to as word2vec (Mikolov et al. 2013a, Mikolov et al. 2013b). The word2vec methods are fast, efficient to train, and easily available online with code and pretrained embeddings. Word2vec embeddings are static embeddings, meaning that the method learns one fixed embedding for each word in the
+
+> `static`（静态的）
+>
+> 释义：指每个词只学习一个固定向量，不随其出现的上下文而变化。
+
+> `embeddings`（嵌入）
+>
+> 释义：把词表示为短而稠密的实数向量，其维度数通常远小于词表大小。
+
+该嵌入对应词表中的一个词。第 9 章我们将介绍学习动态上下文嵌入的方法，例如广受欢迎的 BERT 表示系列，其中每个词的向量在不同上下文中是不同的。
+
+> vocabulary. In Chapter 9 we’ll introduce methods for learning dynamic contextual embeddings like the popular family of BERT representations, in which the vector for each word is different in different contexts.
+
+word2vec 的直觉是：与其统计每个上下文词
+
+> The intuition of word2vec is that instead of counting how often each context
+（比如 apricot）附近出现了多少次，我们改为在一个二分类预测任务上训练一个分类器：“词 c 是否可能出现在 apricot 附近？”我们实际上并不关心这个预测任务；而是把学到的分类器权重作为词嵌入。
+
+> word c occurs near, say, apricot, we’ll instead train a classifier on a binary prediction task: “Is word c likely to show up near apricot?” We don’t actually care about this prediction task; instead we’ll take the learned classifier weights as the word embeddings.
+
+这里具有革命性的直觉是：我们可以直接把连续文本用作隐含的
+
+> The revolutionary intuition here is that we can just use running text as implicitly
+监督训练数据来训练这样的分类器；出现在目标词 apricot 附近的词 c 就充当“词 c 是否可能出现在 apricot 附近？”这一问题的标准“正确答案”。这种方法通常称为自监督，它避免了需要
+
+> supervised training data for such a classifier; a word c that occurs near the target word apricot acts as gold ‘correct answer’ to the question “Is word c likely to show up near apricot?” This method, often called self-supervision, avoids the need for
+
+> `self-supervision`（自监督）
+>
+> 释义：直接以连续文本自身作为监督信号，无需任何人工标注数据。
+
+任何形式的人工标注监督信号。这一想法最早是在神经语言建模任务中提出的，当时 Bengio et al. (2003) 和 Collobert et al. (2011) 表明，神经语言模型（一种学习从前面若干词预测下一个词的神经网络）可以直接把连续文本中的下一个词用作其监督信号，并可以在完成这一预测任务的过程中用来为每个词学习一种嵌入表示。
+
+> any sort of hand-labeled supervision signal. This idea was first proposed in the task of neural language modeling, when Bengio et al. (2003) and Collobert et al. (2011) showed that a neural language model (a neural network that learned to predict the next word from prior words) could just use the next word in running text as its supervision signal, and could be used to learn an embedding representation for each word as part of doing this prediction task.
+
+我们将在下一章看到如何进行神经网络，而 word2vec 是一个
+
+> We’ll see how to do neural networks in the next chapter, but word2vec is a
+比神经网络语言模型简单得多的模型，这体现在两个方面。第一，word2vec 简化了任务（使其成为二分类而不是词预测）。第二，word2vec 简化了架构（训练一个 logistic 回归分类器，而不是训练带有隐藏层、需要更复杂训练算法的多层神经网络）。skip-gram 的直觉是：
+
+> much simpler model than the neural network language model, in two ways. First, word2vec simplifies the task (making it binary classification instead of word prediction). Second, word2vec simplifies the architecture (training a logistic regression classifier instead of a multi-layer neural network with hidden layers that demand more sophisticated training algorithms). The intuition of skip-gram is:
+
+- 将目标词与其邻近的一个上下文词视为正例。
+- 从词表中随机采样其他词作为负样本。
+- 使用逻辑回归训练一个分类器来区分这两种情况。
+- 将学习到的权重用作嵌入。
+
+> Treat the target word and a neighboring context word as positive examples.
+> Randomly sample other words in the lexicon to get negative samples.
+> Use logistic regression to train a classifier to distinguish those two cases.
+> Use the learned weights as the embeddings.
+
+### 5.5.1 分类器
+
+> 5.5.1 The classifier
+
+我们先来思考这个分类任务，然后再讨论如何训练。
+
+> Let’s start by thinking about the classification task, and then turn to how to train.
+
+设想下面这样一个句子，其中目标词为 apricot，并假设我们使用 ±2 个上下文词的窗口：
+
+> Imagine a sentence like the following, with a target word apricot, and assume we’re using a window of ±2 context words:
+
+> …… lemon, a [tablespoon of apricot jam, a] pinch ……
+>
+> *... lemon, a [tablespoon of apricot jam, a] pinch ...*
+
+> c1 c2 w c3 c4
+
+我们的目标是训练一个分类器，使得给定一个由目标词
+
+> Our goal is to train a classifier such that, given a tuple (w,c) of a target word
+w 与一个候选上下文词 c 组成的元组（例如 (apricot, jam)，或者也可能是 (apricot, aardvark)）时，它返回 c 是一个真实上下文词的概率（对 jam 为真，对 aardvark 为假）：
+
+> w paired with a candidate context word c (for example (apricot, jam), or perhaps (apricot, aardvark)) it will return the probability that c is a real context word (true for jam, false for aardvark):
+
+P(+|w,c) (5.11)
+词 c 不是 w 的真实上下文词的概率就是 1 减去
+
+> The probability that word c is not a real context word for w is just 1 minus
+式 5.11：
+
+> Eq. 5.11:
+
+P(−|w,c) = 1−P(+|w,c) (5.12)
+分类器如何计算概率 P？skip-gram 模型的直觉是把这个概率建立在嵌入相似度之上：如果一个词的嵌入向量与目标词嵌入相似，它就更可能出现在目标词附近。为了计算这些稠密嵌入之间的相似度，我们依赖于这样一个直觉：如果两个向量的点积很大，它们就相似（毕竟，余弦只是归一化后的点积）。换句话说：
+
+> How does the classifier compute the probability P? The intuition of the skipgram model is to base this probability on embedding similarity: a word is likely to occur near the target if its embedding vector is similar to the target embedding. To compute similarity between these dense embeddings, we rely on the intuition that two vectors are similar if they have a high dot product (after all, cosine is just a normalized dot product). In other words:
+
+Similarity(w,c) ≈c·w (5.13)
+点积 c · w 不是概率，它只是一个取值范围从 −∞ 到 ∞ 的数（由于 word2vec 嵌入中的元素可以为负，点积也可能为负）。为了把点积转化为概率，我们使用逻辑函数或 Sigmoid 函数 σ(x)，它是逻辑回归的核心基础：
+
+> The dot product c · w is not a probability, it’s just a number ranging from −∞to ∞(since the elements in word2vec embeddings can be negative, the dot product can be negative). To turn the dot product into a probability, we’ll use the logistic or sigmoid function σ(x), the fundamental core of logistic regression:
+
+1
+σ(x) = (5.14)
+1+exp(−x)
+我们把词 c 是目标词 w 的真实上下文词的概率建模为：
+
+> We model the probability that word c is a real context word for target word w as:
+
+1
+P(+|w,c) = σ(c·w) = (5.15)
+1+exp(−c·w)
+Sigmoid 函数返回 0 到 1 之间的一个数，但要使其成为概率，我们还需要让两个可能事件（c 是上下文词，以及 c 不是上下文词）的概率之和为 1。因此，我们把词 c 不是 w 的真实上下文词的概率估计为：
+
+> The sigmoid function returns a number between 0 and 1, but to make it a probability we’ll also need the total probability of the two possible events (c is a context word, and c isn’t a context word) to sum to 1. We thus estimate the probability that word c is not a real context word for w as:
+
+P(−|w,c) = 1−P(+|w,c)
+1 (5.16)
+= σ(−c·w) = 1+exp(c·w)
+式 5.15 给出了针对一个词的概率，但窗口中存在许多上下文词。skip-gram 作了如下简化假设：所有上下文词都是相互独立的，这使我们只需将它们的概率相乘即可：
+
+> Equation 5.15 gives us the probability for one word, but there are many context words in the window. Skip-gram makes the simplifying assumption that all context words are independent, allowing us to just multiply their probabilities:
+
+> L
+
+Y
+P(+|w,c1:L) = (5.17)
+σ(ci ·w)
+X
+logP(+|w,c1:L) = logσ(ci ·w) (5.18)
+总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将
+
+> In summary, skip-gram trains a probabilistic classifier that, given a test target word w and its context window of L words c1:L, assigns a probability based on how similar this context window is to the target word. The probability is based on applying the
+
+> i=1
+
+> L
+
+> i=1
+
+![](images/fig_p13_0.png)
+
+*图 5.6 skip-gram 模型学到的嵌入。该算法为每个词存储两个嵌入，即目标词嵌入（有时称为输入嵌入）和上下文词嵌入（有时称为输出嵌入）。因此，算法学习的参数 θ 是一个由 2|V| 个向量组成的矩阵，每个向量的维度为 d，它由两个矩阵拼接而成：目标词嵌入 W 和上下文+噪声嵌入 C。*
+*Figure 5.6 The embeddings learned by the skipgram model. The algorithm stores two embeddings for each word, the target embedding (sometimes called the input embedding) and the context embedding (sometimes called the output embedding). The parameter θ that the algorithm learns is thus a matrix of 2|V| vectors, each of dimension d, formed by concatenating two matrices, the target embeddings W and the context+noise embeddings C.*
+
+逻辑（Sigmoid）函数应用于目标词嵌入与每个上下文词嵌入的点积。要计算这个概率，我们只需要词汇表中每个目标词和上下文词的嵌入。
+
+> logistic (sigmoid) function to the dot product of the embeddings of the target word with each context word. To compute this probability, we just need embeddings for each target word and context word in the vocabulary.
+
+图 5.6 展示了我们所需参数的直观含义。skip-gram 实际上
+
+> Fig. 5.6 shows the intuition of the parameters we’ll need. Skip-gram actually
+为每个词存储两个嵌入：一个是该词作为目标词时的嵌入，另一个是该词作为上下文词时的嵌入。因此，我们需要学习的参数是两个矩阵 W 和 C，每个矩阵都包含词汇表 V 中全部 |V| 个词各自的嵌入。2 下面我们转向学习这些嵌入（这正是训练这个分类器的真正目的所在）。
+
+> stores two embeddings for each word, one for the word as a target, and one for the word considered as context. Thus the parameters we need to learn are two matrices W and C, each containing an embedding for every one of the |V| words in the vocabulary V.2 Let’s now turn to learning these embeddings (which is the real goal of training this classifier in the first place).
+
+### 5.5.2 学习 skip-gram 嵌入
+
+> 5.5.2 Learning skip-gram embeddings
+
+skip-gram 嵌入的学习算法以文本语料库和选定的词汇量 N 作为输入。它首先为 N 个词汇表中的每个词分配一个随机的嵌入向量，然后迭代地调整每个词 w 的嵌入，使之更接近文本中出现在其附近的词的嵌入，而不那么接近未出现在其附近的词的嵌入。我们先来看一条训练数据：
+
+> The learning algorithm for skip-gram embeddings takes as input a corpus of text, and a chosen vocabulary size N. It begins by assigning a random embedding vector for each of the N vocabulary words, and then proceeds to iteratively shift the embedding of each word w to be more like the embeddings of words that occur nearby in texts, and less like the embeddings of words that don’t occur nearby. Let’s start by considering a single piece of training data:
+
+> …… lemon, a [tablespoon of apricot jam, a] pinch ……
+>
+> *... lemon, a [tablespoon of apricot jam, a] pinch ...*
+
+> c1 c2 w c3 c4
+
+这个例子有一个目标词 w（apricot），以及 L = ±2
+
+> This example has a target word w (apricot), and 4 context words in the L = ±2
+窗口中的 4 个上下文词，从而得到 4 个正训练实例（见下方左侧）：
+
+> window, resulting in 4 positive training instances (on the left below):
+
+正例 + 负例 w cpos w cneg w cneg apricot tablespoon apricot aardvark apricot seven apricot of apricot my apricot forever apricot jam apricot where apricot dear apricot a apricot coaxial apricot if
+
+> positive examples + negative examples w cpos w cneg w cneg apricot tablespoon apricot aardvark apricot seven apricot of apricot my apricot forever apricot jam apricot where apricot dear apricot a apricot coaxial apricot if
+训练二分类器时，我们还需要负例。事实上，带负采样的 skip-gram（SGNS）使用的负例比正例更多（二者之间的比例由参数 k 设定）。因此，对于每一个 (w,cpos) 训练实例，我们会创建 k 个负样本，每个负样本由目标词 w 加上一个“噪声词”cneg 组成。噪声词是从词表中随机抽取的一个词，并被限制为不能是目标词 w。上表展示的是 k = 2 的情形，因此对于每个正例 w,cpos，负训练集中会有 2 个负例。
+
+> For training a binary classifier we also need negative examples. In fact skipgram with negative sampling (SGNS) uses more negative examples than positive examples (with the ratio between them set by a parameter k). So for each of these(w,cpos) training instances we’ll create k negative samples, each consisting of the target w plus a ‘noise word’ cneg. A noise word is a random word from the lexicon, constrained not to be the target word w. The table right above shows the setting where k = 2, so we’ll have 2 negative examples in the negative training set −for each positive example w,cpos.
+
+> 原则上，目标矩阵和上下文矩阵可以使用不同的词汇表，但我们会加以简化
+>
+> *In principle the target matrix and the context matrix could use different vocabularies, but we’ll simplify*
+
+噪声词是根据其加权一元概率来选取的
+
+> The noise words are chosen according to their weighted unigram probability
+pα(w)，其中 α 是一个权重。如果我们按照未加权的一元概率 P(w) 来采样，那就意味着：以一元概率 P(“the”) 把词 the 选作噪声词，以一元概率 P(“aardvark”) 把 aardvark 选作噪声词，依此类推。但实践中通常把 α 设为 0.75，即使用加权 P3 4 (w)：
+
+> pα(w), where α is a weight. If we were sampling according to unweighted probability P(w), it would mean that with unigram probability P(“the”) we would choose the word the as a noise word, with unigram probability P(“aardvark”) we would choose aardvark, and so on. But in practice it is common to set α = 0.75, i.e. use the weighting P3 4 (w):
+
+count(w)α (5.19)
+Pα(w) = P
+w′ count(w′)α
+把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) > P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：
+
+> Setting α = .75 gives better performance because it gives rare noise words slightly higher probability: for rare words, Pα(w) > P(w). To illustrate this intuition, it might help to work out the probabilities for an example with α = .75 and two events, P(a) = 0.99 and P(b) = 0.01:
+
+.99.75
+Pα(a) = .99.75 +.01.75 = 0.97
+.01.75
+Pα(b) = .99.75 +.01.75 = 0.03 (5.20)
+因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。
+
+> Thus using α = .75 increases the probability of the rare event b from 0.01 to 0.03.
+
+给定正、负训练实例的集合，以及一组初始
+
+> Given the set of positive and negative training instances, and an initial set of
+嵌入，学习算法的目标是调整这些嵌入，以
+
+> embeddings, the goal of the learning algorithm is to adjust those embeddings to
+
+- 最大化从正例中抽取的目标词、上下文词对 (w,cpos) 的相似度
+- 最小化来自负例的 (w,cneg) 对的相似度。
+
+> Maximize the similarity of the target word, context word pairs (w,cpos) drawn from the positive examples
+> Minimize the similarity of the (w,cneg) pairs from the negative examples.
+
+如果我们考虑一个词/上下文对 (w,cpos) 及其 k 个噪声词 cneg1……cnegk，
+
+> If we consider one word/context pair (w,cpos) with its k noise words cneg1...cnegk,
+我们就可以把这两个目标表示为如下待最小化的损失函数 L（因此带负号 −）；这里第一项表示我们希望分类器给真实的上下文词 cpos 赋予较高的“是邻居”的概率，第二项表示我们希望给每个噪声词 cnegi 赋予较高的“不是邻居”的概率，二者相乘是因为我们假定它们彼此独立：
+
+> we can express these two goals as the following loss function L to be minimized(hence the −); here the first term expresses that we want the classifier to assign the real context word cpos a high probability of being a neighbor, and the second term expresses that we want to assign each of the noise words cnegi a high probability of being a non-neighbor, all multiplied because we assume independence:
+
+" kY #
+L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi)
+" #
+X
+= − logP(+|w,cpos)+ logP(−|w,cnegi)
+" #
+X   
+= − logP(+|w,cpos)+ log 1−P(+|w,cnegi)
+" #
+X
+logσ(cpos ·w)+ logσ(−cnegi ·w)
+= − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。
+
+> = − That is, we want to maximize the dot product of the word with the actual context words, and minimize the dot products of the word with the k negative sampled nonneighbor words.
+
+> i=1
+
+> k
+
+> i=1
+
+> k
+
+> i=1
+
+我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了
+
+> We minimize this loss function using stochastic gradient descent. Fig. 5.7 shows
+一步学习的直观过程。
+
+> the intuition of one step of learning.
+
+![](images/fig_p15_0.png)
+
+*图 5.7 一步梯度下降的直观示意。skip-gram 模型试图移动嵌入，使目标嵌入（此处为 apricot）更靠近（与之具有更高的点积）邻近词的上下文嵌入（此处为 jam），并更远离（与之具有更低的点积）不在附近出现的噪声词的上下文嵌入（此处为 Tolstoy 和 matrix）。*
+*Figure 5.7 Intuition of one step of gradient descent. The skip-gram model tries to shift embeddings so the target embeddings (here for apricot) are closer to (have a higher dot product with) context embeddings for nearby words (here jam) and further from (lower dot product with) context embeddings for noise words that don’t occur nearby (here Tolstoy and matrix).*
+
+为了得到梯度，我们需要对式 5.21 求关于
+
+> To get the gradient, we need to take the derivative of Eq. 5.21 with respect to
+各个不同嵌入的导数。结果表明，导数如下（我们将证明留作本章末尾的练习）：
+
+> the different embeddings. It turns out the derivatives are the following (we leave the proof as an exercise at the end of the chapter):
+
+∂L
+= [σ(cpos ·w)−1]w (5.22)
+∂cpos∂L
+∂cnegi = [σ(cnegi ·w)]w (5.23)
+∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24)
+[σ(cnegi ·w)]cnegi
+因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程如下：
+
+> The update equations going from time step t to t + 1 in stochastic gradient descent are thus:
+
+> k
+
+> i=1
+
+ct+1 = ct pos −η[σ(ct pos ·wt)−1]wt (5.25)
+ct+1 negi = ct negi −η[σ(ct negi ·wt)]wt (5.26)
+" #
+wt+1 = wt −η X
+[σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct
+pos + (5.27)
+于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。
+
+> Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to minimize the loss in Eq. 5.21 by making the updates in (Eq. 5.25)-(Eq. 5.27).
+
+> pos
+
+> k
+
+> negi
+
+> i=1
+
+回想一下，skip-gram 模型为每个词 i 学习两个独立的嵌入：
+
+> Recall that the skip-gram model learns two separate embeddings for each word i:
+
+> `target`（目标词嵌入）
+>
+> 释义：skip-gram 为每个词学得的两个嵌入之一，存于目标矩阵 W，表示该词作为预测中心词时的向量。
+
+即目标嵌入 wi 和上下文嵌入 ci，它们存储在两个矩阵中，即
+
+> the target embedding wi and the context embedding ci, stored in two matrices, the
+
+> `embedding context embedding`（上下文词嵌入）
+>
+> 释义：skip-gram 为每个词学得的另一个嵌入，存于上下文矩阵 C，表示该词作为上下文词出现时的向量。
+
+目标矩阵 W 和上下文矩阵 C。常见的做法是直接将两者相加，
+
+> target matrix W and the context matrix C. It’s common to just add them together,
+用向量 wi + ci 表示词 i。另一种做法是丢弃 C 矩阵，仅用向量 wi 表示每个词 i。
+
+> representing word i with the vector wi +ci. Alternatively we can throw away the C matrix and just represent each word i by the vector wi.
+
+与 tf-idf 这类简单的基于计数的方法一样，上下文窗口大小
+
+> As with the simple count-based methods like tf-idf, the context window size
+会影响 skip-gram 嵌入的性能，实验中通常会在开发集上调优上下文窗口大小这一参数。
+
+> affects the performance of skip-gram embeddings, and experiments often tune the context window size parameter on a devset.
+
+### 5.5.3 其他类型的静态嵌入
+
+> 5.5.3 Other kinds of static embeddings
+
+静态嵌入有很多类型。作为 word2vec 的一种扩展，fasttext
+
+> There are many kinds of static embeddings. An extension of word2vec, fasttext
+
+> `fasttext`
+>
+> 释义：word2vec 的扩展模型，用子词 n-gram 表示词，从而能处理未登录词以及形态丰富语言中的词稀疏问题。
+
+（Bojanowski et al., 2017）解决了我们迄今所介绍的 word2vec 存在的一个问题：它没有很好的办法处理未登录词——即在测试语料库中出现、但在训练语料库中未出现过的词。一个相关的问题是词稀疏，例如在形态丰富的语言中，每个名词和动词的众多形式里有些可能很少出现。Fasttext 通过使用子词模型来处理这些问题，它将每个词表示为该词本身再加上一袋组成它的 n-gram，并为每个词添加特殊边界符号 < 和 >。例如，当 n = 3 时，词 where 将被表示为序列 <where> 再加上字符 n-gram：
+
+> (Bojanowski et al., 2017), addresses a problem with word2vec as we have presented it so far: it has no good way to deal with unknown words—words that appear in a test corpus but were unseen in the training corpus. A related problem is word sparsity, such as in languages with rich morphology, where some of the many forms for each noun and verb may only occur rarely. Fasttext deals with these problems by using subword models, representing each word as itself plus a bag of constituent n-grams, with special boundary symbols < and > added to each word. For example, with n = 3 the word where would be represented by the sequence <where> plus the character n-grams:
+
+<wh, whe, her, ere, re>
+随后为每个组成 n-gram 学习一个 skipgram 嵌入，而单词 where 则由其所有组成 n-gram 的嵌入之和来表示。
+
+> Then a skipgram embedding is learned for each constituent n-gram, and the word where is represented by the sum of all of the embeddings of its constituent n-grams.
+
+未知词此后就只能由组成它的各个 n-gram 之和来表示。
+
+> Unknown words can then be represented only by the sum of the constituent n-grams.
+
+一个 fasttext 开源库（包含 157 种语言的预训练嵌入）可在 https://fasttext.cc 获取。
+
+> A fasttext open-source library, including pretrained embeddings for 157 languages, is available at https://fasttext.cc.
+
+另一个使用极广的静态嵌入模型是 GloVe（Pennington 等，
+
+> Another very widely used static embedding model is GloVe (Pennington et al.,
+2014），它是 Global Vectors 的简称，因为该模型以捕捉全局语料库统计量为基础。GloVe 基于词-词共现矩阵中概率的比值。
+
+> 2014), short for Global Vectors, because the model is based on capturing global corpus statistics. GloVe is based on ratios of probabilities from the word-word cooccurrence matrix.
+
+事实证明，像 word2vec 这样的稠密嵌入实际上与基于计数的嵌入之间存在一种优雅的数学关系：word2vec 可以看作是以特定的（PPMI）加权方式隐式地优化某个计数矩阵的函数（Levy 和 Goldberg，2014c）。
+
+> It turns out that dense embeddings like word2vec actually have an elegant mathematical relationship with count-based embeddings, in which word2vec can be seen as implicitly optimizing a function of a count matrix with a particular (PPMI) weighting (Levy and Goldberg, 2014c).
+
+## 5.6 嵌入的可视化
+
+> 5.6 Visualizing Embeddings
+
+“只要维数大致是两个，我在多少个维度上都能看得很清楚。”
+
+> “I see well in many dimensions as long as the dimensions are around two.”
+
+> 已故经济学家 Martin Shubik
+>
+> *The late economist Martin Shubik*
+
+可视化嵌入是帮助理解、应用和
+
+> Visualizing embeddings is an important goal in helping understand, apply, and
+改进这些词义模型的一个重要目标。但我们如何可视化一个（例如）100 维的向量呢？
+
+> improve these models of word meaning. But how can we visualize a (for example) 100-dimensional vector?
+
+可视化一个词的含义的最简单方法，
+
+> The simplest way to visualize the meaning of a word
+即对于嵌入到空间中的 w，就是列出与
+
+> w embedded in a space is to list the most similar words to
+w 最相似的词，做法是把词汇表中所有词的向量按
+
+> w by sorting the vectors for all words in the vocabulary by
+它们与 w 的向量的余弦值进行排序。例如，使用由 GloVe 算法计算的一组特定嵌入时，与 frog 最接近的 7 个词是：frogs、toad、litoria、leptodactylidae、rana、lizard 和 eleutherodactylus（Pennington 等，2014）。
+
+> their cosine with the vector for w. For example the 7 closest words to frog using a particular set of embeddings computed with the GloVe algorithm are: frogs, toad, litoria, leptodactylidae, rana, lizard, and eleutherodactylus (Pennington et al., 2014).
+
+> 手腕 脚踝
+>
+> *WRIST ANKLE*
+
+> 手臂 肩部
+>
+> *ARM SHOULDER*
+
+> 腿 手
+>
+> *LEG HAND*
+
+还有一种可视化方法是使用聚类
+
+> Yet another visualization method is to use a clustering
+算法，以层次结构的形式展示嵌入空间中有哪些词彼此相似。左图把某些名词嵌入向量的层次聚类作为一种可视化方法（Rohde 等，2006）。
+
+> algorithm to show a hierarchical representation of which words are similar to others in the embedding space. The figure on the left uses hierarchical clustering of some embedding vectors for nouns as a visualization method (Rohde et al., 2006).
+
+然而，最常见的可视化方法也许是把一个词的 100 个维度投影到 2 个维度上。图 5.1 展示了这样的一种可视化，图 5.10 也是，它们使用的投影方法称为 t-SNE（van der
+
+> Probably the most common visualization method, however, is to project the 100 dimensions of a word down into 2 dimensions. Fig. 5.1 showed one such visualization, as does Fig. 5.10, using a projection method called t-SNE (van der
+Maaten 和 Hinton，2008）。
+
+> Maaten and Hinton, 2008).
+
+## 5.7 嵌入的语义性质
+
+> 5.7 Semantic properties of embeddings
+
+本节简要总结已被研究过的一些嵌入的语义性质。
+
+> In this section we briefly summarize some of the semantic properties of embeddings that have been studied.
+
+不同类型的相似或关联：向量语义模型的一个参数是用于收集计数的上下文窗口大小。它通常为目标词两侧各 1 到 10 个词（总上下文为 2-20 个词）。
+
+> Different types of similarity or association: One parameter of vector semantic models is the size of the context window used to collect counts. This is generally between 1 and 10 words on each side of the target word (for a total context of 2-20 words).
+
+这一选择取决于表示的目标。较短的上下文窗口
+
+> The choice depends on the goals of the representation. Shorter context windows
+往往会产生更偏句法的表示，因为信息来自紧邻的词。当向量由短上下文窗口计算时，与目标词 w 最相似的词往往是词性相同的语义相似词。当向量由长上下文窗口计算时，与目标词 w 余弦值最高的词往往是主题相关但并不相似的词。
+
+> tend to lead to representations that are a bit more syntactic, since the information is coming from immediately nearby words. When the vectors are computed from short context windows, the most similar words to a target word w tend to be semantically similar words with the same parts of speech. When vectors are computed from long context windows, the highest cosine words to a target word w tend to be words that are topically related but not similar.
+
+例如，Levy 和 Goldberg（2014a）表明，使用窗口为
+
+> For example Levy and Goldberg (2014a) showed that using skip-gram with a
+±2 的 skip-gram 时，与单词 Hogwarts（出自《哈利·波特》系列）最相似的词是其他虚构学校的名字：Sunnydale（出自《吸血鬼猎人巴菲》）或 Evernight（出自一个吸血鬼系列）。当窗口为 ±5 时，与 Hogwarts 最相似的词是与《哈利·波特》系列主题相关的其他词：Dumbledore、Malfoy 和 half-blood。
+
+> window of ±2, the most similar words to the word Hogwarts (from the Harry Potter series) were names of other fictional schools: Sunnydale (from Buffy the Vampire Slayer) or Evernight (from a vampire series). With a window of ±5, the most similar words to Hogwarts were other words topically related to the Harry Potter series: Dumbledore, Malfoy, and half-blood.
+
+区分词与词之间的两种相似或关联通常也是有用的，
+
+> It’s also often useful to distinguish two kinds of similarity or association between
+
+> `first-order co-occurrence`（一阶共现）
+>
+> 释义：指两个词因通常出现在彼此附近而具有的关联，也称组合关联，如 wrote 与 book、poem 之间的关系。
+
+（Sch¨utze 和 Pedersen，1993）。如果两个词通常彼此邻近，
+
+> words (Sch¨utze and Pedersen, 1993). Two words have first-order co-occurrence
+它们就具有一阶共现（有时称为组合关联）。
+
+> (sometimes called syntagmatic association) if they are typically nearby each other.
+
+因此，wrote 是 book 或 poem 的一阶关联词。如果两个词具有相似的
+
+> Thus wrote is a first-order associate of book or poem. Two words have second-order
+
+> `second-order co-occurrence`（二阶共现）
+>
+> 释义：指两个词因拥有相似的邻近词而具有的关联，也称聚合关联，如 wrote 与 said、remarked 之间的关系。
+
+共现（有时称为聚合关联），
+
+> co-occurrence (sometimes called paradigmatic association) if they have similar
+则说明它们具有相似的邻居。因此，wrote 是 said 或 remarked 这类词的二阶关联词。
+
+> neighbors. Thus wrote is a second-order associate of words like said or remarked.
+
+类比/关系相似度：嵌入的另一个语义性质是它们捕捉关系含义的能力。在一个重要的早期向量空间模型中，
+
+> Analogy/Relational Similarity: Another semantic property of embeddings is their ability to capture relational meanings. In an important early vector space model of
+
+> `parallelogram model`（平行四边形模型）
+>
+> 释义：一种早期向量空间模型，用词向量之差来表示类比关系，即平行四边形的偏移方向对应词语间的关系。
+
+在认知研究中，Rumelhart 和 Abrahamson（1973）提出了平行四边形模型，
+
+> cognition, Rumelhart and Abrahamson (1973) proposed the parallelogram model
+用于求解形如「a 之于 b 如同 a* 之于什么？」的简单类比问题。在这类问题中，系统会得到一个诸如 apple:tree::grape:? 的问题，即 apple 之于 tree 如同 grape 之于 ____，并且必须填入单词 vine。在如图 5.8 所示的平行四边形模型中，从单词 apple 指向单词 tree 的向量（= # » tree−# » apple）被加到 grape 的向量（# » grape）上；然后返回距离该点最近的单词。
+
+> for solving simple analogy problems of the form a is to b as a* is to what?. In such problems, a system is given a problem like apple:tree::grape:?, i.e., apple is to tree as grape is to , and must fill in the word vine. In the parallelogram model, il- lustrated in Fig. 5.8, the vector from the word apple to the word tree (= # » tree−# » apple) is added to the vector for grape (# » grape); the nearest word to that point is returned.
+
+![](images/fig_p18_1.png)
+
+*图 5.8 用于类比问题的平行四边形模型（Rumelhart 和 Abrahamson，1973）：# » vine 的位置可以通过从 # » tree 中减去 # » apple 再加上 # » grape 得到。*
+*Figure 5.8 The parallelogram model for analogy problems (Rumelhart and Abrahamson, 1973): the location of # » vine can be found by subtracting # » apple from # » tree and adding # » grape.*
+
+在早期使用稀疏嵌入的研究中，学者们表明，稀疏的语义向量模型能够求解这类类比问题（Turney 和 Littman，2005），但平行四边形方法之所以受到更多现代关注，是因为它在 word2vec 或 GloVe 向量上取得了成功（Mikolov 等 2013c；Levy 和 Goldberg 2014b；Pennington 等 2014）。例如，表达式 # » king −man + # » # » woman 的结果是一个接近 # » queen 的向量。类似地，# » Paris −# » France + # » Italy 得到的向量与 # » Rome 很接近。因此，嵌入模型似乎提取出了诸如 MALE-FEMALE、CAPITAL-CITY-OF，甚至 COMPARATIVE/SUPERLATIVE 这类关系的表示，如图 5.9 中来自 GloVe 的结果所示。
+
+> In early work with sparse embeddings, scholars showed that sparse vector models of meaning could solve such analogy problems (Turney and Littman, 2005), but the parallelogram method received more modern attention because of its success with word2vec or GloVe vectors (Mikolov et al. 2013c, Levy and Goldberg 2014b, Pennington et al. 2014). For example, the result of the expression # » king −man + # » # » woman is a vector close to # » queen. Similarly, # » Paris −# » France + # » Italy results in a vector that is close to # » Rome. The embedding model thus seems to be extracting representations of relations like MALE-FEMALE, or CAPITAL-CITY-OF, or even COMPARATIVE/SUPERLATIVE, as shown in Fig. 5.9 from GloVe.
+
+![](images/fig_p18_0.png)
+
+*图 5.9 GloVe 向量空间的关系性质，通过把向量投影到二维上来展示。（a）# » king−# » man+ # » woman 与 # » queen 接近。（b）偏移量似乎捕捉到了比较级和最高级的形态变化（Pennington 等，2014）。*
+*Figure 5.9 Relational properties of the GloVe vector space, shown by projecting vectors onto two dimensions.(a) # » king−# » man+ # » woman is close to # » queen. (b) offsets seem to capture comparative and superlative morphology(Pennington et al., 2014).*
+
+对于一个 a : b :: a∗: b∗ 问题，即算法被给定向量 a、b 和
+
+> For an a : b :: a∗: b∗problem, meaning the algorithm is given vectors a, b, and
+a∗，并且必须找出 b∗，平行四边形方法如下：
+
+> a∗and must find b∗, the parallelogram method is thus:
+
+ˆb∗= argmin distance(x,b−a+a∗) (5.28)
+其中使用某种距离函数，例如欧氏距离。
+
+> with some distance function, such as Euclidean distance.
+
+> x
+
+这里有一些需要注意之处。例如，在 word2vec 或 GloVe 嵌入空间中，平行四边形算法返回的最近值通常实际上并不是 b*，而是 3 个输入词之一或它们的形态变体（即 cherry:red :: potato:x 返回的是 potato 或 potatoes，而不是 brown），因此必须显式地排除这些词。此外，虽然当任务涉及高频词、较小距离以及某些关系（如把国家与其首都关联起来，或把动词/名词与其屈折形式关联起来）时，嵌入空间表现良好，但对于其他关系，基于嵌入的平行四边形方法效果就不那么好（Linzen 2016；Gladkova 等 2016；Schluter 2018；Ethayarajh 等 2019a），而且 Peterson 等（2020）确实认为，平行四边形方法总体上过于简单，无法建模人类形成这类类比时的认知过程。
+
+> There are some caveats. For example, the closest value returned by the parallelogram algorithm in word2vec or GloVe embedding spaces is usually not in fact b* but one of the 3 input words or their morphological variants (i.e., cherry:red :: potato:x returns potato or potatoes instead of brown), so these must be explicitly excluded. Furthermore while embedding spaces perform well if the task involves frequent words, small distances, and certain relations (like relating countries with their capitals or verbs/nouns with their inflected forms), the parallelogram method with embeddings doesn’t work as well for other relations (Linzen 2016, Gladkova et al. 2016, Schluter 2018, Ethayarajh et al. 2019a), and indeed Peterson et al. (2020) argue that the parallelogram method is in general too simple to model the human cognitive process of forming analogies of this kind.
+
+### 5.7.1 嵌入与历史语义
+
+> 5.7.1 Embeddings and Historical Semantics
+
+嵌入也可以成为研究意义如何随时间变化的有用工具，方法是计算多个嵌入空间，每个嵌入空间分别来自写于特定时间段的文本。例如，图 5.10 展示了过去两个世纪中英语单词意义变化的可视化结果，它是通过从 Google n-grams（Lin 等，2012b）和 the Corpus of Historical American English（Davies，2012）等历史语料库中为每个十年构建单独的嵌入空间计算得到的。
+
+> Embeddings can also be a useful tool for studying how meaning changes over time, by computing multiple embedding spaces, each from texts written in a particular time period. For example Fig. 5.10 shows a visualization of changes in meaning in English words over the last two centuries, computed by building separate embedding spaces for each decade from historical corpora like Google n-grams (Lin et al., 2012b) and the Corpus of Historical American English (Davies, 2012).
+
+![](images/fig_p19_0.png)
+
+*图 5.10 使用 word2vec 向量对英语中 3 个词的语义演变进行 t-SNE 可视化。每个词的现代义项以及灰色的上下文词，都是根据最近（现代）时间点的嵌入空间计算得到的。更早的点则根据更早的历史嵌入空间计算得到。这些可视化展示了：gay 一词从与「cheerful」或「frolicsome」相关的含义转变为指代同性恋；broadcast 从其播种的本义发展出现代的「传输」义；以及 awful 一词的贬义化，即它从表示「full of awe」转变为表示「terrible or appalling」（Hamilton 等，2016b）。*
+*Figure 5.10 A t-SNE visualization of the semantic change of 3 words in English using word2vec vectors. The modern sense of each word, and the grey context words, are computed from the most recent (modern) time-point embedding space. Earlier points are computed from earlier historical embedding spaces. The visualizations show the changes in the word gay from meanings related to “cheerful” or “frolicsome” to referring to homosexuality, the development of the modern “transmission” sense of broadcast from its original sense of sowing seeds, and the pejoration of the word awful as it shifted from meaning “full of awe”to meaning “terrible or appalling” (Hamilton et al., 2016b).*
+
+## 5.8 偏见与嵌入
+
+> 5.8 Bias and Embeddings
+
+除了能够从文本中学习词义之外，嵌入遗憾的是也会再现文本中潜在隐含的偏见和刻板印象。正如上一节刚刚展示的那样，嵌入可以粗略地建模关系相似度：‘queen’ 作为与 ‘king’ - ‘man’ + ‘woman’ 最接近的词，蕴含着类比 man:woman::king:queen。但同样的这些嵌入类比也表现出性别刻板印象。例如，Bolukbasi 等（2016）发现，在基于新闻文本训练的 word2vec 嵌入中，与 ‘computer programmer’ - ‘man’ + ‘woman’ 最接近的职业是 ‘homemaker’，并且嵌入同样暗示了「‘father’ 之于 ‘doctor’ 如同 ‘mother’ 之于 ‘nurse’」这一类比。这可能导致 Crawford（2017）和 Blodgett 等（2020）所称的分配伤害（allocational harm），即系统不公平地把资源（工作或信贷）分配给不同群体。例如，把嵌入用作搜寻有潜力程序员或医生的招聘算法的一部分，就可能因此错误地降低包含女性名字的文档的权重。
+
+> In addition to their ability to learn word meaning from text, embeddings, alas, also reproduce the implicit biases and stereotypes that were latent in the text. As the prior section just showed, embeddings can roughly model relational similarity: ‘queen’ as the closest word to ‘king’ - ‘man’ + ‘woman’ implies the analogy man:woman::king:queen. But these same embedding analogies also exhibit gender stereotypes. For example Bolukbasi et al. (2016) find that the closest occupation to ‘computer programmer’ - ‘man’ + ‘woman’ in word2vec embeddings trained on news text is ‘homemaker’, and that the embeddings similarly suggest the analogy‘father’ is to ‘doctor’ as ‘mother’ is to ‘nurse’. This could result in what Crawford(2017) and Blodgett et al. (2020) call an allocational harm, when a system allo- cates resources (jobs or credit) unfairly to different groups. For example algorithms that use embeddings as part of a search for hiring potential programmers or doctors might thus incorrectly downweight documents with women’s names.
+
+事实证明，嵌入不只是反映其输入的统计规律，还
+
+> It turns out that embeddings don’t just reflect the statistics of their input, but also
+
+> `bias`（偏见）
+>
+> 释义：嵌入从训练文本中习得的、对特定社会群体的隐含偏见与刻板印象，例如把某些职业与特定性别不当关联。
+
+会放大偏见；带有性别色彩的词语在嵌入空间中比它们
+
+> amplify bias; gendered terms become more gendered in embedding space than they
+
+> `amplification`（放大）
+>
+> 释义：指嵌入空间中的偏见比输入文本的统计规律或真实就业数据所体现的更强，即偏见被放大的现象。
+
+在输入文本统计中所呈现的更具性别色彩（Zhao 等 2017；Ethayarajh 等 2019b；Jia 等 2020），而且偏见比在实际劳动力就业统计中更加夸张（Garg 等，2018）。
+
+> were in the input text statistics (Zhao et al. 2017, Ethayarajh et al. 2019b, Jia et al. 2020), and biases are more exaggerated than in actual labor employment statistics(Garg et al., 2018).
+
+嵌入还编码了作为人类推理之特性的隐含联想。人类
+
+> Embeddings also encode the implicit associations that are a property of human
+推理。内隐联想测验（Implicit Association Test）（Greenwald 等，1998）通过测量人们为各类别词语贴标签时反应时的差异，来衡量人们在概念（如 ‘flowers’ 或 ‘insects’）与属性（如 ‘pleasantness’ 和 ‘unpleasantness’）之间的联想。3 使用这类方法，美国被试被证明会把非裔美国人的名字与不愉快的词联系起来（比欧裔美国人的名字更多），把男性名字更多地与数学联系起来、把女性名字与艺术联系起来，并且把老年人的名字与不愉快的词联系起来（Greenwald 等 1998；Nosek 等 2002a；Nosek 等 2002b）。Caliskan 等（2017）使用 GloVe 向量和余弦相似度而非人类反应时，复现了所有这些内隐联想的发现。例如，像 ‘Leroy’ 和 ‘Shaniqua’ 这样的非裔美国人名字与不愉快词的 GloVe 余弦相似度更高，而欧裔美国人名字（‘Brad’、‘Greg’、‘Courtney’）与愉快词的余弦相似度更高。这些嵌入存在的问题是表征伤害（representational harm）的一个例子（Crawford 2017；Blodgett 等 2020），即一种由
+
+> reasoning. The Implicit Association Test (Greenwald et al., 1998) measures people’s associations between concepts (like ‘flowers’ or ‘insects’) and attributes (like‘pleasantness’ and ‘unpleasantness’) by measuring differences in the latency with which they label words in the various categories.3 Using such methods, people in the United States have been shown to associate African American names with unpleasant words (more than European-American names), male names more with mathematics and female names with the arts, and old people’s names with unpleasant words (Greenwald et al. 1998, Nosek et al. 2002a, Nosek et al. 2002b). Caliskan et al. (2017) replicated all these findings of implicit associations using GloVe vectors and cosine similarity instead of human latencies. For example African American names like ‘Leroy’ and ‘Shaniqua’ had a higher GloVe cosine with unpleasant words while European-American names (‘Brad’, ‘Greg’, ‘Courtney’) had a higher cosine with pleasant words. These problems with embeddings are an example of a representational harm (Crawford 2017, Blodgett et al. 2020), which is a harm caused by
+
+> `representational harm`（表征伤害）
+>
+> 释义：系统通过贬低甚至无视某些社会群体而对之造成的伤害，例如嵌入中的偏见会加剧对特定群体的不公。
+
+系统贬低甚至无视某些社会群体所造成的伤害。因此，任何利用词情感（word sentiment）的、考虑嵌入的算法，都可能加剧对非裔美国人的偏见。
+
+> a system demeaning or even ignoring some social groups. Any embedding-aware algorithm that made use of word sentiment could thus exacerbate bias against African Americans.
+
+近期研究聚焦于设法消除这类偏见的方法，例如
+
+> Recent research focuses on ways to try to remove these kinds of biases, for
+例如，通过设计一种对嵌入空间的变换，使其去除性别刻板印象但保留定义性别的信息（Bolukbasi 等 2016；Zhao 等 2017），或者改变训练过程（Zhao 等，2018b）。然而，尽管这类去偏方法可能减少嵌入中的偏见，但并不能消除它
+
+> example by developing a transformation of the embedding space that removes gender stereotypes but preserves definitional gender (Bolukbasi et al. 2016, Zhao et al. 2017) or changing the training procedure (Zhao et al., 2018b). However, although these sorts of debiasing may reduce bias in embeddings, they do not eliminate it
+
+> `debiasing`（去偏）
+>
+> 释义：通过变换嵌入空间或修改训练过程来削弱、移除嵌入中偏见的一类做法，但无法彻底消除偏见。
+
+（Gonen 和 Goldberg，2019），这仍是一个未解决的问题。
+
+> (Gonen and Goldberg, 2019), and this remains an open problem.
+
+历史嵌入也被用于衡量过去的偏见。Garg
+
+> Historical embeddings are also being used to measure biases in the past. Garg
+等（2018）使用来自历史文本的嵌入，衡量了整个 20 世纪中职业嵌入与各种族裔或性别名字嵌入之间的关联（例如女性名字相对于男性名字，与 ‘librarian’ 或 ‘carpenter’ 这类职业词的相对余弦相似度）。
+
+> et al. (2018) used embeddings from historical texts to measure the association between embeddings for occupations and embeddings for names of various ethnicities or genders (for example the relative cosine similarity of women’s names versus men’s to occupation words like ‘librarian’ or ‘carpenter’) across the 20th century.
+
+他们_3 发现，这些余弦值与这些职业中女性或族裔群体的经验历史百分比相关。历史嵌入也复现了关于族裔刻板印象的旧调查：1933 年的实验参与者倾向于把 ‘industrious’ 或 ‘superstitious’ 这类形容词与中国族裔等联系起来的倾向，与用 1930 年代文本训练的嵌入中中国姓氏和这些形容词之间的余弦值相关。他们还得以记录历史上的性别偏见，例如与能力相关的形容词（‘smart’、‘wise’、‘thoughtful’、‘resourceful’）的嵌入与男性词的余弦值高于与女性词的余弦值，并表明这种偏见自 1960 年以来一直在缓慢减小。我们
+
+> They_3 found that the cosines correlate with the empirical historical percentages of women or ethnic groups in those occupations. Historical embeddings also replicated old surveys of ethnic stereotypes; the tendency of experimental participants in 1933 to associate adjectives like ‘industrious’ or ‘superstitious’ with, e.g., Chinese ethnicity, correlates with the cosine between Chinese last names and those adjectives using embeddings trained on 1930s text. They also were able to document historical gender biases, such as the fact that embeddings for adjectives related to competence(‘smart’, ‘wise’, ‘thoughtful’, ‘resourceful’) had a higher cosine with male than female words, and showed that this bias has been slowly decreasing since 1960. We
+将在后面的章节回到这个关于偏见在自然语言处理中作用的问题。
+
+> return in later chapters to this question about the role of bias in natural language processing.
+
+> 粗略地说，如果人类把 ‘flowers’ 与 ‘pleasantness’ 联系起来、把 ‘insects’ 与 ‘unpleasantness’ 联系起来，那么当他们被指示为 ‘flowers’（daisy、iris、lilac）和 ‘pleasant words’（love、laughter、pleasure）按绿色按钮、为 ‘insects’（flea、spider、mosquito）和 ‘unpleasant words’（abuse、hatred、ugly）按红色按钮时，他们会比在不一致的条件下更快——在不一致的条件下他们为以下词按红色按钮
+>
+> *Roughly speaking, if humans associate ‘flowers’ with ‘pleasantness’ and ‘insects’ with ‘unpleasantness’, when they are instructed to push a green button for ‘flowers’ (daisy, iris, lilac) and ‘pleasant words’(love, laughter, pleasure) and a red button for ‘insects’ (flea, spider, mosquito) and ‘unpleasant words’(abuse, hatred, ugly) they are faster than in an incongruous condition where they push a red button for*
+
+## 5.9 向量模型的评估
+
+> 5.9 Evaluating Vector Models
+
+向量模型最重要的评估指标是在任务上做外部评估，即在某个 NLP 任务中使用向量，看它是否能比其他某个模型提升性能。
+
+> The most important evaluation metric for vector models is extrinsic evaluation on tasks, i.e., using vectors in an NLP task and seeing whether this improves performance over some other model.
+
+尽管如此，拥有内部评估仍然是有用的。最常见的度量
+
+> Nonetheless it is useful to have intrinsic evaluations. The most common metric
+是测试它们在相似度上的表现，即计算算法的词语相似度得分与人类赋予的词语相似度评分之间的相关性。
+
+> is to test their performance on similarity, computing the correlation between an algorithm’s word similarity scores and word similarity ratings assigned by humans.
+
+WordSim-353（Finkelstein et al., 2002）是一组常用的评分，对 353 个名词对给出 0 到 10 的评分；例如 (plane, car) 的平均分为 5.77。
+
+> WordSim-353 (Finkelstein et al., 2002) is a commonly used set of ratings from 0 to 10 for 353 noun pairs; for example (plane, car) had an average score of 5.77.
+
+SimLex-999（Hill et al., 2015）是一个更复杂的数据集，它量化的是相似性 (cup, mug) 而非关联性 (cup, coffee)，并且包含具体和抽象的形容词、名词和动词对。TOEFL 数据集由 80 道题组成，每道题都由一个目标词和 4 个额外的备选词构成；任务是选出哪一个是正确的同义词，如下例所示：Levied is closest in meaning to: imposed, believed, requested, correlated（Landauer and Dumais, 1997）。所有这些数据集呈现词时都不带上下文。
+
+> SimLex-999 (Hill et al., 2015) is a more complex dataset that quantifies similarity(cup, mug) rather than relatedness (cup, coffee), and includes concrete and abstract adjective, noun and verb pairs. The TOEFL dataset is a set of 80 questions, each consisting of a target word with 4 additional word choices; the task is to choose which is the correct synonym, as in the example: Levied is closest in meaning to: imposed, believed, requested, correlated (Landauer and Dumais, 1997). All of these datasets present words without context.
+
+稍微更真实一些的是包含上下文的内部相似度任务。
+
+> Slightly more realistic are intrinsic similarity tasks that include context. The
+
+Stanford Contextual Word Similarity（SCWS）数据集（Huang et al., 2012）和 Word-in-Context（WiC）数据集（Pilehvar and Camacho-Collados, 2019）提供了更丰富的评估场景。SCWS 给出人类对 2,003 对处于其句子上下文中的词语所作的判断，而 WiC 给出处于两个句子上下文中的目标词，这两个上下文要么属于相同词义、要么属于不同词义；见附录 I。语义文本相似度任务（Agirre et al. 2012, Agirre et al. 2015）评估句子级相似度算法的性能，它由一组句子对组成，每一对都带有由人类标注的相似度评分。
+
+> Stanford Contextual Word Similarity (SCWS) dataset (Huang et al., 2012) and the Word-in-Context (WiC) dataset (Pilehvar and Camacho-Collados, 2019) offer richer evaluation scenarios. SCWS gives human judgments on 2,003 pairs of words in their sentential context, while WiC gives target words in two sentential contexts that are either in the same or different senses; see Appendix I. The semantic textual similarity task (Agirre et al. 2012, Agirre et al. 2015) evaluates the performance of sentencelevel similarity algorithms, consisting of a set of pairs of sentences, each pair with human-labeled similarity scores.
+
+另一个用于评估的任务是类比任务，已在第 143 页讨论过，
+
+> Another task used for evaluation is the analogy task, discussed on page 143,
+其中系统必须解决形如 a 之于 b 如同 a* 之于 b* 的问题，给定 a、b 和 a*，并要求找出 b*（Turney and Littman, 2005）。人们已为该任务创建了若干元组集合（Mikolov et al. 2013a, Mikolov et al. 2013c, Gladkova et al. 2016），涵盖形态学 (city:cities::child:children)、词典关系 (leg:table::spout:teapot) 和百科关系 (Beijing:China::Dublin:Ireland)，其中一些取自 SemEval-2012 Task 2 数据集的 79 种不同关系（Jurgens et al., 2012）。
+
+> where the system has to solve problems of the form a is to b as a* is to b*, given a, b, and a* and having to find b* (Turney and Littman, 2005). A number of sets of tuples have been created for this task (Mikolov et al. 2013a, Mikolov et al. 2013c, Gladkova et al. 2016), covering morphology (city:cities::child:children), lexicographic relations (leg:table::spout:teapot) and encyclopedia relations (Beijing:China::Dublin:Ireland), some drawing from the SemEval-2012 Task 2 dataset of 79 different relations (Jurgens et al., 2012).
+
+所有嵌入算法都存在固有的变异性。例如，由于
+
+> All embedding algorithms suffer from inherent variability. For example because
+初始化中的随机性以及随机负采样，像 word2vec 这样的算法即使在同一数据集上也可能产生不同的结果，而且集合中的单个文档可能强烈影响所得的嵌入（Tian et al. 2016, Hellrich and Hahn 2016, Antoniak and Mimno 2018）。因此，当使用嵌入来研究特定语料库中的词语关联时，最佳做法是对文档进行自助采样来训练多个嵌入，并对结果取平均（Antoniak and Mimno, 2018）。
+
+> of randomness in the initialization and the random negative sampling, algorithms like word2vec may produce different results even from the same dataset, and individual documents in a collection may strongly impact the resulting embeddings(Tian et al. 2016, Hellrich and Hahn 2016, Antoniak and Mimno 2018). When embeddings are used to study word associations in particular corpora, therefore, it is best practice to train multiple embeddings with bootstrap sampling over documents and average the results (Antoniak and Mimno, 2018).
+
+## 5.10 小结
+
+> 5.10 Summary
+
+- 在向量语义中，词被建模为一个向量——高维空间中的一个点，也称为嵌入。本章我们聚焦于静态嵌入，即每个词都被映射到一个固定的嵌入。
+- 向量语义模型分为两类：稀疏的和稠密的。在稀疏模型中，每个维度对应词汇表 V 中的一个词，单元格是共现计数的函数。词-上下文矩阵或称词项-词项矩阵，为词汇表中的每个（目标）词各有一行，为词汇表中的每个上下文词项各有一列。
+- 稠密向量模型的维度通常为 50–1000。像 skip-gram 这样的 word2vec 算法是计算稠密嵌入的一种流行方法。
+
+> In vector semantics, a word is modeled as a vector—a point in high-dimensional space, also called an embedding. In this chapter we focus on static embeddings, where each word is mapped to a fixed embedding.
+> Vector semantic models fall into two classes: sparse and dense. In sparse models each dimension corresponds to a word in the vocabulary V and cells are functions of co-occurrence counts. The word-context or term-term matrix has a row for each (target) word in the vocabulary and a column for each context term in the vocabulary.
+> Dense vector models typically have dimensionality 50–1000. Word2vec algorithms like skip-gram are a popular way to compute dense embeddings.
+
+skip-gram 训练一个逻辑回归分类器，来计算两个词“很可能在文本中邻近出现”的概率。这一概率由这两个词的嵌入之间的点积计算得到。
+
+> Skip-gram trains a logistic regression classifier to compute the probability that two words are ‘likely to occur nearby in text’. This probability is computed from the dot product between the embeddings for the two words.
+
+- skip-gram 使用随机梯度下降来训练该分类器，即学习这样的嵌入：它与邻近出现的词的嵌入具有高点积，与噪声词的嵌入具有低点积。
+- 其他重要的嵌入算法包括 GloVe，它是一种基于词共现概率之比的方法。
+- 无论使用稀疏向量还是稠密向量，词和文档的相似度都通过向量之间点积的某种函数来计算。两个向量的余弦——即归一化的点积——是这类度量中最流行的一种。
+
+> Skip-gram uses stochastic gradient descent to train the classifier, by learning embeddings that have a high dot product with embeddings of words that occur nearby and a low dot product with noise words.
+> Other important embedding algorithms include GloVe, a method based on ratios of word co-occurrence probabilities.
+> Whether using sparse or dense vectors, word and document similarities are computed by some function of the dot product between vectors. The cosine of two vectors—a normalized dot product—is the most popular of such metrics.
+
+## 历史注记
+
+> Historical Notes
+
+向量语义的思想源于 20 世纪 50 年代三个不同领域的研究：语言学、心理学和计算机科学，每个领域都为这一模型贡献了一个基本方面。
+
+> The idea of vector semantics arose out of research in the 1950s in three distinct fields: linguistics, psychology, and computer science, each of which contributed a fundamental aspect of the model.
+
+意义与词在上下文中的分布有关这一思想
+
+> The idea that meaning is related to the distribution of words in context was
+在 20 世纪 50 年代的语言学理论中广为流传，见于 Zellig Harris、Martin Joos 和 J. R. Firth 等分布主义者，以及 Thomas Sebeok 等符号学家之中。正如 Joos（1950）所说，
+
+> widespread in linguistic theory of the 1950s, among distributionalists like Zellig Harris, Martin Joos, and J. R. Firth, and semioticians like Thomas Sebeok. As Joos(1950) put it,
+词的意义可以被建模为多维语义空间中的一个点，这一想法来自 Charles E. Osgood 等心理学家，他一直在研究人们如何通过在 happy/sad 或 hard/soft 这样的量表上赋值来对词的意义作出反应。Osgood et al.（1957）提出，一般而言词的意义可以被建模为多维欧几里得空间中的一个点，而两个词之间意义的相似性可以被建模为该空间中这些点之间的距离。
+
+> The idea that the meaning of a word might be modeled as a point in a multidimensional semantic space came from psychologists like Charles E. Osgood, who had been studying how people responded to the meaning of words by assigning values along scales like happy/sad or hard/soft. Osgood et al. (1957) proposed that the meaning of a word in general could be modeled as a point in a multidimensional Euclidean space, and that the similarity of meaning between two words could be modeled as the distance between these points in the space.
+
+> 语言学家所说的语素的“意义”……按定义就是它在上下文中与所有其他语素共现的条件概率的集合。
+>
+> *the linguist’s “meaning” of a morpheme. . . is by definition the set of conditional probabilities of its occurrence in context with all other morphemes.*
+
+20 世纪 50 年代和 60 年代初最后一个思想来源是当时被称为
+
+> A final intellectual source in the 1950s and early 1960s was the field then called
+机械索引的领域，即如今的信息检索。在后来被称为信息检索向量空间模型的工作中（Salton 1971, Sparck Jones 1986），研究者展示了用向量来定义词的意义的新方法（Switzer, 1965），并改进了基于词间统计关联度量的词语相似度方法，这些度量如互信息（Giuliano, 1965）和 idf（Sparck Jones, 1972），还表明文档的意义可以在与词所用的相同向量空间中表示。大约同一时期，Cordier（1965）表明，对词关联概率做因子分析可以用来形成词的稠密向量表示。
+
+> mechanical indexing, now known as information retrieval. In what became known as the vector space model for information retrieval (Salton 1971, Sparck Jones 1986), researchers demonstrated new ways to define the meaning of words in terms of vectors (Switzer, 1965), and refined methods for word similarity based on measures of statistical association between words like mutual information (Giuliano, 1965) and idf (Sparck Jones, 1972), and showed that the meaning of documents could be represented in the same vector spaces used for words. Around the same time, Cordier (1965) showed that factor analysis of word association probabilities could be used to form dense vector representations of words.
+
+分布主义思维方式的部分哲学基础
+
+> Some of the philosophical underpinning of the distributional way of thinking
+来自哲学家维特根斯坦（Wittgenstein）晚期的著作，他对为每个词建立一套完全形式化的意义定义理论的可能性持怀疑态度。维特根斯坦转而提出，“一个词的意义就是它在语言中的用法”（Wittgenstein, 1953, PI 43）。也就是说，不是用某种逻辑语言来定义每个词，也不是借助所指或真值，维特根斯坦的观点是：我们应当根据人们在日常互动中说话和理解时如何使用一个词来定义它，这预示了语言学和 NLP 中走向具身模型与经验模型的运动（Glenberg and Robertson 2000, Lake and Murphy 2021, Bisk et al. 2020, Bender and Koller 2020）。
+
+> came from the late writings of the philosopher Wittgenstein, who was skeptical of the possibility of building a completely formal theory of meaning definitions for each word. Wittgenstein suggested instead that “the meaning of a word is its use in the language” (Wittgenstein, 1953, PI 43). That is, instead of using some logical language to define each word, or drawing on denotations or truth values, Wittgenstein’s idea is that we should define a word by how it is used by people in speaking and understanding in their day-to-day interactions, thus prefiguring the movement toward embodied and experiential models in linguistics and NLP (Glenberg and Robertson 2000, Lake and Murphy 2021, Bisk et al. 2020, Bender and Koller 2020).
+
+关系更远的一种想法是用离散特征向量来定义词，其根源至少可以追溯到笛卡尔（Descartes）和莱布尼茨（Leibniz）（Wierzbicka 1992, Wierzbicka 1996）。到 20 世纪中叶，从 Hjelmslev 的工作（Hjelmslev, 1969）（最初为 1943 年）开始，并在生成语法的早期模型（Katz and Fodor, 1963）中得到充实，出现了用语义特征来表示意义的思想，语义特征即表示某种基本意义的符号。
+
+> More distantly related is the idea of defining words by a vector of discrete features, which has roots at least as far back as Descartes and Leibniz (Wierzbicka 1992, Wierzbicka 1996). By the middle of the 20th century, beginning with the work of Hjelmslev (Hjelmslev, 1969) (originally 1943) and fleshed out in early models of generative grammar (Katz and Fodor, 1963), the idea arose of representing meaning with semantic features, symbols that represent some sort of primitive meaning.
+
+> `semantic feature`（语义特征）
+>
+> 释义：指用来表示某种基本意义的符号，早期研究用它按性别、年龄等少量固定维度刻画词义，如 hen、rooster、chick 的差异。
+
+例如，hen、rooster 或 chick 这样的词有共同之处（它们都指鸡），也有不同之处（它们的年龄和性别），可以表示为：
+
+> For example words like hen, rooster, or chick, have something in common (they all describe chickens) and something different (their age and sex), representable as:
+
+hen +female, +chicken, +adult rooster -female, +chicken, +adult chick +chicken, -adult
+然而，意义的向量模型在定义词时所使用的那些维度，
+
+> The dimensions used by vector models of meaning to define words, however, are
+与这种由人工构建的少数固定维度构成的想法只有抽象层面的关联。
+
+> only abstractly related to this idea of a small fixed number of hand-built dimensions.
+
+尽管如此，仍有一些尝试试图表明，嵌入模型的某些维度确实贡献了某种具体的组合性意义成分，就像这些早期的语义特征那样。
+
+> Nonetheless, there has been some attempt to show that certain dimensions of embedding models do contribute some specific compositional aspect of meaning like these early semantic features.
+
+用稠密向量来建模词义，乃至嵌入这一术语本身，都源于潜在语义索引（latent semantic indexing, LSI）模型（Deerwester et al., 1988），该模型后来被重新表述为 LSA（潜在语义分析，latent semantic analysis）（Deerwester et al., 1990）。在 LSA 中，奇异值分解——SVD——被应用于一个词-文档矩阵（每个
+
+> The use of dense vectors to model word meaning, and indeed the term embedding, grew out of the latent semantic indexing (LSI) model (Deerwester et al., 1988) recast as LSA (latent semantic analysis) (Deerwester et al., 1990). In LSA singular value decomposition—SVD— is applied to a term-document matrix (each
+
+> `SVD`（SVD（奇异值分解））
+>
+> 释义：一种找出数据集中变化最大的若干最重要维度的方法，LSA 用它把词-文档矩阵降维为稠密向量。
+
+单元格用对数频率加权并用熵归一化），然后取前 300 个维度作为 LSA 嵌入。奇异值分解（Singular Value Decomposition, SVD）是一种找出数据集中最重要维度的方法，也就是数据变化最大的那些维度。此后 LSA 迅速得到广泛应用：作为认知模型（Landauer and Dumais, 1997），并用于拼写检查（Jones and Martin, 1997）、语言建模（Bellegarda 1997, Coccaro and Jurafsky 1998, Bellegarda 2000）、词法形态归纳（Schone and Jurafsky 2000, Schone and Jurafsky 2001b）、多词表达式（multiword expressions, MWEs）（Schone and Jurafsky, 2001a）和作文评分（Rehder et al., 1998）等任务。Schütze（1992b）同时开发了相关模型并将其应用于词义消歧。
+
+> cell weighted by log frequency and normalized by entropy), and then the first 300 dimensions are used as the LSA embedding. Singular Value Decomposition (SVD) is a method for finding the most important dimensions of a dataset, those dimensions along which the data varies the most. LSA was then quickly widely applied: as a cognitive model (Landauer and Dumais, 1997), and for tasks like spell checking(Jones and Martin, 1997), language modeling (Bellegarda 1997, Coccaro and Jurafsky 1998, Bellegarda 2000), morphology induction (Schone and Jurafsky 2000, Schone and Jurafsky 2001b), multiword expressions (MWEs) (Schone and Jurafsky, 2001a), and essay grading (Rehder et al., 1998). Related models were simultaneously developed and applied to word sense disambiguation by Sch¨utze (1992b).
+
+LSA 还促成了最早在概率分类器中使用嵌入来表示词的做法，即 Schütze 等人（1995）的逻辑回归文档路由器。
+
+> LSA also led to the earliest use of embeddings to represent words in a probabilistic classifier, in the logistic regression document router of Sch¨utze et al. (1995).
+
+把 SVD 应用于词-词矩阵（而非词-文档矩阵）以作为 NLP 的意义模型这一想法，在 LSA 之后不久由 Schütze（1992b）提出。
+
+> The idea of SVD on the term-term matrix (rather than the term-document matrix) as a model of meaning for NLP was proposed soon after LSA by Sch¨utze (1992b).
+
+Schütze 把 SVD 产生的低秩（97 维）嵌入应用于词义消歧任务，分析了由此得到的语义空间，还提出了若干可能的技术，如丢弃高阶维度。参见 Schütze（1997）。
+
+> Sch¨utze applied the low-rank (97-dimensional) embeddings produced by SVD to the task of word sense disambiguation, analyzed the resulting semantic space, and also suggested possible techniques like dropping high-order dimensions. See Sch¨utze(1997).
+
+在早期的 SVD 工作之后，又出现了若干替代性的矩阵模型，
+
+> A number of alternative matrix models followed on from the early SVD work,
+包括概率潜在语义索引（Probabilistic Latent Semantic Indexing, PLSI）（Hofmann, 1999）、潜在狄利克雷分配（Latent Dirichlet Allocation, LDA）（Blei et al., 2003）和非负矩阵分解（Non-negative Matrix Factorization, NMF）（Lee and Seung, 1999）。
+
+> including Probabilistic Latent Semantic Indexing (PLSI) (Hofmann, 1999), Latent Dirichlet Allocation (LDA) (Blei et al., 2003), and Non-negative Matrix Factorization (NMF) (Lee and Seung, 1999).
+
+LSA 研究群体似乎最先在 Landauer
+
+> The LSA community seems to have first used the word “embedding” in Landauer
+等人（1997）中使用了“嵌入”一词，用的是它数学含义的一种变体，即从一个空间或数学结构到另一个空间或数学结构的映射。在 LSA 中，嵌入一词似乎指的是从稀疏计数向量空间到 SVD 稠密向量所在潜在空间的映射。因此，尽管这个词最初指的是从一个空间到另一个空间的映射，但它已通过转喻转变为指潜在空间中由此得到的稠密向量，而我们今天使用这个词正是这个意思。
+
+> et al. (1997), in a variant of its mathematical meaning as a mapping from one space or mathematical structure to another. In LSA, the word embedding seems to have described the mapping from the space of sparse count vectors to the latent space of SVD dense vectors. Although the word thus originally meant the mapping from one space to another, it has metonymically shifted to mean the resulting dense vector in the latent space, and it is in this sense that we currently use the word.
+
+到了下一个十年，Bengio 等人（2003）和 Bengio 等人（2006）表明，
+
+> By the next decade, Bengio et al. (2003) and Bengio et al. (2006) showed that
+神经语言模型也可以用来在词预测任务中发展出嵌入。Collobert and Weston（2007）、Collobert and Weston（2008）和 Collobert 等人（2011）随后证明，嵌入可用于为多种 NLP 任务表示词义。Turian 等人（2010）比较了不同种类的嵌入对不同 NLP 任务的价值。Mikolov 等人（2011）表明循环神经网络可以用作语言模型。把这些神经网络语言模型的隐藏层加以简化，从而得到 skip-gram（以及 CBOW）算法的想法由 Mikolov 等人（2013a）提出。负采样训练算法在 Mikolov 等人（2013b）中提出。关于静态嵌入及其参数化方式有大量综述（Bullinaria and Levy 2007, Bullinaria and Levy 2012, Lapesa and Evert 2014, Kiela and Clark 2014, Levy et al. 2015）。
+
+> neural language models could also be used to develop embeddings as part of the task of word prediction. Collobert and Weston (2007), Collobert and Weston (2008), and Collobert et al. (2011) then demonstrated that embeddings could be used to represent word meanings for a number of NLP tasks. Turian et al. (2010) compared the value of different kinds of embeddings for different NLP tasks. Mikolov et al. (2011) showed that recurrent neural nets could be used as language models. The idea of simplifying the hidden layer of these neural net language models to create the skipgram (and also CBOW) algorithms was proposed by Mikolov et al. (2013a). The negative sampling training algorithm was proposed in Mikolov et al. (2013b). There are numerous surveys of static embeddings and their parameterizations (Bullinaria and Levy 2007, Bullinaria and Levy 2012, Lapesa and Evert 2014, Kiela and Clark 2014, Levy et al. 2015).
+
+要更深入地理解向量在信息检索中所起的作用，参见 Manning 等人（2008）和第 11 章，
+
+> See Manning et al. (2008) and Chapter 11 for a deeper understanding of the role
+其中包括如何把查询与文档进行比较、关于 tf-idf 的更多细节，以及扩展到极大规模数据集的问题。关于 word2vec 的清晰而全面的教程参见 Kim（2019）。Cruse（2004）是一本关于词汇语义学的有用语言学入门教材。
+
+> of vectors in information retrieval, including how to compare queries with documents, more details on tf-idf, and issues of scaling to very large datasets. See Kim(2019) for a clear and comprehensive tutorial on word2vec. Cruse (2004) is a useful introductory linguistic text on lexical semantics.
+
+## 练习
+
+> Exercises
+
+5.1 利用图 5.2 中的共现计数，计算 cos(cherry, strawberry)
+
+> 5.1 Using the co-occurrence counts in Fig. 5.2, compute cos(cherry, strawberry)
+以及 cos(cherry, digital)，只使用 pie 和 result 两个维度。哪一对更相似，结果是否与你对这些词含义的直觉相符？
+
+> and cos(cherry, digital) using only the pie and result dimensions. Which pair is more similar, and does the result match your intuition about the words’meanings?
+
+5.2 证明余弦相似度对缩放不变：对任意正常数 c，
+
+> 5.2 Show that cosine similarity is invariant to scaling: for any positive constant c,
+cos(cv,w) = cos(v,w)。鉴于 5.4 节对频率和向量长度的讨论，为什么这是词语相似度度量所希望具备的性质？
+
+> cos(cv,w) = cos(v,w). Why is this a desirable property for a word-similarity metric, given the discussion of frequency and vector length in Section 5.4?
+
+5.3 通过对式 5.21 中的损失函数求导，推导式 5.22~式 5.24 中的 SGNS 梯度，
+
+> 5.3 Derive the SGNS gradients in Eq. 5.22-Eq. 5.24 by differentiating the loss in
+分别针对 cpos、cneg 和 w 求导。你可以利用 dσ(z) =σ(z)(1−σ(z)) 以及 d(cw) = c 这一事实。
+
+> Eq. 5.21 with respect to cpos, cneg, and w. You may use the fact that dσ(z) =σ(z)(1−σ(z)) and that d(cw) = c.

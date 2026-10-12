@@ -34,10 +34,21 @@ img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
 blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
   border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
 blockquote p { margin:.2em 0; }
+.term { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #b9c4d0; color:#4a4a4a; font-size:14px; }
+.term code { background:none; color:var(--accent); margin-right:.5em; }
+.term-zh { color:#333; margin-right:.5em; }
+.term-explain { color:#4a4a4a; }
 table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -59,6 +70,30 @@ def inline(text: str) -> str:
 
 
 IMG_PREFIX = ""
+
+# 页边术语块（build_markdown 产出）：首行 `原词`（译名），其后一行 “释义：…”。
+TERM_HEAD = re.compile(r"^`([^`]+)`(?:（(.*)）)?$")
+
+
+def term_block(block: list[str]) -> str | None:
+    """把页边术语引用块渲染为 <aside class="term">（含 term-explain），非术语块返回 None。"""
+    if not block:
+        return None
+    m = TERM_HEAD.match(block[0].strip())
+    if not m:
+        return None
+    explain = ""
+    for x in block[1:]:
+        if x.startswith("释义："):
+            explain = x[len("释义："):].strip()
+            break
+    if not explain:
+        return None
+    parts = [f"<code>{H.escape(m.group(1))}</code>"]
+    if m.group(2):
+        parts.append(f'<span class="term-zh">{H.escape(m.group(2))}</span>')
+    parts.append(f'<span class="term-explain">{inline(explain)}</span>')
+    return f'<aside class="term">{"".join(parts)}</aside>'
 
 
 def image(line: str) -> str:
@@ -114,6 +149,16 @@ def convert(md: str) -> str:
             i += 1
             continue
 
+        # 彩色边框文本框（build_markdown 产出的显式标记）：成组包一层带边框的容器
+        if stripped == "<!--figbox-->":
+            out.append('<div class="figbox">')
+            i += 1
+            continue
+        if stripped == "<!--/figbox-->":
+            out.append("</div>")
+            i += 1
+            continue
+
         m = re.match(r"^(#{1,6})\s+(.*)$", stripped)
         if m:
             lv = len(m.group(1))
@@ -144,6 +189,10 @@ def convert(md: str) -> str:
             while i < len(lines) and lines[i].strip().startswith(">"):
                 block.append(lines[i].strip()[1:].strip())
                 i += 1
+            term_html = term_block(block)
+            if term_html is not None:
+                out.append(term_html)
+                continue
             inner = "".join(f"<p>{inline(x)}</p>" for x in block if x)
             out.append(f"<blockquote>{inner}</blockquote>")
             continue
@@ -156,11 +205,19 @@ def convert(md: str) -> str:
             out.append("<ul>" + "".join(f"<li>{inline(x)}</li>" for x in items) + "</ul>")
             continue
 
+        # 图注：build_markdown 产出的独立斜体行 `*图 X.Y …*`（* 后无空格，非列表项）
+        mc = re.match(r"^\*([^*].*?)\*$", stripped)
+        if mc:
+            out.append(f'<p class="caption">{inline(mc.group(1))}</p>')
+            i += 1
+            continue
+
         # 普通段落（连续非空行合并）
         para = []
         while i < len(lines):
             s = lines[i].strip()
-            if not s or s.startswith(("#", ">", "|", "-", "*", "!")):
+            # `*` 仅在作为列表标记（`* ` 后跟空格）时才是块起点；否则是斜体行/图注
+            if not s or s.startswith(("#", ">", "|", "!", "<")) or re.match(r"^[-*]\s+", s):
                 break
             para.append(s)
             i += 1

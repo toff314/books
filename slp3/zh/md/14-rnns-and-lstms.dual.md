@@ -1,0 +1,1203 @@
+# 第 14 章 RNN 与 LSTM
+
+### 章
+
+> CHAPTER
+
+# 14 RNN 与 LSTM
+
+> 14 RNNs and LSTMs
+
+> 时间会给出答案。
+>
+> *Time will explain.*
+
+简·奥斯汀，《劝导》
+
+> Jane Austen, Persuasion
+语言本质上是一种时间性现象。口语是随时间展开的一串声学事件，而我们理解和生成口语与书面语言时，都把它当作一个顺序输入流。语言的时间性体现在我们所用的隐喻中：我们会说对话的流动、新闻流和推文流，这些都强调语言是一条随时间展开的序列。
+
+> Language is an inherently temporal phenomenon. Spoken language is a sequence of acoustic events over time, and we comprehend and produce both spoken and written language as a sequential input stream. The temporal nature of language is reflected in the metaphors we use; we talk of the flow of conversations, news feeds, and twitter streams, all of which emphasize that language is a sequence that unfolds in time.
+
+本章介绍一种深度学习架构——循环神经网络（RNN），以及 LSTM 等 RNN 变体，它们表示时间的方式与前馈网络和 Transformer 网络不同。RNN 具有一种直接处理语言顺序性的机制，使其无需使用任意固定大小的窗口就能应对语言的时间性。循环网络提供了一种表示先前上下文的新方式，即通过其循环连接，使模型的决策可以依赖于过去数百个词的信息。我们将看到如何将该模型应用于语言建模任务、情感分析等文本分类任务，以及词性标注等序列建模任务。
+
+> This chapter introduces a deep learning architecture, the recurrent neural network (RNN), and RNN variants like LSTMs, that offer a different way of representing time than feedforward and transformer networks. RNNs have a mechanism that deals directly with the sequential nature of language, allowing them to handle the temporal nature of language without the use of arbitrary fixed-sized windows. The recurrent network offers a new way to represent the prior context, in its recurrent connections, allowing the model’s decision to depend on information from hundreds of words in the past. We’ll see how to apply the model to the task of language modeling, to text classification tasks like sentiment analysis, and to sequence modeling tasks like part-of-speech tagging.
+
+## 14.1 循环神经网络
+
+> 14.1 Recurrent Neural Networks
+
+循环神经网络（RNN）是指网络连接中存在环路的任何网络，也就是说，某个单元的值直接或间接地依赖于它自己较早的输出作为输入。这类网络虽然强大，却难以推理和训练。然而，在循环网络这一大类中，存在一些受约束的架构，它们被证明在应用于语言时极其有效。本节我们考虑一类循环
+
+> A recurrent neural network (RNN) is any network that contains a cycle within its network connections, meaning that the value of some unit is directly, or indirectly, dependent on its own earlier outputs as an input. While powerful, such networks are difficult to reason about and to train. However, within the general class of recurrent networks there are constrained architectures that have proven to be extremely effective when applied to language. In this section, we consider a class of recurrent
+
+> `Elman`
+>
+> 释义：人名，指 1990 年提出简单循环网络的学者，本书用其姓氏命名这类作为 LSTM 基础架构的循环网络。
+
+网络，通常称为 Elman 网络（Elman, 1990）或简单循环网络。这类网络本身很有用，并且是本章后文讨论的长短期记忆（LSTM）网络等更复杂方法的基础。在本章中，当我们使用 RNN 这一术语时，指的是这些更简单、约束更强的网络（尽管你常会看到 RNN 一词泛指包括 LSTM 在内的任何具有循环性质的网络）。
+
+> networks referred to as Elman Networks (Elman, 1990) or simple recurrent networks. These networks are useful in their own right and serve as the basis for more complex approaches like the Long Short-Term Memory (LSTM) networks discussed later in this chapter. In this chapter when we use the term RNN we’ll be referring to these simpler more constrained networks (although you will often see the term RNN to mean any net with recurrent properties including LSTMs).
+
+> `Networks`（网络）
+>
+> 释义：承接前文，指 Elman 提出的简单循环结构：其隐层通过循环连接携带历史信息，是本章 LSTM 的基础。
+
+图 14.1 展示了 RNN 的结构。与普通前馈网络一样，表示当前输入的输入向量 xt 先与一个权重矩阵相乘，然后经过非线性激活函数，计算出该层隐藏单元的值。随后用这个隐藏层计算相应的输出 yt。与之前基于窗口的做法不同，这里序列是逐个把一项呈现给网络来处理的。我们将使用
+
+> Fig. 14.1 illustrates the structure of an RNN. As with ordinary feedforward networks, an input vector representing the current input, xt, is multiplied by a weight matrix and then passed through a non-linear activation function to compute the values for a layer of hidden units. This hidden layer is then used to calculate a corresponding output, yt. In a departure from our earlier window-based approach, sequences are processed by presenting one item at a time to the network. We’ll use
+
+![](images/14-rnns-and-lstms/fig_p2_1.png)
+
+*图 14.1 Elman（1990）提出的简单循环神经网络。隐藏层把一条循环连接作为其输入的一部分。也就是说，隐藏层的激活值既取决于当前输入，也取决于上一时间步隐藏层的激活值。*
+*Figure 14.1 Simple recurrent neural network after Elman (1990). The hidden layer includes a recurrent connection as part of its input. That is, the activation value of the hidden layer depends on the current input as well as the activation value of the hidden layer from the previous time step.*
+
+下标来表示时间，因此 xt 表示时刻 t 的输入向量 x。与前馈网络的关键区别在于图中用虚线画出的循环连接。这条连接把上一时刻隐藏层的值补充到隐藏层计算的输入中。
+
+> subscripts to represent time, thus xt will mean the input vector x at time t. The key difference from a feedforward network lies in the recurrent link shown in the figure with the dashed line. This link augments the input to the computation at the hidden layer with the value of the hidden layer from the preceding point in time.
+
+上一时间步的隐藏层提供了一种记忆，或者说
+
+> The hidden layer from the previous time step provides a form of memory, or
+上下文，它编码了更早的处理过程，并影响后续时刻要做的决策。关键在于，这种方法不对这种先前上下文施加固定长度限制；上一隐藏层所体现的上下文可以包含一直追溯到序列开头的信息。
+
+> context, that encodes earlier processing and informs the decisions to be made at later points in time. Critically, this approach does not impose a fixed-length limit on this prior context; the context embodied in the previous hidden layer can include information extending back to the beginning of the sequence.
+
+加入这一时间维度使 RNN 看起来比
+
+> Adding this temporal dimension makes RNNs appear to be more complex than
+非循环架构更复杂。但实际上，它们并没有那么不同。给定一个输入向量以及上一时间步隐藏层的值，我们执行的仍然是第 6 章介绍的标准前馈计算。要看清这一点，请看图 14.2，它阐明了循环的性质以及它如何参与隐藏层的计算。最重要的变化在于一组新的权重 U，它把上一时间步的隐藏层连接到当前隐藏层。这些权重决定网络在计算当前输入的输出时如何利用过去的上下文。与网络中其他权重一样，这些连接也通过反向传播来训练。
+
+> non-recurrent architectures. But in reality, they’re not all that different. Given an input vector and the values for the hidden layer from the previous time step, we’re still performing the standard feedforward calculation introduced in Chapter 6. To see this, consider Fig. 14.2 which clarifies the nature of the recurrence and how it factors into the computation at the hidden layer. The most significant change lies in the new set of weights, U, that connect the hidden layer from the previous time step to the current hidden layer. These weights determine how the network makes use of past context in calculating the output for the current input. As with the other weights in the network, these connections are trained via backpropagation.
+
+![](images/14-rnns-and-lstms/fig_p2_0.png)
+
+*图 14.2 以展开为前馈网络的形式展示的简单循环神经网络。上一时间步的隐藏层 ht−1 与权重矩阵 U 相乘，然后加到当前时间步的前馈分量上。*
+*Figure 14.2 Simple recurrent neural network illustrated as a feedforward network. The hidden layer ht−1 from the prior time step is multiplied by weight matrix U and then added to the feedforward component from the current time step.*
+
+### 14.1.1 RNN 中的推断
+
+> 14.1.1 Inference in RNNs
+
+RNN 中的前向推断（把一个输入序列映射为一个输出序列）与我们已经见过的前馈网络几乎完全相同。要计算输入 xt 对应的输出 yt，我们需要隐藏层 ht 的激活值。为此，我们将输入 xt 与权重矩阵 W 相乘，将上一时间步的隐藏层 ht−1 与权重矩阵 U 相乘。把这两个值相加并经过合适的激活函数 g，就得到当前隐藏层的激活值 ht。一旦得到隐藏层的值，我们就按通常的计算生成输出向量。
+
+> Forward inference (mapping a sequence of inputs to a sequence of outputs) in an RNN is nearly identical to what we’ve already seen with feedforward networks. To compute an output yt for an input xt, we need the activation value for the hidden layer ht. To calculate this, we multiply the input xt with the weight matrix W, and the hidden layer from the previous time step ht−1 with the weight matrix U. We add these values together and pass them through a suitable activation function, g, to arrive at the activation value for the current hidden layer, ht. Once we have the values for the hidden layer, we proceed with the usual computation to generate the output vector.
+
+ht = g(Uht−1 +Wxt) (14.1)
+yt = f(Vht) (14.2)
+我们把输入层、隐藏层和输出层的维度分别记为 din、dh 和 dout。由此，我们的三个参数矩阵为：W ∈Rdh×din，U ∈Rdh×dh，以及 V ∈Rdout×dh。
+
+> Let’s refer to the input, hidden and output layer dimensions as din, dh, and dout respectively. Given this, our three parameter matrices are: W ∈Rdh×din, U ∈Rdh×dh, and V ∈Rdout×dh.
+
+我们通过 softmax 计算得到 yt，它给出一个概率分布
+
+> We compute yt via a softmax computation that gives a probability distribution
+覆盖可能的输出类别。
+
+> over the possible output classes.
+
+yt = softmax(Vht) (14.3)
+时刻 t 的计算需要时刻 t −1 的隐藏层值，这一事实决定了一个从序列开头推进到结尾的增量式推断算法，如图 14.3 所示。简单循环网络的顺序性也可以通过按时间展开网络来看到，如图 14.4 所示。在该图中，各层单元在每个时间步都被复制出来，以表明它们在不同时刻会取不同的值。不过，各个权重矩阵在所有时间上是共享的。
+
+> The fact that the computation at time t requires the value of the hidden layer from time t −1 mandates an incremental inference algorithm that proceeds from the start of the sequence to the end as illustrated in Fig. 14.3. The sequential nature of simple recurrent networks can also be seen by unrolling the network in time as is shown in Fig. 14.4. In this figure, the various layers of units are copied for each time step to illustrate that they will have differing values over time. However, the various weight matrices are shared across time.
+
+![](images/14-rnns-and-lstms/fig_p3_0.png)
+
+*图 14.3 简单循环网络中的前向推断。矩阵 U、V 和 W 在所有时间上共享，而 h 和 y 的取值在每个时间步都会重新计算。*
+*Figure 14.3 Forward inference in a simple recurrent network. The matrices U, V and W are shared across time, while new values for h and y are calculated with each time step.*
+
+### 14.1.2 训练
+
+> 14.1.2 Training
+
+与前馈网络一样，我们将使用训练集、损失函数和反向传播来获得调整这些循环网络中权重所需的梯度。如图 14.2 所示，现在有三组权重需要更新：W，即从输入层到隐藏层的权重；U，即从上一隐藏层到当前隐藏层的权重；最后是 V，即从隐藏层到输出层的权重。
+
+> As with feedforward networks, we’ll use a training set, a loss function, and backpropagation to obtain the gradients needed to adjust the weights in these recurrent networks. As shown in Fig. 14.2, we now have 3 sets of weights to update: W, the weights from the input layer to the hidden layer, U, the weights from the previous hidden layer to the current hidden layer, and finally V, the weights from the hidden layer to the output layer.
+
+图 14.4 突出了两点考虑，而这两点我们此前在处理前馈网络中的
+
+> Fig. 14.4 highlights two considerations that we didn’t have to worry about with
+反向传播时不必担心。第一，要计算时刻 t 输出的损失函数，我们需要时刻 t −1 的隐藏层。第二，时刻 t 的隐藏层既影响时刻 t 的输出，也影响时刻 t +1 的隐藏层（从而影响 t +1 的输出和损失）。由此可知，要评估累计到 ht 的误差，我们需要知道它对当前输出以及对后续输出的影响。
+
+> backpropagation in feedforward networks. First, to compute the loss function for the output at time t we need the hidden layer from time t −1. Second, the hidden layer at time t influences both the output at time t and the hidden layer at time t +1(and hence the output and loss at t +1). It follows from this that to assess the error accruing to ht, we’ll need to know its influence on both the current output as well as the ones that follow.
+
+![](images/14-rnns-and-lstms/fig_p4_0.png)
+
+*图 14.4 按时间展开的简单循环神经网络。网络各层在每个时间步都会重新计算，而权重 U、V 和 W 在所有时间步上共享。*
+*Figure 14.4 A simple recurrent neural network shown unrolled in time. Network layers are recalculated for each time step, while the weights U, V and W are shared across all time steps.*
+
+将反向传播算法针对这一情形加以调整，就得到了用于训练 RNN 权重的两遍算法。在第一遍中，我们执行前向推断，计算 ht、yt，累加每个时间步的损失，并保存每个时间步的隐藏层取值，供下一个时间步使用。在第二遍中，我们反向处理序列，沿路计算所需的梯度，并为按时间回溯的每一步计算和保存误差项，供隐藏层使用。这种通用方法通常被称为反向传播
+
+> Tailoring the backpropagation algorithm to this situation leads to a two-pass algorithm for training the weights in RNNs. In the first pass, we perform forward inference, computing ht, yt, accumulating the loss at each step in time, saving the value of the hidden layer at each step for use at the next time step. In the second pass, we process the sequence in reverse, computing the required gradients as we go, computing and saving the error term for use in the hidden layer for each step backward in time. This general approach is commonly referred to as backpropagation
+
+> `backpropaga- tion through time`（随时间反向传播）
+>
+> 释义：一种将循环网络按时间展开、从序列末尾向开头逐时间步回传并计算梯度的训练方法。
+
+随时间反向传播（Werbos 1974；Rumelhart 等 1986；Werbos 1990）。
+
+> through time (Werbos 1974, Rumelhart et al. 1986, Werbos 1990).
+
+幸运的是，借助现代计算框架和充足的计算
+
+> Fortunately, with modern computational frameworks and adequate computing
+资源，我们无需采用专门的方法来训练 RNN。如图 14.4 所示，将一个循环网络显式地展开成前馈计算图即可消除任何显式的循环，从而可以直接训练网络权重。在这种做法中，我们提供一个模板，用以指定网络的基本结构，包括输入、输出和隐藏层所需的全部参数、权重矩阵，以及要使用的激活函数和输出函数。随后，当给定一个具体的输入序列时，我们可以生成一个针对该输入展开的前馈网络，并用该计算图通过普通反向传播执行前向推断或训练。
+
+> resources, there is no need for a specialized approach to training RNNs. As illustrated in Fig. 14.4, explicitly unrolling a recurrent network into a feedforward computational graph eliminates any explicit recurrences, allowing the network weights to be trained directly. In such an approach, we provide a template that specifies the basic structure of the network, including all the necessary parameters for the input, output, and hidden layers, the weight matrices, as well as the activation and output functions to be used. Then, when presented with a specific input sequence, we can generate an unrolled feedforward network specific to that input, and use that graph to perform forward inference or training via ordinary backpropagation.
+
+对于涉及长得多输入序列的应用，例如语音识别、字符级处理或流式连续输入，展开整个输入序列可能并不可行。在这些情况下，我们可以把输入展开成可处理的固定长度片段，并将每个片段视为一个独立的训练项。
+
+> For applications that involve much longer input sequences, such as speech recognition, character-level processing, or streaming continuous inputs, unrolling an entire input sequence may not be feasible. In these cases, we can unroll the input into manageable fixed-length segments and treat each segment as a distinct training item.
+
+## 14.2 作为语言模型的 RNN
+
+> 14.2 RNNs as Language Models
+
+下面看看如何把 RNN 应用于语言建模任务。回忆第 3 章的内容，语言模型在给定某些前文上下文的情况下预测序列中的下一个词。例如，如果前文上下文是“Thanks for all the”，而我们想知道下一个词是“fish”的可能性有多大，我们会计算：
+
+> Let’s see how to apply RNNs to the language modeling task. Recall from Chapter 3 that language models predict the next word in a sequence given some preceding context. For example, if the preceding context is “Thanks for all the” and we want to know how likely the next word is “fish” we would compute:
+
+P(fish|Thanks for all the)
+语言模型使我们能够为每一个可能的下一个词赋予这样的条件概率，从而给出在整个词表上的分布。我们还可以借助链式法则把这些条件概率组合起来，为整个序列赋予概率：
+
+> Language models give us the ability to assign such a conditional probability to every possible next word, giving us a distribution over the entire vocabulary. We can also assign probabilities to entire sequences by combining these conditional probabilities with the chain rule:
+
+> n
+
+Y
+P(w1:n) = P(wi|w<i)
+第 3 章的 n-gram 语言模型依据一个词与前面 n−1 个词共同出现的计数来计算该词的概率。因此上下文的大小为 n−1。
+
+> The n-gram language models of Chapter 3 compute the probability of a word given counts of its occurrence with the n−1 prior words. The context is thus of size n−1.
+
+> i=1
+
+对于第 6 章的前馈语言模型而言，上下文则是窗口大小。
+
+> For the feedforward language models of Chapter 6, the context is the window size.
+
+RNN 语言模型（Mikolov 等，2010）一次处理输入序列中的一个
+
+> RNN language models (Mikolov et al., 2010) process the input sequence one
+词，尝试根据当前词和前一隐藏状态预测下一个词。因此，RNN 既没有 n-gram 模型所面临的有限上下文问题，也没有前馈语言模型那种固定上下文的问题，因为隐藏状态原则上可以表示一直到序列开头为止的所有前文词的信息。图 14.5 勾勒出前馈语言模型与 RNN 语言模型之间的这一差异，表明 RNN 语言模型使用 ht−1，即上一时间步的隐藏状态，作为过去上下文的表示。
+
+> word at a time, attempting to predict the next word from the current word and the previous hidden state. RNNs thus don’t have the limited context problem that n-gram models have, or the fixed context that feedforward language models have, since the hidden state can in principle represent information about all of the preceding words all the way back to the beginning of the sequence. Fig. 14.5 sketches this difference between a FFN language model and an RNN language model, showing that the RNN language model uses ht−1, the hidden state from the previous time step, as a representation of the past context.
+
+![](images/14-rnns-and-lstms/fig_p5_0.png)
+
+*图 14.5 两种语言模型架构在文本上推进的简化示意图，展示了三个词元的示意性上下文：（a）前馈神经语言模型，其输入到权重矩阵 W 的上下文是固定的；（b）RNN 语言模型，其中隐藏状态 ht−1 概括了先前的上下文。*
+*Figure 14.5 Simplified sketch of two LM architectures moving through a text, showing a schematic context of three tokens: (a) a feedforward neural language model which has a fixed context input to the weight matrix W, (b) an RNN language model, in which the hidden state ht−1 summarizes the prior context.*
+
+### 14.2.1 RNN 语言模型中的前向推断
+
+> 14.2.1 Forward Inference in an RNN language model
+
+循环语言模型中的前向推断与 14.1.1 节所述完全相同。输入序列 X = [x1;...;xt;...;xN] 由一系列词组成，每个词表示为一个大小为 |V| × 1 的独热向量，而输出预测 ˆy 是一个表示词表上概率分布的向量。在每个时间步，模型使用词嵌入矩阵 E 取出当前词的嵌入，将其与权重矩阵 W 相乘，然后再加上上一步的隐藏层（由权重矩阵 U 加权），从而计算出一个新的隐藏层。随后用这个隐藏层生成输出层，输出层经过一个 softmax 层，产生整个词表上的概率分布。也就是说，在时刻 t：
+
+> Forward inference in a recurrent language model proceeds exactly as described in Section 14.1.1. The input sequence X = [x1;...;xt;...;xN] consists of a series of words each represented as a one-hot vector of size |V| × 1, and the output prediction, ˆy, is a vector representing a probability distribution over the vocabulary. At each step, the model uses the word embedding matrix E to retrieve the embedding for the current word, multiples it by the weight matrix W, and then adds it to the hidden layer from the previous step (weighted by weight matrix U) to compute a new hidden layer. This hidden layer is then used to generate an output layer which is passed through a softmax layer to generate a probability distribution over the entire vocabulary. That is, at time t:
+
+et = Ext ht = g(Uht−1 +Wet) (14.4) (14.5)
+ˆyt = softmax(Vht) (14.6)
+当我们用 RNN 做语言建模时（在第 7 章讲 transformer 时我们会再次看到这一点），一个便利的假设是令嵌入维度 de 与隐藏维度 dh 相同。这样我们就笼统地把二者都称为模型维度 d。于是嵌入矩阵 E 的形状为 [d ×|V|]，而 xt 是形状为 [|V|×1] 的独热向量。因此乘积 et 的形状为 [d ×1]。W 和 U 的形状为 [d × d]，所以 ht 的形状也是 [d × 1]。V 的形状为 [|V| × d]，所以 Vh 的结果是形状为 [|V| × 1] 的向量。这个向量可以看作在 h 所提供的证据下、词表上的一组得分。将这些得分通过 softmax，即可把得分归一化为一个概率分布。词表中某个特定的词 k 是下一个词的概率由 ˆyt[k] 表示，即 ˆyt 的第 k 个分量：
+
+> When we do language modeling with RNNs (and we’ll see this again in Chapter 7 with transformers), it’s convenient to make the assumption that the embedding dimension de and the hidden dimension dh are the same. So we’ll just call both of these the model dimension d. So the embedding matrix E is of shape [d ×|V|], and xt is a one-hot vector of shape [|V|×1]. The product et is thus of shape [d ×1]. W and U are of shape [d × d], so ht is also of shape [d × 1]. V is of shape [|V| × d], so the result of Vh is a vector of shape [|V| × 1]. This vector can be thought of as a set of scores over the vocabulary given the evidence provided in h. Passing these scores through the softmax normalizes the scores into a probability distribution. The probability that a particular word k in the vocabulary is the next word is represented by ˆyt[k], the kth component of ˆyt:
+
+P(wt+1 = k|w1,...,wt) = ˆyt[k] (14.7)
+整个序列的概率就是序列中各项概率的乘积，其中我们用 ˆyi[wi] 表示在时间步 i 真实词 wi 的概率。
+
+> The probability of an entire sequence is just the product of the probabilities of each item in the sequence, where we’ll use ˆyi[wi] to mean the probability of the true word wi at time step i.
+
+> n
+
+Y
+P(w1:n) = P(wi|w1:i−1) (14.8)
+Yˆyi[wi]
+= (14.9)
+
+> i=1 n
+
+> i=1
+
+### 14.2.2 训练 RNN 语言模型
+
+> 14.2.2 Training an RNN language model
+
+要将 RNN 训练为语言模型，我们使用与 7.7 节相同的自监督（或自训练）算法：我们取一个文本语料作为训练材料，并在每个时间步 t 要求模型预测下一个词。我们把这样的模型称为自监督的，因为无需给数据添加任何特殊的标准标签；词的自然序列本身就是它的监督信号！我们只是训练模型最小化预测训练序列中真实下一个词时的误差，使用交叉熵作为损失函数。回忆一下，交叉熵损失衡量的是预测概率分布与正确分布之间的差异。
+
+> To train an RNN as a language model, we use the same self-supervision (or selftraining) algorithm we saw in Section 7.7: we take a corpus of text as training material and at each time step t ask the model to predict the next word. We call such a model self-supervised because we don’t have to add any special gold labels to the data; the natural sequence of words is its own supervision! We simply train the model to minimize the error in predicting the true next word in the training sequence, using cross-entropy as the loss function. Recall that the cross-entropy loss measures the difference between a predicted probability distribution and the correct distribution.
+
+> `self-supervision`（自监督）
+>
+> 释义：利用数据自身蕴含的自然序列作为监督信号、无需额外人工标注标签的训练方式。
+
+X
+LCE( ˆyt,yt) = − yt[w]log ˆyt[w]
+
+![](images/14-rnns-and-lstms/fig_p7_0.png)
+
+*图 14.6 将 RNN 训练为语言模型。*
+*Figure 14.6 Training RNNs as language models.*
+
+在语言建模的情形中，正确的分布 yt 来自对下一个词的已知。它表示为一个与词表对应的独热向量，其中真实下一个词对应的项为 1，其余所有项均为 0。因此，语言建模的交叉熵损失由模型赋予正确下一个词的概率决定。于是在时刻 t，交叉熵损失就是模型赋予训练序列中下一个词的概率的负对数。
+
+> In the case of language modeling, the correct distribution yt comes from knowing the next word. This is represented as a one-hot vector corresponding to the vocabulary where the entry for the actual next word is 1, and all the other entries are 0. Thus, the cross-entropy loss for language modeling is determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence.
+
+LCE( ˆyt,yt) = −log ˆyt[wt+1] (14.11)
+因此，在输入的每个词位置 t 上，模型以正确的词 wt 连同 ht−1 作为输入，其中 ht−1 编码了来自先前 w1:t−1 的信息，并用它们计算可能的下一个词上的概率分布，从而计算模型对下一个词元 wt+1 的损失。随后我们移到下一个词，忽略模型对下一个词所预测的结果，转而使用正确的词 wt+1 连同已编码的先前历史来估计词元 wt+2 的概率。这种始终把正确的历史序列交给模型来预测下一个词（而不是把模型在上一个时间步的最佳结果喂回模型）的做法，称为教师强制。
+
+> Thus at each word position t of the input, the model takes as input the correct word wt together with ht−1, encoding information from the preceding w1:t−1, and uses them to compute a probability distribution over possible next words so as to compute the model’s loss for the next token wt+1. Then we move to the next word, we ignore what the model predicted for the next word and instead use the correct word wt+1 along with the prior history encoded to estimate the probability of token wt+2. This idea that we always give the model the correct history sequence to predict the next word (rather than feeding the model its best case from the previous time step) is called teacher forcing.
+
+> `teacher forcing`（教师强制）
+>
+> 释义：训练语言模型时，每个时间步都改用真实的历史词而非模型自身的预测作为输入，以免误差沿时间步累积。
+
+网络中的权重会被调整，以最小化在训练序列上的平均交叉熵损失
+
+> The weights in the network are adjusted to minimize the average CE loss over
+，这一过程通过梯度下降完成。图 14.6 展示了这一训练流程。
+
+> the training sequence via gradient descent. Fig. 14.6 illustrates this training regimen.
+
+### 14.2.3 权重绑定
+
+> 14.2.3 Weight Tying
+
+细心的读者可能已经注意到，输入嵌入矩阵 E 与最终层矩阵 V（即向输出 softmax 供量的那个矩阵）相当相似。
+
+> Careful readers may have noticed that the input embedding matrix E and the final layer matrix V, which feeds the output softmax, are quite similar.
+
+E 的各列表示词表中每个词的词嵌入，这些嵌入是在训练过程中学到的，其目标是让含义与功能相近的词具有相近的嵌入。而且，由于我们用 RNN 做语言建模时假定嵌入维度与隐藏维度相同（即模型维度 d），嵌入矩阵 E 的形状为 [d × |V|]。最终层矩阵 V 则通过计算 Vh，提供一种为词表中每个词的可能性打分的方式，打分的依据是网络最终隐藏层中所呈现的证据。V 的形状为 [|V|×d]。
+
+> The columns of E represent the word embeddings for each word in the vocabulary learned during the training process with the goal that words that have similar meaning and function will have similar embeddings. And, since when we use RNNs for language modeling we make the assumption that the embedding dimension and the hidden dimension are the same (= the model dimension d), the embedding matrix E has shape [d × |V|]. And the final layer matrix V provides a way to score the likelihood of each word in the vocabulary given the evidence present in the final hidden layer of the network through the calculation of Vh. V is of shape [|V|×d].
+
+也就是说，V 的各行在形状上相当于 E 的转置，这意味着 V 提供了第二组学到的词嵌入。
+
+> That is, the rows of V are shaped like a transpose of E, meaning that V provides a second set of learned word embeddings.
+
+语言模型并不使用两组嵌入矩阵，而是只使用一个
+
+> Instead of having two sets of embedding matrices, language models use a single
+嵌入矩阵，它同时出现在输入层和 softmax 层。也就是说，我们省去 V，在计算的开始处使用 E，在结束处使用 E⊺（因为 V 的形状正是 E 的转置）。在两处使用同一个矩阵（的转置）称为权重绑定。1 对 RNN 语言
+
+> embedding matrix, which appears at both the input and softmax layers. That is, we dispense with V and use E at the start of the computation and E⊺(because the shape of V is the transpose of E at the end. Using the same matrix (transposed) in two places is called weight tying.1 The weight-tied equations for an RNN language
+
+> `weight tying`（权重绑定）
+>
+> 释义：让输入嵌入矩阵与输出 softmax 层的权重矩阵共用同一个矩阵，从而减少参数量并改善困惑度。
+
+模型而言，采用权重绑定后的等式则变为：
+
+> model then become:
+
+et = Ext ht = g(Uht−1 +Wet) (14.12) (14.13)
+ˆyt = softmax(E⊺ht) (14.14)
+除了能带来更好的模型困惑度之外，这种做法还显著减少了模型所需的参数数量。
+
+> In addition to providing improved model perplexity, this approach significantly reduces the number of parameters required for the model.
+
+## 14.3 用于其他 NLP 任务的 RNN
+
+> 14.3 RNNs for other NLP tasks
+
+既然我们已经了解了基本的 RNN 架构，接下来考虑如何把它应用到三类 NLP 任务上：情感分析和主题分类之类的序列分类任务，词性标注之类的序列标注任务，以及文本生成任务，其中还包括一种称为编码器-解码器的新架构。
+
+> Now that we’ve seen the basic RNN architecture, let’s consider how to apply it to three types of NLP tasks: sequence classification tasks like sentiment analysis and topic classification, sequence labeling tasks like part-of-speech tagging, and text generation tasks, including with a new architecture called the encoder-decoder.
+
+### 14.3.1 序列标注
+
+> 14.3.1 Sequence Labeling
+
+在序列标注中，网络的任务是为序列的每个元素指定一个标签，标签取自一小组合固定的标签。一类经典的序列标注任务是词性（POS）标注（为句子中的每个词赋予 NOUN、VERB 这类语法标签）。我们将在第 18 章详细讨论词性标注，这里先给出一个起说明作用的例子。在用于序列标注的 RNN 方法中，输入是词嵌入，输出是在给定标签集上由 softmax 层生成的标签概率，如图 14.7 所示。
+
+> In sequence labeling, the network’s task is to assign a label chosen from a small fixed set of labels to each element of a sequence. One classic sequence labeling tasks is part-of-speech (POS) tagging (assigning grammatical tags like NOUN and VERB to each word in a sentence). We’ll discuss part-of-speech tagging in detail in Chapter 18, but let’s give a motivating example here. In an RNN approach to sequence labeling, inputs are word embeddings and the outputs are tag probabilities generated by a softmax layer over the given tagset, as illustrated in Fig. 14.7.
+
+在该图中，每个时间步的输入是与输入词元对应的预训练词嵌入。RNN 方块是一种抽象，表示一个按时间展开的简单循环网络，它在每个时间步都由输入层、隐藏层和输出层构成，此外还包括构成该网络、被共享使用的 U、V 和 W 权重矩阵。网络在每个时间步的输出表示由 softmax 层生成的词性标签集上的分布。
+
+> In this figure, the inputs at each time step are pretrained word embeddings corresponding to the input tokens. The RNN block is an abstraction that represents an unrolled simple recurrent network consisting of an input layer, hidden layer, and output layer at each time step, as well as the shared U, V and W weight matrices that comprise the network. The outputs of the network at each time step represent the distribution over the POS tagset generated by a softmax layer.
+
+要为给定输入生成一个标签序列，我们需要在输入序列上执行前向推断，
+
+> To generate a sequence of tags for a given input, we run forward inference over
+并在每一步从 softmax 中选出最可能的标签。由于我们在每个时间步都用 softmax 层生成输出标签集上的概率分布，训练时我们将再次采用交叉熵损失。
+
+> the input sequence and select the most likely tag from the softmax at each step. Since we’re using a softmax layer to generate the probability distribution over the output tagset at each time step, we will again employ the cross-entropy loss during training.
+
+### 14.3.2 用于序列分类的 RNN
+
+> 14.3.2 RNNs for Sequence Classification
+
+RNN 的另一种用途是对整个序列而非序列中的词元进行分类。这类任务通常称为文本分类，例如情感分析或垃圾邮件检测，此时我们把一段文本分为两个或三个类别（如正面或负面），此外也包括类别数量很多的
+
+> Another use of RNNs is to classify entire sequences rather than the tokens within them. This is the set of tasks commonly called text classification, like sentiment analysis or spam detection, in which we classify a text into two or three classes(like positive or negative), as well as classification tasks with a large number of
+
+![](images/14-rnns-and-lstms/fig_p9_0.png)
+
+*图 14.7 用简单 RNN 把词性标注看作序列标注。词性（POS）标注的目标是为句子中的每个词赋予一个取自预定义标签集的语法标签。（本句的标签包括 NNP（专有名词）、MD（情态动词）等；我们将在第 18 章完整描述词性标注这项任务。）预训练词嵌入作为输入，softmax 层在每个时间步输出词性标签上的概率分布。*
+*Figure 14.7 Part-of-speech tagging as sequence labeling with a simple RNN. The goal of part-of-speech (POS) tagging is to assign a grammatical label to each word in a sentence, drawn from a predefined set of tags. (The tags for this sentence include NNP (proper noun), MD (modal verb) and others; we’ll give a complete description of the task of part-of-speech tagging in Chapter 18.) Pre-trained word embeddings serve as inputs and a softmax layer provides a probability distribution over the part-of-speech tags as output at each time step.*
+
+分类任务，例如文档级主题分类，或客户服务应用中的消息路由。
+
+> categories, like document-level topic classification, or message routing for customer service applications.
+
+在这种情形下应用 RNN 时，我们把待分类的文本送入 RNN，
+
+> To apply RNNs in this setting, we pass the text to be classified through the RNN
+一次送入一个词，并在每个时间步生成一个新的隐藏层表示。
+
+> a word at a time generating a new hidden layer representation at each time step.
+
+随后我们可以取文本最后一个词元的隐藏层 hn，把它作为整个序列的压缩表示。我们可以把这个表示 hn 传入一个前馈网络，由该网络通过在所有可能类别上的 softmax 选择一个类别。图 14.8 展示了这一做法。
+
+> We can then take the hidden layer for the last token of the text, hn, to constitute a compressed representation of the entire sequence. We can pass this representation hn to a feedforward network that chooses a class via a softmax over the possible classes. Fig. 14.8 illustrates this approach.
+
+![](images/14-rnns-and-lstms/fig_p9_1.png)
+
+*图 14.8 用简单 RNN 与前馈网络相结合进行序列分类。RNN 的最终隐状态被用作执行分类的前馈网络的输入。*
+*Figure 14.8 Sequence classification using a simple RNN combined with a feedforward network. The final hidden state from the RNN is used as the input to a feedforward network that performs the classification.*
+
+注意，在这种做法下，我们不需要序列中那些位于最后一个元素之前的词的中间输出
+
+> Note that in this approach we don’t need intermediate outputs for the words in
+。因此，与这些元素相关的损失项并不存在。相反，用于训练网络权重的损失函数完全基于最终的文本分类任务。前馈分类器 softmax 输出的结果连同交叉熵损失共同驱动训练。来自分类的误差信号会一路反向传播，先经过前馈分类器中的权重传到它的输入端，再传到 RNN 中的三组权重，正如第 14.1.2 节前面所述。
+
+> the sequence preceding the last element. Therefore, there are no loss terms associated with those elements. Instead, the loss function used to train the weights in the network is based entirely on the final text classification task. The output from the softmax output from the feedforward classifier together with a cross-entropy loss drives the training. The error signal from the classification is backpropagated all the way through the weights in the feedforward classifier through, to its input, and then through to the three sets of weights in the RNN as described earlier in Section 14.1.2.
+
+使用来自下游应用的损失来调整
+
+> The training regimen that uses the loss from a downstream application to adjust the
+
+> `end-to-end training`（端到端训练）
+>
+> 释义：直接用下游任务的损失信号一路反向传播，把网络中从输出到输入的全部权重一起调整的训练方式。
+
+网络中全部权重的这种训练方式，称为端到端训练。
+
+> weights all the way through the network is referred to as end-to-end training.
+
+另一种选择是，不用最后一个词元的隐藏状态 hn 来
+
+> Another option, instead of using just the hidden state of the last token hn to
+表示整个序列，而是使用序列中
+
+> represent the whole sequence, is to use some sort of pooling function of all the
+
+> `pooling`（池化）
+>
+> 释义：把序列中各位置的隐藏状态按元素聚合（如取平均或取最大值）成一个固定长度向量的操作。
+
+每个词 i 的隐藏状态 hi 的某种池化函数。例如，我们可以通过对全部 n 个隐藏状态取逐元素平均，构造出一个池化后的表示：
+
+> hidden states hi for each word i in the sequence. For example, we can create a representation that pools all the n hidden states by taking their element-wise mean:
+
+> n
+
+hmean = 1 X
+n hi (14.15)
+或者我们可以取逐元素最大值；n 个向量构成的集合的逐元素最大值是一个新向量，其第 k 个元素是这 n 个向量的第 k 个元素中的最大值。
+
+> Or we can take the element-wise max; the element-wise max of a set of n vectors is a new vector whose kth element is the max of the kth elements of all the n vectors.
+
+> i=1
+
+RNN 的长上下文使得成功地反向传播
+
+> The long contexts of RNNs makes it quite difficult to successfully backpropagate
+误差一路穿过整个输入变得相当困难；我们将在 14.5 节讨论这个问题以及一些标准解决方案。
+
+> error all the way through the entire input; we’ll talk about this problem, and some standard solutions, in Section 14.5.
+
+### 14.3.3 使用基于 RNN 的语言模型进行生成
+
+> 14.3.3 Generation with RNN-Based Language Models
+
+基于 RNN 的语言模型也可以用于生成文本。文本生成与图像生成、代码生成一起，构成了一个常被称为生成式 AI 的 AI 新领域。已经读过第 7 章的读者已经见过这些内容，但考虑到有些读者按不同的顺序阅读，我们在这里重新介绍它。
+
+> RNN-based language models can also be used to generate text, Text generation, along with image generation and code generation, constitute a new area of AI that is often called generative AI. Those of you who have already read Chapter 7 will have already seen this, but we reintroduce it here for those who are reading in a different order.
+
+回想第 3 章，我们看到了如何从 n-gram 语言
+
+> Recall back in Chapter 3 we saw how to generate text from an n-gram language
+模型中生成文本，做法是采用一种采样技术，该技术由 Claude Shannon（Shannon, 1951）以及心理学家 George Miller 和 Jennifer Selfridge（Miller and Selfridge, 1950）在大约同一时期提出。我们首先根据某个词作为序列开头的合适程度，随机采样一个词来开始一个序列。然后我们继续以先前做出的选择为条件采样词，直到达到预先确定的长度，或者生成了序列结束词元。
+
+> model by adapting a sampling technique suggested at about the same time by Claude Shannon (Shannon, 1951) and the psychologists George Miller and Jennifer Selfridge (Miller and Selfridge, 1950). We first randomly sample a word to begin a sequence based on its suitability as the start of a sequence. We then continue to sample words conditioned on our previous choices until we reach a pre-determined length, or an end of sequence token is generated.
+
+如今，这种使用语言模型逐步生成词的方法，
+
+> Today, this approach of using a language model to incrementally generate words
+即通过重复地以我们先前做出的选择为条件采样下一个词，被称为
+
+> by repeatedly sampling the next word conditioned on our previous choices is called
+
+> `autoregressive generation`（自回归生成）
+>
+> 释义：每一步都以网络此前选出的词为条件采样下一个词，从而逐个词地扩展文本的生成方式。
+
+自回归生成或因果 LM 生成。该过程基本上
+
+> autoregressive generation or causal LM generation. The procedure is basically
+与第 79 页所描述的相同，只是被调整到了神经网络的语境下：
+
+> the same as that described on page 79, but adapted to a neural context:
+
+- 从以句子起始标记 <s> 作为第一个输入所得的 softmax 分布中，采样输出中的一个词。
+- 把第一个词的词嵌入作为下一时间步网络的输入，然后用同样的方式采样下一个词。
+- 继续生成，直到采样到句子结束标记 </s>，或达到固定的长度上限。
+
+> Sample a word in the output from the softmax distribution that results from using the beginning of sentence marker, <s>, as the first input.
+> Use the word embedding for that first word as the input to the network at the next time step, and then sample the next word in the same fashion.
+> Continue generating until the end of sentence marker, </s>, is sampled or a fixed length limit is reached.
+
+严格来说，自回归模型是一种基于 t−1、t−2 等时刻先前值的线性函数来预测 t 时刻值的模型。尽管语言模型不是线性的（因为它们具有许多层非线性），我们还是宽泛地把这种生成技术称为自回归生成，因为每个时间步生成的词都以网络在前一步选出的词为条件。图 14.9 展示了这种方法。在该图中，RNN 的隐藏层与循环连接的细节被隐藏在蓝色块内。
+
+> Technically an autoregressive model is a model that predicts a value at time t based on a linear function of the previous values at times t −1, t −2, and so on. Although language models are not linear (since they have many layers of non-linearities), we loosely refer to this generation technique as autoregressive generation since the word generated at each time step is conditioned on the word selected by the network from the previous step. Fig. 14.9 illustrates this approach. In this figure, the details of the RNN’s hidden layers and recurrent connections are hidden within the blue block.
+
+这一简单的架构支撑着一些应用的最先进方法，
+
+> This simple architecture underlies state-of-the-art approaches to applications
+例如机器翻译、摘要和问答。这些方法的关键在于用恰当的上下文为生成组件做好准备。
+
+> such as machine translation, summarization, and question answering. The key to these approaches is to prime the generation component with an appropriate context.
+
+也就是说，我们可以不只用 <s> 来启动，而是提供一个更丰富的、适合任务的上下文；对翻译而言，上下文是源语言的句子；对摘要而言，上下文是我们想要摘要的长文本。
+
+> That is, instead of simply using <s> to get things started we can provide a richer task-appropriate context; for translation the context is the sentence in the source language; for summarization it’s the long text we want to summarize.
+
+![](images/14-rnns-and-lstms/fig_p11_0.png)
+
+*图 14.9 使用基于 RNN 的神经语言模型进行自回归生成。*
+*Figure 14.9 Autoregressive generation with an RNN-based neural language model.*
+
+## 14.4 堆叠与双向 RNN 架构
+
+> 14.4 Stacked and Bidirectional RNN architectures
+
+循环网络相当灵活。通过把按时间展开的计算图的前馈特性与作为通用输入和输出的向量结合起来，复杂的网络可以被当作模块，以富有创意的方式组合。本节介绍在 RNN 语言处理中使用的两种较常见的网络架构。
+
+> Recurrent networks are quite flexible. By combining the feedforward nature of unrolled computational graphs with vectors as common inputs and outputs, complex networks can be treated as modules that can be combined in creative ways. This section introduces two of the more common network architectures used in language processing with RNNs.
+
+### 14.4.1 堆叠 RNN
+
+> 14.4.1 Stacked RNNs
+
+在我们目前的例子中，RNN 的输入由词或字符嵌入（向量）序列组成，输出则是有助于预测词、标记或序列标签的向量。然而，没有什么妨碍我们把一个 RNN 的全部输出序列用作另一个 RNN 的输入序列。
+
+> In our examples thus far, the inputs to our RNNs have consisted of sequences of word or character embeddings (vectors) and the outputs have been vectors useful for predicting words, tags or sequence labels. However, nothing prevents us from using the entire sequence of outputs from one RNN as an input sequence to another one.
+
+堆叠 RNN 由多个网络组成，其中一层的输出作为
+
+> Stacked RNNs consist of multiple networks where the output of one layer serves as
+
+> `Stacked RNNs`（堆叠 RNN）
+>
+> 释义：把多个 RNN 逐层叠加，使前一层的输出序列成为后一层的输入序列的网络结构。
+
+后续一层的输入，如图 14.10 所示。
+
+> the input to a subsequent layer, as shown in Fig. 14.10.
+
+堆叠 RNN 通常优于单层网络。这种
+
+> Stacked RNNs generally outperform single-layer networks. One reason for this
+成功的一个原因似乎是，网络在各层之间归纳出不同抽象层级的表示。正如人类视觉系统的早期阶段检测边缘，随后用这些边缘寻找更大的区域和形状，堆叠网络的初始层可以归纳出为后续层充当有用抽象的表示——而这些表示在单个 RNN 中可能难以归纳出来。
+
+> success seems to be that the network induces representations at differing levels of abstraction across layers. Just as the early stages of the human visual system detect edges that are then used for finding larger regions and shapes, the initial layers of stacked networks can induce representations that serve as useful abstractions for further layers—representations that might prove difficult to induce in a single RNN.
+
+堆叠 RNN 的最优层数因每个应用和每个训练集而异。然而，随着堆叠数量的增加，训练成本会
+
+> The optimal number of stacked RNNs is specific to each application and to each training set. However, as the number of stacks is increased the training costs rise
+
+![](images/14-rnns-and-lstms/fig_p12_0.png)
+
+*图 14.10 堆叠循环网络。较低层的输出作为较高层的输入，最后一个网络的输出作为最终输出。*
+*Figure 14.10 Stacked recurrent networks. The output of a lower level serves as the input to higher levels with the output of the last network serving as the final output.*
+
+迅速上升。
+
+> quickly.
+
+### 14.4.2 双向 RNN
+
+> 14.4.2 Bidirectional RNNs
+
+RNN 利用来自左侧（先前）上下文的信息来做出 t 时刻的预测。但在许多应用中，我们可以访问整个输入序列；在这些情况下，我们希望能利用 t 右侧上下文中的词。一种做法是运行两个独立的 RNN，一个从左到右，一个从右到左，并把它们的表示拼接起来。
+
+> The RNN uses information from the left (prior) context to make its predictions at time t. But in many applications we have access to the entire input sequence; in those cases we would like to use words from the context to the right of t. One way to do this is to run two separate RNNs, one left-to-right, and one right-to-left, and concatenate their representations.
+
+在目前讨论的从左到右的 RNN 中，给定时刻的隐状态
+
+> In the left-to-right RNNs we’ve discussed so far, the hidden state at a given time
+t 表示网络到该时刻为止对序列所知的一切。该状态是输入 x1,...,xt 的函数，表示当前时刻左侧网络的上下文。
+
+> t represents everything the network knows about the sequence up to that point. The state is a function of the inputs x1,...,xt and represents the context of the network to the left of the current time.
+
+h f t = RNNforward(x1,...,xt) (14.16)
+这个新记号 hf t 只不过对应于 t 时刻通常的隐状态，表示网络到目前为止从序列中收集到的一切。
+
+> This new notation hf t simply corresponds to the normal hidden state at time t, representing everything the network has gleaned from the sequence so far.
+
+为了利用当前输入右侧的上下文，我们可以训练一个
+
+> To take advantage of context to the right of the current input, we can train an
+RNN，让它在反转的输入序列上训练。采用这种方法，时刻 t 的隐状态表示当前输入右侧序列的信息：
+
+> RNN on a reversed input sequence. With this approach, the hidden state at time t represents information about the sequence to the right of the current input:
+
+hb t = RNNbackward(xt,... xn) (14.17)
+这里，隐状态 hb t 表示我们从 t 到序列末尾所辨识出的关于该序列的全部信息。
+
+> Here, the hidden state hb t represents all the information we have discerned about the sequence from t to the end of the sequence.
+
+> `bidirectional RNN`（双向 RNN）
+>
+> 释义：同时从正、反两个方向处理同一输入序列，并把两个方向得到的隐状态拼接或组合起来的循环网络结构。
+
+双向 RNN（Schuster 和 Paliwal, 1997）组合了两个相互独立的
+
+> A bidirectional RNN (Schuster and Paliwal, 1997) combines two independent
+RNN，其中一个从头到尾处理输入，另一个从尾到头处理输入。然后我们把这两个网络计算出的表示拼接成单个向量，从而在每个时刻捕捉输入的左侧和右侧上下文。这里我们用分号“;”或等价的符号 ⊕ 表示向量拼接：
+
+> RNNs, one where the input is processed from the start to the end, and the other from the end to the start. We then concatenate the two representations computed by the networks into a single vector that captures both the left and right contexts of an input at each point in time. Here we use either the semicolon ”;” or the equivalent symbol⊕to mean vector concatenation:
+
+ht = [h f t ; hb t]
+= h f t ⊕hb 图 14.11 展示了这样一个双向网络，它拼接了前向传播和后向传播的输出。其他组合前向与后向上下文的简单方式包括逐元素相加或逐元素相乘。于是每个时间步的输出都捕捉了当前输入左侧和右侧的信息。在序列标注应用中，这些拼接后的输出可以作为局部标注决策的基础。
+
+> = h f t ⊕hb Fig. 14.11 illustrates such a bidirectional network that concatenates the outputs of the forward and backward pass. Other simple ways to combine the forward and backward contexts include element-wise addition or multiplication. The output at each step in time thus captures information to the left and to the right of the current input. In sequence labeling applications, these concatenated outputs can serve as the basis for a local labeling decision.
+
+![](images/14-rnns-and-lstms/fig_p13_0.png)
+
+*图 14.11 一个双向 RNN。分别沿前向和后向方向训练彼此独立的模型，每个模型在各时间点的输出被拼接起来，表示该时间点的双向状态。*
+*Figure 14.11 A bidirectional RNN. Separate models are trained in the forward and backward directions, with the output of each model at each time point concatenated to represent the bidirectional state at that time point.*
+
+双向 RNN 在序列分类上也已被证明相当有效。回想图 14.8，对于序列分类，我们把 RNN 的最终隐状态用作后续前馈分类器的输入。这种方法的一个困难在于，最终状态自然更多地反映句子末尾的信息，而不是句首的信息。双向 RNN 为这个问题提供了简单的解决办法；如图 14.12 所示，我们只需把前向和后向传播的最终隐状态组合起来（例如通过拼接），并将其作为后续处理的输入。
+
+> Bidirectional RNNs have also proven to be quite effective for sequence classification. Recall from Fig. 14.8 that for sequence classification we used the final hidden state of the RNN as the input to a subsequent feedforward classifier. A difficulty with this approach is that the final state naturally reflects more information about the end of the sentence than its beginning. Bidirectional RNNs provide a simple solution to this problem; as shown in Fig. 14.12, we simply combine the final hidden states from the forward and backward passes (for example by concatenation) and use that as input for follow-on processing.
+
+## 14.5 LSTM
+
+> 14.5 The LSTM
+
+在实践中，对于要求网络利用距离当前处理位置较远的信息的任务，训练 RNN 相当困难。尽管网络可以访问整个先前的序列，但隐状态中编码的信息往往相当局部，与输入序列最近的部分和最近的决策更为相关。然而，远距离的信息对许多语言应用都至关重要。
+
+> In practice, it is quite difficult to train RNNs for tasks that require a network to make use of information distant from the current point of processing. Despite having access to the entire preceding sequence, the information encoded in hidden states tends to be fairly local, more relevant to the most recent parts of the input sequence and recent decisions. Yet distant information is critical to many language applications.
+
+请考虑语言建模语境下的下面这个例子。
+
+> Consider the following example in the context of language modeling.
+
+(14.19) The flights the airline was canceling were full.
+
+在 airline 之后给 was 赋予较高的概率是直接的，因为 airline 为单数一致提供了很强的局部上下文。然而，给 were 赋予合适的概率则相当困难，不仅因为复数形式的 flights 距离相当远，还因为单数名词 airline 在中间位置上更接近
+
+> Assigning a high probability to was following airline is straightforward since airline provides a strong local context for the singular agreement. However, assigning an appropriate probability to were is quite difficult, not only because the plural flights is quite distant, but also because the singular noun airline is closer in the intervening
+
+![](images/14-rnns-and-lstms/fig_p14_0.png)
+
+*图 14.12 用于序列分类的双向 RNN。前向和后向传播的最终隐藏单元被组合起来，用以表示整个序列。这一组合表示作为后续分类器的输入。*
+*Figure 14.12 A bidirectional RNN for sequence classification. The final hidden units from the forward and backward passes are combined to represent the entire sequence. This combined representation serves as input to the subsequent classifier.*
+
+上下文。理想情况下，网络应当能够保留关于复数 flights 的远距离信息，直到需要它的时候，同时仍能正确处理序列中间的部分。
+
+> context. Ideally, a network should be able to retain the distant information about plural flights until it is needed, while still processing the intermediate parts of the sequence correctly.
+
+RNN 无法向前传递关键信息的一个原因是，
+
+> One reason for the inability of RNNs to carry forward critical information is that
+隐藏层以及由此决定隐藏层取值的权重，被要求同时完成两项任务：提供对当前决策有用的信息，以及更新并向前传递未来决策所需的信息。
+
+> the hidden layers, and, by extension, the weights that determine the values in the hidden layer, are being asked to perform two tasks simultaneously: provide information useful for the current decision, and updating and carrying forward information required for future decisions.
+
+训练 RNN 的第二个困难源于需要把
+
+> A second difficulty with training RNNs arises from the need to backpropagate
+误差信号随时间反向传播。回想 14.1.2 节，时刻 t 的隐藏层参与下一时间步的计算，因而会影响该时间步的损失。结果是，在训练的反向传播过程中，隐藏层会经历反复相乘，相乘次数由序列长度决定。这一过程常常导致梯度最终被驱向零，这种情况
+
+> the error signal back through time. Recall from Section 14.1.2 that the hidden layer at time t contributes to the loss at the next time step since it takes part in that calculation. As a result, during the backward pass of training, the hidden layers are subject to repeated multiplications, as determined by the length of the sequence. A frequent result of this process is that the gradients are eventually driven to zero, a situation
+
+> `vanishing`（消失）
+>
+> 释义：指梯度沿时间长链反向传播、经过反复相乘后逐渐趋近于零，使网络难以学到远距离依赖的现象。
+
+被称为梯度消失问题。
+
+> called the vanishing gradients problem.
+
+> `gradients`（梯度）
+>
+> 释义：损失函数对模型参数（此处主要是各时间步共享的权重）的偏导数，用于指示参数应当朝哪个方向更新。
+
+为解决这些问题，人们设计了更复杂的网络架构，
+
+> To address these issues, more complex network architectures have been designed
+以显式地管理随时间维持相关上下文这一任务，办法是让网络学会遗忘不再需要的信息，并记住后续决策所需要的信息。
+
+> to explicitly manage the task of maintaining relevant context over time, by enabling the network to learn to forget information that is no longer needed and to remember information required for decisions still to come.
+
+RNN 这类扩展中使用最广泛的是长短期记忆（LSTM）网络（Hochreiter 和 Schmidhuber, 1997）。LSTM 把上下文
+
+> The most commonly used such extension to RNNs is the long short-term memory (LSTM) network (Hochreiter and Schmidhuber, 1997). LSTMs divide the con-
+
+> `long short-term memory`（长短期记忆）
+>
+> 释义：一种在循环隐藏层之外增加显式上下文层、并用门控单元学习遗忘与记住信息的循环网络结构。
+
+文本管理问题分成两个子问题：从上下文中移除不再需要的信息，以及添加后续决策很可能需要的信息。解决这两个问题的关键在于学会如何管理这种上下文，而不是把某种策略硬编码到架构中。LSTM 做到这一点的方式是：首先在架构中增加一个显式的上下文层（在通常的循环隐藏层之外），并且使用专门的神经单元，这些单元借助门来控制信息进出构成网络各层的单元。这些门通过额外的权重实现，这些权重依次作用于输入、前一隐藏层和前一上下文层。
+
+> text management problem into two subproblems: removing information no longer needed from the context, and adding information likely to be needed for later decision making. The key to solving both problems is to learn how to manage this context rather than hard-coding a strategy into the architecture. LSTMs accomplish this by first adding an explicit context layer to the architecture (in addition to the usual recurrent hidden layer), and through the use of specialized neural units that make use of gates to control the flow of information into and out of the units that comprise the network layers. These gates are implemented through the use of additional weights that operate sequentially on the input, and previous hidden layer, and previous context layers.
+
+LSTM 中的门遵循一种共同的设计模式：每个门都由一个前馈层、随后的 sigmoid 激活函数、以及与所要门控的层进行的逐点相乘组成。之所以选择 sigmoid 作为激活函数，是因为它倾向于把输出推向 0 或 1。把它与逐点相乘结合起来，效果类似于一个二值掩码。被门控的层中与掩码中接近 1 的数值相对应的取值几乎原样通过；与较低数值相对应的取值则基本被抹除。
+
+> The gates in an LSTM share a common design pattern; each consists of a feedforward layer, followed by a sigmoid activation function, followed by a pointwise multiplication with the layer being gated. The choice of the sigmoid as the activation function arises from its tendency to push its outputs to either 0 or 1. Combining this with a pointwise multiplication has an effect similar to that of a binary mask. Values in the layer being gated that align with values near 1 in the mask are passed through nearly unchanged; values corresponding to lower values are essentially erased.
+
+我们要考察的第一个门是遗忘门。这个门的目的是
+
+> The first gate we’ll consider is the forget gate. The purpose of this gate is
+
+> `forget gate`（遗忘门）
+>
+> 释义：依据前一隐状态与当前输入生成掩码，用来从上下文里删除已不再需要的信息的门。
+
+从上下文中删除不再需要的信息。遗忘门计算前一状态的隐藏层与当前输入的加权和，并把该结果送入 sigmoid。随后把这个掩码与上下文向量逐元素相乘，以从上下文中移除不再需要的信息。两个向量的逐元素相乘（用算子 ⊙ 表示，有时也称为 Hadamard 积）是一个与两个输入向量维度相同的向量，其中每个元素 i 是两个输入向量中元素 i 的乘积：
+
+> to delete information from the context that is no longer needed. The forget gate computes a weighted sum of the previous state’s hidden layer and the current input and passes that through a sigmoid. This mask is then multiplied element-wise by the context vector to remove the information from context that is no longer required. Element-wise multiplication of two vectors (represented by the operator ⊙, and sometimes called the Hadamard product) is the vector of the same dimension as the two input vectors, where each element i is the product of element i in the two input vectors:
+
+ft = σ(Uf ht−1 +Wf xt) (14.20)
+kt = ct−1 ⊙ft (14.21)
+下一项任务是计算我们需要从前一隐状态和当前输入中提取的实际信息——这与我们一直用于所有循环网络的基本计算相同。
+
+> The next task is to compute the actual information we need to extract from the previous hidden state and current inputs—the same basic computation we’ve been using for all our recurrent networks.
+
+gt = tanh(Ught−1 +Wgxt) (14.22)
+接下来，我们生成添加门的掩码，以选择要添加到
+
+> Next, we generate the mask for the add gate to select the information to add to the
+
+> `add gate`（添加门）
+>
+> 释义：生成掩码以筛选出当前应写入细胞状态（上下文向量）的新信息的门。
+
+当前的上下文。
+
+> current context.
+
+it = σ(Uiht−1 +Wixt) (14.23)
+jt = gt ⊙it (14.24)
+接下来，我们把它加到修改后的上下文向量上，得到新的上下文向量。
+
+> Next, we add this to the modified context vector to get our new context vector.
+
+ct = jt +kt (14.25)
+我们要用的最后一个门是输出门，它用于决定当前隐状态需要哪些信息（相对于哪些信息需要为未来的决策而保留）。
+
+> The final gate we’ll use is the output gate which is used to decide what information is required for the current hidden state (as opposed to what information needs to be preserved for future decisions).
+
+> `output gate`（输出门）
+>
+> 释义：LSTM 单元中控制从细胞状态中取出哪些信息作为当前隐状态输出的门，与为未来保留信息的遗忘门相对。
+
+ot = σ(Uoht−1 +Woxt) ht = ot ⊙tanh(ct) (14.26) (14.27)
+图 14.13 展示了单个 LSTM 单元的完整计算过程。给定各个门相应的权重后，LSTM 将上一时间步的上下文层和隐藏层，以及当前的输入向量作为输入。随后它生成更新后的上下文向量和隐藏向量作为输出。
+
+> Fig. 14.13 illustrates the complete computation for a single LSTM unit. Given the appropriate weights for the various gates, an LSTM accepts as input the context layer, and hidden layer from the previous time step, along with the current input vector. It then generates updated context and hidden vectors as output.
+
+在每个时间步，正是隐状态 ht 为 LSTM 提供输出。
+
+> It is the hidden state, ht, that provides the output for the LSTM at each time step.
+
+该输出可用作堆叠 RNN 中后续各层的输入，或者在网络的最后一层，ht 可用来提供 LSTM 的最终输出。
+
+> This output can be used as the input to subsequent layers in a stacked RNN, or at the final layer of a network ht can be used to provide the final output of the LSTM.
+
+![](images/14-rnns-and-lstms/fig_p16_0.png)
+
+*图 14.13 以计算图形式展示的单个 LSTM 单元。每个单元的输入包括当前输入 x、上一隐状态 ht−1 和上一上下文 ct−1。输出是新的隐状态 ht 和更新后的上下文 ct。*
+*Figure 14.13 A single LSTM unit displayed as a computation graph. The inputs to each unit consists of the current input, x, the previous hidden state, ht−1, and the previous context, ct−1. The outputs are a new hidden state, ht and an updated context, ct.*
+
+![](images/14-rnns-and-lstms/fig_p16_1.png)
+
+*图 14.14 前馈网络、简单循环网络（SRN）和长短期记忆（LSTM）中使用的基本神经单元。*
+*Figure 14.14 Basic neural units used in feedforward, simple recurrent networks (SRN), and long short-term memory (LSTM).*
+
+### 14.5.1 门控单元、层与网络
+
+> 14.5.1 Gated Units, Layers and Networks
+
+LSTM 中使用的神经单元显然比基本前馈网络中使用的单元复杂得多。幸运的是，这种复杂性被封装在基本处理单元内部，使我们得以保持模块化，并轻松试验不同的架构。为说明这一点，请看图 14.14，它展示了与每种单元相关联的输入和输出。
+
+> The neural units used in LSTMs are obviously much more complex than those used in basic feedforward networks. Fortunately, this complexity is encapsulated within the basic processing units, allowing us to maintain modularity and to easily experiment with different architectures. To see this, consider Fig. 14.14 which illustrates the inputs and outputs associated with each kind of unit.
+
+在最左边，(a) 是基本的前馈单元，其中单一一组权重和
+
+> At the far left, (a) is the basic feedforward unit where a single set of weights and
+单个激活函数决定其输出，并且当它们排成一层时，层内各单元之间没有连接。接下来，(b) 表示简单循环网络中的单元。此时有两个输入，并配有一组额外的权重。不过，仍然只有一个激活函数和一个输出。
+
+> a single activation function determine its output, and when arranged in a layer there are no connections among the units in the layer. Next, (b) represents the unit in a simple recurrent network. Now there are two inputs and an additional set of weights to go with it. However, there is still a single activation function and output.
+
+LSTM 单元增加的复杂性被封装在单元
+
+> The increased complexity of the LSTM units is encapsulated within the unit
+自身内部。相比基本循环单元 (b)，LSTM 唯一额外增加的外部复杂性，是多了一个上下文向量作为输入和输出。
+
+> itself. The only additional external complexity for the LSTM over the basic recurrent unit (b) is the presence of the additional context vector as an input and output.
+
+这种模块化是 LSTM 单元强大能力和广泛适用性的关键。
+
+> This modularity is key to the power and widespread applicability of LSTM units.
+
+LSTM 单元（或其他变体，如 GRU）可以替换到第 14.4 节描述的任何网络架构中。而且，与简单 RNN 一样，使用门控单元的多层网络可以按时间展开成深度前馈网络，并按常规方式用反向传播进行训练。因此在实践中，对于任何使用循环网络的现代系统，LSTM 而非 RNN 已成为标准单元。
+
+> LSTM units (or other varieties, like GRUs) can be substituted into any of the network architectures described in Section 14.4. And, as with simple RNNs, multi-layered networks making use of gated units can be unrolled into deep feedforward networks and trained in the usual fashion with backpropagation. In practice, therefore, LSTMs rather than RNNs have become the standard unit for any modern system that makes use of recurrent networks.
+
+## 14.6 小结：常见的 RNN 自然语言处理架构
+
+> 14.6 Summary: Common RNN NLP Architectures
+
+我们现在已经介绍了 RNN，看到了诸如堆叠多个层、使用 LSTM 版本等高级组件，也了解了 RNN 如何应用于各种任务。让我们花点时间总结这些应用的架构。
+
+> We’ve now introduced the RNN, seen advanced components like stacking multiple layers and using the LSTM version, and seen how the RNN can be applied to various tasks. Let’s take a moment to summarize the architectures for these applications.
+
+图 14.15 展示了我们迄今讨论过的三种架构：序列标注、序列分类和语言建模。在序列标注中（例如词性标注），我们训练模型为每个输入词或词元生成一个标签。在序列分类中，例如情感分析，我们忽略每个词元的输出，只取序列末尾的值（同样，模型的训练信号来自从最后那个词元开始的反向传播）。在语言建模中，我们训练模型在每个词元步预测下一个词。下一节我们将介绍第四种架构：编码器-解码器。
+
+> Fig. 14.15 shows the three architectures we’ve discussed so far: sequence labeling, sequence classification, and language modeling. In sequence labeling (for example for part of speech tagging), we train a model to produce a label for each input word or token. In sequence classification, for example for sentiment analysis, we ignore the output for each token, and only take the value from the end of the sequence (and similarly the model’s training signal comes from backpropagation from that last token). In language modeling, we train the model to predict the next word at each token step. In the next section we’ll introduce a fourth architecture, the encoder-decoder.
+
+![](images/14-rnns-and-lstms/fig_p17_0.png)
+
+*图 14.15 自然语言处理任务的四种架构。在序列标注（词性标注或命名实体标注）中，我们把每个输入词元 xi 映射到一个输出词元 yi。在序列分类中，我们把整个输入序列映射为单一类别。在语言建模中，我们以先前的词元为条件输出下一个词元。在编码器模型中，我们有两个独立的 RNN 模型，其中一个把输入序列 x 映射为我们称为上下文的中间表示，另一个把上下文映射为输出序列 y。*
+*Figure 14.15 Four architectures for NLP tasks. In sequence labeling (POS or named entity tagging) we map each input token xi to an output token yi. In sequence classification we map the entire input sequence to a single class. In language modeling we output the next token conditioned on previous tokens. In the encoder model we have two separate RNN models, one of which maps from an input sequence x to an intermediate representation we call the context, and a second of which maps from the context to an output sequence y.*
+
+## 14.7 使用 RNN 的编码器-解码器模型
+
+> 14.7 The Encoder-Decoder Model with RNNs
+
+本节我们介绍编码器-解码器模型，当我们需要把一个输入序列转换为长度与输入不同、且无法逐词对齐的输出序列时，就会用到它。
+
+> In this section we introduce the encoder-decoder model, which is used when we are taking an input sequence and translating it to an output sequence that is of a different length than the input, and doesn’t align with it in a word-to-word way.
+
+已经读过第 13 章的读者已经在
+
+> Those of you who already read Chapter 13 will have already seen this model in
+transformer 架构及其在机器翻译中的应用中见过这个模型，但我们在这里再次介绍该架构，是为了那些以不同顺序接触这些概念、先读 RNN 后读 transformer 的读者。
+
+> the transformer architecture, and its application to machine translation, but we introduce this architecture again here for those who come to the concepts in a different order and are reading about RNNs before transformers.
+
+回想一下，在序列标注任务中，我们有两个序列，但它们
+
+> Recall that in the sequence labeling task, we have two sequences, but they are
+长度相同（例如在词性标注中，每个词元都会得到一个关联的标签），每个输入都与一个特定的输出相关联，而对该输出的标注主要利用局部信息。因此，判断一个词是动词还是名词时，我们主要看这个词及其相邻的词。
+
+> the same length (for example in part-of-speech tagging each token gets an associated tag), each input is associated with a specific output, and the labeling for that output takes mostly local information. Thus deciding whether a word is a verb or a noun, we look mostly at the word and the neighboring words.
+
+相比之下，编码器-解码器模型尤其用于像机器
+
+> By contrast, encoder-decoder models are used especially for tasks like machine
+翻译这样的任务，其中输入序列和输出序列的长度可以不同，输入中的词元与输出中的词元之间的映射可能非常间接（在某些语言中动词出现在句首，在另一些语言中则出现在句末）。我们在第 13 章介绍了机器翻译，但这里只需指出，把英语句子映射为塔加洛语或约鲁巴语的句子时，词数可能相差很大，词的顺序也可能非常不同。
+
+> translation, where the input sequence and output sequence can have different lengths and the mapping between a token in the input and a token in the output can be very indirect (in some languages the verb appears at the beginning of the sentence; in other languages at the end). We introduced machine translation in Chapter 13, but for now we’ll just point out that the mapping for a sentence in English to a sentence in Tagalog or Yoruba can have very different numbers of words, and the words can be in a very different order.
+
+> `encoder- decoder`（编码器-解码器）
+>
+> 释义：一种架构，先由编码器把输入序列压缩成上下文表示，再由解码器据此生成长度任意的输出序列，常用于机器翻译。
+
+编码器-解码器网络，有时也称为序列到序列网络，
+
+> Encoder-decoder networks, sometimes called sequence-to-sequence networks,
+是一类模型，能够在给定输入序列的情况下生成上下文贴切、长度任意的输出序列。编码器-解码器网络已被应用于非常广泛的领域，包括摘要、问答和对话，但它们在机器翻译中尤其流行。
+
+> are models capable of generating contextually appropriate, arbitrary length, output sequences given an input sequence. Encoder-decoder networks have been applied to a very wide range of applications including summarization, question answering, and dialogue, but they are particularly popular for machine translation.
+
+这些网络背后的核心思想是使用一个编码器网络，它
+
+> The key idea underlying these networks is the use of an encoder network that
+接收输入序列并创建它的情境化表示，通常称为上下文。然后该表示被传递给解码器，由解码器生成特定任务的输出序列。图 14.16 展示了该架构。
+
+> takes an input sequence and creates a contextualized representation of it, often called the context. This representation is then passed to a decoder which generates a taskspecific output sequence. Fig. 14.16 illustrates the architecture.
+
+![](images/14-rnns-and-lstms/fig_p18_0.png)
+
+*图 14.16 编码器-解码器架构。上下文是输入的隐藏表示的函数，解码器可以以多种方式使用它。*
+*Figure 14.16 The encoder-decoder architecture. The context is a function of the hidden representations of the input, and may be used by the decoder in a variety of ways.*
+
+编码器-解码器网络由三个概念性组件构成：
+
+> Encoder-decoder networks consist of three conceptual components:
+
+- 一个编码器，它接受输入序列 x1:n，并生成对应的上下文相关表示序列 h1:n。LSTM、卷积网络和 Transformer 都可用作编码器。
+- 一个上下文向量 c，它是 h1:n 的函数，并向解码器传递输入的要旨。
+
+> An encoder that accepts an input sequence, x1:n, and generates a corresponding sequence of contextualized representations, h1:n. LSTMs, convolutional networks, and transformers can all be employed as encoders.
+> A context vector, c, which is a function of h1:n, and conveys the essence of the input to the decoder.
+
+- 一个解码器，它接受 c 作为输入，并生成任意长度的隐状态序列 h1:m，由此可获得对应的输出状态序列 y1:m。与编码器一样，解码器可由任意类型的序列架构实现。
+
+> A decoder, which accepts c as input and generates an arbitrary length sequence of hidden states h1:m, from which a corresponding sequence of output states y1:m, can be obtained. Just as with encoders, decoders can be realized by any kind of sequence architecture.
+
+在本节中，我们将描述一个基于一对
+
+> In this section we’ll describe an encoder-decoder network based on a pair of
+RNN 的编码器-解码器网络；我们已经在第 13 章见过用于机器翻译的编码器-解码器。我们将从条件 RNN 语言模型 p(y)（即序列 y 的概率）出发，逐步建立编码器-解码器模型的方程。
+
+> RNNs; we already saw encoder-decoders for MT in Chapter 13. We’ll build up the equations for encoder-decoder models by starting with the conditional RNN language model p(y), the probability of a sequence y.
+
+回顾一下，在任何语言模型中，我们都可以按如下方式分解概率：
+
+> Recall that in any language model, we can break down the probability as follows:
+
+p(y) = p(y1)p(y2|y1)p(y3|y1,y2)... p(ym|y1,...,ym−1) (14.28)
+在 RNN 语言建模中，在特定的时刻 t，我们将由 t −1 个
+
+> In RNN language modeling, at a particular time t, we pass the prefix of t −1
+词元构成的前缀传入语言模型，利用前向推断生成一个隐状态序列，最后得到与前缀最后一个词相对应的隐状态。然后，我们将前缀的最终隐状态作为起点来生成下一个词元。
+
+> tokens through the language model, using forward inference to produce a sequence of hidden states, ending with the hidden state corresponding to the last word of the prefix. We then use the final hidden state of the prefix as our starting point to generate the next token.
+
+更正式地说，如果 g 是一个诸如 tanh 或 ReLU 的激活函数，它是
+
+> More formally, if g is an activation function like tanh or ReLU, a function of
+时刻 t 的输入与时刻 t −1 的隐状态的函数，且 softmax 作用于所有可能的词表项构成的集合上，那么在时刻 t，输出 yt 与隐状态 ht 计算如下：
+
+> the input at time t and the hidden state at time t −1, and the softmax is over the set of possible vocabulary items, then at time t the output yt and hidden state ht are computed as:
+
+ht = g(ht−1,xt) (14.29)
+ˆyt = softmax(ht) (14.30)
+我们只需做一个微小的改动，就能把这个带自回归生成的语言模型转变为一个编码器-解码器模型，即一个能把一种语言的源文本翻译成另一种语言的目标文本的翻译模型：
+
+> We only have to make one slight change to turn this language model with autoregressive generation into an encoder-decoder model that is a translation model that can translate from a source text in one language to a target text in a second:
+
+> `sentence separation`（句子分隔）
+>
+> 释义：在源文本末尾插入分隔标记，用以标示源句结束，使编码器-解码器模型能区分源文本与目标文本的边界。
+
+在源文本末尾添加一个句子分隔标记，然后简单地
+
+> add a sentence separation marker at the end of the source text, and then simply
+拼接目标文本。
+
+> concatenate the target text.
+
+让我们用 <s> 作为句子分隔词元，并考虑把
+
+> Let’s use <s> for our sentence separator token, and let’s think about translating
+一段英文源文本（“the green witch arrived”）翻译成一句西班牙语句子（“llegó la bruja verde”，可逐词注释为 ‘arrived the witch green’）。
+
+> an English source text (“the green witch arrived”), to a Spanish sentence (“lleg´o la bruja verde” (which can be glossed word-by-word as ‘arrived the witch green’).
+
+我们也可以用问答对或文本摘要对来说明编码器-解码器模型。
+
+> We could also illustrate encoder-decoder models with a question-answer pair, or a text-summarization pair.
+
+让我们用 x 指代源文本（此处为英文）加上分隔
+
+> Let’s use x to refer to the source text (in this case in English) plus the separator
+词元 <s>，用 y 指代目标文本 y（此处为西班牙文）。那么编码器-解码器模型按如下方式计算概率 p(y|x)：
+
+> token <s>, and y to refer to the target text y (in this case in Spanish). Then an encoder-decoder model computes the probability p(y|x) as follows:
+
+p(y|x) = p(y1|x)p(y2|y1,x)p(y3|y1,y2,x)... p(ym|y1,...,ym−1,x) (14.31)
+图 14.17 展示了一个简化版编码器-解码器模型的设置
+
+> Fig. 14.17 shows the setup for a simplified version of the encoder-decoder model
+（我们将在下一节看到完整模型，它需要注意力这一新概念）。
+
+> (we’ll see the full model, which requires the new concept of attention, in the next section).
+
+图 14.17 展示了一段英文源文本（“the green witch arrived”）、一个句子
+
+> Fig. 14.17 shows an English source text (“the green witch arrived”), a sentence
+分隔词元（<s>）以及一段西班牙文目标文本（“llegó la bruja verde”）。要翻译一段源文本，我们先让它通过网络执行前向推断以生成隐状态，直到抵达源文本的末尾。然后我们开始自回归生成，在源输入末尾的隐藏层以及句末标记所提供的上下文中请求一个词。后续的词则以前一个隐状态和上一个生成词的嵌入为条件。
+
+> separator token (<s>, and a Spanish target text (“lleg´o la bruja verde”). To translate a source text, we run it through the network performing forward inference to generate hidden states until we get to the end of the source. Then we begin autoregressive generation, asking for a word in the context of the hidden layer from the end of the source input as well as the end-of-sentence marker. Subsequent words are conditioned on the previous hidden state and the embedding for the last word generated.
+
+![](images/14-rnns-and-lstms/fig_p20_0.png)
+
+*图 14.17 在编码器-解码器机器翻译方法的基本 RNN 版本中翻译单个句子（推断时）。源句子与目标句子之间用一个分隔词元拼接，解码器使用来自编码器最后一个隐状态的上下文信息。*
+*Figure 14.17 Translating a single sentence (inference time) in the basic RNN version of encoder-decoder approach to machine translation. Source and target sentences are concatenated with a separator token in between, and the decoder uses context information from the encoder’s last hidden state.*
+
+让我们在图 14.18 中将这个模型稍作形式化与推广。（为了便于
+
+> Let’s formalize and generalize this model a bit in Fig. 14.18. (To help keep
+条理清晰，我们会在需要时使用上标 e 和 d 来区分编码器与解码器的隐状态。）网络中左侧的部分处理输入序列 x，构成编码器。尽管我们的简化图只展示了编码器的单个网络层，但堆叠架构才是常态，其中取自堆栈顶层的输出状态被当作最终表示，编码器由堆叠的双向 LSTM 组成，来自前向与后向传播中顶层的隐状态被拼接起来，为每个时间步提供上下文相关表示。
+
+> things straight, we’ll use the superscripts e and d where needed to distinguish the hidden states of the encoder and the decoder.) The elements of the network on the left process the input sequence x and comprise the encoder. While our simplified figure shows only a single network layer for the encoder, stacked architectures are the norm, where the output states from the top layer of the stack are taken as the final representation, and the encoder consists of stacked biLSTMs where the hidden states from top layers from the forward and backward passes are concatenated to provide the contextualized representations for each time step.
+
+![](images/14-rnns-and-lstms/fig_p20_1.png)
+
+*图 14.18 在基于 RNN 的基本编码器-解码器架构中推断时翻译一个句子的更正式版本。编码器 RNN 的最终隐状态 hen 作为解码器的上下文，充当解码器 RNN 中的 hd 0，同时也提供给每个解码器隐状态。*
+*Figure 14.18 A more formal version of translating a sentence at inference time in the basic RNN-based encoder-decoder architecture. The final hidden state of the encoder RNN, hen, serves as the context for the decoder in its role as hd 0 in the decoder RNN, and is also made available to each decoder hidden state.*
+
+编码器的全部目的就是生成一个输入的
+
+> The entire purpose of the encoder is to generate a contextualized representation
+上下文相关表示。这一表示体现为编码器的最终隐状态 he n。该表示也被称作 c（表示上下文），随后被传递给解码器。
+
+> of the input. This representation is embodied in the final hidden state of the encoder, he n. This representation, also called c for context, is then passed to the decoder.
+
+解码器网络最简单的版本会取用这一状态，并仅用
+
+> The simplest version of the decoder network would take this state and use it just
+它来初始化解码器的第一个隐状态；第一个解码器 RNN 单元会把 c 作为其先前的隐状态 hd 0。随后解码器将自回归地一次一个元素地生成输出序列，直到生成序列结束标记。每个隐状态都以前一个隐状态以及在前一状态中生成的输出为条件。
+
+> to initialize the first hidden state of the decoder; the first decoder RNN cell would use c as its prior hidden state hd 0. The decoder would then autoregressively generate a sequence of outputs, an element at a time, until an end-of-sequence marker is generated. Each hidden state is conditioned on the previous hidden state and the output generated in the previous state.
+
+如图 14.18 所示，我们做了更复杂一些的事情：我们让上下文
+
+> As Fig. 14.18 shows, we do something more complex: we make the context
+向量 c 不只为第一个解码器隐状态所用，以确保上下文向量 c 的影响不会随着输出序列的生成而衰减。
+
+> vector c available to more than just the first decoder hidden state, to ensure that the influence of the context vector, c, doesn’t wane as the output sequence is generated.
+
+我们通过将 c 作为参数加入当前隐状态的计算来做到这一点，使用如下方程：
+
+> We do this by adding c as a parameter to the computation of the current hidden state. using the following equation:
+
+hd t = g(ˆyt−1,hd (14.32)
+t−1,c)
+现在我们准备来看这个基本编码器-解码器模型中该版本解码器的完整方程，其中上下文在每个解码时间步都可用。回顾一下，g 是某种 RNN 的代称，而 ˆyt−1 是上一步从 softmax 中采样得到的输出的嵌入：
+
+> Now we’re ready to see the full equations for this version of the decoder in the basic encoder-decoder model, with context available at each decoding timestep. Recall that g is a stand-in for some flavor of RNN and ˆyt−1 is the embedding for the output sampled from the softmax at the previous step:
+
+c = he
+hd 0 = c hd = g(ˆyt−1,hd t−1,c)
+ˆyt = softmax(hd (14.33)
+t )
+因此，ˆyt 是词表上的一个概率向量，表示在时间 t 出现每个词的概率。要生成文本，我们便从这个分布 ˆyt 中采样。例如，贪心选择就是在每个时间步选择最可能的词来生成。我们在第 7.6 节讨论了其他采样方法。
+
+> Thus ˆyt is a vector of probabilities over the vocabulary, representing the probability of each word occurring at time t. To generate text, we sample from this distributionˆyt. For example, the greedy choice is simply to choose the most probable word to generate at each timestep. We discussed other sampling methods in Section 7.6.
+
+> n
+
+> t
+
+### 14.7.1 训练编码器-解码器模型
+
+> 14.7.1 Training the Encoder-Decoder Model
+
+编码器-解码器架构采用端到端训练。每个训练样本都是一个成对字符串组成的元组，即一个源串和一个目标串。这些源-目标对与一个分隔符词元拼接后，便可作为训练数据。
+
+> Encoder-decoder architectures are trained end-to-end. Each training example is a tuple of paired strings, a source and a target. Concatenated with a separator token, these source-target pairs can now serve as training data.
+
+对于机器翻译（MT），训练数据通常由成组的句子及其译文构成。这些数据可以取自对齐句对的标准数据集，我们将在第 13.2.2 节讨论。一旦有了训练集，训练过程本身就与任何基于 RNN 的语言模型相同。网络先接收源文本，然后从分隔符词元开始，以自回归方式训练来预测下一个词，如图 14.19 所示。
+
+> For MT, the training data typically consists of sets of sentences and their translations. These can be drawn from standard datasets of aligned sentence pairs, as we’ll discuss in Section 13.2.2. Once we have a training set, the training itself proceeds as with any RNN-based language model. The network is given the source text and then starting with the separator token is trained autoregressively to predict the next word, as shown in Fig. 14.19.
+
+请注意训练（图 14.19）与推断（图 14.17）之间的差异，
+
+> Note the differences between training (Fig. 14.19) and inference (Fig. 14.17)
+差异在于每个时间步的输出。推断时，解码器把自己估计的输出 ˆyt 作为下一个时间步 xt+1 的输入。因此，随着解码器不断生成更多词元，它会越来越偏离标准目标句。所以在训练中，更常见的做法是在
+
+> with respect to the outputs at each time step. The decoder during inference uses its own estimated output ˆyt as the input for the next time step xt+1. Thus the decoder will tend to deviate more and more from the gold target sentence as it keeps generating more tokens. In training, therefore, it is more common to use teacher forcing in the
+
+> `teacher forcing`（教师强制）
+>
+> 释义：训练解码器时，用训练数据中的标准目标词元作为下一步输入，而非模型自己生成的输出，从而加速并稳定训练。
+
+解码器中使用教师强制。教师强制是指强制系统使用训练中的标准目标词元作为下一个输入 xt+1，而不让它依赖（可能出错的）解码器输出 ˆyt。这样可以加快训练。
+
+> decoder. Teacher forcing means that we force the system to use the gold target token from training as the next input xt+1, rather than allowing it to rely on the (possibly erroneous) decoder output ˆyt. This speeds up training.
+
+![](images/14-rnns-and-lstms/fig_p22_0.png)
+
+*图 14.19 训练用于机器翻译的基本 RNN 编码器-解码器方法。注意，在解码器中我们通常不传播模型的 softmax 输出 ˆyt，而是使用教师强制，在训练时把每个输入强制设为正确的标准值。我们在解码器中计算 ˆy 上的 softmax 输出分布，以便计算每个词元处的损失，然后对其取平均得到句子的损失。该损失随后通过解码器参数和编码器参数反向传播。*
+*Figure 14.19 Training the basic RNN encoder-decoder approach to machine translation. Note that in the decoder we usually don’t propagate the model’s softmax outputs ˆyt, but use teacher forcing to force each input to the correct gold value for training. We compute the softmax output distribution over ˆy in the decoder in order to compute the loss at each token, which can then be averaged to compute a loss for the sentence. This loss is then propagated through the decoder parameters and the encoder parameters.*
+
+## 14.8 注意力
+
+> 14.8 Attention
+
+编码器-解码器模型的简洁之处在于它把编码器与解码器清晰分离——编码器构建源文本的表示，解码器则利用这一上下文生成目标文本。在目前为止所描述的模型中，这个上下文向量是 hn，即源文本最后一个（第 n 个）时间步的隐状态。
+
+> The simplicity of the encoder-decoder model is its clean separation of the encoder—which builds a representation of the source text—from the decoder, which uses this context to generate a target text. In the model as we’ve described it so far, this context vector is hn, the hidden state of the last (nth) time step of the source text.
+
+因此，这个最终的隐状态起到了瓶颈的作用：它必须表示源文本含义的全部内容，因为解码器对源文本的唯一了解就是这个上下文向量中的内容（图 14.20）。句子开头的信息，尤其是长句中的信息，在上下文向量中可能得不到同样好的表示。
+
+> This final hidden state is thus acting as a bottleneck: it must represent absolutely everything about the meaning of the source text, since the only thing the decoder knows about the source text is what’s in this context vector (Fig. 14.20). Information at the beginning of the sentence, especially for long sentences, may not be equally well represented in the context vector.
+
+![](images/14-rnns-and-lstms/fig_p22_1.png)
+
+*图 14.20 要求上下文 c 只能是编码器的最终隐状态，就会迫使整个源句的全部信息都经过这个表示瓶颈。*
+*Figure 14.20 Requiring the context c to be only the encoder’s final hidden state forces all the information from the entire source sentence to pass through this representational bottleneck.*
+
+> `attention mechanism`（注意力机制）
+>
+> 释义：一种让解码器不再只依赖编码器最后一个隐状态，而是对编码器所有隐状态加权求和得到动态上下文，从而缓解信息瓶颈的方法。
+
+注意力机制是解决这个瓶颈问题的一种方案，它
+
+> The attention mechanism is a solution to the bottleneck problem, a way of
+使解码器能够从编码器的所有隐状态而不仅仅是最后一个隐状态获取信息。
+
+> allowing the decoder to get information from all the hidden states of the encoder, not just the last hidden state.
+
+在注意力机制中，与原始编码器-解码器模型一样，上下文
+
+> In the attention mechanism, as in the vanilla encoder-decoder model, the context
+向量 c 是一个单一向量，它是编码器隐状态的函数。但它并非取自最后一个隐状态，而是编码器所有隐状态的加权平均。而且这个加权平均还受到部分解码器状态的影响，也就是解码器在当前词元 i 之前那一刻的状态。
+
+> vector c is a single vector that is a function of the hidden states of the encoder. But instead of being taken from the last hidden state, it’s a weighted average of all the hidden states of the encoder. And this weighted average is also informed by part of the decoder state as well, the state of the decoder right before the current token i.
+
+也就是说，ci = f(he 1 ...he n,hd i−1)。这些权重聚焦于（“关注”）源文本中与解码器当前正在生成的词元 i 相关的特定部分。
+
+> That is, ci = f(he 1 ...he n,hd i−1). The weights focus on (‘attend to’) a particular part of the source text that is relevant for the token i that the decoder is currently producing.
+
+因此，注意力用动态导出的上下文向量取代了静态的上下文向量：它由编码器隐状态动态导出，同时也受到解码的影响，因而在解码时对每个词元都不同。
+
+> Attention thus replaces the static context vector with one that is dynamically derived from the encoder hidden states, but also informed by and hence different for each token in decoding.
+
+这个上下文向量 ci 在每一步解码 i 时都会重新生成，并在
+
+> This context vector, ci, is generated anew with each decoding step i and takes
+其推导过程中把编码器的所有隐状态都考虑在内。随后，我们让当前解码器隐状态的计算以它为条件（同时还以前一隐状态和解码器此前生成的输出为条件），从而使该上下文在解码时可被使用，如下式（及图 14.21）所示：
+
+> all of the encoder hidden states into account in its derivation. We then make this context available during decoding by conditioning the computation of the current decoder hidden state on it (along with the prior hidden state and the previous output generated by the decoder), as we see in this equation (and Fig. 14.21):
+
+hd = g(ˆyi−1,hd (14.34)
+i−1,ci)
+
+> i
+
+![](images/14-rnns-and-lstms/fig_p23_0.png)
+
+*图 14.21 注意力机制让解码器的每个隐状态都能看到一个不同的、动态的上下文，该上下文是编码器所有隐状态的函数。*
+*Figure 14.21 The attention mechanism allows each hidden state of the decoder to see a different, dynamic, context, which is a function of all the encoder hidden states.*
+
+计算 ci 的第一步，是计算应对每个编码器
+
+> The first step in computing ci is to compute how much to focus on each encoder
+状态聚焦多少，即每个编码器状态与 hd i−1 所捕获的解码器状态有多相关。我们通过在解码的每个状态 i 处为每个编码器状态 j 计算一个 score(hd i−1,he j) 来刻画这种相关性。
+
+> state, how relevant each encoder state is to the decoder state captured in hd i−1. We capture relevance by computing— at each state i during decoding—a score(hd i−1,he j) for each encoder state j.
+
+> `dot-product attention`（点积注意力）
+>
+> 释义：用解码器隐状态与编码器隐状态之间的点积作为相关性得分，以此衡量二者相似度，是最简单的一种注意力打分方式。
+
+这类得分中最简单的一种称为点积注意力，它把相关性实现为
+
+> The simplest such score, called dot-product attention, implements relevance as
+相似度：通过计算解码器隐状态与编码器隐状态之间的点积，来衡量二者有多相似：
+
+> similarity: measuring how similar the decoder hidden state is to an encoder hidden state, by computing the dot product between them:
+
+score(hd i−1,he j) = hd i−1 · he (14.35)
+这个点积得到的得分是一个标量，反映两个向量之间的相似程度。所有编码器隐状态上这些得分构成的向量，给出了每个编码器状态对解码器当前步骤的相关性。
+
+> The score that results from this dot product is a scalar that reflects the degree of similarity between the two vectors. The vector of these scores across all the encoder hidden states gives us the relevance of each encoder state to the current step of the decoder.
+
+> j
+
+为了利用这些分数，我们用 softmax 对它们进行归一化，从而得到一个
+
+> To make use of these scores, we’ll normalize them with a softmax to create a
+权重向量 αij，它告诉我们每个编码器隐状态 j 相对于先前的解码器隐状态 hd i−1 的相对相关性。
+
+> vector of weights, αi j, that tells us the proportional relevance of each encoder hidden state j to the prior hidden decoder state, hd i−1.
+
+αi j = softmax(score(hd i−1,he j))
+exp(score(hd i−1,he j) (14.36)
+= P k exp(score(hd i−1,he
+k))
+最后，给定 α 中的分布，我们可以通过对所有编码器隐状态取加权平均，为当前解码器状态计算出一个固定长度的上下文向量。
+
+> Finally, given the distribution in α, we can compute a fixed-length context vector for the current decoder state by taking a weighted average over all the encoder hidden states.
+
+X
+αij he
+ci = 有了它，我们终于得到一个固定长度的上下文向量，它考虑了来自整个编码器状态的信息，并会动态更新，以反映解码器在解码每一步时的需要。图 14.22 展示了一个带注意力的编码器-解码器网络，重点说明了一个上下文向量 ci 的计算。
+
+> ci = With this, we finally have a fixed-length context vector that takes into account information from the entire encoder state that is dynamically updated to reflect the needs of the decoder at each step of decoding. Fig. 14.22 illustrates an encoderdecoder network with attention, focusing on the computation of one context vector ci.
+
+![](images/14-rnns-and-lstms/fig_p24_0.png)
+
+*图 14.22 带注意力的编码器-解码器网络示意图，重点展示 ci 的计算。*
+*Figure 14.22 A sketch of the encoder-decoder network with attention, focusing on the computation of ci.*
+
+> 上下文值 ci 是计算 hd i 的输入之一。它的计算方式是对所有编码器隐状态取加权和，其中每个隐状态的权重是它与先前解码器隐状态 hd i−1 的点积。
+>
+> *The context value ci is one of the inputs to the computation of hd i . It is computed by taking the weighted sum of all the encoder hidden states, each weighted by their dot product with the prior decoder hidden state hd i−1.*
+
+也可以为注意力模型构造更复杂的评分函数。
+
+> It’s also possible to create more sophisticated scoring functions for attention
+
+除了简单的点积注意力之外，我们还可以通过用一组自己的权重 Ws 对评分进行参数化，得到一个更强大的函数，用于计算每个编码器隐状态与解码器隐状态的相关性。
+
+> models. Instead of simple dot product attention, we can get a more powerful function that computes the relevance of each encoder hidden state to the decoder hidden state by parameterizing the score with its own set of weights, Ws.
+
+score(hd i−1,he j) = hd i−1Wshe (14.38)
+这些权重 Ws 在正常的端到端训练过程中被训练，使网络能够学习解码器状态与编码器状态之间相似性的哪些方面对当前应用是重要的。这种双线性模型还允许编码器和解码器使用不同维度的向量，而简单的点积注意力则要求编码器和解码器隐状态具有相同的维度。
+
+> The weights Ws, which are then trained during normal end-to-end training, give the network the ability to learn which aspects of similarity between the decoder and encoder states are important to the current application. This bilinear model also allows the encoder and decoder to use different dimensional vectors, whereas the simple dot-product attention requires that the encoder and decoder hidden states have the same dimensionality.
+
+> j
+
+## 14.9 小结
+
+> 14.9 Summary
+
+本章介绍了循环神经网络的概念，以及如何将它们应用于语言问题。以下是我们所涵盖要点的总结：
+
+> This chapter has introduced the concepts of recurrent neural networks and how they can be applied to language problems. Here’s a summary of the main points that we covered:
+
+- 在简单循环神经网络中，序列一次处理一个元素，时刻 t 的每个神经单元的输出既基于 t 时刻的当前输入，也基于 t −1 时刻的隐藏层。
+- RNN 可以用反向传播算法的一种直接扩展来训练，这种扩展称为随时间反向传播（BPTT）。
+
+> In simple Recurrent Neural Networks sequences are processed one element at a time, with the output of each neural unit at time t based both on the current input at t and the hidden layer from time t −1.
+> RNNs can be trained with a straightforward extension of the backpropagation algorithm, known as backpropagation through time (BPTT).
+
+- 简单循环网络在长输入上会失败，原因在于梯度消失之类的问题；现代系统改用更复杂的门控架构，例如 LSTM，它们明确决定在隐藏层和上下文层中记住什么、忘记什么。
+- RNN 常见的基于语言的应用包括：
+- 概率语言建模：为一个序列赋予概率，或在给定前文词的情况下为序列的下一个元素赋予概率。
+- 使用训练好的语言模型进行自回归生成。
+- 序列标注，例如词性标注，其中序列的每个元素都被赋予一个标签。
+- 序列分类，即将整段文本归入某个类别，例如垃圾邮件检测、情感分析或主题分类。
+- 编码器-解码器架构，即将输入映射为长度和对齐方式都不同的输出。
+
+> Simple recurrent networks fail on long inputs because of problems like vanishing gradients; instead modern systems use more complex gated architectures such as LSTMs that explicitly decide what to remember and forget in their hidden and context layers.
+> Common language-based applications for RNNs include:
+> Probabilistic language modeling: assigning a probability to a sequence, or to the next element of a sequence given the preceding words.
+> Auto-regressive generation using a trained language model.
+> Sequence labeling like part-of-speech tagging, where each element of a sequence is assigned a label.
+> Sequence classification, where an entire text is assigned to a category, as in spam detection, sentiment analysis or topic classification.
+> Encoder-decoder architectures, where an input is mapped to an output of different length and alignment.
+
+## 历史注记
+
+> Historical Notes
+
+20 世纪 80 年代，在加州大学圣地亚哥分校的并行分布式处理（Parallel Distributed Processing, PDP）小组的背景下，出现了若干有影响力的 RNN 研究。这些工作大多面向人类认知建模，而非实际的 NLP 应用（Rumelhart and McClelland 1986c, McClelland and Rumelhart 1986）。在前馈网络的隐藏层使用循环的模型（Elman 网络）由 Elman（1990）提出。Jordan（1986）研究了从输出层引入循环的类似架构，Mathis and Mozer（1995）则在隐藏层之前增加了一个循环上下文层。将一个循环网络展开为等价的前馈网络的可能性在（Rumelhart and McClelland, 1986c）中有所讨论。
+
+> Influential investigations of RNNs were conducted in the context of the Parallel Distributed Processing (PDP) group at UC San Diego in the 1980’s. Much of this work was directed at human cognitive modeling rather than practical NLP applications(Rumelhart and McClelland 1986c, McClelland and Rumelhart 1986). Models using recurrence at the hidden layer in a feedforward network (Elman networks) were introduced by Elman (1990). Similar architectures were investigated by Jordan (1986) with a recurrence from the output layer, and Mathis and Mozer (1995) with the addition of a recurrent context layer prior to the hidden layer. The possibility of unrolling a recurrent network into an equivalent feedforward network is discussed in (Rumelhart and McClelland, 1986c).
+
+与认知建模方面的工作同时，RNN 也在
+
+> In parallel with work in cognitive modeling, RNNs were investigated extensively
+信号处理和语音领域的连续域中得到了广泛研究（Giles et al. 1994, Robinson et al. 1996）。Schuster and Paliwal（1997）提出了双向 RNN，并描述了在 TIMIT 音素转写任务上的结果。
+
+> in the continuous domain in the signal processing and speech communities (Giles et al. 1994, Robinson et al. 1996). Schuster and Paliwal (1997) introduced bidirectional RNNs and described results on the TIMIT phoneme transcription task.
+
+尽管在理论上很有意思，但训练 RNN 以及在长序列上管理上下文的困难阻碍了实际应用的进展。随着 Hochreiter and Schmidhuber（1997）和 Gers et al.（2000）提出 LSTM，这种情况发生了变化。在处于信号处理与语言处理交界处的任务上展示出了令人印象深刻的性能提升，包括音素识别（Graves and Schmidhuber, 2005）、手写识别（Graves et al., 2007），以及最重要的语音识别（Graves et al., 2013）。
+
+> While theoretically interesting, the difficulty with training RNNs and managing context over long sequences impeded progress on practical applications. This situation changed with the introduction of LSTMs in Hochreiter and Schmidhuber(1997) and Gers et al. (2000). Impressive performance gains were demonstrated on tasks at the boundary of signal processing and language processing including phoneme recognition (Graves and Schmidhuber, 2005), handwriting recognition(Graves et al., 2007) and most significantly speech recognition (Graves et al., 2013).
+
+将神经网络应用于实际 NLP 问题的兴趣，随着
+
+> Interest in applying neural networks to practical NLP problems surged with the
+Collobert and Weston（2008）以及 Collobert et al.（2011）的工作而高涨。这些工作利用了学习得到的词嵌入、卷积网络和端到端训练。
+
+> work of Collobert and Weston (2008) and Collobert et al. (2011). These efforts made use of learned word embeddings, convolutional networks, and end-to-end training.
+
+他们在一系列标准共享任务上展示了接近当时最先进水平的性能，包括词性标注、组块分析、命名实体识别和语义角色标注，且没有使用人工设计的特征。
+
+> They demonstrated near state-of-the-art performance on a number of standard shared tasks including part-of-speech tagging, chunking, named entity recognition and semantic role labeling without the use of hand-engineered features.
+
+将 LSTM 与预训练词嵌入集合相结合的方法，
+
+> Approaches that married LSTMs with pretrained collections of word-embeddings
+这些词嵌入基于 word2vec（Mikolov et al., 2013a）和 GloVe（Pennington et al., 2014），很快就在许多常见任务上占据了主导地位：词性标注（Ling et al., 2015）、句法组块（Søgaard and Goldberg, 2016）、命名实体识别（Chiu and Nichols, 2016; Ma and Hovy, 2016）、意见挖掘（Irsoy and Cardie, 2014）、语义角色标注（Zhou and Xu, 2015a）和 AMR 解析（Foland and Martin, 2016）。与早期统计机器学习取得进展的情形一样，这些进步之所以成为可能，得益于 CONLL、SemEval 及其他共享任务提供的训练数据，以及 Ontonotes（Pradhan et al., 2007b）和 PropBank（Palmer et al., 2005）等共享资源。
+
+> based on word2vec (Mikolov et al., 2013a) and GloVe (Pennington et al., 2014) quickly came to dominate many common tasks: part-of-speech tagging (Ling et al., 2015), syntactic chunking (Søgaard and Goldberg, 2016), named entity recognition(Chiu and Nichols, 2016; Ma and Hovy, 2016), opinion mining (Irsoy and Cardie, 2014), semantic role labeling (Zhou and Xu, 2015a) and AMR parsing (Foland and Martin, 2016). As with the earlier surge of progress involving statistical machine learning, these advances were made possible by the availability of training data provided by CONLL, SemEval, and other shared tasks, as well as shared resources such as Ontonotes (Pradhan et al., 2007b), and PropBank (Palmer et al., 2005).
+
+现代神经编码器-解码器方法由 Kalchbrenner
+
+> The modern neural encoder-decoder approach was pioneered by Kalchbrenner
+和 Blunsom（2013）开创，他们使用 CNN 编码器和 RNN 解码器。Cho et al.（2014）（他们创造了“编码器-解码器”这一名称）和 Sutskever et al.（2014）随后展示了如何对编码器和解码器都使用扩展的 RNN。生成式解码器应以输入的软加权作为输入这一想法，也就是注意力的核心思想，最早由 Graves（2013）在手写识别的背景下提出。Bahdanau et al.（2015）扩展了这一想法，将其命名为“注意力”，并将其应用于机器翻译。
+
+> and Blunsom (2013), who used a CNN encoder and an RNN decoder. Cho et al.(2014) (who coined the name “encoder-decoder”) and Sutskever et al. (2014) then showed how to use extended RNNs for both encoder and decoder. The idea that a generative decoder should take as input a soft weighting of the inputs, the central idea of attention, was first developed by Graves (2013) in the context of handwriting recognition. Bahdanau et al. (2015) extended the idea, named it “attention” and applied it to MT.

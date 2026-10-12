@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 18 章 词性与命名实体的序列标注（中英对照）</title>
+<style>
+:root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
+* { box-sizing: border-box; }
+body { margin:0; background:#f6f7f9; color:var(--ink);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+  line-height:1.85; font-size:16px; }
+.wrap { max-width:860px; margin:0 auto; background:var(--bg); min-height:100vh;
+  padding:48px 56px 120px; box-shadow:0 0 24px rgba(0,0,0,.06); }
+h1,h2,h3,h4 { line-height:1.35; margin:1.4em 0 .6em; }
+h1 { font-size:28px; border-bottom:2px solid var(--line); padding-bottom:.3em; }
+h2 { font-size:22px; } h3 { font-size:18px; } h4 { font-size:16px; }
+p { margin:0 0 .9em; text-align:justify; }
+ul { margin:.4em 0 1em 1.4em; } li { margin:.25em 0; }
+img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
+blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
+blockquote p { margin:.2em 0; }
+.term { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #b9c4d0; color:#4a4a4a; font-size:14px; }
+.term code { background:none; color:var(--accent); margin-right:.5em; }
+.term-zh { color:#333; margin-right:.5em; }
+.term-explain { color:#4a4a4a; }
+table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
+th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+th { background:#f3f5f7; font-weight:600; }
+code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
+.nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
+.nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
+footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
+  font-size:13px; color:var(--muted); }
+</style>
+</head><body><div class="wrap">
+<div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/18-sequence-labeling.md">Markdown 源文件</a></div>
+<h1>第 18 章 词性与命名实体的序列标注</h1>
+<h3>章</h3>
+<blockquote><p>CHAPTER</p></blockquote>
+<h1>18 词性与命名实体的序列标注</h1>
+<blockquote><p>18 Sequence Labeling for Parts of Speech and Named Entities</p></blockquote>
+<p>为每一个词配上婉转的音符</p>
+<blockquote><p>To each word a warbling note</p></blockquote>
+<p>《仲夏夜之梦》，第五幕第一场</p>
+<blockquote><p>A Midsummer Night’s Dream, V.I</p></blockquote>
+<p>亚历山大的 Dionysius Thrax（约公元前 100 年）——也可能是其他人（毕竟那是很久以前的事了）——写了一部希腊语语法纲要（一部“technē”），总结了当时他所处时代的语言学知识。这部著作是现代语言学词汇中惊人比例（的词）的来源，包括 syntax（句法）、diphthong（双元音）、clitic（附着词）和 analogy（类比）这些词。其中还包含对八种词性的描述：名词、动词、</p>
+<blockquote><p>Dionysius Thrax of Alexandria (c. 100 B.C.), or perhaps someone else (it was a long time ago), wrote a grammatical sketch of Greek (a “techn¯e”) that summarized the linguistic knowledge of his day. This work is the source of an astonishing proportion of modern linguistic vocabulary, including the words syntax, diphthong, clitic, and analogy. Also included are a description of eight parts of speech: noun, verb,</p></blockquote>
+<aside class="term"><code>parts of speech</code><span class="term-zh">词性</span><span class="term-explain">又称词类，指依据词与邻近词的语法关系或其词缀的形态属性划分出的词类，如名词、动词、形容词等；英语中通常分为封闭类和开放类两大类。</span></aside>
+<p>代词、介词、副词、连词、分词和冠词。尽管更早的学者（包括亚里士多德以及斯多葛学派）有他们自己的词性清单，但正是 Thrax 的这八种词性成为此后 2000 年间欧洲语言描述的基础。（一路延续到我们童年时代的 Schoolhouse Rock 教育电视节目，那里面有讲述 8 种词性的歌曲，比如已故的伟大歌手 Bob Dorough 的 Conjunction Junction。）词性能够延续两千年之久，正说明了它们在人类语言模型中的核心地位。</p>
+<blockquote><p>pronoun, preposition, adverb, conjunction, participle, and article. Although earlier scholars (including Aristotle as well as the Stoics) had their own lists of parts of speech, it was Thrax’s set of eight that became the basis for descriptions of European languages for the next 2000 years. (All the way to the Schoolhouse Rock educational television shows of our childhood, which had songs about 8 parts of speech, like the late great Bob Dorough’s Conjunction Junction.) The durability of parts of speech through two millennia speaks to their centrality in models of human language.</p></blockquote>
+<p>专有名词是另一个重要且自古以来就被研究的语言类别。</p>
+<blockquote><p>Proper names are another important and anciently studied linguistic category.</p></blockquote>
+<p>词性一般是分配给单个词或语素的，而专有名词往往是一个完整的多词短语，比如人名“玛丽·居里”、地名“纽约市”或机构名“斯坦福大学”。我们将用“命名实体”这个术语来指代，大致上说，任何可以用</p>
+<blockquote><p>While parts of speech are generally assigned to individual words or morphemes, a proper name is often an entire multiword phrase, like the name “Marie Curie”, the location “New York City”, or the organization “Stanford University”. We’ll use the term named entity for, roughly speaking, anything that can be referred to with a</p></blockquote>
+<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的对象，如人名、地名、机构名等；该术语通常还被扩展使用，以涵盖并非严格意义上实体的事物（如时间、数量、事件等）。</span></aside>
+<p>专有名词指称的东西：一个人、一个地点、一个组织；不过正如我们将看到的，这个术语通常被扩展使用，以包含并非严格意义上实体的事物。</p>
+<blockquote><p>proper name: a person, a location, an organization, although as we’ll see the term is commonly extended to include things that aren’t entities per se.</p></blockquote>
+<p>词性（也称为 POS）和命名实体是有用的线索，可用来推断</p>
+<blockquote><p>Parts of speech (also known as POS) and named entities are useful clues to</p></blockquote>
+<aside class="term"><code>POS</code><span class="term-zh">词性</span><span class="term-explain">part of speech 的缩写，即词性/词类。本书中也用于指词性标记集里的具体标记，如 NOUN、VERB。</span></aside>
+<p>句子结构和意义。知道一个词是名词还是动词，能告诉我们它可能有哪些邻近词（英语中名词前面是限定词和形容词，动词前面是名词）以及句法结构（动词与名词之间存在依存链接），这使得词性标注成为句法分析的一个关键环节。知道像华盛顿这样的命名实体是人名、地名还是大学名，对许多自然语言处理任务（如问答、立场检测或信息抽取）都很重要。</p>
+<blockquote><p>sentence structure and meaning. Knowing whether a word is a noun or a verb tells us about likely neighboring words (nouns in English are preceded by determiners and adjectives, verbs by nouns) and syntactic structure (verbs have dependency links to nouns), making part-of-speech tagging a key aspect of parsing. Knowing if a named entity like Washington is a name of a person, a place, or a university is important to many natural language processing tasks like question answering, stance detection, or information extraction.</p></blockquote>
+<p>在本章中，我们将介绍词性标注任务——给定一个词序列，为每个词分配像 NOUN 或 VERB 这样的词性；以及命名实体识别（NER）任务——为词或短语分配像 PERSON、LOCATION 或 ORGANIZATION 这样的标记。</p>
+<blockquote><p>In this chapter we’ll introduce the task of part-of-speech tagging, taking a sequence of words and assigning each word a part of speech like NOUN or VERB, and the task of named entity recognition (NER), assigning words or phrases tags like PERSON, LOCATION, or ORGANIZATION.</p></blockquote>
+<p>这类任务是指，我们为输入词序列中的每个词 xi 分配一个</p>
+<blockquote><p>Such tasks in which we assign, to each word xi in an input word sequence, a</p></blockquote>
+<p>标记 yi，使得输出序列 Y 与输入序列 X 的长度相同</p>
+<blockquote><p>label yi, so that the output sequence Y has the same length as the input sequence X</p></blockquote>
+<aside class="term"><code>sequence</code><span class="term-zh">序列</span><span class="term-explain">按顺序排列的元素集合。在序列标注任务中，输入和输出都是等长的序列（词序列与标记序列）。</span></aside>
+<p>被称为序列标注任务。我们将介绍经典的序列标注算法：一种是生成式的——隐马尔可夫模型（HMM）；一种是判别式的——条件随机场（CRF）。</p>
+<blockquote><p>are called sequence labeling tasks. We’ll introduce classic sequence labeling algorithms, one generative— the Hidden Markov Model (HMM)—and one discriminative—the Conditional Random Field (CRF).</p></blockquote>
+<aside class="term"><code>labeling</code><span class="term-zh">标注</span><span class="term-explain">为输入序列中的每个单元（通常是一个词元）赋予类别标记的过程；序列标注即为每个词元分配相应标记的任务。</span></aside>
+<h2>18.1（主要是）英语词类</h2>
+<blockquote><p>18.1 (Mostly) English Word Classes</p></blockquote>
+<p>到目前为止，我们一直在相当随意地使用像名词和动词这样的词性术语。</p>
+<blockquote><p>Until now we have been using part-of-speech terms like noun and verb rather freely.</p></blockquote>
+<p>在本节中，我们给出更完整的定义。虽然词类确实存在语义倾向——例如形容词常常描述属性，名词描述人或事物——但词性的定义依据的却是词与邻近词的语法关系，或者其词缀的形态属性。</p>
+<blockquote><p>In this section we give more complete definitions. While word classes do have semantic tendencies—adjectives, for example, often describe properties and nouns describe people—parts of speech are defined instead based on their grammatical relationship with neighboring words or the morphological properties of their affixes.</p></blockquote>
+<blockquote><p>标记 描述 示例 ADJ 形容词：描述属性的名词修饰语 red、young、awesome</p><p><em>Tag Description Example ADJ Adjective: noun modifiers describing properties red, young, awesome</em></p></blockquote>
+<blockquote><p>开放类 ADV 副词：表时间、地点、方式的动词修饰语 very、slowly、home、yesterday</p><p><em>Open Class ADV Adverb: verb modifiers of time, place, manner very, slowly, home, yesterday</em></p></blockquote>
+<blockquote><p>NOUN 表示人、地点、事物等的词 algorithm、cat、mango、beauty VERB 表示动作和过程的词 draw、provide、go PROPN 专有名词：人、组织、地点等的名称 Regina、IBM、Colorado INTJ 感叹词：感叹、问候、是/否回答等 oh、um、yes、hello ADP 附置词（前置词/后置词）：标记名词的 in、on、by、under</p><p><em>NOUN words for persons, places, things, etc. algorithm, cat, mango, beauty VERB words for actions and processes draw, provide, go PROPN Proper noun: name of a person, organization, place, etc.. Regina, IBM, Colorado INTJ Interjection: exclamation, greeting, yes/no response, etc. oh, um, yes, hello ADP Adposition (Preposition/Postposition): marks a noun’s in, on, by, under</em></p></blockquote>
+<blockquote><p>空间、时间或其他关系</p><p><em>spacial, temporal, or other relation</em></p></blockquote>
+<blockquote><p>AUX 助动词：标记时态、体、语气等的辅助动词 can、may、should、are</p><p><em>AUX Auxiliary: helping verb marking tense, aspect, mood, etc., can, may, should, are</em></p></blockquote>
+<blockquote><p>封闭类 CCONJ 并列连词：连接两个短语/小句 and、or、but</p><p><em>Closed Class CCONJ Coordinating Conjunction: joins two phrases/clauses and, or, but</em></p></blockquote>
+<blockquote><p>DET 限定词：标记名词短语的性质 a、an、the、this NUM 数词 one、two、2026、11:00、hundred PART 小品词：一个必须与另一个 ’s、not、(不定式) to</p><p><em>DET Determiner: marks noun phrase properties a, an, the, this NUM Numeral one, two, 2026, 11:00, hundred PART Particle: a function word that must be associated with an- ’s, not, (infinitive) to</em></p></blockquote>
+<blockquote><p>词相关联的功能词</p><p><em>other word</em></p></blockquote>
+<blockquote><p>PRON 代词：指称实体或事件的简略形式 she、who、I、others SCONJ 从属连词：把主句与一个 whether、because</p><p><em>PRON Pronoun: a shorthand for referring to an entity or event she, who, I, others SCONJ Subordinating Conjunction: joins a main clause with a whether, because</em></p></blockquote>
+<blockquote><p>从句（如句子补语）连接起来</p><p><em>subordinate clause such as a sentential complement</em></p></blockquote>
+<blockquote><p>其他 PUNCT 标点 ˙、,、()</p><p><em>Other PUNCT Punctuation ˙, , ()</em></p></blockquote>
+<blockquote><p>SYM 像 $ 或 emoji 这样的符号 $、%X 其他 asdf、qwfg</p><p><em>SYM Symbols like $ or emoji $, %X Other asdf, qwfg</em></p></blockquote>
+<p>词性分为两大范畴：封闭类和开放类。</p>
+<blockquote><p>Parts of speech fall into two broad categories: closed class and open class.</p></blockquote>
+<aside class="term"><code>closed class open class</code><span class="term-zh">封闭类 开放类</span><span class="term-explain">封闭类指成员相对固定、很少新增的词类（如介词、限定词、连词）；开放类指不断有新成员被创造或借用的词类（如名词、动词、形容词）。</span></aside>
+<p>封闭类是成员相对固定的那些词类，比如介词——</p>
+<blockquote><p>Closed classes are those with relatively fixed membership, such as prepositions—</p></blockquote>
+<p>新的介词很少被创造出来。相比之下，名词和动词是开放类——像 iPhone 或 to fax 这样的新名词和新动词不断被创造或借用。</p>
+<blockquote><p>new prepositions are rarely coined. By contrast, nouns and verbs are open classes—new nouns and verbs like iPhone or to fax are continually being created or borrowed.</p></blockquote>
+<p>封闭类词一般都是功能词，如 of、it、and 或 you，它们通常</p>
+<blockquote><p>Closed class words are generally function words like of, it, and, or you, which tend</p></blockquote>
+<aside class="term"><code>function word</code><span class="term-zh">功能词</span><span class="term-explain">封闭类词的通称，主要承担语法结构功能而非指称具体内容，如冠词、介词、连词、代词、助动词等；数量有限，新成员极少增加。</span></aside>
+<p>很短、出现频率很高，并且常常在语法中起结构性的作用。</p>
+<blockquote><p>to be very short, occur frequently, and often have structuring uses in grammar.</p></blockquote>
+<p>世界上的语言中普遍存在四个主要的开放类：名词（包括</p>
+<blockquote><p>Four major open classes occur in the languages of the world: nouns (including</p></blockquote>
+<p>专有名词）、动词、形容词和副词，此外还有规模较小的开放类——感叹词。英语这五类全都具备，但并非每种语言都是如此。</p>
+<blockquote><p>proper nouns), verbs, adjectives, and adverbs, as well as the smaller open class of interjections. English has all five, although not every language does.</p></blockquote>
+<p>名词是表示人、地点或事物的词，但也包括其他情况。普通名词既包括 cat、mango 这类具体事物的词，也包括 algorithm</p>
+<blockquote><p>Nouns are words for people, places, or things, but include others as well. Common nouns include concrete terms like cat and mango, abstractions like algorithm</p></blockquote>
+<aside class="term"><code>noun</code><span class="term-zh">名词</span><span class="term-explain">开放类之一，表示人、地点、事物或抽象概念；英语名词可与限定词连用（a goat、this bandwidth）、可带所有格（IBM’s annual revenue），还可以有复数形式（goats、abaci）。</span></aside>
+<aside class="term"><code>common noun</code><span class="term-zh">普通名词</span><span class="term-explain">与专有名词相对，指称某一类人、事物或概念而非某个特定个体，如 cat、mango、beauty、pacing；英语中可与限定词连用并有复数形式。</span></aside>
+<p>和 beauty 这类抽象概念，以及像 His pacing to and fro became quite annoying（他来来回回地踱步变得相当烦人）中 pacing 这样类似动词的词语。英语名词可以与限定词连用（a goat、this bandwidth），可以带所有格（IBM’s annual revenue），还可以有复数形式（goats、abaci）。</p>
+<blockquote><p>and beauty, and verb-like terms like pacing as in His pacing to and fro became quite annoying. Nouns in English can occur with determiners (a goat, this bandwidth) take possessives (IBM’s annual revenue), and may occur in the plural (goats, abaci).</p></blockquote>
+<p>包括英语在内的许多语言，都把普通名词分为可数名词和</p>
+<blockquote><p>Many languages, including English, divide common nouns into count nouns and</p></blockquote>
+<aside class="term"><code>count noun mass noun</code><span class="term-zh">可数名词；不可数名词</span><span class="term-explain">可数名词（count noun）有单数和复数形式，并可以直接计数，如 one goat、two goats；不可数名词（mass noun）用于把事物概念化为一个同质的整体，通常不能计数，如 snow、salt、communism（不说 <em>two snows、</em>two communisms）。</span></aside>
+<p>不可数名词。可数名词既有单数形式也有复数形式（goat/goats、relationship/relationships），并且可以计数（one goat、two goats）。当某事物被概念化为一个同质的整体时，就使用不可数名词。因此 snow、salt 和 communism 不能计数（即不说 <em>two snows 或 </em>two communisms）。专有名词，如 Regina、Colorado 和 IBM，是特定人物或实体的名称。</p>
+<blockquote><p>mass nouns. Count nouns can occur in the singular and plural (goat/goats, relationship/relationships) and can be counted (one goat, two goats). Mass nouns are used when something is conceptualized as a homogeneous group. So snow, salt, and communism are not counted (i.e., <em>two snows or </em>two communisms). Proper nouns, like Regina, Colorado, and IBM, are names of specific persons or entities.</p></blockquote>
+<p>动词指动作和过程，包括 draw、provide、</p>
+<blockquote><p>Verbs refer to actions and processes, including main verbs like draw, provide,</p></blockquote>
+<aside class="term"><code>verb</code><span class="term-zh">动词</span><span class="term-explain">开放类之一，表示动作或过程；英语动词有屈折变化，如非第三人称单数（eat）、第三人称单数（eats）、进行式（eating）、过去分词（eaten）。</span></aside>
+<p>和 go 这类主要动词。英语动词有屈折变化（非第三人称单数（eat）、第三人称单数（eats）、进行式（eating）、过去分词（eaten））。许多学者相信所有人类语言都有名词和动词这两个范畴，但也有人主张，某些语言（如廖内印尼语和汤加语）甚至不作这种区分（Broschart 1997; Evans 2000; Gil 2000）。</p>
+<blockquote><p>and go. English verbs have inflections (non-third-person-singular (eat), third-personsingular (eats), progressive (eating), past participle (eaten)). While many scholars believe that all human languages have the categories of noun and verb, others have argued that some languages, such as Riau Indonesian and Tongan, don’t even make this distinction (Broschart 1997; Evans 2000; Gil 2000) .</p></blockquote>
+<p>形容词通常描述名词的性质或属性，如颜色（white、</p>
+<blockquote><p>Adjectives often describe properties or qualities of nouns, like color (white,</p></blockquote>
+<aside class="term"><code>adjective</code><span class="term-zh">形容词</span><span class="term-explain">开放类之一，用于描述名词的性质或属性，如颜色、年龄、价值等；但也存在没有形容词的语言，如韩语中对应英语形容词的词充当动词的一个子类。</span></aside>
+<p>black）、年龄（old、young）和价值（good、bad），但也有些语言没有形容词。例如在韩语中，与英语形容词相对应的词充当动词的一个子类，因此英语中的形容词 “beautiful” 在韩语中的表现犹如一个意为“美”的动词。</p>
+<blockquote><p>black), age (old, young), and value (good, bad), but there are languages without adjectives. In Korean, for example, the words corresponding to English adjectives act as a subclass of verbs, so what is in English an adjective “beautiful” acts in Korean like a verb meaning “to be beautiful”.</p></blockquote>
+<p>副词是一个大杂烩。下面这个例子中所有斜体词都是副词：</p>
+<blockquote><p>Adverbs are a hodge-podge. All the italicized words in this example are adverbs:</p></blockquote>
+<aside class="term"><code>adverb</code><span class="term-zh">副词</span><span class="term-explain">开放类之一，一般修饰动词，也可修饰其他副词乃至整个动词短语；包括方向/处所副词、程度副词、方式副词和时间副词等，因而成员庞杂。</span></aside>
+<p>Actually, I ran home extremely quickly yesterday（实际上，我昨天极其迅速地跑回了家）</p>
+<blockquote><p>Actually, I ran home extremely quickly yesterday</p></blockquote>
+<p>副词一般修饰某个成分（常修饰动词，故有 “adverb” 之名，但也可修饰其他副词和整个动词短语）。方向副词或处所副词（home、here、downhill）指明某一动作的方向或位置；程度</p>
+<blockquote><p>Adverbs generally modify something (often verbs, hence the name “adverb”, but also other adverbs and entire verb phrases). Directional adverbs or locative adverbs (home, here, downhill) specify the direction or location of some action; degree</p></blockquote>
+<aside class="term"><code>locative</code><span class="term-zh">处所</span><span class="term-explain">表示处所或位置的语法范畴；处所副词（locative adverb）说明动作发生的地点或方向，如 home、here、downhill。</span></aside>
+<aside class="term"><code>degree</code><span class="term-zh">程度</span><span class="term-explain">程度副词（degree adverb）说明某一动作、过程或性质的程度，如 extremely、very、somewhat。</span></aside>
+<p>副词（extremely、very、somewhat）说明某一动作、过程或性质的程度；方式副词（slowly、slinkily、delicately）描述某个</p>
+<blockquote><p>adverbs (extremely, very, somewhat) specify the extent of some action, process, or property; manner adverbs (slowly, slinkily, delicately) describe the manner of some</p></blockquote>
+<aside class="term"><code>manner</code><span class="term-zh">方式</span><span class="term-explain">方式副词（manner adverb）描述动作或过程的发生方式，如 slowly、slinkily、delicately。</span></aside>
+<p>动作或过程的方式；时间副词则描述某个动作或事件</p>
+<blockquote><p>action or process; and temporal adverbs describe the time that some action or event</p></blockquote>
+<aside class="term"><code>temporal</code><span class="term-zh">时间</span><span class="term-explain">表示时间的语法范畴；时间副词（temporal adverb）说明动作或事件发生的时间，如 yesterday、Monday。</span></aside>
+<p>发生的时间（yesterday、Monday）。</p>
+<blockquote><p>took place (yesterday, Monday).</p></blockquote>
+<p>感叹词（oh、hey、alas、uh、um）是一个较小的开放类，其中还包括</p>
+<blockquote><p>Interjections (oh, hey, alas, uh, um) are a smaller open class that also includes</p></blockquote>
+<aside class="term"><code>interjection</code><span class="term-zh">感叹词</span><span class="term-explain">规模较小的开放类，用于表达情感或对话语作出反应，包括问候语（hello、goodbye）和疑问应答语（yes、no、uh-huh）。</span></aside>
+<p>问候语（hello、goodbye）和疑问应答语（yes、no、uh-huh）。</p>
+<blockquote><p>greetings (hello, goodbye) and question responses (yes, no, uh-huh).</p></blockquote>
+<p>英语的附置词出现在名词之前，因此被称为介词。它们可以</p>
+<blockquote><p>English adpositions occur before nouns, hence are called prepositions. They can</p></blockquote>
+<aside class="term"><code>preposition</code><span class="term-zh">介词</span><span class="term-explain">英语中的附置词（adposition）出现在名词之前，故称介词；用于表示空间或时间关系（字面或隐喻），也可标记施事等关系，如 Hamlet was written by Shakespeare 中的 by。</span></aside>
+<p>表示空间或时间关系，无论字面的（on it、before then、by the house）还是隐喻的（on time、with gusto、beside herself），也可表示诸如下面这样的关系：在 Hamlet was written by Shakespeare 中标示施事。</p>
+<blockquote><p>indicate spatial or temporal relations, whether literal (on it, before then, by the house) or metaphorical (on time, with gusto, beside herself), and relations like marking the agent in Hamlet was written by Shakespeare.</p></blockquote>
+<p>小品词在形式上与介词或副词相似，需与</p>
+<blockquote><p>A particle resembles a preposition or an adverb and is used in combination with</p></blockquote>
+<aside class="term"><code>particle</code><span class="term-zh">小品词</span><span class="term-explain">形式上类似介词或副词、须与动词组合使用的虚词，如 she turned the paper over 中的 over；其意义往往是引申的，与所形似的介词并不完全相同。</span></aside>
+<p>动词组合使用。小品词常有引申意义，与其形似的介词并不完全相同，如 she turned the paper over（她把纸翻了过来）中的小品词 over。与小品词组合成一个单位使用的动词称为短语动词。短语动词的意义</p>
+<blockquote><p>a verb. Particles often have extended meanings that aren’t quite the same as the prepositions they resemble, as in the particle over in she turned the paper over. A verb and a particle acting as a single unit is called a phrasal verb. The meaning</p></blockquote>
+<aside class="term"><code>phrasal verb</code><span class="term-zh">短语动词</span><span class="term-explain">由动词与其后小品词构成单一单位的动词结构，如 turn down、rule out、go on；其意义往往是不可组合的，无法从动词与小品词各自的意义推知。</span></aside>
+<p>往往是不可组合的——无法由动词和小品词各自的意义预测出来。因此，turn down 意为“拒绝”，rule out 意为“排除”，go on 意为“继续”。</p>
+<blockquote><p>of phrasal verbs is often non-compositional—not predictable from the individual meanings of the verb and the particle. Thus, turn down means ‘reject’, rule out‘eliminate’, and go on ‘continue’.</p></blockquote>
+<p>像 this 和 that 这样的限定词（this chapter、that page）可以标记一个</p>
+<blockquote><p>Determiners like this and that (this chapter, that page) can mark the start of an</p></blockquote>
+<aside class="term"><code>determiner</code><span class="term-zh">限定词</span><span class="term-explain">一类用于标记名词短语起始位置的词，例如 this、that、a、the。</span></aside>
+<p>英语名词短语的开始。像 a、an 和 the 这样的冠词是限定词的一种，它们标记</p>
+<blockquote><p>English noun phrase. Articles like a, an, and the, are a type of determiner that mark</p></blockquote>
+<aside class="term"><code>article</code><span class="term-zh">冠词</span><span class="term-explain">限定词的一个子类，包括 a、an 和 the，用于标记名词的话语属性，在英语中出现频率极高。</span></aside>
+<p>名词的话语属性，并且出现得相当频繁；the 是书面英语中最常见的词，a 和 an 紧随其后。</p>
+<blockquote><p>discourse properties of the noun and are quite frequent; the is the most common word in written English, with a and an right behind.</p></blockquote>
+<p>连词连接两个短语、子句或句子。像 and、or 和 but 这样的并列连词连接两个地位相等的成分。当其中一个成分具有某种内嵌地位时，就使用从属连词。例如，在“I thought that you might like some milk”中，从属连词 that 把主句 I thought 与从句 you might like some milk 连接起来。这个从句之所以被称为从属从句，是因为整个从句都是主动词 thought 的“内容”。像 that 这样以这种方式把动词与其论元连接起来的从属连词，也称为补语化标记。</p>
+<blockquote><p>Conjunctions join two phrases, clauses, or sentences. Coordinating conjunctions like and, or, and but join two elements of equal status. Subordinating conjunctions are used when one of the elements has some embedded status. For example, the subordinating conjunction that in “I thought that you might like some milk” links the main clause I thought with the subordinate clause you might like some milk. This clause is called subordinate because this entire clause is the “content” of the main verb thought. Subordinating conjunctions like that which link a verb to its argument in this way are also called complementizers.</p></blockquote>
+<aside class="term"><code>conjunction</code><span class="term-zh">连词</span><span class="term-explain">连接两个短语、子句或句子的词，分为连接地位相等成分的并列连词和连接具有内嵌地位成分的从属连词。</span></aside>
+<aside class="term"><code>complementizer pronoun</code><span class="term-zh">补语化标记代词</span><span class="term-explain">补语化标记（complementizer）指像 that 那样把动词与其论元连接起来的从属连词；代词（pronoun）则用作指代实体或事件的简写形式。</span></aside>
+<p>代词用作指代实体或事件的简写形式。人称代词指代人或实体（you、she、I、it、me 等）。物主代词是人称代词的各种形式，表示实际的占有，但更多时候只是表示人与某物之间的抽象关系（my、your、his、her、its、one’s、our、their）。Wh-代词（what、who、whom、whoever）用于某些疑问</p>
+<blockquote><p>Pronouns act as a shorthand for referring to an entity or event. Personal pronouns refer to persons or entities (you, she, I, it, me, etc.). Possessive pronouns are forms of personal pronouns that indicate either actual possession or more often just an abstract relation between the person and some object (my, your, his, her, its, one’s, our, their). Wh-pronouns (what, who, whom, whoever) are used in certain question</p></blockquote>
+<aside class="term"><code>wh</code><span class="term-zh">wh-词</span><span class="term-explain">以 wh 开头的疑问代词（what、who、whom、whoever），用于构成某些疑问形式，也可充当补语化标记（如 Frida, who married Diego...）。</span></aside>
+<p>形式中，或充当补语化标记（Frida, who married Diego...）。</p>
+<blockquote><p>forms, or act as complementizers (Frida, who married Diego...).</p></blockquote>
+<p>助动词标记主动词的语义特征，如它的时态、是否</p>
+<blockquote><p>Auxiliary verbs mark semantic features of a main verb such as its tense, whether</p></blockquote>
+<aside class="term"><code>auxiliary</code><span class="term-zh">助动词</span><span class="term-explain">标记主动词语义特征（时态、体、极性、情态等）的动词；英语助动词包括系动词 be、动词 do 和 have 的各种形式，以及情态动词。</span></aside>
+<p>完成（体）、是否被否定（极性），以及一个动作是必要的、可能的、被建议的还是被期望的（情态）。英语助动词包括系动词 be、do 和 have 这两个动词的各种形式，以及用来</p>
+<blockquote><p>it is completed (aspect), whether it is negated (polarity), and whether an action is necessary, possible, suggested, or desired (mood). English auxiliaries include the copula verb be, the two verbs do and have, forms, as well as modal verbs used to</p></blockquote>
+<aside class="term"><code>copula</code><span class="term-zh">系动词</span><span class="term-explain">即系动词 be，属于英语助动词之一，用于连接主语与其补足语。</span></aside>
+<p>标记与主动词所描述事件相关的情态的动词：can 表示</p>
+<blockquote><p>mark the mood associated with the event depicted by the main verb: can indicates</p></blockquote>
+<aside class="term"><code>modal</code><span class="term-zh">情态动词</span><span class="term-explain">用于标记主词所描述事件情态的助动词，如 can 表示能力或可能性、may 表示许可或可能性、must 表示必要性。</span></aside>
+<p>能力或可能性，may 表示许可或可能性，must 表示必要性。</p>
+<blockquote><p>ability or possibility, may permission or possibility, must necessity.</p></blockquote>
+<p>一个英语专用的标记集，即 Penn Treebank 标记集（Marcus 等，1993），如</p>
+<blockquote><p>An English-specific tagset, the Penn Treebank tagset (Marcus et al., 1993), shown</p></blockquote>
+<p>图 18.2 所示，一直被用于标注许多句法标注语料库，如 Penn Treebank 语料库，因此值得了解。</p>
+<blockquote><p>in Fig. 18.2, has been used to label many syntactically annotated corpora like the Penn Treebank corpora, so it is worth knowing about.</p></blockquote>
+<blockquote><p>标记 说明 示例 标记 说明 示例 标记 说明 示例 CC and, but, or NNP 专有名词，单数 IBM TO to</p><p><em>Tag Description Example Tag Description Example Tag Description Example CC and, but, or NNP proper noun, sing. IBM TO to</em></p></blockquote>
+<blockquote><p>并列连词 不定式 to</p><p><em>coord. conj. infinitive to</em></p></blockquote>
+<blockquote><p>CD 基数词 one, two NNPS 专有名词，复数 Carolinas UH ah, oops</p><p><em>CD cardinal number one, two NNPS proper noun, plu. Carolinas UH ah, oops</em></p></blockquote>
+<blockquote><p>感叹词</p><p><em>interjection</em></p></blockquote>
+<blockquote><p>DT a, the NNS llamas VB eat</p></blockquote>
+<blockquote><p>限定词 名词，复数 动词原形</p><p><em>determiner noun, plural verb base</em></p></blockquote>
+<blockquote><p>EX there PDT all, both VBD 动词过去时 ate</p><p><em>EX there PDT all, both VBD verb past tense ate</em></p></blockquote>
+<blockquote><p>存在句‘there’ 前限定词</p><p><em>existential ‘there’ predeterminer</em></p></blockquote>
+<blockquote><p>FW 外来词 mea culpa POS 所有格词尾 ’s VBG 动词现在分词 eating IN of, in, by PRP I, you, he VBN 动词过去分词 eaten</p><p><em>FW foreign word mea culpa POS possessive ending ’s VBG verb gerund eating IN of, in, by PRP I, you, he VBN verb past partici- eaten</em></p></blockquote>
+<blockquote><p>介词/ 人称代词 从属连词 ple</p><p><em>preposition/ personal pronoun subordin-conj ple</em></p></blockquote>
+<blockquote><p>JJ yellow PRP$ your VBP eat</p></blockquote>
+<blockquote><p>形容词 物主代词 动词非第三人称单数现在时</p><p><em>adjective possess. pronoun verb non-3sg-pr</em></p></blockquote>
+<blockquote><p>JJR 比较级形容词 bigger RB quickly VBZ eats</p><p><em>JJR comparative adj bigger RB quickly VBZ eats</em></p></blockquote>
+<blockquote><p>副词 动词第三人称单数现在时</p><p><em>adverb verb 3sg pres</em></p></blockquote>
+<blockquote><p>JJS wildest RBR faster WDT wh-限定词 which, that</p><p><em>JJS wildest RBR faster WDT wh-determ. which, that</em></p></blockquote>
+<blockquote><p>最高级形容词 比较级副词</p><p><em>superlative adj comparative adv</em></p></blockquote>
+<blockquote><p>LS 1, 2, One RBS fastest WP what, who</p></blockquote>
+<blockquote><p>列表项标记 最高级副词 wh-代词</p><p><em>list item marker superlatv. adv wh-pronoun</em></p></blockquote>
+<blockquote><p>MD 情态动词 can, should RP up, off WP$ whose</p><p><em>MD modal can, should RP up, off WP$ whose</em></p></blockquote>
+<blockquote><p>小品词 wh-所有格</p><p><em>particle wh-possess.</em></p></blockquote>
+<blockquote><p>NN 单数名词或不可数名词 llama SYM 符号 +、%、&amp; WRB wh-副词 how、where</p><p><em>NN sing or mass noun llama SYM +, %, &amp; WRB wh-adverb how, where</em></p></blockquote>
+<blockquote><p>符号</p><p><em>symbol</em></p></blockquote>
+<p>下面我们给出一些例子，其中每个词都同时按照 UD</p>
+<blockquote><p>Below we show some examples with each word tagged according to both the UD</p></blockquote>
+<p>（蓝色）和 Penn（红色）两个标记集进行了标注。请注意，Penn 标记集区分动词的时态和分词形式，并且为英语中的存在句 there 结构设置了一个专门的标记。还要注意，由于 London Journal of Medicine 是专有名词，两个标记集都把它包含的名词标注为 PROPN/NNP，包括 journal 和 medicine，否则它们可能会被标注为普通名词（NOUN/NN）。</p>
+<blockquote><p>(in blue) and Penn (in red) tagsets. Notice that the Penn tagset distinguishes tense and participles on verbs, and has a special tag for the existential there construction in English. Note that since London Journal of Medicine is a proper noun, both tagsets mark its component nouns as PROPN/NNP, including journal and medicine, which might otherwise be labeled as common nouns (NOUN/NN).</p></blockquote>
+<p>(18.1) There/PRON/EX are/VERB/VBP 70/NUM/CD children/NOUN/NNS there/ADV/RB ./PUNC/.</p>
+<p>(18.2) Preliminary/ADJ/JJ findings/NOUN/NNS were/AUX/VBD reported/VERB/VBN in/ADP/IN today/NOUN/NN ’s/PART/POS London/PROPN/NNP Journal/PROPN/NNP of/ADP/IN Medicine/PROPN/NNP</p>
+<h2>18.2 词性标注</h2>
+<blockquote><p>18.2 Part-of-Speech Tagging</p></blockquote>
+<aside class="term"><code>part-of-speech tagging</code><span class="term-zh">词性标注</span><span class="term-explain">为文本中每个词赋予一个词性的任务：输入是（已词元化的）词序列以及一个标记集，输出是与输入一一对应的标记序列，每个输出标记恰好对应一个输入词。</span></aside>
+<p>词性标注是为文本中每个词赋予一个词性的过程。</p>
+<blockquote><p>Part-of-speech tagging is the process of assigning a part-of-speech to each word in</p></blockquote>
+<p>输入是（已词元化的）词序列 x1,x2,...,xn 以及一个标记集，输出是标记序列 y1,y2,...,yn，其中每个输出 yi 恰好对应一个输入 xi，如图 18.3 的直观示意所示。</p>
+<blockquote><p>a text. The input is a sequence x1,x2,...,xn of (tokenized) words and a tagset, and the output is a sequence y1,y2,...,yn of tags, each output yi corresponding exactly to one input xi, as shown in the intuition in Fig. 18.3.</p></blockquote>
+<p>标注是一项消歧任务；词是有歧义的——即具有不止一个</p>
+<blockquote><p>Tagging is a disambiguation task; words are ambiguous —have more than one</p></blockquote>
+<aside class="term"><code>ambiguous</code><span class="term-zh">有歧义的</span><span class="term-explain">指一个词具有不止一个可能的词性，例如 book 既可以作动词（book that flight），也可以作名词（hand me that book）。</span></aside>
+<p>可能的词性——标注的目标就是找到适合当前情境的正确标记。</p>
+<blockquote><p>possible part-of-speech—and the goal is to find the correct tag for the situation.</p></blockquote>
+<p>例如，book 可以是动词（book that flight），也可以是名词（hand me that book）。</p>
+<blockquote><p>For example, book can be a verb (book that flight) or a noun (hand me that book).</p></blockquote>
+<img src="../md/images/18-sequence-labeling/fig_p5_0.png" alt="">
+<p>That 可以是限定词（Does that flight serve dinner），也可以是补语化标记（I</p>
+<blockquote><p>That can be a determiner (Does that flight serve dinner) or a complementizer (I</p></blockquote>
+<aside class="term"><code>ambiguity resolution</code><span class="term-zh">歧义消解</span><span class="term-explain">在多个可能的解释中选出与上下文相符的那一个，例如为一个有歧义的词选定正确的词性标记。</span></aside>
+<p>thought that your flight was earlier）。词性标注的目标就是消解这些</p>
+<blockquote><p>thought that your flight was earlier). The goal of POS-tagging is to resolve these</p></blockquote>
+<p>歧义，为上下文选择恰当的标记。</p>
+<blockquote><p>ambiguities, choosing the proper tag for the context.</p></blockquote>
+<p>词性标注算法的准确率（即测试集中</p>
+<blockquote><p>The accuracy of part-of-speech tagging algorithms (the percentage of test set</p></blockquote>
+<aside class="term"><code>accuracy</code><span class="term-zh">准确率</span><span class="term-explain">测试集中标记与人工金标准标签相一致的百分比。</span></aside>
+<p>标记与人工金标准标签相符的比例）极高。一项研究在通用依存（Universal Dependency，UD）树库的 15 种语言上得到的准确率都超过 97%（Wu 和 Dredze, 2019）。在多个英语树库上的准确率同样是 97%（无论采用什么算法；HMM、CRF、BERT 的表现都差不多）。这个 97% 大致也就是该任务上人类的表现，至少对英语而言如此（Manning, 2011）。</p>
+<blockquote><p>tags that match human gold labels) is extremely high. One study found accuracies over 97% across 15 languages from the Universal Dependency (UD) treebank (Wu and Dredze, 2019). Accuracies on various English treebanks are also 97% (no matter the algorithm; HMMs, CRFs, BERT perform similarly). This 97% number is also about the human performance on this task, at least for English (Manning, 2011).</p></blockquote>
+<blockquote><p>词类型：WSJ Brown 无歧义（1 个标记）44,432 (86%) 45,799 (85%) 有歧义（2 个及以上标记）7,025 (14%) 8,050 (15%) 词元：无歧义（1 个标记）577,421 (45%) 384,349 (33%) 有歧义（2 个及以上标记）711,780 (55%) 786,646 (67%)</p><p><em>Types: WSJ Brown Unambiguous (1 tag) 44,432 (86%) 45,799 (85%) Ambiguous (2+ tags) 7,025 (14%) 8,050 (15%) Tokens: Unambiguous (1 tag) 577,421 (45%) 384,349 (33%) Ambiguous (2+ tags) 711,780 (55%) 786,646 (67%)</em></p></blockquote>
+<p>我们将在接下来几节中介绍用于该任务的算法，不过首先让我们</p>
+<blockquote><p>We’ll introduce algorithms for the task in the next few sections, but first let’s</p></blockquote>
+<p>先来考察一下这个任务。它究竟有多难？图 18.4 表明，大多数词类型（85%–86%）都是无歧义的（Janet 总是 NNP，hesitantly 总是 RB）。但是，有歧义的词虽然只占词表的 14%–15%，却非常常用，实际文本中有 55%–67% 的词元是有歧义的。歧义特别多的常用词包括 that、back、down、put 和 set；下面是 back 一词的 6 种不同词性的例子：</p>
+<blockquote><p>explore the task. Exactly how hard is it? Fig. 18.4 shows that most word types(85-86%) are unambiguous (Janet is always NNP, hesitantly is always RB). But the ambiguous words, though accounting for only 14-15% of the vocabulary, are very common, and 55-67% of word tokens in running text are ambiguous. Particularly ambiguous common words include that, back, down, put and set; here are some examples of the 6 different parts of speech for the word back:</p></blockquote>
+<p>收益增长退到了 back/JJ 座（earnings growth took a back seat） 后方的一座小楼（a small building in the back/NN） 参议员的明确多数支持 back/VBP 该法案（a clear majority of senators back the bill） Dave 开始 back/VB 向门口（Dave began to back toward the door） 使该国能够回购 back/RP 债务（enable the country to buy back debt） 那时我二十一岁 back/RB（I was twenty-one back then）</p>
+<blockquote><p>earnings growth took a back/JJ seat a small building in the back/NN a clear majority of senators back/VBP the bill Dave began to back/VB toward the door enable the country to buy back/RP debt I was twenty-one back/RB then</p></blockquote>
+<p>尽管如此，许多词很容易消歧，因为它们的不同标记并非同等可能。例如，a 可以是限定词，也可以是字母 a，但限定词这一义项的可能性要大得多。</p>
+<blockquote><p>Nonetheless, many words are easy to disambiguate, because their different tags aren’t equally likely. For example, a can be a determiner or the letter a, but the determiner sense is much more likely.</p></blockquote>
+<p>这一想法提示了一个有用的基线：给定一个歧义词，选择在</p>
+<blockquote><p>This idea suggests a useful baseline: given an ambiguous word, choose the tag</p></blockquote>
+<p>训练语料中出现最频繁的那个标记。这是一个关键概念：</p>
+<blockquote><p>which is most frequent in the training corpus. This is a key concept:</p></blockquote>
+<p>最频繁类别基线：始终要把分类器与一个至少和最频繁类别基线一样好的基线相比较（该基线把每个词元赋予它在训练集中出现最频繁的那个类别）。</p>
+<blockquote><p>Most Frequent Class Baseline: Always compare a classifier against a baseline at least as good as the most frequent class baseline (assigning each token to the class it occurred in most often in the training set).</p></blockquote>
+<p>最频繁标记基线的准确率约为 92%1。该基线</p>
+<blockquote><p>The most-frequent-tag baseline has an accuracy of about 92%1. The baseline</p></blockquote>
+<p>因此与当前最优水平和人类上限（97%）只相差 5%。</p>
+<blockquote><p>thus differs from the state-of-the-art and human ceiling (97%) by only 5%.</p></blockquote>
+<h2>18.3 命名实体与命名实体标注</h2>
+<blockquote><p>18.3 Named Entities and Named Entity Tagging</p></blockquote>
+<p>词性标注可以告诉我们，Janet、Stanford University 和 Colorado 这类词都是专有名词；作专有名词是这些词的语法属性。但从语义的角度看，这些专有名词指称的是不同种类的实体：Janet 是人名，Stanford University 是机构名，Colorado 是地名。</p>
+<blockquote><p>Part of speech tagging can tell us that words like Janet, Stanford University, and Colorado are all proper nouns; being a proper noun is a grammatical property of these words. But viewed from a semantic perspective, these proper nouns refer to different kinds of entities: Janet is a person, Stanford University is an organization, and Colorado is a location.</p></blockquote>
+<p>这里我们再次引入命名实体的概念，它此前也曾在</p>
+<blockquote><p>Here we re-introduce the concept of a named entity, which was also introduced</p></blockquote>
+<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">语义上指称某一特定种类事物的词或短语，例如人名（Janet）、机构名（Stanford University）、地名（Colorado），以及时间、数量、货币等。</span></aside>
+<p>见第 9.5 节，供尚未读过第 9 章的读者参考。</p>
+<blockquote><p>in Section 9.5 for readers who haven’t yet read Chapter 9.</p></blockquote>
+<p>粗略地说，命名实体就是任何可以用一个</p>
+<blockquote><p>A named entity is, roughly speaking, anything that can be referred to with a</p></blockquote>
+<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。</span></aside>
+<p>专有名词来指称的东西：一个人、一个地点、一个机构。命名实体识别（named entity recognition, NER）的任务就是找出构成专有名词的文本片段，并标注</p>
+<blockquote><p>proper name: a person, a location, an organization. The task of named entity recognition (NER) is to find spans of text that constitute proper names and tag the type of</p></blockquote>
+<aside class="term"><code>named entity recognition NER</code><span class="term-zh">命名实体识别（NER）</span><span class="term-explain">从文本中找出命名实体所在的片段并判定其类别（如人名、地名、机构名）的序列标注任务。</span></aside>
+<p>该实体的类型。最常见的实体标记有四种：PER（人名）、LOC（地名）、ORG</p>
+<blockquote><p>the entity. Four entity tags are most common: PER (person), LOC (location), ORG</p></blockquote>
+<p>（机构名）或 GPE（地缘政治实体）。不过，“命名实体”这一术语通常被扩展使用，用来涵盖本身并非实体的东西，包括日期、时间以及其他各种时间表达，甚至像价格这样的数值表达。下面是 NER 标注器的一个输出示例：</p>
+<blockquote><p>(organization), or GPE (geo-political entity). However, the term named entity is commonly extended to include things that aren’t entities per se, including dates, times, and other kinds of temporal expressions, and even numerical expressions like prices. Here’s an example of the output of an NER tagger:</p></blockquote>
+<p>以高油价为由，[ORG United Airlines] 表示，[TIME 周五] 它已将飞往某些同时由低成本航空公司服务的城市的往返票价每程上调了 [MONEY 6 美元]。[ORG American Airlines]——[ORG AMR Corp.] 的一个下属单位——立即跟进，其发言人 [PER Tim Wagner] 说。[ORG United]——[ORG UAL Corp.] 的一个下属单位——表示此次涨价从 [TIME 周四] 起生效，适用于它与折扣航空公司竞争的大多数航线，例如 [LOC 芝加哥] 到 [LOC 达拉斯]，以及 [LOC 丹佛] 到 [LOC 旧金山]。</p>
+<blockquote><p>Citing high fuel prices, [ORG United Airlines] said [TIME Friday] it has increased fares by [MONEY $6] per round trip on flights to some cities also served by lower-cost carriers. [ORG American Airlines], a unit of [ORG AMR Corp.], immediately matched the move, spokesman[PER Tim Wagner] said. [ORG United], a unit of [ORG UAL Corp.], said the increase took effect [TIME Thursday] and applies to most routes where it competes against discount carriers, such as [LOC Chicago] to [LOC Dallas] and [LOC Denver] to [LOC San Francisco].</p></blockquote>
+<p>这段文字包含 13 处命名实体提及，其中 5 处机构名、4 处地名、2 处时间、1 处人名，以及 1 处金额。图 18.5 列出了典型的通用命名实体类型。许多应用还需要使用更具体的实体类型，如蛋白质、基因、商品或艺术作品。</p>
+<blockquote><p>The text contains 13 mentions of named entities including 5 organizations, 4 locations, 2 times, 1 person, and 1 mention of money. Figure 18.5 shows typical generic named entity types. Many applications will also need to use specific entity types like proteins, genes, commercial products, or works of art.</p></blockquote>
+<blockquote><p>类型 标记 示例类别 例句 人名 PER 人物、角色 图灵是计算机科学界的巨人。</p><p><em>Type Tag Sample Categories Example sentences People PER people, characters Turing is a giant of computer science.</em></p></blockquote>
+<blockquote><p>机构名 ORG 公司、运动队 IPCC 曾就这场气旋发出警告。</p><p><em>Organization ORG companies, sports teams The IPCC warned about the cyclone.</em></p></blockquote>
+<blockquote><p>地名 LOC 地区、山脉、海洋 Sanitas 山位于 Sunshine Canyon。</p><p><em>Location LOC regions, mountains, seas Mt. Sanitas is in Sunshine Canyon.</em></p></blockquote>
+<blockquote><p>地缘政治实体 GPE 国家、州 帕洛阿尔托正在提高停车费。</p><p><em>Geo-Political Entity GPE countries, states Palo Alto is raising the fees for parking.</em></p></blockquote>
+<p>命名实体标注是许多自然语言处理任务中有用的第一步</p>
+<blockquote><p>Named entity tagging is a useful first step in lots of natural language processing</p></blockquote>
+<p>。在情感分析中，我们可能想知道消费者对某个特定实体的情感倾向。在问答中，或者在把文本链接到维基百科这类结构化知识源中的信息时，实体都是有用的第一步。命名实体标注对于构建语义表示的任务（例如抽取事件以及参与者之间的关系）也处于核心地位。</p>
+<blockquote><p>tasks. In sentiment analysis we might want to know a consumer’s sentiment toward a particular entity. Entities are a useful first stage in question answering, or for linking text to information in structured knowledge sources like Wikipedia. And named entity tagging is also central to tasks involving building semantic representations, like extracting events and the relationship between participants.</p></blockquote>
+<p>与词性标注不同——词性标注不存在切分问题，因为</p>
+<blockquote><p>Unlike part-of-speech tagging, where there is no segmentation problem since</p></blockquote>
+<p>每个词都只得到一个标记——命名实体识别的任务是找出并标注文本片段，其困难部分来自切分的歧义：我们需要判断什么是实体、什么不是实体，以及实体的边界在哪里。事实上，文本中的大多数词都不是命名实体。另一个困难来自类型歧义。提及 JFK 既可以指一个人，也可以指纽约的机场，还可以指美国各地众多学校、桥梁和街道中的任何一个。图 18.6 给出了这类跨类型混淆的一些例子。</p>
+<blockquote><p>each word gets one tag, the task of named entity recognition is to find and label spans of text, and is difficult partly because of the ambiguity of segmentation; we need to decide what’s an entity and what isn’t, and where the boundaries are. Indeed, most words in a text will not be named entities. Another difficulty is caused by type ambiguity. The mention JFK can refer to a person, the airport in New York, or any number of schools, bridges, and streets around the United States. Some examples of this kind of cross-type confusion are given in Figure 18.6.</p></blockquote>
+<blockquote><p>[PER 华盛顿] 出生在 James Burroughs 的农场，生而为奴。[ORG 华盛顿] 在四场系列赛中以 2 比 1 领先。</p><p><em>[PER Washington] was born into slavery on the farm of James Burroughs.[ORG Washington] went up 2 games to 1 in the four-game series.</em></p></blockquote>
+<blockquote><p>布莱尔抵达 [LOC 华盛顿]，进行很可能是一次最后的国事访问。</p><p><em>Blair arrived in [LOC Washington] for what may well be his last state visit.</em></p></blockquote>
+<blockquote><p>六月，[GPE 华盛顿] 通过了一项可直接执法的强制安全带法。</p><p><em>In June, [GPE Washington] passed a primary seatbelt law.</em></p></blockquote>
+<p>对于像</p>
+<blockquote><p>The standard approach to sequence labeling for a span-recognition problem like</p></blockquote>
+<p>NER 这样需要在片段层面进行识别的问题，序列标注的标准做法是 BIO 标注（Ramshaw 和 Marcus，1995）。这种方法让我们可以借助同时捕捉边界和命名实体类型的标记，把 NER 当作逐词的序列标注任务来处理。请看下面这个句子：</p>
+<blockquote><p>NER is BIO tagging (Ramshaw and Marcus, 1995). This is a method that allows us to treat NER like a word-by-word sequence labeling task, via tags that capture both the boundary and the named entity type. Consider the following sentence:</p></blockquote>
+<p>[ORG United]（[ORG United Airlines Holding] 的一个下属单位）的 [PER Jane Villanueva] 表示，该票价适用于 [LOC 芝加哥] 航线。</p>
+<blockquote><p>[PER Jane Villanueva ] of [ORG United] , a unit of [ORG United Airlines Holding] , said the fare applies to the [LOC Chicago ] route.</p></blockquote>
+<p>图 18.7 展示了同一段文字用 BIO 标注表示的结果，以及</p>
+<blockquote><p>Figure 18.7 shows the same excerpt represented with BIO tagging, as well as</p></blockquote>
+<aside class="term"><code>BIO</code><span class="term-explain">一种序列标注方案：B 表示实体片段的开始（begin），I 表示片段内部（inside），O 表示不属于任何片段（outside）。</span></aside>
+<p>称为 IO 标注和 BIOES 标注的两种变体。在 BIO 标注中，我们把任何位于感兴趣片段起始处的词元标为 B，把出现在片段内部的词元标为 I，而把位于所有感兴趣片段之外的词元标为 O。虽然 O 标记只有一个，但每个命名实体类别都会有各自不同的 B 标记和 I 标记。</p>
+<blockquote><p>variants called IO tagging and BIOES tagging. In BIO tagging we label any token that begins a span of interest with the label B, tokens that occur inside a span are tagged with an I, and any tokens outside of any span of interest are labeled O. While there is only one O tag, we’ll have distinct B and I tags for each named entity class.</p></blockquote>
+<p>因此标记的总数为 2n+1 个，其中 n 是实体类型的数量。BIO 标注能够表示与方括号记法完全相同的信息，但优点在于我们可以像词性标注那样，用同样简单的序列建模方式来表示这个任务：为每个输入词 xi 分配一个标记 yi：</p>
+<blockquote><p>The number of tags is thus 2n+1 tags, where n is the number of entity types. BIO tagging can represent exactly the same information as the bracketed notation, but has the advantage that we can represent the task in the same simple sequence modeling way as part-of-speech tagging: assigning a single label yi to each input word xi:</p></blockquote>
+<blockquote><p>词语 IO 标记 BIO 标记 BIOES 标记 Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</p><p><em>Words IO Label BIO Label BIOES Label Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</em></p></blockquote>
+<p>我们还展示了两种变体标注方案：IO 标注，它丢失了一部分</p>
+<blockquote><p>We’ve also shown two variant tagging schemes: IO tagging, which loses some</p></blockquote>
+<p>信息，因为它取消了 B 标记；以及 BIOES 标注，它增加了一个表示片段结束的结束标记 E，和一个用于仅由单个词构成的片段的片段标记 S。</p>
+<blockquote><p>information by eliminating the B tag, and BIOES tagging, which adds an end tag E for the end of a span, and a span tag S for a span consisting of only one word.</p></blockquote>
+<p>序列标注器（HMM、CRF、RNN、Transformer 等）经过训练后，能够为文本中的每个词元打上标记，以表明特定种类的命名实体存在（或不存在）。</p>
+<blockquote><p>A sequence labeler (HMM, CRF, RNN, Transformer, etc.) is trained to label each token in a text with tags that indicate the presence (or absence) of particular kinds of named entities.</p></blockquote>
+<h2>18.4 HMM 词性标注</h2>
+<blockquote><p>18.4 HMM Part-of-Speech Tagging</p></blockquote>
+<p>本节介绍我们的第一个序列标注算法——隐马尔可夫模型，并演示如何把它应用于词性标注。回忆一下，序列标注器是一类模型，其任务是为序列中的每个单元分配一个标记，从而把一个观测序列映射为长度相同的标记序列。</p>
+<blockquote><p>In this section we introduce our first sequence labeling algorithm, the Hidden Markov Model, and show how to apply it to part-of-speech tagging. Recall that a sequence labeler is a model whose job is to assign a label to each unit in a sequence, thus mapping a sequence of observations to a sequence of labels of the same length.</p></blockquote>
+<p>HMM 是一个经典模型，它引出了序列建模的许多关键概念，这些概念在更现代的模型中还会再次出现。</p>
+<blockquote><p>The HMM is a classic model that introduces many of the key concepts of sequence modeling that we will see again in more modern models.</p></blockquote>
+<p>HMM 是一种概率序列模型：给定一个单元序列（词、</p>
+<blockquote><p>An HMM is a probabilistic sequence model: given a sequence of units (words,</p></blockquote>
+<p>字母、语素、句子，等等），它计算一个概率分布，该分布定义在</p>
+<blockquote><p>letters, morphemes, sentences, whatever), it computes a probability distribution over</p></blockquote>
+<aside class="term"><code>Markov chain</code><span class="term-zh">马尔可夫链</span><span class="term-explain">一种状态序列的随机过程模型，其中下一状态的概率只取决于当前状态（马尔可夫假设）。</span></aside>
+<img src="../md/images/18-sequence-labeling/fig_p8_0.png" alt="">
+<aside class="term"><code>Markov assumption</code><span class="term-zh">马尔可夫假设</span><span class="term-explain">隐马尔可夫模型中的一条简化假设：某个状态的概率只依赖于前一个状态，即 P(qi|q1,...,qi−1) = P(qi|qi−1)。</span></aside>
+<p>图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。</p>
+<blockquote><p>Figure 18.8a shows a Markov chain for assigning a probability to a sequence of weather events, for which the vocabulary consists of HOT, COLD, and WARM. The states are represented as nodes in the graph, and the transitions, with their probabilities, as edges. The transitions are probabilities: the values of arcs leaving a given state must sum to 1. Figure 18.8b shows a Markov chain for assigning a probability to a sequence of words w1...wt. This Markov chain should be familiar; in fact, it represents a bigram language model, with each edge expressing the probability p(wi|wj)! Given the two models in Fig. 18.8, we can assign a probability to any sequence from our vocabulary.</p></blockquote>
+<blockquote><p>形式化地，马尔可夫链由以下组成部分指定：Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11a12 ...aN1 ...aNN，转移概率矩阵 A，其中每个 aij 表示从状态 i 转移到状态 j 的概率，满足 Pn j=1 aij = 1 ∀i</p><p><em>Formally, a Markov chain is specified by the following components: Q = q1q2 ...qN a set of N states A = a11a12 ...aN1 ...aNN a transition probability matrix A, each aij representing the probability of moving from state i to state j, s.t. Pn j=1 aij = 1 ∀i</em></p></blockquote>
+<blockquote><p>π = π1,π2,...,πN，状态上的初始概率分布。πi 是</p><p><em>π = π1,π2,...,πN an initial probability distribution over states. πi is the</em></p></blockquote>
+<blockquote><p>马尔可夫链将从状态 i 开始的概率。作为初始状态。另外，Pn 某些状态 j 可能有 πj = 0，意味着它们不能</p><p><em>probability that the Markov chain will start in state i. be initial states. Also, Pn Some states j may have πj = 0, meaning that they cannot</em></p></blockquote>
+<blockquote><p>i=1 πi = 1</p></blockquote>
+<p>继续往下之前，请使用图 18.8a 中的示例概率（取 π = [0.1,0.7,0.2]）</p>
+<blockquote><p>Before you go on, use the sample probabilities in Fig. 18.8a (with π = [0.1,0.7,0.2])</p></blockquote>
+<p>来计算以下每个序列的概率：</p>
+<blockquote><p>to compute the probability of each of the following sequences:</p></blockquote>
+<p>(18.4) hot hot hot hot(18.5) cold hot cold hot这些概率上的差异，就图 18.8a 所编码的现实天气事实而言，说明了什么？</p>
+<blockquote><p>What does the difference in these probabilities tell you about a real-world weather fact encoded in Fig. 18.8a?</p></blockquote>
+<h3>18.4.2 隐马尔可夫模型</h3>
+<blockquote><p>18.4.2 The Hidden Markov Model</p></blockquote>
+<p>当我们需要为一个可观测事件序列计算概率时，马尔可夫链很有用。然而在许多情况下，我们关心的事件是隐藏的：我们并不直接观测它们。例如，我们通常不会观测到</p>
+<blockquote><p>A Markov chain is useful when we need to compute a probability for a sequence of observable events. In many cases, however, the events we are interested in are hidden: we don’t observe them directly. For example we don’t normally observe</p></blockquote>
+<aside class="term"><code>hidden</code><span class="term-zh">隐藏的</span><span class="term-explain">在隐马尔可夫模型中指无法直接观测、只能通过观测序列推断的事件，如文本中的词性标记。</span></aside>
+<p>文本中的词性标记。相反，我们看到的是词，必须从词序列中推断出标记。我们把这类标记称为隐藏的，原因就在于它们没有被观测到。</p>
+<blockquote><p>part-of-speech tags in a text. Rather, we see words, and must infer the tags from the word sequence. We call the tags hidden because they are not observed.</p></blockquote>
+<aside class="term"><code>hidden Markov model</code><span class="term-zh">隐马尔可夫模型</span><span class="term-explain">一种序列模型，同时建模可观测事件（如输入中的词）与隐藏事件（如词性标记），由状态集 Q、转移概率矩阵 A、发射概率 B 和初始概率分布 π 指定。缩写作 HMM。</span></aside>
+<p>隐马尔可夫模型（HMM）使我们能够同时讨论观测事件</p>
+<blockquote><p>A hidden Markov model (HMM) allows us to talk about both observed events</p></blockquote>
+<p>（如我们在输入中看到的词）和隐藏事件（如词性标记），后者被我们视为概率模型中的因果因素。HMM 由以下组成部分指定：</p>
+<blockquote><p>(like words that we see in the input) and hidden events (like part-of-speech tags) that we think of as causal factors in our probabilistic model. An HMM is specified by the following components:</p></blockquote>
+<blockquote><p>Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11 ...ai j ...aNN，转移概率矩阵 A，其中每个 aij 表示……的概率</p><p><em>Q = q1q2 ...qN a set of N states A = a11 ...ai j ...aNN a transition probability matrix A, each aij representing the probability</em></p></blockquote>
+<blockquote><p>从状态 i 转移到状态 j 的概率，满足 PN j=1 aij = 1 ∀i</p><p><em>of moving from state i to state j, s.t. PN j=1 aij = 1 ∀i</em></p></blockquote>
+<blockquote><p>B = bi(ot)，观测似然序列，也称为发射概率，每个表示观测 ot（取自词表 V = v1,v2,...,vV）由状态 qi 生成的概率</p><p><em>B = bi(ot) a sequence of observation likelihoods, also called emission probabilities, each expressing the probability of an observation ot (drawn from a vocabulary V = v1,v2,...,vV) being generated from a state qi</em></p></blockquote>
+<blockquote><p>π = π1,π2,...,πN，状态上的初始概率分布。πi 是……的概率</p><p><em>π = π1,π2,...,πN an initial probability distribution over states. πi is the probability that</em></p></blockquote>
+<blockquote><p>马尔可夫链从状态 i 开始的概率。某些状态 j 可能有 π j = 0，意味着它们不能作为初始状态。另外，Pn</p><p><em>the Markov chain will start in state i. Some states j may have π j = 0, meaning that they cannot be initial states. Also, Pn</em></p></blockquote>
+<blockquote><p>i=1 πi = 1</p></blockquote>
+<p>HMM 的输入为 O = o1o2 ...oT：由 T 个观测组成的序列，其中每个</p>
+<blockquote><p>The HMM is given as input O = o1o2 ...oT: a sequence of T observations, each</p></blockquote>
+<p>观测都取自词表 V。</p>
+<blockquote><p>one drawn from the vocabulary V.</p></blockquote>
+<p>一阶隐马尔可夫模型实例化了两条简化假设。</p>
+<blockquote><p>A first-order hidden Markov model instantiates two simplifying assumptions.</p></blockquote>
+<p>第一，与一阶马尔可夫链一样，某个特定状态的概率只依赖于前一个状态：</p>
+<blockquote><p>First, as with a first-order Markov chain, the probability of a particular state depends only on the previous state:</p></blockquote>
+<p>P(qi|q1,...,qi−1) = P(qi|qi−1) (18.6)第二，输出观测 oi 的概率只依赖于</p>
+<blockquote><p>Second, the probability of an output observation oi depends only on the state that</p></blockquote>
+<p>产生该观测的那个状态 qi，而与任何其他状态或任何其他观测无关：</p>
+<blockquote><p>produced the observation qi and not on any other states or any other observations:</p></blockquote>
+<blockquote><p>马尔可夫假设：</p><p><em>Markov Assumption:</em></p></blockquote>
+<p>输出独立性：P(oi|q1,...qi,...,qT,o1,...,oi,...,oT) = P(oi|qi) (18.7)</p>
+<blockquote><p>Output Independence: P(oi|q1,...qi,...,qT,o1,...,oi,...,oT) = P(oi|qi) (18.7)</p></blockquote>
+<h3>18.4.3 HMM 标注器的组成部分</h3>
+<blockquote><p>18.4.3 The components of an HMM tagger</p></blockquote>
+<p>HMM 有两个组成部分，即 A 概率和 B 概率，二者都是通过在带标记的训练语料上计数来估计的。（本示例中我们将使用带标记的 WSJ 语料库。）</p>
+<blockquote><p>An HMM has two components, the A and B probabilities, both estimated by counting on a tagged training corpus. (For this example we’ll use the tagged WSJ corpus.)</p></blockquote>
+<p>A 矩阵包含标记转移概率 P(ti|ti−1)，它表示</p>
+<blockquote><p>The A matrix contains the tag transition probabilities P(ti|ti−1) which represent</p></blockquote>
+<p>在给定前一个标记的条件下某个标记出现的概率。例如，像 will 这样的情态动词后面非常可能跟着一个原形动词，即 VB，如 race，因此我们预期这个概率会很高。我们通过计数来计算该转移概率的最大似然估计：在标注语料中看到第一个标记的所有次数里，第一个标记后面跟着第二个标记的频率：</p>
+<blockquote><p>the probability of a tag occurring given the previous tag. For example, modal verbs like will are very likely to be followed by a verb in the base form, a VB, like race, so we expect this probability to be high. We compute the maximum likelihood estimate of this transition probability by counting, out of the times we see the first tag in a labeled corpus, how often the first tag is followed by the second:</p></blockquote>
+<p>P(ti|ti−1) = C(ti−1,ti) (18.8) C(ti−1)例如在 WSJ 语料库中，MD 出现了 13124 次，其中它后面跟着</p>
+<blockquote><p>In the WSJ corpus, for example, MD occurs 13124 times of which it is followed</p></blockquote>
+<p>后接 VB 的有 10471 次，其 MLE 估计为</p>
+<blockquote><p>by VB 10471, for an MLE estimate of</p></blockquote>
+<p>P(VB|MD) = C(MD,VB) = 10471 13124 = .80 (18.9) C(MD) B 发射概率 P(wi|ti) 表示：给定一个标记（比如</p>
+<blockquote><p>The B emission probabilities, P(wi|ti), represent the probability, given a tag (say</p></blockquote>
+<p>MD）时，它与某个给定词（比如 will）相关联的概率。发射概率的 MLE 为</p>
+<blockquote><p>MD), that it will be associated with a given word (say will). The MLE of the emission probability is</p></blockquote>
+<p>P(wi|ti) = C(ti,wi) (18.10) C(ti)在 WSJ 语料库中 MD 的 13124 次出现里，有 4046 次与 will 相关联：</p>
+<blockquote><p>Of the 13124 occurrences of MD in the WSJ corpus, it is associated with will 4046 times:</p></blockquote>
+<img src="../md/images/18-sequence-labeling/fig_p10_0.png" alt="">
+<p>HMM 的 A 转移概率和 B 观测似然</p>
+<blockquote><p>The A transition probabilities, and B observation likelihoods of the HMM are</p></blockquote>
+<p>如图 18.9 所示，这里以 HMM 词性标注器中的三个状态为例进行了说明；完整的标注器则会为每个标记设置一个状态。</p>
+<blockquote><p>illustrated in Fig. 18.9 for three states in an HMM part-of-speech tagger; the full tagger would have one state for each tag.</p></blockquote>
+<h3>18.4.4 把 HMM 标注视为解码</h3>
+<blockquote><p>18.4.4 HMM tagging as decoding</p></blockquote>
+<p>对于任何包含隐藏变量的模型（例如 HMM），确定与观测序列相对应的隐藏变量序列这一任务称为解码。更形式化地说，</p>
+<blockquote><p>For any model, such as an HMM, that contains hidden variables, the task of determining the hidden variables sequence corresponding to the sequence of observations is called decoding. More formally,</p></blockquote>
+<aside class="term"><code>decoding</code><span class="term-zh">解码</span><span class="term-explain">在含隐藏变量的模型中，根据观测序列推断出最可能的隐藏状态序列这一任务。</span></aside>
+<p>解码：输入一个 HMM λ = (A,B) 以及一个观测序列 O = o1,o2,...,oT，找出最可能的状态序列 Q = q1q2q3 ...qT。</p>
+<blockquote><p>Decoding: Given as input an HMM λ = (A,B) and a sequence of observations O = o1,o2,...,oT, find the most probable sequence of states Q = q1q2q3 ...qT.</p></blockquote>
+<p>对于词性标注，HMM 解码的目标是选择标记</p>
+<blockquote><p>For part-of-speech tagging, the goal of HMM decoding is to choose the tag</p></blockquote>
+<p>序列 t1 ...tn，使其在给定由 n 个词构成的观测序列 w1 ...wn 时最可能：</p>
+<blockquote><p>sequence t1 ...tn that is most probable given the observation sequence of n words w1 ...wn:</p></blockquote>
+<p>ˆt1:n = argmax P(t1 ...tn|w1 ...wn) (18.12)在 HMM 中我们采用的做法是：用贝叶斯法则改为计算：</p>
+<blockquote><p>The way we’ll do this in the HMM is to use Bayes’ rule to instead compute:</p></blockquote>
+<blockquote><p>t1... tn</p></blockquote>
+<p>ˆt1:n = argmax P(w1 ...wn|t1 ...tn)P(t1 ...tn) (18.13) P(w1 ...wn)此外，我们略去分母 P(wn 1)，从而简化式 18.13：</p>
+<blockquote><p>Furthermore, we simplify Eq. 18.13 by dropping the denominator P(wn 1):</p></blockquote>
+<blockquote><p>t1... tn</p></blockquote>
+<p>ˆt1:n = argmax P(w1 ...wn|t1 ...tn)P(t1 ...tn) (18.14) HMM 标注器还做了两个进一步的简化假设。第一个假设（输出独立性，来自式 18.7）是：一个词出现的概率只取决于它自身的标记，而与相邻的词和标记无关：</p>
+<blockquote><p>HMM taggers make two further simplifying assumptions. The first (output independence, from Eq. 18.7) is that the probability of a word appearing depends only on its own tag and is independent of neighboring words and tags:</p></blockquote>
+<blockquote><p>t1... tn</p></blockquote>
+<blockquote><p>n</p></blockquote>
+<p>Y P(w1 ...wn|t1 ...tn) ≈ P(wi|ti) (18.15)第二个假设（马尔可夫假设，式 18.6）是：一个标记的概率只依赖于前一个标记，而不是整个标记序列；</p>
+<blockquote><p>The second assumption (the Markov assumption, Eq. 18.6) is that the probability of a tag is dependent only on the previous tag, rather than the entire tag sequence;</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>n</p></blockquote>
+<p>Y P(t1 ...tn) ≈ P(ti|ti−1) (18.16)把式 18.15 和式 18.16 中的简化假设代入式 18.14，就得到 bigram 标注器求最可能标记序列的如下公式：</p>
+<blockquote><p>Plugging the simplifying assumptions from Eq. 18.15 and Eq. 18.16 into Eq. 18.14 results in the following equation for the most probable tag sequence from a bigram tagger:</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>发射 转移</p>
+<blockquote><p>emission transition</p></blockquote>
+<p>Y z }| { z }| {ˆt1:n = argmax P(t1 ...tn|w1 ...wn) ≈argmax P(wi|ti) P(ti|ti−1) (18.17)式 18.17 的两部分恰好对应我们上面刚刚定义的 B 发射概率和 A 转移概率！</p>
+<blockquote><p>The two parts of Eq. 18.17 correspond neatly to the B emission probability and A transition probability that we just defined above!</p></blockquote>
+<blockquote><p>n</p></blockquote>
+<blockquote><p>t1... tn t1... tn i=1</p></blockquote>
+<img src="../md/images/18-sequence-labeling/fig_p12_0.png" alt="">
+<h3>18.4.5 维特比算法</h3>
+<blockquote><p>18.4.5 The Viterbi Algorithm</p></blockquote>
+<aside class="term"><code>Viterbi algorithm</code><span class="term-zh">维特比算法</span><span class="term-explain">一种用于 HMM 解码的动态规划算法：给定观测序列和模型参数，逐步填充网格中的每个单元格，从而找出使观测序列概率最大的隐藏状态序列。</span></aside>
+<p>HMM 的解码算法就是图 18.10 所示的维特比算法。</p>
+<blockquote><p>The decoding algorithm for HMMs is the Viterbi algorithm shown in Fig. 18.10.</p></blockquote>
+<p>作为动态规划的一个实例，维特比算法与第 2 章的最小编辑距离动态规划算法相似。</p>
+<blockquote><p>As an instance of dynamic programming, Viterbi resembles the dynamic programming minimum edit distance algorithm of Chapter 2.</p></blockquote>
+<p>维特比算法首先建立一个概率矩阵，或称网格：每个观测 ot 对应一列，状态图中的每个状态对应一行。于是每一列中，这个组合自动机里的每个状态 qi 都有一个单元格。图 18.11 直观展示了句子 Janet will back the bill 对应的网格。</p>
+<blockquote><p>The Viterbi algorithm first sets up a probability matrix or lattice, with one column for each observation ot and one row for each state in the state graph. Each column thus has a cell for each state qi in the single combined automaton. Figure 18.11 shows an intuition of this lattice for the sentence Janet will back the bill.</p></blockquote>
+<p>网格中的每个单元格 vt(j) 表示：给定 HMM λ，在观测到前 t 个观测值、并经过最可能的状态序列 q1,...,qt−1 之后，HMM 处于状态 j 的概率。每个单元格 vt(j) 的值，是通过递归地取能够到达该单元格的最可能路径计算出来的。形式上，每个单元格所表示的概率为</p>
+<blockquote><p>Each cell of the lattice, vt(j), represents the probability that the HMM is in state j after seeing the first t observations and passing through the most probable state sequence q1,...,qt−1, given the HMM λ. The value of each cell vt(j) is computed by recursively taking the most probable path that could lead us to this cell. Formally, each cell expresses the probability</p></blockquote>
+<p>vt(j) = q1,...,qt−1 P(q1...qt−1,o1,o2 ...ot,qt = j|λ) max (18.18)我们通过对所有可能的取值取最大值来表示最可能的路径，</p>
+<blockquote><p>We represent the most probable path by taking the maximum over all possible</p></blockquote>
+<p>即前一状态序列 q1,...,qt−1。与其他动态规划算法一样，维特比中的 max 递归地填充每个单元格。既然我们已经算出 t −1 时刻处于每个状态的概率，就可以通过取通向当前单元格的各条路径之延伸中最可能的那一个，来计算维特比概率。对于 t 时刻的给定状态 qj，其值 vt(j) 计算为</p>
+<blockquote><p>previous state sequences q1,...,qt−1. Like other dynamic programming algorithms, max Viterbi fills each cell recursively. Given that we had already computed the probability of being in every state at time t −1, we compute the Viterbi probability by taking the most probable of the extensions of the paths that lead to the current cell. For a given state qj at time t, the value vt(j) is computed as</p></blockquote>
+<p>vt(j) = max i=1 vt−1(i) aij bj(ot) (18.19)式 18.19 中，为把之前的路径延伸出去、以计算 t 时刻的维特比概率，所相乘的三个因子是</p>
+<blockquote><p>The three factors that are multiplied in Eq. 18.19 for extending the previous paths to compute the Viterbi probability at time t are</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<img src="../md/images/18-sequence-labeling/fig_p13_0.png" alt="">
+<h3>18.4.6 完整走一遍一个例子</h3>
+<blockquote><p>18.4.6 Working through an example</p></blockquote>
+<p>让我们给句子 Janet will back the bill 标注；目标是得到正确的标记序列（另见图 18.11）：</p>
+<blockquote><p>Let’s tag the sentence Janet will back the bill; the goal is the correct series of tags(see also Fig. 18.11):</p></blockquote>
+<p>(18.20) Janet/NNP will/MD back/VB the/DT bill/NN</p>
+<table><tr><th></th><th>NNP</th><th>MD</th><th>VB</th><th>JJ</th><th>NN</th><th>RB</th><th>DT</th></tr><tr><td>&lt;s&gt;</td><td>0.2767</td><td>0.0006</td><td>0.0031</td><td>0.0453</td><td>0.0449</td><td>0.0510</td><td>0.2026</td></tr><tr><td>NNP</td><td>0.3777</td><td>0.0110</td><td>0.0009</td><td>0.0084</td><td>0.0584</td><td>0.0090</td><td>0.0025</td></tr><tr><td>MD</td><td>0.0008</td><td>0.0002</td><td>0.7968</td><td>0.0005</td><td>0.0008</td><td>0.1698</td><td>0.0041</td></tr><tr><td>VB</td><td>0.0322</td><td>0.0005</td><td>0.0050</td><td>0.0837</td><td>0.0615</td><td>0.0514</td><td>0.2231</td></tr><tr><td>JJ</td><td>0.0366</td><td>0.0004</td><td>0.0001</td><td>0.0733</td><td>0.4509</td><td>0.0036</td><td>0.0036</td></tr><tr><td>NN</td><td>0.0096</td><td>0.0176</td><td>0.0014</td><td>0.0086</td><td>0.1216</td><td>0.0177</td><td>0.0068</td></tr><tr><td>RB</td><td>0.0068</td><td>0.0102</td><td>0.1011</td><td>0.1012</td><td>0.0120</td><td>0.0728</td><td>0.0479</td></tr><tr><td>DT</td><td>0.1147</td><td>0.0021</td><td>0.0002</td><td>0.2157</td><td>0.4744</td><td>0.0102</td><td>0.0017</td></tr></table>
+<p>&lt;s&gt; 0.2767 0.0006 0.0031 0.0453 0.0449 0.0510 0.2026 NNP 0.3777 0.0110 0.0009 0.0084 0.0584 0.0090 0.0025 MD 0.0008 0.0002 0.7968 0.0005 0.0008 0.1698 0.0041 VB 0.0322 0.0005 0.0050 0.0837 0.0615 0.0514 0.2231 JJ 0.0366 0.0004 0.0001 0.0733 0.4509 0.0036 0.0036 NN 0.0096 0.0176 0.0014 0.0086 0.1216 0.0177 0.0068 RB 0.0068 0.0102 0.1011 0.1012 0.0120 0.0728 0.0479 DT 0.1147 0.0021 0.0002 0.2157 0.4744 0.0102 0.0017</p>
+<p>设 HMM 由图 18.12 和图 18.13 中的两张表定义。图 18.12 列出了在隐藏状态（词性标记）之间转移的 ai j 概率。图 18.13 给出了 bi(ot) 概率，即给定标记时单词的观测似然。该表（略有简化）来自 WSJ 语料库中的计数。因此，单词 Janet 只以 NNP 出现，而 back 有 4 种可能的词性</p>
+<blockquote><p>Let the HMM be defined by the two tables in Fig. 18.12 and Fig. 18.13. Figure 18.12 lists the ai j probabilities for transitioning between the hidden states (partof-speech tags). Figure 18.13 expresses the bi(ot) probabilities, the observation likelihoods of words given tags. This table is (slightly simplified) from counts in the WSJ corpus. So the word Janet only appears as an NNP, back has 4 possible parts</p></blockquote>
+<table><tr><th></th><th>Janet</th><th>will</th><th>back</th><th>the</th><th>bill</th></tr><tr><td>NNP</td><td>0.000032</td><td>0</td><td>0</td><td>0.000048</td><td>0</td></tr><tr><td>MD</td><td>0</td><td>0.308431</td><td>0</td><td>0</td><td>0</td></tr><tr><td>VB</td><td>0</td><td>0.000028</td><td>0.000672</td><td>0</td><td>0.000028</td></tr><tr><td>JJ</td><td>0</td><td>0</td><td>0.000340</td><td>0</td><td>0</td></tr><tr><td>NN</td><td>0</td><td>0.000200</td><td>0.000223</td><td>0</td><td>0.002337</td></tr><tr><td>RB</td><td>0</td><td>0</td><td>0.010446</td><td>0</td><td>0</td></tr><tr><td>DT</td><td>0</td><td>0</td><td>0</td><td>0.506099</td><td>0</td></tr></table>
+<p>NNP 0.000032 0 0 0.000048 0 MD 0 0.308431 0 0 0 VB 0 0.000028 0.000672 0 0.000028 JJ 0 0 0.000340 0 0 NN 0 0.000200 0.000223 0 0.002337 RB 0 0 0.010446 0 0 DT 0 0 0 0.506099 0</p>
+<p>，而单词 the 既可以作为限定词出现，也可以作为 NNP 出现（在像“Somewhere Over the Rainbow”这样的标题中，所有词都被标注为 NNP）。</p>
+<blockquote><p>of speech, and the word the can appear as a determiner or as an NNP (in titles like“Somewhere Over the Rainbow” all words are tagged as NNP).</p></blockquote>
+<img src="../md/images/18-sequence-labeling/fig_p14_0.png" alt="">
+<p>图 18.14 展示了我们在图 18.11 中看到的示意图的完整版本，</p>
+<blockquote><p>Figure 18.14 shows a fleshed-out version of the sketch we saw in Fig. 18.11,</p></blockquote>
+<p>也就是为观测序列 Janet will back the bill 计算最优隐藏状态序列的维特比网格。</p>
+<blockquote><p>the Viterbi lattice for computing the best hidden state sequence for the observation sequence Janet will back the bill.</p></blockquote>
+<p>共有 N = 5 个状态列。我们从第 1 列（对应单词 Janet）开始，</p>
+<blockquote><p>There are N = 5 state columns. We begin in column 1 (for the word Janet) by</p></blockquote>
+<p>把每个单元格中的维特比值设为 π 转移概率（即状态 i 的起始概率，取自图 18.12 的 &lt;s&gt; 那一行）与给定该单元格的标记时单词 Janet 的观测似然之积。由于单词 Janet 不可能是这些标记中的任何一个，该列中大多数单元格都为零。读者应在图 18.14 中找到这一结果。</p>
+<blockquote><p>setting the Viterbi value in each cell to the product of the π transition probability (the start probability for that state i, which we get from the &lt;s&gt; entry of Fig. 18.12), and the observation likelihood of the word Janet given the tag for that cell. Most of the cells in the column are zero since the word Janet cannot be any of those tags. The reader should find this in Fig. 18.14.</p></blockquote>
+<p>接下来，will 列中的每个单元格都会被更新。对于每个状态，我们计算</p>
+<blockquote><p>Next, each cell in the will column gets updated. For each state, we compute the</p></blockquote>
+<p>值 viterbi[s,t]：按照式 18.19，对前一列中通向当前单元格的所有路径的延伸取最大值。我们已给出 MD、VB 和 NN 三个单元格的值。每个单元格取前一列 7 个值中的最大值，再乘以相应的转移概率；在本例中恰好如此，前一列里它们大多是零。剩下的那个值再乘以相关的观测概率，并取（平凡的）最大值。在本例中，最终值 2.772e-8 来自前一列的 NNP 状态。读者应填满图 18.14 中网格的其余部分，并回溯，看看维特比算法是否返回金标准状态序列 NNP MD VB DT NN。</p>
+<blockquote><p>value viterbi[s,t] by taking the maximum over the extensions of all the paths from the previous column that lead to the current cell according to Eq. 18.19. We have shown the values for the MD, VB, and NN cells. Each cell gets the max of the 7 values from the previous column, multiplied by the appropriate transition probability; as it happens in this case, most of them are zero from the previous column. The remaining value is multiplied by the relevant observation probability, and the (trivial) max is taken. In this case the final value, 2.772e-8, comes from the NNP state at the previous column. The reader should fill in the rest of the lattice in Fig. 18.14 and backtrace to see whether or not the Viterbi algorithm returns the gold state sequence NNP MD VB DT NN.</p></blockquote>
+<h2>18.5 条件随机场（CRF）</h2>
+<blockquote><p>18.5 Conditional Random Fields (CRFs)</p></blockquote>
+<p>虽然 HMM 是一个有用且强大的模型，但事实证明，HMM 需要许多增强手段才能达到高准确率。例如，在词性标注中</p>
+<blockquote><p>While the HMM is a useful and powerful model, it turns out that HMMs need a number of augmentations to achieve high accuracy. For example, in POS tagging</p></blockquote>
+<aside class="term"><code>unknown words</code><span class="term-zh">未登录词</span><span class="term-explain">指在词表中没有出现过、因而没有对应参数（如发射概率）的词；在标注任务中通常需要依靠词形、前后缀、大写等特征来猜测其标记。</span></aside>
+<p>与其他任务一样，我们经常会遇到未登录词：专有名词和缩略语</p>
+<blockquote><p>as in other tasks, we often run into unknown words: proper names and acronyms</p></blockquote>
+<p>新词被创造出来的频率非常高，甚至新的普通名词和动词也以惊人的速度进入语言。如果能有办法加入任意特征来帮助解决这个问题，那就太好了——这些特征或许可以基于大写或形态学（以大写字母开头的词很可能是专有名词，以 -ed 结尾的词往往是过去时（VBD 或 VBN）等）。又或者，知道前一个词或后一个词也可能是有用的特征（如果前一个词是 the，那么当前的标记不太可能是动词）。</p>
+<blockquote><p>are created very often, and even new common nouns and verbs enter the language at a surprising rate. It would be great to have ways to add arbitrary features to help with this, perhaps based on capitalization or morphology (words starting with capital letters are likely to be proper nouns, words ending with -ed tend to be past tense (VBD or VBN), etc.) Or knowing the previous or following words might be a useful feature (if the previous word is the, the current tag is unlikely to be a verb).</p></blockquote>
+<p>尽管我们可以试着对 HMM 做各种变通改造，设法把其中一些</p>
+<blockquote><p>Although we could try to hack the HMM to find ways to incorporate some of</p></blockquote>
+<p>特征纳入模型之中，但总体而言，像 HMM 这样的生成式模型很难以一种干净的方式把任意特征直接加进模型。我们已经见过一种以原则化方式组合任意特征的模型：对数线性模型，比如第 4 章的逻辑回归模型！但逻辑回归并不是序列模型；它只把一个类别分配给单个观测。</p>
+<blockquote><p>these, in general it’s hard for generative models like HMMs to add arbitrary features directly into the model in a clean way. We’ve already seen a model for combining arbitrary features in a principled way: log-linear models like the logistic regression model of Chapter 4! But logistic regression isn’t a sequence model; it assigns a class to a single observation.</p></blockquote>
+<p>幸运的是，存在一种基于对数线性模型的判别式序列模型：</p>
+<blockquote><p>Luckily, there is a discriminative sequence model based on log-linear models:</p></blockquote>
+<p>条件随机场（CRF）。这里我们要介绍的是线性链 CRF，</p>
+<blockquote><p>the conditional random field (CRF). We’ll describe here the linear chain CRF,</p></blockquote>
+<aside class="term"><code>CRF</code><span class="term-explain">条件随机场（conditional random field）。一种判别式序列模型，直接对后验概率 p(Y|X) 建模：它把整条输入序列 X 和整条输出标记序列 Y 映射为特征向量，用对数线性函数打分，并通过归一化因子 Z(X) 把分数转成整条序列的概率。这里的全局特征可分解为每个位置的局部特征之和，最常用于语言处理的是线性链 CRF（linear chain CRF），其条件化方式与 HMM 密切对应。</span></aside>
+<p>它是语言处理中最常用的 CRF 版本，其条件化方式与 HMM 紧密对应。</p>
+<blockquote><p>the version of the CRF most commonly used for language processing, and the one whose conditioning closely matches the HMM.</p></blockquote>
+<p>假设我们有一个输入词序列 X = x1...xn，想要计算</p>
+<blockquote><p>Assuming we have a sequence of input words X = x1...xn and want to compute</p></blockquote>
+<p>一个输出标记序列 Y = y1...yn。在 HMM 中，为了计算使 P(Y|X) 最大的最佳标记序列，我们依赖贝叶斯法则和似然 P(X|Y)：</p>
+<blockquote><p>a sequence of output tags Y = y1...yn. In an HMM to compute the best tag sequence that maximizes P(Y|X) we rely on Bayes’ rule and the likelihood P(X|Y):</p></blockquote>
+<p>ˆY = argmax p(Y|X) = argmax p(X|Y)p(Y) Y Y = argmax p(xi|yi) p(yi|yi−1) (18.21)相比之下，在 CRF 中我们直接计算后验概率 p(Y|X)，通过训练让 CRF 在可能的标记序列之间进行判别：</p>
+<blockquote><p>In a CRF, by contrast, we compute the posterior p(Y|X) directly, training the CRF to discriminate among the possible tag sequences:</p></blockquote>
+<blockquote><p>Y</p></blockquote>
+<blockquote><p>Y</p></blockquote>
+<blockquote><p>Y i i</p></blockquote>
+<p>ˆY = argmax P(Y|X) (18.22)然而，CRF 并不在每个时间步为每个标记计算一个概率。相反，在每个时间步 CRF 会在一组相关特征上计算对数线性函数，这些局部特征被聚合并归一化，从而产生整条序列的全局概率。</p>
+<blockquote><p>However, the CRF does not compute a probability for each tag at each time step. Instead, at each time step the CRF computes log-linear functions over a set of relevant features, and these local features are aggregated and normalized to produce a global probability for the whole sequence.</p></blockquote>
+<blockquote><p>Y∈Y</p></blockquote>
+<p>让我们更正式地介绍 CRF，仍然用 X 和 Y 表示输入和</p>
+<blockquote><p>Let’s introduce the CRF more formally, again using X and Y as the input and</p></blockquote>
+<p>输出序列。CRF 是一种对数线性模型：在给定整个输入（词）序列 X 的条件下，它为所有可能的序列 Y 中的某个完整输出（标记）序列 Y 分配一个概率。我们可以把 CRF 看作我们为文本分类见过的多项逻辑回归算法的一个巨型序列版本。回忆一下，我们在用于文本分类的普通多项逻辑回归中引入了特征函数 f，它以一个元组为自变量：输入文本 x 和单个类别 y（第 110 页）。在 CRF 中，我们处理的是一个序列，因此函数 F 把整个输入序列 X 和整个输出序列 Y 映射为一个特征向量。假设我们有 K 个特征，每个特征 Fk 对应一个权重 wk：</p>
+<blockquote><p>output sequences. A CRF is a log-linear model that assigns a probability to an entire output (tag) sequence Y, out of all possible sequences Y, given the entire input(word) sequence X. We can think of a CRF as like a giant sequential version of the multinomial logistic regression algorithm we saw for text categorization. Recall that we introduced the feature function f in regular multinomial logistic regression for text categorization as a function of a tuple: the input text x and a single class y(page 110). In a CRF, we’re dealing with a sequence, so the function F maps an entire input sequence X and an entire output sequence Y to a feature vector. Let’s assume we have K features, with a weight wk for each feature Fk:</p></blockquote>
+<p>K ! X exp wkFk(X,Y) p(Y|X) = (18.23) K !</p>
+<blockquote><p>k=1</p></blockquote>
+<p>X X exp wkFk(X,Y ′)通常也会把分母提取为一个函数 Z(X)，用这种方式来描述同一个等式：</p>
+<blockquote><p>It’s common to also describe the same equation by pulling out the denominator into a function Z(X):</p></blockquote>
+<blockquote><p>Y ′∈Y k=1</p></blockquote>
+<p>K !</p>
+<p>1 X p(Y|X) = Z(X)exp wkFk(X,Y) (18.24) K !</p>
+<blockquote><p>k=1</p></blockquote>
+<p>X X Z(X) = exp wkFk(X,Y ′) (18.25)我们将这 K 个函数 Fk(X,Y) 称为全局特征，因为每一个都是整个输入序列 X 和输出序列 Y 的性质。我们通过把它们分解为 Y 中每个位置 i 的局部特征之和来计算它们：</p>
+<blockquote><p>We’ll call these K functions Fk(X,Y) global features, since each one is a property of the entire input sequence X and output sequence Y. We compute them by decomposing into a sum of local features for each position i in Y:</p></blockquote>
+<blockquote><p>Y ′∈Y k=1</p></blockquote>
+<blockquote><p>n</p></blockquote>
+<p>X Fk(X,Y) = fk(yi−1,yi,X,i) (18.26)在线性链 CRF 中，每个这样的局部特征 fk 都可以利用当前的输出词元 yi、前一个输出词元 yi−1、整个输入串 X（或它的任意一部分）以及当前位置 i。只依赖当前输出词元与前一个输出词元 yi 和 yi−1 这一约束，正是线性</p>
+<blockquote><p>Each of these local features fk in a linear-chain CRF is allowed to make use of the current output token yi, the previous output token yi−1, the entire input string X (or any subpart of it), and the current position i. This constraint to only depend on the current and previous output tokens yi and yi−1 are what characterizes a linear</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<aside class="term"><code>linear chain CRF</code><span class="term-zh">线性链 CRF</span><span class="term-explain">一种条件随机场，其局部特征只依赖当前输出词元与前一个输出词元，因此可以沿用 HMM 中高效的维特比算法与前向-后向算法进行推理。</span></aside>
+<p>链 CRF 的标志性特点。正如我们将看到的，正是这一限制使得我们可以使用</p>
+<blockquote><p>chain CRF. As we will see, this limitation makes it possible to use versions of the</p></blockquote>
+<p>HMM 中高效的维特比算法和前向-后向算法。相比之下，一般 CRF 允许特征利用任意输出词元，因此在决策依赖于较远输出词元（如 yi−4）的任务中是必需的。一般 CRF 需要更复杂的推理，在语言处理中不太常用。</p>
+<blockquote><p>efficient Viterbi and Forward-Backwards algorithms from the HMM. A general CRF, by contrast, allows a feature to make use of any output token, and are thus necessary for tasks in which the decision depend on distant output tokens, like yi−4. General CRFs require more complex inference, and are less commonly used for language processing.</p></blockquote>
+<h3>18.5.1 CRF 词性标注器中的特征</h3>
+<blockquote><p>18.5.1 Features in a CRF POS Tagger</p></blockquote>
+<p>下面我们详细看看其中一些特征，因为使用判别式序列模型的理由就在于它更容易纳入大量特征。2</p>
+<blockquote><p>Let’s look at some of these features in detail, since the reason to use a discriminative sequence model is that it’s easier to incorporate a lot of features.2</p></blockquote>
+<p>再强调一次，在线性链 CRF 中，位置 i 处的每个局部特征 fk 可以依赖</p>
+<blockquote><p>Again, in a linear-chain CRF, each local feature fk at position i can depend on</p></blockquote>
+<p>来自 (yi−1,yi,X,i) 的任意信息。因此，一些表示常见情形的合法特征可以是这样：</p>
+<blockquote><p>any information from: (yi−1,yi,X,i). So some legal features representing common situations might be the following:</p></blockquote>
+<p>1{xi = the, yi = DET} 1{yi = PROPN, xi+1 = Street, yi−1 = NUM} 1{yi = VERB, yi−1 = AUX}为简单起见，我们假定所有 CRF 特征只取 1 或 0。上面我们显式使用了记号 1{x}，表示“x 为真时取 1，否则取 0”。从现在开始，我们在定义特征时会省略这个 1，但你可以认为每个特征都隐含地带着它。</p>
+<blockquote><p>For simplicity, we’ll assume all CRF features take on the value 1 or 0. Above, we explicitly use the notation 1{x} to mean “1 if x is true, and 0 otherwise”. From now on, we’ll leave off the 1 when we define features, but you can assume each feature has it there implicitly.</p></blockquote>
+<p>尽管使用哪些特征是由系统设计者手工决定的，</p>
+<blockquote><p>Although the idea of what features to use is done by the system designer by hand,</p></blockquote>
+<aside class="term"><code>feature</code><span class="term-zh">特征</span><span class="term-explain">在序列标注的判别式模型中，指用于描述输入与输出标记具体搭配情形的属性（如“yi = VB 且 xi = back”），模型为每个特征学习一个权重。</span></aside>
+<p>但具体特征是通过特征模板自动生成的，正如我们</p>
+<blockquote><p>the specific features are automatically populated by using feature templates as we</p></blockquote>
+<aside class="term"><code>templates</code><span class="term-zh">模板</span><span class="term-explain">特征模板是形如 ⟨yi,xi⟩、⟨yi,yi−1⟩ 的模式，用来在训练集和测试集的每个实例上自动实例化出一组具体特征。</span></aside>
+<p>在第 4 章简要提到的那样。下面是一些只使用 (yi−1,yi,X,i) 信息的模板：</p>
+<blockquote><p>briefly mentioned in Chapter 4. Here are some templates that only use information from (yi−1,yi,X,i):</p></blockquote>
+<p>⟨yi,xi⟩,⟨yi,yi−1⟩,⟨yi,xi−1,xi+2⟩这些模板会从训练集和测试集的每个实例中自动生成特征集合。因此对于我们例子中的 Janet/NNP will/MD back/VB the/DT bill/NN，当 xi 是词 back 时，会生成以下特征并取值为 1（我们给它们分配了任意的特征编号）：</p>
+<blockquote><p>These templates automatically populate the set of features from every instance in the training and test set. Thus for our example Janet/NNP will/MD back/VB the/DT bill/NN, when xi is the word back, the following features would be generated and have the value 1 (we’ve assigned them arbitrary feature numbers):</p></blockquote>
+<p>f3743: yi = VB 且 xi = back f156: yi = VB 且 yi−1 = MD f99732: yi = VB 且 xi−1 = will 且 xi+2 = bill</p>
+<blockquote><p>f3743: yi = VB and xi = back f156: yi = VB and yi−1 = MD f99732: yi = VB and xi−1 = will and xi+2 = bill</p></blockquote>
+<p>拥有有助于处理未登录词的特征同样重要。其中</p>
+<blockquote><p>It’s also important to have features that help with unknown words. One of the</p></blockquote>
+<p>最重要的是词形特征，它表示单词的抽象字母模式</p>
+<blockquote><p>most important is word shape features, which represent the abstract letter pattern</p></blockquote>
+<aside class="term"><code>word shape</code><span class="term-zh">词形</span><span class="term-explain">把单词中的字符按类别映射后得到的抽象模式：小写字母映射为 x、大写字母映射为 X、数字映射为 d，标点保留。例如 I.M.F. 映射为 X.X.X.，DC10-30 映射为 XXdd-dd。</span></aside>
+<p>（即把单词中的小写字母映射为 ‘x’、大写字母映射为 ‘X’、数字映射为 ‘d’，并保留标点）。例如 I.M.F. 会映射为 X.X.X.，DC10-30 会映射为 XXdd-dd。此外还使用第二类更短的词形特征：在这类特征中，连续相同的字符类型会被合并，因此全大写单词映射为 X，首字母大写单词映射为 Xx，DC10-30 映射为 Xd-d，但 I.M.F 仍然映射为 X.X.X.。前缀和后缀特征同样有用。</p>
+<blockquote><p>of the word by mapping lower-case letters to ‘x’, upper-case to ‘X’, numbers to’d’, and retaining punctuation. Thus for example I.M.F. would map to X.X.X. and DC10-30 would map to XXdd-dd. A second class of shorter word shape features is also used. In these features consecutive character types are removed, so words in all caps map to X, words with initial-caps map to Xx, DC10-30 would be mapped to Xd-d but I.M.F would still map to X.X.X. Prefix and suffix features are also useful.</p></blockquote>
+<p>总结一下，以下是一些有助于处理未登录词的示例特征模板：</p>
+<blockquote><p>In summary, here are some sample feature templates that help with unknown words:</p></blockquote>
+<p>xi 含有某个特定前缀（例如取自所有长度 ≤2 的前缀） xi 含有某个特定后缀（例如取自所有长度 ≤2 的后缀） xi 的词形 xi 的短词形</p>
+<blockquote><p>xi contains a particular prefix (perhaps from all prefixes of length ≤2) xi contains a particular suffix (perhaps from all suffixes of length ≤2) xi’s word shape xi’s short word shape</p></blockquote>
+<p>例如，单词 well-dressed 可能生成以下非零取值的特征：</p>
+<blockquote><p>F_2or example the word well-dressed might generate the following non-zero valued feature values:</p></blockquote>
+<blockquote><p>因为在 HMM 中所有计算都基于 P(tag|tag) 和 P(word|tag) 这两个概率，如果</p><p><em>Because in HMMs all computation is based on the two probabilities P(tag|tag) and P(word|tag), if</em></p></blockquote>
+<p>prefix(xi) = w prefix(xi) = we suffix(xi) = ed suffix(xi) = d word-shape(xi) = xxxx-xxxxxxx short-word-shape(xi) = x-x已知词模板会对训练集中出现过的每个词计算；</p>
+<blockquote><p>The known-word templates are computed for every word seen in the training</p></blockquote>
+<p>未登录词特征也可以对训练集中的所有词计算，或者只对频率低于某个阈值的训练词计算。已知词模板与词签名特征的结果是一个非常大的特征集合。</p>
+<blockquote><p>set; the unknown word features can also be computed for all words in training, or only on training words whose frequency is below some threshold. The result of the known-word templates and word-signature features is a very large set of features.</p></blockquote>
+<p>通常还会使用特征截断：如果某个特征在训练集中的计数小于 5，就把它丢弃。</p>
+<blockquote><p>Generally a feature cutoff is used in which features are thrown out if they have count&lt; 5 in the training set.</p></blockquote>
+<p>请记住，在 CRF 中我们并不为这些局部特征 fk 逐个学习权重。相反，我们先把每个局部特征（例如特征 f3743）在整个句子上的取值求和，得到每个全局特征（例如 F3743）。随后与权重 w3743 相乘的正是这些全局特征。因此，尽管每个句子的长度不同，训练和推理时始终是固定的 K 个特征和 K 个权重。</p>
+<blockquote><p>Remember that in a CRF we don’t learn weights for each of these local features fk. Instead, we first sum the values of each local feature (for example feature f3743) over the entire sentence, to create each global feature (for example F3743). It is those global features that will then be multiplied by weight w3743. Thus for training and inference there is always a fixed set of K features with K weights, even though the length of each sentence is different.</p></blockquote>
+<h3>18.5.2 CRF 命名实体识别器的特征</h3>
+<blockquote><p>18.5.2 Features for CRF Named Entity Recognizers</p></blockquote>
+<p>用于 NER 的 CRF 所使用的特征与词性标注器非常相似，如图 18.15 所示。</p>
+<blockquote><p>A CRF for NER makes use of very similar features to a POS tagger, as shown in Figure 18.15.</p></blockquote>
+<blockquote><p>wi 本身、相邻词本身 wi 的嵌入、相邻词的嵌入 wi 的词性、相邻词的词性 wi 是否出现在地名词典中 wi 含有某个特定前缀（取自所有长度 ≤4 的前缀） wi 含有某个特定后缀（取自所有长度 ≤4 的后缀） wi 的词形、相邻词的词形 wi 的短词形、相邻词的短词形 地名词典特征</p><p><em>identity of wi, identity of neighboring words embeddings for wi, embeddings for neighboring words part of speech of wi, part of speech of neighboring words presence of wi in a gazetteer wi contains a particular prefix (from all prefixes of length ≤4) wi contains a particular suffix (from all suffixes of length ≤4) word shape of wi, word shape of neighboring words short word shape of wi, short word shape of neighboring words gazetteer features</em></p></blockquote>
+<p>对地名尤为有用的一类特征是地名词典，即一份地点</p>
+<blockquote><p>One feature that is especially useful for locations is a gazetteer, a list of place</p></blockquote>
+<aside class="term"><code>gazetteer</code><span class="term-zh">地名词典</span><span class="term-explain">一种收录地名及其地理、政治等属性信息的词典或列表资源，通常包含数百万条地点条目。在命名实体识别中作为外部知识来源：若某个短语出现在地名词典中，就提示它可能是地名；实际使用时常被实现为一个二值特征。</span></aside>
+<p>名称，常常为地点提供数百万条条目，并附有详细的地理与政治信息。3 这可以实现为一个二值特征，用来表示某个短语是否出现在该列表中。其他相关资源也可以使用，例如来自美国人口普查局4的名称列表；同样可用的还有其他实体词典，如公司或产品列表，尽管它们可能不如地名词典那样有用（Mikheev 等，1999）。</p>
+<blockquote><p>names, often providing millions of entries for locations with detailed geographical and political information.3 This can be implemented as a binary feature indicating a phrase appears in the list. Other related resources like name-lists, for example from the United States Census Bureau4, can be used, as can other entity dictionaries like lists of corporations or products, although they may not be as helpful as a gazetteer(Mikheev et al., 1999).</p></blockquote>
+<p>示例中的命名实体词元 L’Occitane 会产生以下非零特征值（假设 L’Occitane 既不在该地名词典中，也不在人口普查列表中）。</p>
+<blockquote><p>The sample named entity token L’Occitane would generate the following nonzero valued feature values (assuming that L’Occitane is neither in the gazetteer nor the census).</p></blockquote>
+<p>prefix(xi) = L suffix(xi) = tane prefix(xi) = L’ suffix(xi) = ane prefix(xi) = L’O suffix(xi) = ne prefix(xi) = L’Oc suffix(xi) = e word-shape(xi) = X’Xxxxxxxx short-word-shape(xi) = X’Xx图 18.16 展示了在我们之前的例子中加入词性标记以及一些词形</p>
+<blockquote><p>Figure 18.16 illustrates the result of adding part-of-speech tags and some shape</p></blockquote>
+<p>信息之后的结果。</p>
+<blockquote><p>information to our earlier example.</p></blockquote>
+<blockquote><p>词 词性 短词形 地名词典 BIO 标签 Jane NNP Xx 0 B-PER Villanueva NNP Xx 1 I-PER of IN x 0 O United NNP Xx 0 B-ORG Airlines NNP Xx 0 I-ORG Holding NNP Xx 0 I-ORG discussed VBD x 0 O the DT x 0 O Chicago NNP Xx 1 B-LOC route NN x 0 O. . . 0 O</p><p><em>Words POS Short shape Gazetteer BIO Label Jane NNP Xx 0 B-PER Villanueva NNP Xx 1 I-PER of IN x 0 O United NNP Xx 0 B-ORG Airlines NNP Xx 0 I-ORG Holding NNP Xx 0 I-ORG discussed VBD x 0 O the DT x 0 O Chicago NNP Xx 1 B-LOC route NN x 0 O. . . 0 O</em></p></blockquote>
+<h3>18.5.3 CRF 的推理与训练</h3>
+<blockquote><p>18.5.3 Inference and Training for CRFs</p></blockquote>
+<p>对于给定的输入 X，我们如何找到最佳标记序列 ˆY？我们从式 18.22 开始：</p>
+<blockquote><p>How do we find the best tag sequence ˆY for a given input X? We start with Eq. 18.22:</p></blockquote>
+<p>ˆY = argmax P(Y|X) K !</p>
+<blockquote><p>Y∈Y</p></blockquote>
+<p>1 X = argmax Z(X)exp wkFk(X,Y) (18.27) K !</p>
+<blockquote><p>Y∈Y k=1</p></blockquote>
+<blockquote><p>n</p></blockquote>
+<p>X X = argmax exp wk fk(yi−1,yi,X,i) (18.28) X X = argmax wk fk(yi−1,yi,X,i) (18.29) X X = argmax wk fk(yi−1,yi,X,i) (18.30)如上所示，我们可以忽略 exp 函数和分母 Z(X)，因为 exp 不改变 argmax，而且对于给定的观测序列 X，分母 Z(X) 是常数。</p>
+<blockquote><p>We can ignore the exp function and the denominator Z(X), as we do above, because exp doesn’t change the argmax, and the denominator Z(X) is constant for a given observation sequence X.</p></blockquote>
+<blockquote><p>Y∈Y k=1 i=1</p></blockquote>
+<blockquote><p>K n</p></blockquote>
+<blockquote><p>Y∈Y k=1 i=1</p></blockquote>
+<blockquote><p>n K</p></blockquote>
+<blockquote><p>Y∈Y i=1 k=1</p></blockquote>
+<p>我们应如何解码才能找到这个最优标记序列 ˆy？正如使用 HMM 时一样，</p>
+<blockquote><p>How should we decode to find this optimal tag sequence ˆy? Just as with HMMs,</p></blockquote>
+<p>我们将转向维特比算法；它之所以可行，是因为与 HMM 一样，线性链 CRF 在每个时间步只依赖于前一个输出词元 yi−1。</p>
+<blockquote><p>we’ll turn to the Viterbi algorithm, which works because, like the HMM, the linearchain CRF depends at each timestep on only one previous output token yi−1.</p></blockquote>
+<p>具体来说，这涉及用一个 N×T 数组填入相应的值，并在过程中维护回溯指针。与 HMM 的维特比算法一样，当表格填满后，我们只需从最后一列的最大值沿指针回溯，即可取出所需的标签集合。</p>
+<blockquote><p>Concretely, this involves filling an N×T array with the appropriate values, maintaining backpointers as we proceed. As with HMM Viterbi, when the table is filled, we simply follow pointers back from the maximum value in the final column to retrieve the desired set of labels.</p></blockquote>
+<p>相对于 HMM 的维特比算法，所需的改动只在于我们如何填充每个</p>
+<blockquote><p>The requisite changes from HMM Viterbi have to do only with how we fill each</p></blockquote>
+<p>单元格。回忆式 18.19，维特比方程的递推步骤把状态 j 在时刻 t 的维特比值计算为</p>
+<blockquote><p>cell. Recall from Eq. 18.19 that the recursive step of the Viterbi equation computes the Viterbi value of time t for state j as</p></blockquote>
+<p>vt(j) = max vt−1(i)aij bj(ot); 1 ≤j ≤N,1 &lt; t ≤T (18.31)这是如下式子的 HMM 实现：</p>
+<blockquote><p>which is the HMM implementation of</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<p>vt(j) = max vt−1(i) P(s j|si) P(ot|s j) 1 ≤j ≤N,1 &lt; t ≤T (18.32) CRF 只需对后一个公式作少许改动，即把 a 和 b 这两个先验概率与似然概率替换为 CRF 特征：</p>
+<blockquote><p>The CRF requires only a slight change to this latter formula, replacing the a and b prior and likelihood probabilities with the CRF features:</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<p>&quot; # X vt(j) = max vt−1(i)+ wk fk(yt−1,yt,X,t) 1 ≤j ≤N,1 &lt; t ≤T (18.33) CRF 的学习依赖于我们为逻辑回归介绍过的同一套有监督学习算法。给定观测序列、特征函数和相应的输出，我们使用随机梯度下降来训练权重，以最大化训练语料库的对数似然。线性链 CRF 的局部性质意味着，附录 A 中为 HMM 引入的前向-后向算法可以扩展为一个 CRF 版本，从而高效地计算所需的导数。与逻辑回归一样，L1 或 L2 正则化很重要。</p>
+<blockquote><p>Learning in CRFs relies on the same supervised learning algorithms we presented for logistic regression. Given a sequence of observations, feature functions, and corresponding outputs, we use stochastic gradient descent to train the weights to maximize the log-likelihood of the training corpus. The local nature of linear-chain CRFs means that the forward-backward algorithm introduced for HMMs in Appendix A can be extended to a CRF version that will efficiently compute the necessary derivatives. As with logistic regression, L1 or L2 regularization is important.</p></blockquote>
+<blockquote><p>K</p></blockquote>
+<blockquote><p>N</p></blockquote>
+<blockquote><p>i=1 k=1</p></blockquote>
+<h2>18.6 命名实体识别的评估</h2>
+<blockquote><p>18.6 Evaluation of Named Entity Recognition</p></blockquote>
+<p>词性标注器用准确率这一标准指标来评估。命名实体识别器则用召回率、精确率和 F1 值来评估。回忆一下，召回率是正确标注的响应数与本应被标注的总数之比；精确率是正确标注的响应数与已标注总数之比；而 F 值是二者的调和平均。</p>
+<blockquote><p>Part-of-speech taggers are evaluated by the standard metric of accuracy. Named entity recognizers are evaluated by recall, precision, and F1 measure. Recall that recall is the ratio of the number of correctly labeled responses to the total that should have been labeled; precision is the ratio of the number of correctly labeled responses to the total labeled; and F-measure is the harmonic mean of the two.</p></blockquote>
+<p>为了判断两个 NER 系统的 F1 分数之间的差异是否为显著差异，我们使用配对自助检验，或者与之类似的随机化检验（4.11 节）。</p>
+<blockquote><p>To know if the difference between the F1 scores of two NER systems is a significant difference, we use the paired bootstrap test, or the similar randomization test(Section 4.11).</p></blockquote>
+<p>对于命名实体标注而言，响应单元是实体，而不是词。</p>
+<blockquote><p>For named entity tagging, the entity rather than the word is the unit of response.</p></blockquote>
+<p>因此在图 18.16 的例子中，两个实体 Jane Villanueva 和 United Airlines Holding，以及非实体 discussed，各自都算作一个响应。</p>
+<blockquote><p>Thus in the example in Fig. 18.16, the two entities Jane Villanueva and United Airlines Holding and the non-entity discussed would each count as a single response.</p></blockquote>
+<p>命名实体标注含有一个切分成分，而这一成分并不</p>
+<blockquote><p>The fact that named entity tagging has a segmentation component which is not</p></blockquote>
+<p>存在于文本分类或词性标注之类的任务中，这给评估带来了一些问题。例如，一个系统若把 Jane 而非 Jane Villanueva 标为人名，就会造成两个错误：一个针对 O 的假正例和一个针对 I-PER 的假负例。此外，用实体作为响应单元、却用词作为训练单元，意味着训练条件与测试条件之间存在不匹配。</p>
+<blockquote><p>present in tasks like text categorization or part-of-speech tagging causes some problems with evaluation. For example, a system that labeled Jane but not Jane Villanueva as a person would cause two errors, a false positive for O and a false negative for I-PER. In addition, using entities as the unit of response but words as the unit of training means that there is a mismatch between the training and test conditions.</p></blockquote>
+<h2>18.7 进一步细节</h2>
+<blockquote><p>18.7 Further Details</p></blockquote>
+<p>本节我们总结词性标注与 NER 在数据和模型方面剩余的若干细节，先从数据谈起。由于我们介绍的算法都是有监督的，拥有标注数据对训练和测试都必不可少。词性标注和/或 NER 有各种各样的数据集。通用依存（Universal Dependencies，UD）数据集（de Marneffe et al., 2021）包含一百多种语言的词性标注语料库，英语、汉语和阿拉伯语的 Penn Treebank 也是如此。</p>
+<blockquote><p>In this section we summarize a few remaining details of the data and models for part-of-speech tagging and NER, beginning with data. Since the algorithms we have presented are supervised, having labeled data is essential for training and testing. A wide variety of datasets exist for part-of-speech tagging and/or NER. The Universal Dependencies (UD) dataset (de Marneffe et al., 2021) has POS tagged corpora in over a hundred languages, as do the Penn Treebanks in English, Chinese, and Arabic.</p></blockquote>
+<p>OntoNotes 拥有英语、汉语和阿拉伯语的命名实体标注语料库（Hovy et al., 2006）。命名实体标注语料库在特定领域中也可以获得，例如生物医学（Bada et al., 2012）和文学文本（Bamman et al., 2019）。</p>
+<blockquote><p>OntoNotes has corpora labeled for named entities in English, Chinese, and Arabic(Hovy et al., 2006). Named entity tagged corpora are also available in particular domains, such as for biomedical (Bada et al., 2012) and literary text (Bamman et al., 2019).</p></blockquote>
+<h3>18.7.1 基于规则的方法</h3>
+<blockquote><p>18.7.1 Rule-based Methods</p></blockquote>
+<p>尽管机器学习的（神经或 CRF）序列模型是学术研究中的常规做法，但商业 NER 方法往往建立在列表与规则的务实组合之上，只辅以少量有监督机器学习（Chiticariu et al., 2013）。例如在 IBM System T 架构中，用户用一门包含正则表达式、词典、语义约束和其他算子的形式化查询语言，为标注任务指定声明式约束，系统再把这些约束编译成高效的抽取器（Chiticariu et al., 2018）。</p>
+<blockquote><p>While machine learned (neural or CRF) sequence models are the norm in academic research, commercial approaches to NER are often based on pragmatic combinations of lists and rules, with some smaller amount of supervised machine learning(Chiticariu et al., 2013). For example in the IBM System T architecture, a user specifies declarative constraints for tagging tasks in a formal query language that includes regular expressions, dictionaries, semantic constraints, and other operators, which the system compiles into an efficient extractor (Chiticariu et al., 2018).</p></blockquote>
+<p>一种常见做法是对文本反复进行基于规则的扫描，从</p>
+<blockquote><p>One common approach is to make repeated rule-based passes over a text, starting</p></blockquote>
+<p>具有极高精确率但召回率很低的规则开始，并在后续阶段使用会把第一轮输出纳入考虑的机器学习方法（这一做法最早是为指代消解提出的（Lee et al., 2017a））：</p>
+<blockquote><p>with rules with very high precision but low recall, and, in subsequent stages, using machine learning methods that take the output of the first pass into account (an approach first worked out for coreference (Lee et al., 2017a)):</p></blockquote>
+<ul><li>首先，使用高精确率的规则来标注无歧义的实体提及。</li><li>然后，搜索先前检测到的名称的子串匹配。</li><li>使用特定应用的名词列表来找出可能是领域特定的提及。</li><li>最后，应用有监督序列标注技术，把前面几个阶段产生的标记作为额外特征使用。</li></ul>
+<blockquote><p>First, use high-precision rules to tag unambiguous entity mentions.</p><p>Then, search for substring matches of the previously detected names.</p><p>Use application-specific name lists to find likely domain-specific mentions.</p><p>Finally, apply supervised sequence labeling techniques that use tags from previous stages as additional features.</p></blockquote>
+<p>基于规则的方法也是最早的词性标注方法。</p>
+<blockquote><p>Rule-based methods were also the earliest methods for part-of-speech tagging.</p></blockquote>
+<p>像英语 Constraint Grammar 系统（Karlsson et al. 1995, Voutilainen 1999）这样的基于规则的标注器，使用的是一种在 20 世纪 50 年代和 60 年代发明的两阶段形式化方法：</p>
+<blockquote><p>Rule-based taggers like the English Constraint Grammar system (Karlsson et al. 1995, Voutilainen 1999) use a two-stage formalism invented in the 1950s and 1960s:</p></blockquote>
+<ul><li>一个拥有数万条词干条目的形态分析器返回一个词所有可能的词性，然后（2）对输入句子施加大规模的约束集合（数千条约束），以排除与上下文不一致的词性。</li></ul>
+<blockquote><p>a morphological analyzer with tens of thousands of word stem entries returns all parts of speech for a word, then (2) a large set of thousands of constraints are applied to the input sentence to rule out parts of speech inconsistent with the context.</p></blockquote>
+<h3>18.7.2 形态丰富语言的词性标注</h3>
+<blockquote><p>18.7.2 POS Tagging for Morphologically Rich Languages</p></blockquote>
+<p>在处理像捷克语、匈牙利语和土耳其语这样形态丰富的语言时，对标注算法加以增强就变得必要。</p>
+<blockquote><p>Augmentations to tagging algorithms become necessary when dealing with languages with rich morphology like Czech, Hungarian and Turkish.</p></blockquote>
+<p>这些能产的构词过程使得这些语言的词表非常庞大：</p>
+<blockquote><p>These productive word-formation processes result in a large vocabulary for these</p></blockquote>
+<p>一个包含 25 万个词例的匈牙利语语料库，其词类型数量是规模相近的英语语料库的两倍多（Oravecz and Dienes, 2002）；而一个包含 1000 万个词例的土耳其语语料库，其词类型数量是规模相近的英语语料库的四倍（Hakkani-T¨ur et al., 2002）。庞大的词表意味着大量未登录词，而这些未登录词在许多语言（包括捷克语、斯洛文尼亚语、爱沙尼亚语和罗马尼亚语）中都会造成显著的性能下降（Hajiˇc, 2000）。</p>
+<blockquote><p>languages: a 250,000 word token corpus of Hungarian has more than twice as many word types as a similarly sized corpus of English (Oravecz and Dienes, 2002), while a 10 million word token corpus of Turkish contains four times as many word types as a similarly sized English corpus (Hakkani-T¨ur et al., 2002). Large vocabularies mean many unknown words, and these unknown words cause significant performance degradations in a wide variety of languages (including Czech, Slovene, Estonian, and Romanian) (Hajiˇc, 2000).</p></blockquote>
+<p>高度屈折的语言还在词的形态中编码了远多于英语的信息，</p>
+<blockquote><p>Highly inflectional languages also have much more information than English</p></blockquote>
+<p>例如格（主格、宾格、属格）或性（阳性、阴性）。由于这些信息对句法分析和指代消解之类的任务很重要，面向形态丰富语言的词性标注器需要用格和性信息来标注词。因此，形态丰富语言的标记集是形态标记的序列，而不是单个原始标记。下面是一个土耳其语的例子，其中词 izin 有三种可能的形态/词性标记和含义（Hakkani-T¨ur et al., 2002）：</p>
+<blockquote><p>coded in word morphology, like case (nominative, accusative, genitive) or gender(masculine, feminine). Because this information is important for tasks like parsing and coreference resolution, part-of-speech taggers for morphologically rich lan- guages need to label words with case and gender information. Tagsets for morphologically rich languages are therefore sequences of morphological tags rather than a single primitive tag. Here’s a Turkish example, in which the word izin has three possible morphological/part-of-speech tags and meanings (Hakkani-T¨ur et al., 2002):</p></blockquote>
+<blockquote><p>1. Yerdeki izin temizlenmesi gerek. iz + Noun+A3sg+Pnon+Gen 地板上的痕迹应该被清理掉。</p><p><em>1. Yerdeki izin temizlenmesi gerek. iz + Noun+A3sg+Pnon+Gen The trace on the floor should be cleaned.</em></p></blockquote>
+<blockquote><p>2. ¨Uzerinde parmak izin kalmis¸. iz + Noun+A3sg+P2sg+Nom 你的指纹留在了（它）上面。</p><p><em>2. ¨Uzerinde parmak izin kalmis¸. iz + Noun+A3sg+P2sg+Nom Your finger print is left on (it).</em></p></blockquote>
+<blockquote><p>3. Ic¸eri girmek ic¸in izin alman gerekiyor. izin + Noun+A3sg+Pnon+Nom 你需要获得许可才能进入。</p><p><em>3. Ic¸eri girmek ic¸in izin alman gerekiyor. izin + Noun+A3sg+Pnon+Nom You need permission to enter.</em></p></blockquote>
+<p>使用像 Noun+A3sg+Pnon+Gen 这样的形态分析序列作为词性标记，会极大地增加词性的数量，因此标记集可能比我们在英语中看到的 50–100 个标记大 4 到 10 倍。面对如此庞大的标记集，每个词都需要做形态分析，以生成该词可能的形态标记序列（词性标记）列表。标注器的作用则是在这些标记之间消歧。这种方法还有助于处理未登录词，因为形态分析器可以接受未知词干，并且仍然正确地切分词缀。</p>
+<blockquote><p>Using a morphological parse sequence like Noun+A3sg+Pnon+Gen as the partof-speech tag greatly increases the number of parts of speech, and so tagsets can be 4 to 10 times larger than the 50–100 tags we have seen for English. With such large tagsets, each word needs to be morphologically analyzed to generate the list of possible morphological tag sequences (part-of-speech tags) for the word. The role of the tagger is then to disambiguate among these tags. This method also helps with unknown words since morphological parsers can accept unknown stems and still segment the affixes properly.</p></blockquote>
+<h2>18.8 小结</h2>
+<blockquote><p>18.8 Summary</p></blockquote>
+<p>本章介绍了词性与命名实体，以及词性标注和命名实体识别这两项任务：</p>
+<blockquote><p>This chapter introduced parts of speech and named entities, and the tasks of partof-speech tagging and named entity recognition:</p></blockquote>
+<ul><li>语言通常只有一小组封闭类词，它们使用频率极高、具有歧义并充当功能词；与之相对的是名词、动词、形容词这类开放类词。目前存在多种词性标记集，其标记数量在 40 到 200 之间。</li><li>词性标注就是为一个词序列中的每个词指派一个词性标签的过程。</li><li>命名实体是主要指称人名、地名和机构名的专有名词词语，但其范围已扩展到许多其他类型，这些类型严格来说并不是实体，甚至不是专有名词。</li><li>序列建模有两种常见方法：生成式方法，即 HMM 标注；以及判别式方法，即 CRF 标注。我们将在后续各章看到神经方法。</li><li>HMM 标注器中的概率是在带标记的训练语料上通过最大似然估计得到的。解码时使用维特比算法，找出最可能的标记序列</li><li>条件随机场（CRF）标注器训练一个对数线性模型，该模型能在给定观测序列的前提下选出最佳的标记序列，其依据的特征以输出标记、前一个输出标记、整个输入序列以及当前时间步为条件。它们使用维特比算法进行推理以选出最佳的标记序列，并使用前向-后向算法的一个版本（见附录 A）进行训练，</li></ul>
+<blockquote><p>Languages generally have a small set of closed class words that are highly frequent, ambiguous, and act as function words, and open-class words like nouns, verbs, adjectives. Various part-of-speech tagsets exist, of between 40 and 200 tags.</p><p>Part-of-speech tagging is the process of assigning a part-of-speech label to each of a sequence of words.</p><p>Named entities are words for proper nouns referring mainly to people, places, and organizations, but extended to many other types that aren’t strictly entities or even proper nouns.</p><p>Two common approaches to sequence modeling are a generative approach, HMM tagging, and a discriminative approach, CRF tagging. We will see a neural approach in following chapters.</p><p>The probabilities in HMM taggers are estimated by maximum likelihood estimation on tag-labeled training corpora. The Viterbi algorithm is used for decoding, finding the most likely tag sequence</p><p>Conditional Random Fields or CRF taggers train a log-linear model that can choose the best tag sequence given an observation sequence, based on features that condition on the output tag, the prior output tag, the entire input sequence, and the current timestep. They use the Viterbi algorithm for inference, to choose the best sequence of tags, and a version of the Forward-Backward algorithm (see Appendix A) for training,</p></blockquote>
+<h2>历史注记</h2>
+<blockquote><p>Historical Notes</p></blockquote>
+<p>最早的那个词性标注器，很可能就是 Zellig Harris 的“转换与话语分析项目”（Transformations and Discourse Analysis Project, TDAP）中句法分析器的一部分，该项目于 1958 年 6 月至 1959 年 7 月间在宾夕法尼亚大学实现（Harris, 1962），尽管更早的系统已经使用了词性词典。TDAP 使用 14 条手写规则进行词性消歧；它对词性标记序列的使用以及用某个词各标记的相对频率来消歧的做法，已经预示了现代算法的思路。</p>
+<blockquote><p>What is probably the earliest part-of-speech tagger was part of the parser in Zellig Harris’s Transformations and Discourse Analysis Project (TDAP), implemented between June 1958 and July 1959 at the University of Pennsylvania (Harris, 1962), although earlier systems had used part-of-speech dictionaries. TDAP used 14 handwritten rules for part-of-speech disambiguation; the use of part-of-speech tag sequences and the relative frequency of tags for a word prefigures modern algorithms.</p></blockquote>
+<p>该分析器在实现上本质上是一连串有限状态转换器的级联；其重新实现可参见 Joshi 和 Hopely（1999）以及 Karttunen（1999）。</p>
+<blockquote><p>The parser was implemented essentially as a cascade of finite-state transducers; see Joshi and Hopely (1999) and Karttunen (1999) for a reimplementation.</p></blockquote>
+<p>Klein 和 Simmons（1963）的计算语法编码器（Computational Grammar Coder, CGC）包含</p>
+<blockquote><p>The Computational Grammar Coder (CGC) of Klein and Simmons (1963) had</p></blockquote>
+<p>三个组成部分：一部词库、一个形态分析器和一个上下文消歧器。那部只有 1500 词的小词库只收录功能词和其他不规则词。形态分析器利用屈折后缀和派生后缀来指派词性类别。这些部件在词上运行，产生候选词性，随后再由 500 条上下文规则依据周围由无歧义词构成的“孤岛”进行消歧。例如，有一条规则规定，在冠词（ARTICLE）和动词（VERB）之间，允许出现的唯一序列是 ADJ-NOUN、NOUN-ADVERB 或 NOUN-NOUN。TAGGIT 标注器（Greene and Rubin, 1971）采用了与 Klein 和 Simmons（1963）相同的架构，但词典更大、标记更多（87 个）。TAGGIT 被用于 Brown 语料库，据 Francis 和 Kučera（1982, p. 9）称，它正确标注了该语料库的 77%；Brown 语料库的其余部分随后由人工标注。所有这些早期算法都基于两阶段架构：先用词典为每个词指派一组可能的词性，再用一系列手写消歧规则把候选集合缩减为每个词唯一的一个词性。</p>
+<blockquote><p>three components: a lexicon, a morphological analyzer, and a context disambiguator. The small 1500-word lexicon listed only function words and other irregular words. The morphological analyzer used inflectional and derivational suffixes to assign part-of-speech classes. These were run over words to produce candidate parts of speech which were then disambiguated by a set of 500 context rules by relying on surrounding islands of unambiguous words. For example, one rule said that between an ARTICLE and a VERB, the only allowable sequences were ADJ-NOUN, NOUN-ADVERB, or NOUN-NOUN. The TAGGIT tagger (Greene and Rubin, 1971) used the same architecture as Klein and Simmons (1963), with a bigger dictionary and more tags (87). TAGGIT was applied to the Brown corpus and, according to Francis and Kuˇcera (1982, p. 9), accurately tagged 77% of the corpus; the remainder of the Brown corpus was then tagged by hand. All these early algorithms were based on a two-stage architecture in which a dictionary was first used to assign each word a set of potential parts of speech, and then lists of handwritten disambiguation rules winnowed the set down to a single part of speech per word.</p></blockquote>
+<p>Stolz 等人（1965）在标注中使用了概率，Bahl 和 Mercer（1976）勾画了一个带维特比解码的完整概率标注器。20 世纪 80 年代初，作为 Brown 语料库的英式英语对应物，兰卡斯特-奥斯陆/卑尔根（Lancaster-Oslo/Bergen, LOB）语料库用 CLAWS 标注器（Marshall 1983; Marshall 1987; Garside 1987）进行了标注，这是一个近似于简化版 HMM 标注器的概率算法。该算法使用标记 bigram 概率，但它并不存储每个标记对应的词似然，而是把标记分为三类：罕见（P(tag|word) &lt; .01）、不常见（P(tag|word) &lt; .10）或正常常见（P(tag|word) &gt; .10）。</p>
+<blockquote><p>Probabilities were used in tagging by Stolz et al. (1965) and a complete probabilistic tagger with Viterbi decoding was sketched by Bahl and Mercer (1976). The Lancaster-Oslo/Bergen (LOB) corpus, a British English equivalent of the Brown corpus, was tagged in the early 1980’s with the CLAWS tagger (Marshall 1983; Marshall 1987; Garside 1987), a probabilistic algorithm that approximated a simplified HMM tagger. The algorithm used tag bigram probabilities, but instead of storing the word likelihood of each tag, the algorithm marked tags either as rare (P(tag|word) &lt;.01) infrequent (P(tag|word) &lt; .10) or normally frequent (P(tag|word) &gt; .10).</p></blockquote>
+<p>DeRose（1988）开发了一个准 HMM 算法，其中也用到了动态规划，只是计算的是 P(t|w)P(w) 而非 P(w|t)P(w)。同年，Church 1988, 1989 的概率 PARTS 标注器很可能是第一个真正实现的 HMM 标注器，其正确描述见 Church（1989），尽管 Church（1988）也把这一计算错误地描述为 P(t|w)P(w) 而不是 P(w|t)P(w)。Church（私人通信）解释说，他这样做是为了教学目的而做的简化，因为使用概率 P(t|w) 会让这个想法显得更易理解，即“以几乎标准的形式存储一部词典”。</p>
+<blockquote><p>DeRose (1988) developed a quasi-HMM algorithm, including the use of dynamic programming, although computing P(t|w)P(w) instead of P(w|t)P(w). The same year, the probabilistic PARTS tagger of Church 1988, 1989 was probably the first implemented HMM tagger, described correctly in Church (1989), although Church (1988) also described the computation incorrectly as P(t|w)P(w) instead of P(w|t)P(w). Church (p.c.) explained that he had simplified for pedagogical purposes because using the probability P(t|w) made the idea seem more understandable as “storing a lexicon in an almost standard form”.</p></blockquote>
+<p>后来的标注器明确引入了隐马尔可夫模型的使用（Kupiec</p>
+<blockquote><p>Later taggers explicitly introduced the use of the hidden Markov model (Kupiec</p></blockquote>
+<p>1992; Weischedel et al. 1993; Schütze and Singer 1994）。Merialdo（1994）表明，完全无监督的 EM 在标注任务上效果不佳，依赖人工标注的数据十分重要。Charniak 等人（1993）说明了最频繁标记基线的重要性；我们上文给出的 92.3% 这一数字来自 Abney 等人（1999）。关于 HMM 标注器的实现细节，包括扩展到 trigram 上下文以及使用精巧的未登录词特征，可参见 Brants（2000）；其性能仍然接近当前最先进的标注器。</p>
+<blockquote><p>1992; Weischedel et al. 1993; Sch¨utze and Singer 1994). Merialdo (1994) showed that fully unsupervised EM didn’t work well for the tagging task and that reliance on hand-labeled data was important. Charniak et al. (1993) showed the importance of the most frequent tag baseline; the 92.3% number we give above was from Abney et al. (1999). See Brants (2000) for HMM tagger implementation details, including the extension to trigram contexts, and the use of sophisticated unknown word features; its performance is still close to state of the art taggers.</p></blockquote>
+<p>用于词性标注的对数线性模型由 Ratnaparkhi（1996）引入，</p>
+<blockquote><p>Log-linear models for POS tagging were introduced by Ratnaparkhi (1996),</p></blockquote>
+<p>他提出了一个名为 MXPOST 的系统，实现了最大熵马尔可夫模型（MEMM），那是 CRF 的一个略为简化的版本。大约同一时期，序列标注器被应用于命名实体标注任务，最初使用 HMM（Bikel et al., 1997）和 MEMM（McCallum et al., 2000），后来 CRF 被提出之后（Lafferty et al. 2001），它们也被应用于 NER（McCallum and Li, 2003）。随后出现了对特征的广泛探索（Zhou et al., 2005）。</p>
+<blockquote><p>who introduced a system called MXPOST which implemented a maximum entropy Markov model (MEMM), a slightly simpler version of a CRF. Around the same time, sequence labelers were applied to the task of named entity tagging, first with HMMs (Bikel et al., 1997) and MEMMs (McCallum et al., 2000), and then once CRFs were developed (Lafferty et al. 2001), they were also applied to NER (Mc-Callum and Li, 2003). A wide exploration of features followed (Zhou et al., 2005).</p></blockquote>
+<p>NER 的神经方法主要承自 Collobert 等人（2011）的开创性成果，他们在卷积网络之上应用了 CRF。不久之后，以词嵌入和基于字符的嵌入为输入的 BiLSTM 出现，并成为 NER 的标准神经算法（Huang et al. 2015, Ma and Hovy 2016, Lample et al. 2016），其后是更近期对 Transformer 和 BERT 的使用。</p>
+<blockquote><p>Neural approaches to NER mainly follow from the pioneering results of Collobert et al. (2011), who applied a CRF on top of a convolutional net. BiLSTMs with word and character-based embeddings as input followed shortly and became a standard neural algorithm for NER (Huang et al. 2015, Ma and Hovy 2016, Lample et al. 2016) followed by the more recent use of Transformers and BERT.</p></blockquote>
+<p>利用字母后缀来处理未登录词的想法相当古老；早期的 Klein</p>
+<blockquote><p>The idea of using letter suffixes for unknown words is quite old; the early Klein</p></blockquote>
+<p>和 Simmons（1963）系统检查了长度为 1-5 的所有末尾字母后缀。第 416 页描述的未登录词特征主要来自 Ratnaparkhi（1996），并吸收了 Toutanova 等人（2003）和 Manning（2011）的补充内容。</p>
+<blockquote><p>and Simmons (1963) system checked all final letter suffixes of lengths 1-5. The unknown word features described on page 416 come mainly from Ratnaparkhi (1996), with augmentations from Toutanova et al. (2003) and Manning (2011).</p></blockquote>
+<p>当前最先进的词性标注器使用神经算法，要么是双向 RNN，要么是</p>
+<blockquote><p>State of the art POS taggers use neural algorithms, either bidirectional RNNs or</p></blockquote>
+<p>像 BERT 这样的 Transformer；参见第 14 章至第 9 章。HMM（Brants 2000; Thede and Harper 1999）和 CRF 标注器的准确率很可能只略低一点。</p>
+<blockquote><p>Transformers like BERT; see Chapter 14 to Chapter 9. HMM (Brants 2000; Thede and Harper 1999) and CRF tagger accuracies are likely just a tad lower.</p></blockquote>
+<p>Manning（2011）考察了一个高性能</p>
+<blockquote><p>Manning (2011) investigates the remaining 2.7% of errors in a high-performing</p></blockquote>
+<p>标注器（Toutanova et al., 2003）中剩余 2.7% 的错误。他认为，这些剩余错误中有三分之一到一半源于训练数据里的错误或不一致，三分之一也许可以借助更丰富的语言学模型来解决，而其余的则是因为任务本身定义不够充分或含义不明。</p>
+<blockquote><p>tagger (Toutanova et al., 2003). He suggests that a third or half of these remaining errors are due to errors or inconsistencies in the training data, a third might be solvable with richer linguistic models, and for the remainder the task is underspecified or unclear.</p></blockquote>
+<p>有监督标注在很大程度上依赖由</p>
+<blockquote><p>Supervised tagging relies heavily on in-domain training data hand-labeled by</p></blockquote>
+<p>专家人工标注的领域内训练数据。放宽这一假设的方法包括：把词聚类成类似词性类别的无监督算法（综述见 Christodoulopoulos et al. (2010)），以及把标注数据与未标注数据结合起来的方法，例如协同训练（co-training）（Clark et al. 2003; Søgaard 2010）。</p>
+<blockquote><p>experts. Ways to relax this assumption include unsupervised algorithms for clustering words into part-of-speech-like classes, summarized in Christodoulopoulos et al.(2010), and ways to combine labeled and unlabeled data, for example by co-training(Clark et al. 2003; Søgaard 2010).</p></blockquote>
+<p>关于词性的历史注记可参见 Householder（1995），关于 Brown 及其他标记集</p>
+<blockquote><p>See Householder (1995) for historical notes on parts of speech, and Sampson</p></blockquote>
+<p>的来源可参见 Sampson（1987）和 Garside 等人（1997）。</p>
+<blockquote><p>(1987) and Garside et al. (1997) on the provenance of the Brown and other tagsets.</p></blockquote>
+<h2>练习</h2>
+<blockquote><p>Exercises</p></blockquote>
+<p>18.1 在下列每个用</p>
+<blockquote><p>18.1 Find one tagging error in each of the following sentences that are tagged with</p></blockquote>
+<p>Penn Treebank 标记集标注的句子中，各找出一个标注错误：</p>
+<blockquote><p>the Penn Treebank tagset:</p></blockquote>
+<ul><li>I/PRP need/VBP a/DT flight/NN from/IN Atlanta/NN</li><li>Does/VBZ this/DT flight/NN serve/VB dinner/NNS</li><li>I/PRP have/VB a/DT friend/NN living/VBG in/IN Denver/NNP</li><li>Can/VBP you/PRP list/VB the/DT nonstop/JJ afternoon/NN flights/NNS</li></ul>
+<p>18.2 使用 Penn Treebank 标记集为下列句子中的每个词标注词性，</p>
+<blockquote><p>18.2 Use the Penn Treebank tagset to tag each word in the following sentences</p></blockquote>
+<p>这些句子出自 Damon Runyon 的短篇小说。可以忽略标点符号。其中一些相当困难；尽力而为即可。</p>
+<blockquote><p>from Damon Runyon’s short stories. You may ignore punctuation. Some of these are quite difficult; do your best.</p></blockquote>
+<ul><li>这是一个美好的夜晚。</li><li>这场掷骰子赌博就在第五十二街一家车库的楼上……</li><li>……从来没有人买她卖的报纸……</li><li>他是个又高又瘦的家伙，长着一张长长的、忧郁而刻薄的脸，声音哀伤。</li></ul>
+<blockquote><p>It is a nice night.</p><p>This crap game is over a garage in Fifty-second Street...</p><p>...Nobody ever takes the newspapers she sells ...</p><p>He is a tall, skinny guy with a long, sad, mean-looking kisser, and a mournful voice.</p></blockquote>
+<ul><li>……我坐在 Mindy 餐馆里吃 gefillte fish（填馅鱼），这是我很喜欢的一道菜，……</li><li>当一个小伙子和一个姑娘开始你来我往地互相偷看时，那可不就是这么回事嘛。</li></ul>
+<blockquote><p>...I am sitting in Mindy’s restaurant putting on the gefillte fish, which is a dish I am very fond of, ...</p><p>When a guy and a doll get to taking peeks back and forth at each other, why there you are indeed.</p></blockquote>
+<p>18.3 现在把你在上一练习中得到的标记与一两位朋友的</p>
+<blockquote><p>18.3 Now compare your tags from the previous exercise with one or two friend’s</p></blockquote>
+<p>答案对比一下。你们分歧最大的是哪些词？为什么？</p>
+<blockquote><p>answers. On which words did you disagree the most? Why?</p></blockquote>
+<p>18.4 实现“最可能的标记”基线。找一个带有词性标记的训练集，</p>
+<blockquote><p>18.4 Implement the “most likely tag” baseline. Find a POS-tagged training set,</p></blockquote>
+<p>并用它计算每个词使 p(t|w) 最大的标记。你需要实现一个简单的词元化器来处理句子边界。先假设所有未登录词都是 NN，并分别计算你在已知词和未登录词上的错误率。现在至少写出五条规则，以便更好地标注未登录词，并展示错误率上的差异。</p>
+<blockquote><p>and use it to compute for each word the tag that maximizes p(t|w). You will need to implement a simple tokenizer to deal with sentence boundaries. Start by assuming that all unknown words are NN and compute your error rate on known and unknown words. Now write at least five rules to do a better job of tagging unknown words, and show the difference in error rates.</p></blockquote>
+<p>18.5 构建一个 bigram HMM 标注器。你需要一个带词性标记的语料库。</p>
+<blockquote><p>18.5 Build a bigram HMM tagger. You will need a part-of-speech-tagged corpus.</p></blockquote>
+<p>首先把语料库分成训练集和测试集。利用标注训练集，直接在人工标注的数据上训练 HMM 标注器的转移概率和观测概率。然后实现维特比算法，以便对测试句子解码。现在在测试集上运行你的算法。报告其错误率，并将其性能与最频繁标记基线进行比较。</p>
+<blockquote><p>First split the corpus into a training set and test set. From the labeled training set, train the transition and observation probabilities of the HMM tagger directly on the hand-tagged data. Then implement the Viterbi algorithm so you can decode a test sentence. Now run your algorithm on the test set. Report its error rate and compare its performance to the most frequent tag baseline.</p></blockquote>
+<p>18.6 对你的标注器做一次错误分析。构建混淆矩阵，并考察</p>
+<blockquote><p>18.6 Do an error analysis of your tagger. Build a confusion matrix and investigate</p></blockquote>
+<p>出现最频繁的那些错误。提出一些特征，用来改进标注器在这些错误上的性能。</p>
+<blockquote><p>the most frequent errors. Propose some features for improving the performance of your tagger on these errors.</p></blockquote>
+<p>18.7 设计一组正则表达式，用来识别</p>
+<blockquote><p>18.7 Develop a set of regular expressions to recognize the character shape features</p></blockquote>
+<p>第 416 页所描述的字符词形特征。</p>
+<blockquote><p>described on page 416.</p></blockquote>
+<p>18.8 本章给出的 BIO 及其他标注方案并不是唯一</p>
+<blockquote><p>18.8 The BIO and other labeling schemes given in this chapter aren’t the only</p></blockquote>
+<p>可行的方案。例如，可以只把 B 标记保留给相邻实体之间存在歧义的那些情形。为你的 NER 系统提出一组新的 BIO 标记。对它做实验，并将其性能与本章介绍的几种方案进行比较。</p>
+<blockquote><p>possible one. For example, the B tag can be reserved only for those situations where an ambiguity exists between adjacent entities. Propose a new set of BIO tags for use with your NER system. Experiment with it and compare its performance with the schemes presented in this chapter.</p></blockquote>
+<p>18.9 艺术作品（书籍、电影、电子游戏等）的名称，与我们在本章讨论的各类命名实体</p>
+<blockquote><p>18.9 Names of works of art (books, movies, video games, etc.) are quite different</p></blockquote>
+<p>颇为不同。从某个网络来源（如 gutenberg.org、amazon.com、imdb.com 等）收集某一特定类别艺术作品的名称列表。分析你的列表，并举例说明其中的名称可能在哪些方面会给本章介绍的技术带来麻烦。</p>
+<blockquote><p>from the kinds of named entities we’ve discussed in this chapter. Collect a list of names of works of art from a particular category from a Web-based source (e.g., gutenberg.org, amazon.com, imdb.com, etc.). Analyze your list and give examples of ways that the names in it are likely to be problematic for the techniques described in this chapter.</p></blockquote>
+<p>18.10 针对你收集到的那一类名称，开发一个专门的 NER 系统</p>
+<blockquote><p>18.10 Develop an NER system specific to the category of names that you collected</p></blockquote>
+<p>（即上一练习中的那一类）。在可能包含这类命名实体实例的文本集合上评估你的系统。</p>
+<blockquote><p>in the last exercise. Evaluate your system on a collection of text likely to contain instances of these named entities.</p></blockquote>
+</div></body></html>
