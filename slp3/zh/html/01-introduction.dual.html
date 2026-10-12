@@ -46,10 +46,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Perhaps our obsession shouldn’t be surprising.</p></blockquote>
 <p>语言是人类与感知能力的标志，甚至在我们拥有计算机之前，我们就已经有了制造能够处理人类语言的器物的想法。</p>
 <blockquote><p>Language is the mark of humanity and sentience, and even before we had computers we had the idea of making artifacts that can process human language.</p></blockquote>
-<p>本卷讲述这一激动人心的想法的实现与影响，它体现在大型语言模型（large language models，LLM）之中。我们将介绍语言模型本身，以及这个充满活力的跨学</p>
-<blockquote><p>This volume is about the implementation and implications of that exciting idea, as realized in large language models, or LLMs. We’ll introduce language models themselves, and the vibrant interdisci-</p></blockquote>
-<p>科领域，其目标是让计算机通过执行涉及人类语言的有用任务来帮助人类。</p>
-<blockquote><p>plinary field that studies them, with the goal of getting computers to help people by performing useful tasks involving human language.</p></blockquote>
+<p>本卷讲述这一激动人心的想法的实现与影响，它体现在大型语言模型（large language models，LLM）之中。我们将介绍语言模型本身，以及这个充满活力的跨学科领域，其目标是让计算机通过执行涉及人类语言的有用任务来帮助人类。</p>
+<blockquote><p>This volume is about the implementation and implications of that exciting idea, as realized in large language models, or LLMs. We’ll introduce language models themselves, and the vibrant interdisciplinary field that studies them, with the goal of getting computers to help people by performing useful tasks involving human language.</p></blockquote>
 <blockquote><p>米开朗基罗的《摩西》（1515）</p><p><em>Michelangelo’s Moses (1515)</em></p></blockquote>
 <p>这个领域有许多名称，对应着它的诸多侧面，包括自然语言处理（natural language processing，NLP）、计算语言学、口语处理、语音识别，或最近干脆就叫语言建模。该领域是现代人工智能（artificial intelligence，AI）的新核心，并且长期以来与语言学、心理学、哲学、认知科学等学科有着丰富的联系。</p>
 <blockquote><p>The field has many names corresponding to its many facets, including natural language processing (NLP), computational linguistics, spoken language processing, speech recognition, or most recently simply language modeling. This field is the new heart of modern artificial intelligence (AI), and has long had rich links to disciplines like linguistics, psychology, philosophy, cognitive science and more.</p></blockquote>
@@ -84,7 +82,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>intellectual tools underlying language modeling. Chapter 3 introduces n-gram language models and word prediction, sampling, and perplexity in the intuitive n-gram environment where students can work out the arithmetic by hand. Chapter 4 introduces logistic regression classification, a component of all transformer and other neural network layers, including gradient descent and cross-entropy loss. Chapter 5 introduces embeddings, the fundamental internal unit for meaning representation, and chapter 6 the feedforward neural network. Chapter 7 integrates all these in defining the core architecture of modern language models: the transformer, its application to language modeling, and the algorithm for pretraining it. Finally, Chapter 8 introduces the various parts of post-training (instruction tuning, preference alignment, RL for reasoning).</p></blockquote>
 <p>第 II 卷介绍 LLM 的应用（RAG，以及更广义的智能体、机器翻译、语音识别与合成）与架构（如 BERT 的仅编码器模型和编码器-解码器模型）。第 III 卷介绍涉及标注语言结构的任务：句法分析、词义、共指与连贯，这些对 LLM 的可解释性以及社会与认知科学任务都很有用。</p>
 <blockquote><p>Volume II introduces LLM applications (RAG, and agents more generally, machine translation, speech recognition and synthesis) and architectures (encoder-only models like BERT and the encoder-decoder model). Volume III introduces tasks involving labeling linguistic structure: parsing, word meaning, coreference and coherence useful for interpretability in LLMs, and for social and cognitive science tasks.</p></blockquote>
-<p>1.1 什么是大型语言模型？</p>
+<h2>1.1 什么是大型语言模型？</h2>
 <blockquote><p>1.1 What is a Large Language Model?</p></blockquote>
 <p>你们都与作为对话助手和智能体的 LLM 互动过。这确实是“语言模型”这一说法的一种含义：一种既能进行对话又能作用于世界的智能体。但事实上，“语言模型”一词还有一个不同的、非常具体的技术含义。</p>
 <blockquote><p>You’ve all interacted with LLMs as conversational assistants and agents. That is indeed one sense of the term “language model”: a kind of agent that both carries on conversations and acts in the world. But in fact the term “language model” has a different, very specific technical meaning.</p></blockquote>
@@ -178,10 +176,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)</p>
 <p>缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。</p>
 <blockquote><p>Scaling laws explain why models tend to get bigger, with both positive outcomes(more impressive performance) and negative ones (more expense and use of natural resources like water and energy). But very big models are also very expensive at inference every time we prompt a model. So scaling laws also explain why we often choose to instead train a smaller model and make it better by training for more time over more data.</p></blockquote>
-<h2>1.2 大语言模型从词（token）预测中学到</h2>
-<blockquote><p>1.2 What do LLMs Learn From Word (Token) Predic-</p></blockquote>
-<p>什么？</p>
-<blockquote><p>tion?</p></blockquote>
+<h2>1.2 大语言模型从词（token）预测中学到什么？</h2>
+<blockquote><p>1.2 What do LLMs Learn From Word (Token) Prediction?</p></blockquote>
 <p>“我们在任何时候知道多少？我相信，远比我们知道自己知道的要多。”</p>
 <blockquote><p>“How much do we know at any time? Much more, or so I believe, than we know we know.”</p></blockquote>
 <p>阿加莎·克里斯蒂，《魔手》</p>
@@ -231,7 +227,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>From the first sentence a model can learn ontological facts like that roses and</p></blockquote>
 <p>大丽花和芍药都是花的种类。从第二个句子，模型可以学到“enormous”表示与 big 处于同一量级但在该量级上更靠后的程度。从第三个句子，系统可以学到数学，而从第 4 个句子可以学到关于世界和历史作者的事实。最后，如果模型反复接触像最后一个句子那样的句子，它可能学会只把教授与男性代词联系起来，或其他可能导致模型对不同人不公平的关联。</p>
 <blockquote><p>dahlias and peonies are all kinds of flowers. From the second, a model could learn that “enormous” means something on the same scale as big but further along on the scale. From the third sentence, the system could learn math, while from the 4th sentence facts about the world and historical authors. Finally, if a model was exposed to sentences like the last one repeatedly, it might learn to associate professors only with male pronouns, or other kinds of associations that might cause models to act unfairly to different people.</p></blockquote>
-<p>1.2.1 提示 = 条件生成 = token 预测！</p>
+<h3>1.2.1 提示 = 条件生成 = token 预测！</h3>
 <blockquote><p>1.2.1 Prompting = conditional generation = token prediction!</p></blockquote>
 <p>你们都使用过提示（prompt），即用户发给语言模型以让</p>
 <blockquote><p>You all have used prompts, text strings that a user issues to a language model to get</p></blockquote>

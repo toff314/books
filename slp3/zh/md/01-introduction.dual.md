@@ -30,12 +30,9 @@
 
 > Language is the mark of humanity and sentience, and even before we had computers we had the idea of making artifacts that can process human language.
 
-本卷讲述这一激动人心的想法的实现与影响，它体现在大型语言模型（large language models，LLM）之中。我们将介绍语言模型本身，以及这个充满活力的跨学
+本卷讲述这一激动人心的想法的实现与影响，它体现在大型语言模型（large language models，LLM）之中。我们将介绍语言模型本身，以及这个充满活力的跨学科领域，其目标是让计算机通过执行涉及人类语言的有用任务来帮助人类。
 
-> This volume is about the implementation and implications of that exciting idea, as realized in large language models, or LLMs. We’ll introduce language models themselves, and the vibrant interdisci-
-科领域，其目标是让计算机通过执行涉及人类语言的有用任务来帮助人类。
-
-> plinary field that studies them, with the goal of getting computers to help people by performing useful tasks involving human language.
+> This volume is about the implementation and implications of that exciting idea, as realized in large language models, or LLMs. We’ll introduce language models themselves, and the vibrant interdisciplinary field that studies them, with the goal of getting computers to help people by performing useful tasks involving human language.
 
 > 米开朗基罗的《摩西》（1515）
 >
@@ -102,7 +99,7 @@ LLM 在信息获取与教育获取方面也有明确的应用。LLM
 
 > Volume II introduces LLM applications (RAG, and agents more generally, machine translation, speech recognition and synthesis) and architectures (encoder-only models like BERT and the encoder-decoder model). Volume III introduces tasks involving labeling linguistic structure: parsing, word meaning, coreference and coherence useful for interpretability in LLMs, and for social and cognitive science tasks.
 
-1.1 什么是大型语言模型？
+## 1.1 什么是大型语言模型？
 
 > 1.1 What is a Large Language Model?
 
@@ -295,13 +292,9 @@ Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)
 
 > Scaling laws explain why models tend to get bigger, with both positive outcomes(more impressive performance) and negative ones (more expense and use of natural resources like water and energy). But very big models are also very expensive at inference every time we prompt a model. So scaling laws also explain why we often choose to instead train a smaller model and make it better by training for more time over more data.
 
-## 1.2 大语言模型从词（token）预测中学到
+## 1.2 大语言模型从词（token）预测中学到什么？
 
-> 1.2 What do LLMs Learn From Word (Token) Predic-
-
-什么？
-
-> tion?
+> 1.2 What do LLMs Learn From Word (Token) Prediction?
 
 “我们在任何时候知道多少？我相信，远比我们知道自己知道的要多。”
 
@@ -393,7 +386,7 @@ Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)
 
 > dahlias and peonies are all kinds of flowers. From the second, a model could learn that “enormous” means something on the same scale as big but further along on the scale. From the third sentence, the system could learn math, while from the 4th sentence facts about the world and historical authors. Finally, if a model was exposed to sentences like the last one repeatedly, it might learn to associate professors only with male pronouns, or other kinds of associations that might cause models to act unfairly to different people.
 
-1.2.1 提示 = 条件生成 = token 预测！
+### 1.2.1 提示 = 条件生成 = token 预测！
 
 > 1.2.1 Prompting = conditional generation = token prediction!
 
