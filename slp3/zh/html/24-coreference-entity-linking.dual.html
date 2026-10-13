@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第 24 章 共指消解与实体链接（中英对照）</title>
+<title>24-coreference-entity-linking（中英对照）</title>
 <style>
 :root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
 * { box-sizing: border-box; }
@@ -42,7 +42,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 </style>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/24-coreference-entity-linking.md">Markdown 源文件</a></div>
-<h1>第 24 章 共指消解与实体链接</h1>
+<h1>24-coreference-entity-linking</h1>
 <h3>章</h3>
 <blockquote><p>CHAPTER</p></blockquote>
 <h1>24 共指消解与实体链接</h1>
@@ -117,7 +117,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Coreference resolution thus comprises two tasks (although they are often performed jointly): (1) identifying the mentions, and (2) clustering them into coreference chains/discourse entities.</p></blockquote>
 <p>我们 _3 说过，如果两个提及与同一话语实体相关联，那么它们就是共指的。但我们常常希望更进一步，确定与这个话语实体相关联的是哪个现实世界实体。例如，提及 Washington 可能指美国的一个州，或首都，或人物 George Washington；对这些不同的所指，句子的解释自然大不相同。实体链接（Ji and Grishman, 2011）或实体消解的任务，就是把</p>
 <blockquote><p>We _3said that two mentions corefered if they are associated with the same discourse entity. But often we’d like to go further, deciding which real world entity is associated with this discourse entity. For example, the mention Washington might refer to the US state, or the capital city, or the person George Washington; the interpretation of the sentence will of course be very different for each of these. The task of entity linking (Ji and Grishman, 2011) or entity resolution is the task of mapping</p></blockquote>
-<aside class="term"><code>entity linking</code><span class="term-zh">实体链接</span><span class="term-explain">把文本中的提及映射到知识库中某个现实世界实体（如某个 Wikipedia 页面）的任务。</span></aside>
+<aside class="term"><code>entity linking</code><span class="term-zh">实体链接</span><span class="term-explain">指把文本中出现的提及映射到知识库中某个具体实体的表示，从而确定其指向的现实对象。</span></aside>
 <p>a_2 话语实体映射到某个现实世界个体。3 我们通常把实体</p>
 <blockquote><p>a_2 discourse entity to some real-world individual.3 We usually operationalize entity</p></blockquote>
 <p>链接或消解，即映射到一个本体：世界上实体的列表，如地名词典（附录 H）。这项任务最常用的本体大概就是 Wikipedia；每个 Wikipedia 页面充当某个特定实体的唯一 id。因此，维基化（Mihalcea and Csomai, 2007）这一实体链接任务，就是确定某个提及所指的是与某个个体对应的哪个 Wikipedia 页面。不过，实体链接可以用任何本体来完成；例如，如果我们有一个基因本体，就可以把文本中基因的提及链接到该本体中消歧后的基因名称。</p>
@@ -132,7 +132,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>will only touch on briefly at the end of this chapter. First are the famous Winograd Schema problems (so-called because they were first pointed out by Terry Winograd in his dissertation). These entity coreference resolution problems are designed to be too difficult to be solved by the resolution methods we describe in this chapter, and the kind of real-world knowledge they require has made them a kind of challenge task for natural language processing. For example, consider the task of determining the correct antecedent of the pronoun they in the following example:</p></blockquote>
 <p>（24.2）市议会拒绝给示威者发放许可，因为</p>
 <blockquote><p>(24.2) The city council denied the demonstrators a permit because</p></blockquote>
-<ul><li>他们害怕暴力。</li><li>他们主张暴力。</li></ul>
+<ul><li>他们害怕暴力。</li><li>他们鼓吹暴力。</li></ul>
 <blockquote><p>they feared violence.</p><p>they advocated violence.</p></blockquote>
 <p>确定代词 they 的正确先行语需要理解</p>
 <blockquote><p>Determining the correct antecedent for the pronoun they requires understanding</p></blockquote>
@@ -469,7 +469,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>It is Modaladjective that S It is Modaladjective (for NP) to VP It is Cogv-ed that S It seems/appears/means/follows (that) S</p></blockquote>
 <p>提及检测规则有时是专门针对特定评测活动设计的。例如对 OntoNotes 来说，提及不嵌套在更大的提及之中，而且虽然数值量被标注，它们却很少共指。因此对于 CoNLL 2012 这类 OntoNotes 任务（Pradhan et al., 2012a），一种常见的第一遍基于规则的提及检测算法（Lee et al., 2013）是：</p>
 <blockquote><p>Mention-detection rules are sometimes designed specifically for particular evaluation campaigns. For OntoNotes, for example, mentions are not embedded within larger mentions, and while numeric quantities are annotated, they are rarely coreferential. Thus for OntoNotes tasks like CoNLL 2012 (Pradhan et al., 2012a), a common first pass rule-based mention detection algorithm (Lee et al., 2013) is:</p></blockquote>
+<div class="figbox">
 <blockquote><p>取所有 NP、物主代词和命名实体。</p><p><em>Take all NPs, possessive pronouns, and named entities.</em></p></blockquote>
+</div>
 <p>然而，基于规则的系统通常不足以处理提及检测，因此现代系统会引入某种学习得到的提及检测组件，例如指称性分类器、回指性分类器（检测某个 NP 是否为回指语），或新引入话语分类器（检测某个提及是否是新引入话语、是否是未来回指语的潜在先行语）。</p>
 <blockquote><p>Rule-based systems, however, are generally insufficient to deal with mentiondetection, and so modern systems incorporate some sort of learned mention detection component, such as a referentiality classifier, an anaphoricity classifier—detecting whether an NP is an anaphor—or a discourse-new classifier— detecting whether a mention is discourse-new and a potential antecedent for a future anaphor.</p></blockquote>
 <aside class="term"><code>anaphoricity detector</code><span class="term-zh">回指性检测器</span><span class="term-explain">判断给定 NP 是否为回指语的两类分类器之一，用于滤除不指称任何对象的提及。</span></aside>
@@ -516,7 +518,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>24.4.1 The Mention-Pair Architecture</p></blockquote>
 <p>我们从提及对架构开始，它是最简单也最具影响力的</p>
 <blockquote><p>We begin with the mention-pair architecture, the simplest and most influential</p></blockquote>
-<aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">共指架构中最简单的一类：用一个分类器判断候选回指语与其候选先行语这两条提及是否共指。</span></aside>
+<aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">一种共指模型：把回指语与每个候选先行语配成对，逐对判定二者是否指向同一实体。</span></aside>
 <p>共指架构，它引入了许多更复杂算法的特征，尽管其他架构表现更好。提及对架构围绕一个分类器构建，顾名思义，该分类器接收一对提及——一个候选回指语和一个候选先行语——并做出二元分类决策：是否共指。</p>
 <blockquote><p>coreference architecture, which introduces many of the features of more complex algorithms, even though other architectures perform better. The mention-pair architecture is based around a classifier that— as its name suggests—is given a pair of mentions, a candidate anaphor and a candidate antecedent, and makes a binary classification decision: coreferring or not.</p></blockquote>
 <aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">一种共指模型：把回指语与每个候选先行语配成对，逐对判定二者是否指向同一实体。</span></aside>
@@ -616,6 +618,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>classifiers make use of three types of features: (i) features of the anaphor, (ii) features of the candidate antecedent, and (iii) features of the relationship between the pair.</p></blockquote>
 <p>基于实体的模型还可以额外利用两个额外的类别：(iv) 来自先行语实体簇中所有提及的特征，以及 (v) 回指语与先行语实体簇中各提及之间关系的特征。</p>
 <blockquote><p>Entity-based models can make additional use of two additional classes: (iv) feature of all mentions from the antecedent’s entity cluster, and (v) features of the relation between the anaphor and the mentions in the antecedent entity cluster.</p></blockquote>
+<div class="figbox">
 <blockquote><p>回指语或先行语提及的特征</p><p><em>Features of the Anaphor or Antecedent Mention</em></p></blockquote>
 <blockquote><p>首（末）词 Victoria/she 先行语/回指语的首个或末个词（或其嵌入） 中心词 Victoria/she 先行语/回指语的中心词（或中心词嵌入） 属性 Sg-F-A-3-PER/ 先行语/回指语的数、性、生命度、人称、命名实体类型</p><p><em>First (last) word Victoria/she First or last word (or embedding) of antecedent/anaphor Head word Victoria/she Head word (or head embedding) of antecedent/anaphor Attributes Sg-F-A-3-PER/ The number, gender, animacy, person, named entity type</em></p></blockquote>
 <blockquote><p>Sg-F-A-3-PER （先行语/回指语）的属性</p><p><em>Sg-F-A-3-PER attributes of (antecedent/anaphor)</em></p></blockquote>
@@ -634,6 +637,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>中心词匹配 F 若来自先行语簇的任一提及具有</p><p><em>Head Word Match F True if any mentions from antecedent cluster has same</em></p></blockquote>
 <blockquote><p>与回指语簇中任一提及相同的中心词则为真</p><p><em>headword as any mention in anaphor cluster</em></p></blockquote>
 <blockquote><p>词语包含 F 回指语簇中的所有词语都包含在先行语簇中</p><p><em>Word Inclusion F All words in anaphor cluster included in antecedent cluster</em></p></blockquote>
+</div>
 <p class="caption">图 24.4 基于特征的共指：回指语“she”与潜在先行语“Victoria Chen”的示例特征值。</p>
 <p class="caption">Figure 24.4 Feature-based coreference: sample feature values for anaphor “she” and potential antecedent“Victoria Chen”.</p>
 <p>图 24.4 展示了一组常用特征，并展示了</p>

@@ -147,7 +147,7 @@ Jenny 也想买一架钢琴。他去了钢琴店。它就在附近。客厅在�
 
 > `entity grid`（实体网格）
 >
-> 释义：一种通过记录各实体的语法角色在连续句子中的出现模式来刻画篇章连贯程度的模型。
+> 释义：一种二维表示，行是句子、列是篇章实体，单元格记录实体在该句中的语法角色，用其实体转移模式刻画篇章连贯。
 
 的模型，它实现了中心理论框架中的部分直觉。
 
@@ -175,7 +175,7 @@ Jenny 也想买一架钢琴。他去了钢琴店。它就在附近。客厅在�
 
 > `lexical cohesion`（词汇衔接）
 >
-> 释义：邻近句子因共用相同或语义相关的词语而彼此绑定的表层文本现象。
+> 释义：指邻近句子重复使用相同或语义相关的词语，从而在词层面把上下文连接起来。
 
 (25.4) 入冬之前我砌了一个烟囱，并给房子的外墙铺上了木瓦……
 
@@ -438,6 +438,7 @@ although、when、since 或 as a result。在文本中这些词标示两个文�
 
 > Because Chinese has a smaller percentage of explicit discourse connectives than English (only 22% of all discourse relations are marked with explicit connectives,
 
+<!--figbox-->
 > 类别 类型 示例
 >
 > *Class Type Example*
@@ -473,10 +474,12 @@ although、when、since 或 as a result。在文本中这些词标示两个文�
 > 表明自己与角色格格不入，而且还往往真的倒立起来。
 >
 > *it clear they are at odds with them, but they often literally stand on their heads.*
+<!--/figbox-->
 
 *图 25.2 PDTB 语义层级中的四个高层语义区分*
 *Figure 25.2 The four high-level semantic distinctions in the PDTB sense hierarchy*
 
+<!--figbox-->
 > Temporal Comparison
 
 > • Asynchronous • Contrast (Juxtaposition, Opposition)
@@ -498,6 +501,7 @@ although、when、since 或 as a result。在文本中这些词标示两个文�
 > • Pragmatic Condition (Relevance, Implicit As- • Alternative (Conjunction, Disjunction, Chosen Alternasertion) tive)
 
 > • List
+<!--/figbox-->
 
 *图 25.3 PDTB 语义层级。顶层有四个类别，其下有 16 种类型和 23 种子类型（并非所有类型都有子类型）。16 种类型中有 11 种常用于隐式论元分类；以斜体标出的 5 种类型在隐式标注中出现得过于稀少，因而未被使用。*
 *Figure 25.3 The PDTB sense hierarchy. There are four top-level c¯lasses, 16 types, and 23 subtypes (not all types have subtypes). 11 of the 16 types are commonly used for implicit argument classification; the 5 types in italics are too rare in implicit labeling to be used.*
@@ -519,9 +523,25 @@ although、when、since 或 as a result。在文本中这些词标示两个文�
 
 > 25.2 Discourse Structure Parsing
 
-给定一个句子序列，我们如何自动确定它们之间的连贯关系？这一任务通常称为篇章分析（尽管对于 PDTB，我们只是为叶节点片段分配标签，而不像对 RST 那样构建完整的分析树）。
+给定一个句子序列，我们如何自动确定它们之间的连贯
 
-> Given a sequence of sentences, how can we automatically determine the coherence relations between them? This task is often called discourse parsing (even though for PDTB we are only assigning labels to leaf spans and not building a full parse tree as we do for RST).
+> Given a sequence of sentences, how can we automatically determine the coherence
+
+> `discourse`（篇章（discourse））
+>
+> 释义：由若干句子构成、在意义上连贯的语言单位；篇章分析研究的对象。
+
+关系？这一任务通常称为篇章分析（尽管
+
+> relations between them? This task is often called discourse parsing (even though
+
+> `parsing`（分析（parsing））
+>
+> 释义：依据文法或模型，为输入赋予句法/篇章结构的过程。
+
+对于 PDTB，我们只是为叶节点片段分配标签，而不像对 RST 那样构建完整的分析树）。
+
+> for PDTB we are only assigning labels to leaf spans and not building a full parse tree as we do for RST).
 
 ### 25.2.1 RST 分析的基本篇章单元（EDU）切分
 
@@ -857,11 +877,13 @@ RST EDU 相同的序列模型来识别：一个以预训练上下文嵌入（BER
 
 > which defines four intersentential relationships between a pair of utterances Un and Un+1 that depend on the relationship between Cb(Un+1), Cb(Un), and Cp(Un+1); these are shown in Fig. 25.7.
 
+<!--figbox-->
 > Cb(Un+1) = Cb(Un) Cb(Un+1)̸ = Cb(Un) 或未定义 Cb(Un)
 >
 > *Cb(Un+1) = Cb(Un) Cb(Un+1)̸ = Cb(Un) or undefined Cb(Un)*
 
 > Cb(Un+1) = Cp(Un+1) Continue Smooth-Shift Cb(Un+1)̸ = Cp(Un+1) Retain Rough-Shift
+<!--/figbox-->
 
 *图 25.7 来自 Brennan et al. (1987) 的规则 2 的中心转移。*
 *Figure 25.7 Centering Transitions for Rule 2 from Brennan et al. (1987).*
@@ -870,6 +892,7 @@ RST EDU 相同的序列模型来识别：一个以预训练上下文嵌入（BER
 
 > The following rules are used by the algorithm:
 
+<!--figbox-->
 > 规则 1：若 Cf (Un) 中的任一元素在话语中由代词实现，
 >
 > *Rule 1: If any element of Cf (Un) is realized by a pronoun in utterance*
@@ -885,6 +908,7 @@ RST EDU 相同的序列模型来识别：一个以预训练上下文嵌入（BER
 > Smooth-Shift 优先于 Rough-Shift。
 >
 > *preferred to Smooth-Shift is preferred to Rough-Shift.*
+<!--/figbox-->
 
 规则 1 体现的直觉是，代词化（包括零形回指）
 
@@ -1341,6 +1365,7 @@ Propp 表明，他所研究的每个童话的情节都能表示为这些功能�
 
 > idea that each scientific paper tries to make a knowledge claim about a new piece of knowledge being added to the repository of the field (Myers, 1992). Sentences in a scientific paper can be assigned one of 15 tags; Fig. 25.13 shows 7 (shortened) examples of labeled sentences.
 
+<!--figbox-->
 > 类别 描述 示例 AIM 具体研究目标的陈述，或“本过程的目的是考察
 >
 > *Category Description Example AIM Statement of specific research goal, or “The aim of this process is to examine the role that*
@@ -1400,6 +1425,7 @@ Propp 表明，他所研究的每个童话的情节都能表示为这些功能�
 > 工作的优越性
 >
 > *periority of own work*
+<!--/figbox-->
 
 *图 25.13 论证分区（AZ）标注集中 15 个标签里 7 个标签的示例（Teufel 等，2009）。*
 *Figure 25.13 Examples for 7 of the 15 labels from the Argumentative Zoning labelset (Teufel et al., 2009).*

@@ -233,9 +233,11 @@ FLEURS（Conneau et al., 2023）是一个平行语音数据集，建立在 MT �
 
 > or WER, defined on page 378) from roughly state-of-the-art systems as of the time of this writing on some of these tasks. Note that the error rate on English read speech(like the LibriSpeech clean audiobook corpus) is around 2% ; transcription of speech read in English is highly accurate. By contrast, the error rate for transcribing conversations between humans is higher; 5.8 to 11% for the Switchboard and CALLHOME corpora or AMI meetings. The error rate is higher yet again for speakers of varieties like African American English, and yet again for difficult conversational tasks like transcription of 4-speaker dinner party speech, which can have error rates as high as 25.5%. Character error rates (CER) are also higher for Mandarin natural conversation than for Mandarin read speech. Error rates are even higher for lower resource languages; we’ve shown a handful of examples.
 
+<!--figbox-->
 > 英语任务 WER%LibriSpeech 有声书 960 小时干净集 1.4 LibriSpeech 有声书 960 小时其他集 2.6 Switchboard 陌生人之间的电话对话 5.8 CALLHOME 家人之间的电话对话 11 AMI 会议 11 社会语言学访谈，CORAAL（AAE）16.2 CHiME6 使用远场麦克风的晚餐聚会 25.5 其他语言的示例任务 WER%Common Voice 15 越南语 39.8 Common Voice 15 斯瓦希里语 51.2 FLEURS 孟加拉语 50 中文（普通话）任务 CER%AISHELL-1 普通话朗读语音语料库 3.9 HKUST 普通话电话对话 18.5
 >
 > *English Tasks WER%LibriSpeech audiobooks 960hour clean 1.4 LibriSpeech audiobooks 960hour other 2.6 Switchboard telephone conversations between strangers 5.8 CALLHOME telephone conversations between family 11 AMI meetings 11 Sociolinguistic interviews, CORAAL (AAE) 16.2 CHiME6 dinner parties with distant microphones 25.5 Sample tasks in other languages WER%Common Voice 15 Vietnamese 39.8 Common Voice 15 Swahili 51.2 FLEURS Bengali 50 Chinese (Mandarin) Tasks CER%AISHELL-1 Mandarin read speech corpus 3.9 HKUST Mandarin Chinese telephone conversations 18.5*
+<!--/figbox-->
 
 *图 16.1 约 2023—2024 年报告的、在多种美式英语及其他语言识别任务上 ASR 的大致词错误率（WER = 误识别词所占百分比），以及两个中文识别任务的字符错误率（CER）。*
 *Figure 16.1 Rough Word Error Rates (WER = % of words misrecognized) reported around 2023-4 for ASR on various American English and other language recognition tasks, and character error rates (CER) for two Chinese recognition tasks.*
@@ -274,9 +276,18 @@ FLEURS（Conneau et al., 2023）是一个平行语音数据集，建立在 MT �
 CNN 使用一个卷积核，即一个小的权重向量 w1 ...wk，来提取特征。它
 
 > A CNN uses a kernel, a small vector of weights w1 ...wk, to extract features. It
+
+> `kernel`（卷积核）
+>
+> 释义：在输入上滑动的小型权重向量，通过卷积从输入中提取局部特征；语音 CNN 沿时间维度滑动它。
+
 的做法是把该卷积核与输入进行卷积。卷积核与信号的卷积包含 3 个步骤：
 
 > does this by convolving this kernel with the input. The convolution of a kernel with a signal has 3 steps:
+
+> `convolving`（卷积）
+>
+> 释义：把卷积核（小权重向量）沿输入逐帧滑过、在每一帧与局部输入求点积，从而得到输出序列的运算。
 
 - 将卷积核左右翻转
 - 逐帧（沿时间）让卷积核滑过输入
@@ -857,17 +868,13 @@ CNN 被冻结，模型其余部分使用将在第 16.5 节描述的 CTC 损失�
 
 > The algorithm has two steps. In the assignment step, given a set of k current centroids and a dataset of vectors, it assigns each vector to the cluster whose codeword is the closest (by squared Euclidean distance). In the re-estimation step, it recomputes the codeword for each cluster by recomputing the mean vector. Note that the resulting mean vector need not be an actual point from the dataset. We iterate back and forth between these two steps.
 
-算法如下：初始化：对每个簇 k，随机选择一个向量 µk ∈Rd 作为该簇的码字（也称为模板或原型）。其结果是一个
+算法如下：初始化：对每个簇 k，随机选择一个向量 µk ∈Rd 作为该簇的码字（也称为模板或原型）。其结果是一个码本，其中 k 个簇各有一个码字。
 
-> Here’s the algorithm: Initialization: For each cluster k choose a random vector µk ∈Rd to be the codeword (also called template or prototype) for the cluster. The result is a
+> Here’s the algorithm: Initialization: For each cluster k choose a random vector µk ∈Rd to be the codeword (also called template or prototype) for the cluster. The result is a codebook that has one codeword for each of the k clusters.
 
 > `codeword template prototype codebook`（码字、模板、原型、码本）
 >
 > 释义：聚类中代表每个簇的向量；簇的码字也称模板或原型，全部簇的码字合起来构成码本。
-
-码本，其中 k 个簇各有一个码字。
-
-> codebook that has one codeword for each of the k clusters.
 
 然后迭代重复直至收敛：
 
@@ -920,7 +927,7 @@ cluster(i) = argmin ||v(i) −µj||2 (16.14)
 
 > `alignment`（对齐）
 >
-> 释义：把每个输入帧对应到一个字母所得的字母序列，用以标明各字母在声学信号中的时间位置。
+> 释义：将假设词串与参考词串逐词匹配，标出替换、插入和删除的位置，用于统计错误数量。
 
 的位置。图 16.12 展示了这样一种对齐，以及如果我们使用仅删除连续重复字母的折叠函数会发生什么。
 
@@ -1358,17 +1365,13 @@ Fry 和 Denes 的系统首次使用音素转移概率来约束识别器。
 
 > The late 1960s and early 1970s produced a number of important paradigm shifts.
 
-首先是若干特征提取算法，包括高效的快速傅里叶变换（FFT）（Cooley and Tukey, 1965）、倒谱处理在语音上的应用（Oppenheim et al., 1968），以及用于语音编码的 LPC 的提出（Atal and Hanauer, 1971）。其次是若干处理弯折的方法；即对输入信号进行拉伸或压缩，以应对语速
+首先是若干特征提取算法，包括高效的快速傅里叶变换（FFT）（Cooley and Tukey, 1965）、倒谱处理在语音上的应用（Oppenheim et al., 1968），以及用于语音编码的 LPC 的提出（Atal and Hanauer, 1971）。其次是若干处理弯折的方法；即对输入信号进行拉伸或压缩，以应对语速和音段长度的差异。求解这一问题的自然算法是动态规划，而且正如我们在附录 A 中所见，该算法为处理此问题被多次重新发明。它在语音处理中的首次应用由 Vintsyuk（1968）完成，不过他的成果未被其他研究者采纳，之后又被 Velichko 和 Zagoruyko（1970）以及 Sakoe 和 Chiba（1971）（以及 1984）重新发明。不久之后，Itakura（1975）把这一动态规划思想与先前仅用于语音编码的 LPC 系数结合起来。由此得到的系统从输入词中提取 LPC 特征，并用动态规划将其与存储的 LPC 模板进行匹配。
 
-> First were a number of feature-extraction algorithms, including the efficient fast Fourier transform (FFT) (Cooley and Tukey, 1965), the application of cepstral processing to speech (Oppenheim et al., 1968), and the development of LPC for speech coding (Atal and Hanauer, 1971). Second were a number of ways of handling warp- ing; stretching or shrinking the input signal to handle differences in speaking rate
+> First were a number of feature-extraction algorithms, including the efficient fast Fourier transform (FFT) (Cooley and Tukey, 1965), the application of cepstral processing to speech (Oppenheim et al., 1968), and the development of LPC for speech coding (Atal and Hanauer, 1971). Second were a number of ways of handling warp- ing; stretching or shrinking the input signal to handle differences in speaking rate and segment length when matching against stored patterns. The natural algorithm for solving this problem was dynamic programming, and, as we saw in Appendix A, the algorithm was reinvented multiple times to address this problem. The first application to speech processing was by Vintsyuk (1968), although his result was not picked up by other researchers, and was reinvented by Velichko and Zagoruyko (1970) and Sakoe and Chiba (1971) (and 1984). Soon afterward, Itakura (1975) combined this dynamic programming idea with the LPC coefficients that had previously been used only for speech coding. The resulting system extracted LPC features from incoming words and used dynamic programming to match them against stored LPC templates.
 
 > `warping`（弯折）
 >
 > 释义：指匹配已存储模式时对输入信号做拉伸或压缩，以应对语速与音段长度差异的处理方式。
-
-和音段长度的差异。求解这一问题的自然算法是动态规划，而且正如我们在附录 A 中所见，该算法为处理此问题被多次重新发明。它在语音处理中的首次应用由 Vintsyuk（1968）完成，不过他的成果未被其他研究者采纳，之后又被 Velichko 和 Zagoruyko（1970）以及 Sakoe 和 Chiba（1971）（以及 1984）重新发明。不久之后，Itakura（1975）把这一动态规划思想与先前仅用于语音编码的 LPC 系数结合起来。由此得到的系统从输入词中提取 LPC 特征，并用动态规划将其与存储的 LPC 模板进行匹配。
-
-> and segment length when matching against stored patterns. The natural algorithm for solving this problem was dynamic programming, and, as we saw in Appendix A, the algorithm was reinvented multiple times to address this problem. The first application to speech processing was by Vintsyuk (1968), although his result was not picked up by other researchers, and was reinvented by Velichko and Zagoruyko (1970) and Sakoe and Chiba (1971) (and 1984). Soon afterward, Itakura (1975) combined this dynamic programming idea with the LPC coefficients that had previously been used only for speech coding. The resulting system extracted LPC features from incoming words and used dynamic programming to match them against stored LPC templates.
 
 这种以非概率方式使用动态规划、将模板与输入语音进行匹配的做法，称为动态时间规整。
 
@@ -1407,17 +1410,13 @@ HMM 的使用——以高斯混合模型（GMM）作为音素
 到 1990 年前后，用于 ASR 的 HMM/GMM 架构的神经网络替代方案
 
 > By around 1990 neural alternatives to the HMM/GMM architecture for ASR
-出现了，其基础是此前一系列把神经网络用于音素识别及其他语音任务的实验。相关架构包括时延神经网络（TDNN）——卷积网络在语音上的首次应用——（Waibel et al. 1989, Lang et al. 1990）、RNN（Robinson and Fallside, 1991），以及混合式
+出现了，其基础是此前一系列把神经网络用于音素识别及其他语音任务的实验。相关架构包括时延神经网络（TDNN）——卷积网络在语音上的首次应用——（Waibel et al. 1989, Lang et al. 1990）、RNN（Robinson and Fallside, 1991），以及混合式 HMM/MLP 架构，其中前馈神经网络被训练为音素分类器，其输出被用作基于 HMM 的架构的概率估计（Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995）。
 
-> arose, based on a number of earlier experiments with neural networks for phoneme recognition and other speech tasks. Architectures included the time-delay neural network (TDNN)—the first use of convolutional networks for speech— (Waibel et al. 1989, Lang et al. 1990), RNNs (Robinson and Fallside, 1991), and the hybrid
+> arose, based on a number of earlier experiments with neural networks for phoneme recognition and other speech tasks. Architectures included the time-delay neural network (TDNN)—the first use of convolutional networks for speech— (Waibel et al. 1989, Lang et al. 1990), RNNs (Robinson and Fallside, 1991), and the hybrid HMM/MLP architecture in which a feedforward neural network is trained as a phonetic classifier whose outputs are used as probability estimates for an HMM-based architecture (Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995).
 
 > `hybrid`（混合式）
 >
 > 释义：本书指把前馈神经网络当作音素分类器、其输出用作 HMM 概率估计的混合 HMM/MLP 架构。
-
-HMM/MLP 架构，其中前馈神经网络被训练为音素分类器，其输出被用作基于 HMM 的架构的概率估计（Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995）。
-
-> HMM/MLP architecture in which a feedforward neural network is trained as a phonetic classifier whose outputs are used as probability estimates for an HMM-based architecture (Morgan and Bourlard 1990, Bourlard and Morgan 1994, Morgan and Bourlard 1995).
 
 尽管混合系统表现出接近标准 HMM/GMM
 

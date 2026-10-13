@@ -27,7 +27,7 @@
 
 > `subjectivity`（主观性）
 >
-> 释义：指对说话人或作者所表达的评价、意见、情绪和推测等内容的研究。
+> 释义：文本表达作者私人状态（如看法、信念、态度）而非仅陈述客观事实的属性，是主观性检测任务要识别的目标。
 
 即对说话人或作者的评价、意见、情绪和推测的研究（Wiebe 等，1999）。
 
@@ -125,6 +125,10 @@
 
 > In one of these families, emotions are viewed as fixed atomic units, limited in number, and from which others are generated, often called basic emotions (Tomkins 1962, Plutchik 1962), a model dating back to Darwin. Perhaps the most well-known of this family of theories are the 6 emotions proposed by Ekman (e.g., Ekman 1999) to be universally present in all cultures: surprise, happiness, anger, fear, disgust, sadness. Another atomic theory is the Plutchik (1980) wheel of emotion, consisting of 8 basic emotions in four opposing pairs: joy–sadness, anger–fear, trust–disgust, and anticipation–surprise, together with the emotions derived from them, shown in Fig. 23.2.
 
+> `basic emotions`（基本情绪）
+>
+> 释义：指被视为数量有限、固定不变的原子情绪单元，其他情绪由它们生成，如 Ekman 提出的 6 种情绪。
+
 ![](images/23-lexicons-sentiment/fig_p3_0.png)
 
 *图 23.2 Plutchik 情绪轮。*
@@ -177,6 +181,7 @@ General Inquirer（Stone 等，1966），它借鉴了内容分析以及词语意
 
 > work in the cognitive psychology of word meaning (Osgood et al., 1957). The General Inquirer has a lexicon of 1915 positive words and a lexicon of 2291 negative words (as well as other lexicons discussed below). The MPQA Subjectivity lexicon(Wilson et al., 2005) has 2718 positive and 4912 negative words drawn from prior lexicons plus a bootstrapped list of subjective words and phrases (Riloff and Wiebe, 2003). Each entry in the lexicon is hand-labeled for sentiment and also labeled for reliability (strongly subjective or weakly subjective). The polarity lexicon of Hu and Liu (2004) gives 2006 positive and 4783 negative words, drawn from product reviews, labeled using a bootstrapping method from WordNet.
 
+<!--figbox-->
 > 正面 钦佩、令人惊叹、保证、庆祝、魅力、渴望、热忱、卓越、精致、绝妙、嬉戏、优雅、快乐、喜悦、好运、威严、仁慈、美好、耐心、完美、自豪、欢欣、宽慰、尊重、令人满意、轰动、超棒、了不起、感谢、生动、明智、美妙、兴致
 >
 > *Positive admire, amazing, assure, celebration, charm, eager, enthusiastic, excellent, fancy, fantastic, frolic, graceful, happy, joy, luck, majesty, mercy, nice, patience, perfect, proud, rejoice, relief, respect, satisfactorily, sensational, super, terrific, thank, vivid, wise, wonderful, zest*
@@ -188,6 +193,7 @@ General Inquirer（Stone 等，1966），它借鉴了内容分析以及词语意
 > 有缺陷、失望、使尴尬、虚假、恐惧、肮脏、傻瓜、罪疚、憎恨、白痴、施加、懒惰、悲惨、哀悼、紧张、反对、害虫、阴谋、拒绝、尖叫、愚蠢、可怕、不友好、卑劣、邪恶
 >
 > *defective, disappointment, embarrass, fake, fear, filthy, fool, guilt, hate, idiot, inflict, lazy, miserable, mourn, nervous, objection, pest, plot, reject, scream, silly, terrible, unfriendly, vile, wicked*
+<!--/figbox-->
 
 *图 23.3 在 General Inquirer（Stone 等，1966）、MPQA 主观性词表（Wilson 等，2005）以及 Hu 和 Liu（2004）的极性词表中情感一致的若干词。*
 *Figure 23.3 Some words with consistent sentiment across the General Inquirer (Stone et al., 1966), the MPQA Subjectivity lexicon (Wilson et al., 2005), and the polarity lexicon of Hu and Liu (2004).*
@@ -199,6 +205,7 @@ General Inquirer（Stone 等，1966），它借鉴了内容分析以及词语意
 
 > word a value on all three affective dimensions. The NRC Valence, Arousal, and Dominance (VAD) lexicon (Mohammad, 2018a) assigns valence, arousal, and dominance scores to 20,000 words. Some examples are shown in Fig. 23.4.
 
+<!--figbox-->
 > 效价 唤醒度 支配度
 >
 > *Valence Arousal Dominance*
@@ -206,6 +213,7 @@ General Inquirer（Stone 等，1966），它借鉴了内容分析以及词语意
 > 度假 .840 暴怒 .962 强大 .991 令人愉快 .918 聚会 .840 权威 .935 哨声 .653 有条理 .337 萨克斯管 .482 安慰 .408 毫不费力 .120 气馁 .0090 折磨 .115 打盹 .046 软弱 .045
 >
 > *vacation .840 enraged .962 powerful .991 delightful .918 party .840 authority .935 whistle .653 organized .337 saxophone .482 consolation .408 effortless .120 discouraged .0090 torture .115 napping .046 weak .045*
+<!--/figbox-->
 
 *图 23.4 若干示例词在 Mohammad（2018a）的情感维度上的取值。*
 *Figure 23.4 Values of sample words on the emotional dimensions of Mohammad (2018a).*
@@ -242,6 +250,7 @@ NRC 词-情绪关联词表，也称为 EmoLex（Mohammad and Turney, 2013），�
 
 > (Mohammad, 2018b) contains real-valued scores of association for anger, fear, joy, and sadness; Fig. 23.5 shows examples.
 
+<!--figbox-->
 > 愤怒 恐惧 喜悦 悲伤
 >
 > *Anger Fear Joy Sadness*
@@ -249,6 +258,7 @@ NRC 词-情绪关联词表，也称为 EmoLex（Mohammad and Turney, 2013），�
 > 暴怒 0.964 恐怖 0.923 极好 0.864 悲伤 0.844 暴力 0.742 痛苦 0.703 欢呼 0.773 罪疚 0.750 政变 0.578 瘟疫 0.625 彩虹 0.531 刻薄 0.547 驱逐 0.484 紧张 0.531 手势 0.387 困难 0.421 可疑 0.484 失败 0.531 温暖 0.391 乞丐 0.422 培育 0.059 自信 0.094 艰难 .031 歌唱 0.017
 >
 > *outraged 0.964 horror 0.923 superb 0.864 sad 0.844 violence 0.742 anguish 0.703 cheered 0.773 guilt 0.750 coup 0.578 pestilence 0.625 rainbow 0.531 unkind 0.547 oust 0.484 stressed 0.531 gesture 0.387 difficulties 0.421 suspicious 0.484 failing 0.531 warms 0.391 beggar 0.422 nurture 0.059 confident 0.094 hardship .031 sing 0.017*
+<!--/figbox-->
 
 *图 23.5 取自 Mohammad（2018b）的若干词在愤怒、恐惧、喜悦和悲伤上的情感强度示例。*
 *Figure 23.5 Sample emotional intensities for words for anger, fear, joy, and sadness from Mohammad (2018b).*
@@ -269,13 +279,17 @@ LIWC，即语言探究与词计数（Linguistic Inquiry and Word Count），是�
 
 > Another useful feature for various tasks is the distinction between concrete
 
-> `concrete abstract`（具体与抽象）
+> `concrete`（具体的（concrete））
 >
-> 释义：按词义能否被感官感知而区分的词类特征，一端如香蕉、浴袍，另一端如信念、尽管，可用 1 至 5 分评定。
+> 释义：指所表示的事物较为具体、可直接感知的词，如 banana、bathrobe，与抽象词相对。
 
 词（如香蕉或浴袍）与抽象词（如信念和尽管）之间的区别。
 
 > words like banana or bathrobe and abstract words like belief and although. The
+
+> `abstract`（抽象的（abstract））
+>
+> 释义：指所表示的概念较为抽象、不易直接感知的词，如 belief、although，与具体词相对。
 
 Brysbaert 等（2014）的词表使用众包为 40,000 个词的具体性赋予 1 到 5 的评分，从而给香蕉、浴袍和百吉饼评 5 分，给信念评 1.19 分，给尽管评 1.07 分，而介于其间的词如明快则评 2.5 分。
 
@@ -285,13 +299,23 @@ Brysbaert 等（2014）的词表使用众包为 40,000 个词的具体性赋予 
 
 > 23.3 Creating Affect Lexicons by Human Labeling
 
-构建态度词表最早使用、至今仍普遍使用的方法是让人类为每个词标注。如今这通常通过众包完成：把任务拆成小块，分发给大量标注者。
+构建态度词表最早使用、至今仍普遍使用的方法是让人类为每个词标注。如今这通常通过众包完成：
 
-> The earliest method used to build affect lexicons, and still in common use, is to have humans label each word. This is now most commonly done via crowdsourcing: breaking the task into small pieces and distributing them to a large number of anno-
+> The earliest method used to build affect lexicons, and still in common use, is to have humans label each word. This is now most commonly done via crowdsourcing:
 
+> `crowdsourcing`（众包）
+>
+> 释义：指把任务拆成小块并分发给大量标注者完成的标注方式，常用于构建态度词表。
+
+把任务拆成小块，分发给大量标注者
+
+> breaking the task into small pieces and distributing them to a large number of anno-
+
+<!--figbox-->
 > 正面情绪：欣赏*、安慰*、很好、快乐、兴趣、喜悦*、完美*、请*、安全*、极好、价值、哇*；负面情绪：愤怒*、无聊*、哭泣、绝望*、失败*、恐惧、悲伤*、憎恨*、恐慌*、受苦、使恐惧、暴力*；洞察力：意识到*、相信、决定*、感觉、弄清*、知道、懂得、意味着、注意*、认识*、感知、思考；抑制：避免*、小心*、犹豫*、限制*、反对*、阻止*、不情愿*、安全*、停止、固执*、等待、警惕；家庭：兄弟*、表亲*、女儿*、家庭、父亲*、祖父*、祖母*、丈夫、妈妈、母亲、侄女*、妻子；否定：不是、不能、没有、既不、从不、不、没有人*、一个也没有、也不、没有什么、无处、无
 >
 > *Positive Negative Emotion Emotion Insight Inhibition Family Negate appreciat* anger* aware* avoid* brother* aren’t comfort* bore* believe careful* cousin* cannot great cry decid* hesitat* daughter* didn’t happy despair* feel limit* family neither interest fail* figur* oppos* father* never joy* fear know prevent* grandf* no perfect* griev* knew reluctan* grandm* nobod*please* hate* means safe* husband none safe* panic* notice* stop mom nor terrific suffers recogni* stubborn* mother nothing value terrify sense wait niece* nowhere wow* violent* think wary wife without*
+<!--/figbox-->
 
 *图 23.6 LIWC 中 73 个词汇类别里 5 个类别的示例（Pennebaker 等，2007）。*
 *Figure 23.6 Samples from 5 of the 73 lexical categories in LIWC (Pennebaker et al., 2007).*
@@ -351,17 +375,13 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 
 > For valence, for example, the raters were asked:
 
-问题 1. 下列四个词中，哪一个与幸福／快乐／积极／满意／知足／满怀希望关联最多，或者与不幸福／恼怒／消极／不满意／忧郁／绝望关联最少？（列出四个词作为选项。）问题 2. 下列四个词中，哪一个与幸福／快乐／积极／满意／知足／满怀希望关联最少，或者与不幸福／恼怒／消极／不满意／忧郁／绝望关联最多？（列出四个词作为选项。）词表中每个词的得分，是该条目被选为最好（V/A/D 最高）的次数占比减去它被选为最差（V/A/D 最低）的次数占比。标注之间的一致性用分半信度来评估：把语料分成两半，并计算
+问题 1. 下列四个词中，哪一个与幸福／快乐／积极／满意／知足／满怀希望关联最多，或者与不幸福／恼怒／消极／不满意／忧郁／绝望关联最少？（列出四个词作为选项。）问题 2. 下列四个词中，哪一个与幸福／快乐／积极／满意／知足／满怀希望关联最少，或者与不幸福／恼怒／消极／不满意／忧郁／绝望关联最多？（列出四个词作为选项。）词表中每个词的得分，是该条目被选为最好（V/A/D 最高）的次数占比减去它被选为最差（V/A/D 最低）的次数占比。标注之间的一致性用分半信度来评估：把语料分成两半，并计算两半中的标注之间的相关性。
 
-> Q1. Which of the four words below is associated with the MOST happiness / pleasure / positiveness / satisfaction / contentedness / hopefulness OR LEAST unhappiness / annoyance / negativeness / dissatisfaction / melancholy / despair? (Four words listed as options.) Q2. Which of the four words below is associated with the LEAST happiness / pleasure / positiveness / satisfaction / contentedness / hopefulness OR MOST unhappiness / annoyance / negativeness / dissatisfaction/ melancholy / despair? (Four words listed as options.) The score for each word in the lexicon is the proportion of times the item was chosen as the best (highest V/A/D) minus the proportion of times the item was chosen as the worst (lowest V/A/D). The agreement between annotations are evaluated by splithalf reliability: split the corpus in half and compute the correlations between the
+> Q1. Which of the four words below is associated with the MOST happiness / pleasure / positiveness / satisfaction / contentedness / hopefulness OR LEAST unhappiness / annoyance / negativeness / dissatisfaction / melancholy / despair? (Four words listed as options.) Q2. Which of the four words below is associated with the LEAST happiness / pleasure / positiveness / satisfaction / contentedness / hopefulness OR MOST unhappiness / annoyance / negativeness / dissatisfaction/ melancholy / despair? (Four words listed as options.) The score for each word in the lexicon is the proportion of times the item was chosen as the best (highest V/A/D) minus the proportion of times the item was chosen as the worst (lowest V/A/D). The agreement between annotations are evaluated by splithalf reliability: split the corpus in half and compute the correlations between the annotations in the two halves.
 
 > `split-half reliability`（分半信度）
 >
 > 释义：把同一批标注结果分成两半，用两半之间的相关程度来衡量标注一致性的评估方法。
-
-两半中的标注之间的相关性。
-
-> annotations in the two halves.
 
 ## 23.4 态度词表的半监督归纳
 
@@ -390,6 +410,7 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 
 > dealing with the fact that the affect of a word is different in different contexts: (1) start with a single large seed lexicon and rely on the induction algorithm to fine-tune it to the domain, or (2) choose different seed words for different genres. Hellrich et al. (2019) suggests that for modeling affect across different historical time periods, starting with a large modern affect dictionary is better than small seedsets tuned to be stable across time. As an example of the second approach, Hamilton et al. (2016a) define one set of seed words for general sentiment analysis, a different set for Twitter, and yet another set for sentiment in financial text:
 
+<!--figbox-->
 > 领域 正向种子词 负向种子词
 >
 > *Domain Positive seeds Negative seeds*
@@ -413,6 +434,7 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 > 改善、好转、成功、收益、损害、糟糕、诉讼、失败、下跌、正面 负面
 >
 > *improving, improved, success, gains, damages, bad, litigation, failure, down, positive negative*
+<!--/figbox-->
 
 第二步，我们为每个极点词计算嵌入。这些
 
@@ -622,6 +644,7 @@ good#6“令人愉快的或讨人喜欢的” 1 0 0 respectable#2 honorable#4 go
 
 > books, or other products, each of which have the text of the review along with an
 
+<!--figbox-->
 > 电影评论摘录（IMDb）
 >
 > *Movie review excerpts (IMDb)*
@@ -701,6 +724,7 @@ good#6“令人愉快的或讨人喜欢的” 1 0 0 respectable#2 honorable#4 go
 > 你得加超多的液体。我还希望它有个壶嘴……
 >
 > *You have to add a TON of liquid. I also wish it had a spout ...*
+<!--/figbox-->
 
 *图 23.9 取自各类评论网站的一些评论摘录，除 IMDb 采用 1 到 10 星标度外，其余均采用 1 到 5 星标度。*
 *Figure 23.9 Excerpts from some reviews from various review websites, all on a scale of 1 to 5 stars except IMDb, which is on a scale of 1 to 10 stars.*
@@ -738,17 +762,13 @@ P(w|c) = P
 w∈C count(w,c) P(w|c)
 PottsScore(w) = P
 c P(w|c) (23.6)
-将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示
+将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。
 
-> Dividing the IMDb estimate P(disappointing|1) of .0003 by the sum of the likelihood P(w|c) over all categories gives a Potts score of 0.10. The word disappointing thus is associated with the vector [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05]. The Potts diagram (Potts, 2011) is a visualization of these word scores, representing the
+> Dividing the IMDb estimate P(disappointing|1) of .0003 by the sum of the likelihood P(w|c) over all categories gives a Potts score of 0.10. The word disappointing thus is associated with the vector [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05]. The Potts diagram (Potts, 2011) is a visualization of these word scores, representing the prior sentiment of a word as a distribution over the rating categories.
 
 > `Potts diagram`（Potts 图）
 >
 > 释义：把单词的先验情感表示为各评分类别上的概率分布曲线，并依据曲线形状刻画其情感类型的一种可视化图。
-
-单词的先验情感在各评分类别上的分布。
-
-> prior sentiment of a word as a distribution over the rating categories.
 
 图 23.10 给出了 3 个正面和 3 个负面程度形容词的 Potts 图。请注意，强正面程度词的曲线呈字母 J 形，而强负面程度词看起来像倒 J 形。相比之下，弱正面和弱负面程度词呈驼峰形，其峰值要么低于均值（如 disappointing 这类弱负面词），要么高于均值（如 good 这类弱正面词）。这些形状提供了一种富有启发性的情感含义类型学。
 
@@ -848,6 +868,10 @@ ni nj (23.7)
 
 > Instead, let’s compute the log odds ratio: does horrible have higher odds in i or in j:
 
+> `log odds ratio`（对数几率比）
+>
+> 释义：指两个词几率之比的对数，用于比较某个词在两个语料库或类别中的相对关联强度。
+
  Pi(horrible)   Pj(horrible) 
 lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible)
  fi(horrible)   f j(horrible) 
@@ -922,6 +946,7 @@ Yelp，把一星评论中使用的词与五星评论中使用的词加以比较�
 
 > Yelp, comparing the words used in 1-star reviews to the words used in 5-star reviews(Jurafsky et al., 2014). The largest difference is in obvious sentiment words, with the 1-star reviews using negative sentiment words like worse, bad, awful and the 5-star reviews using positive sentiment words like great, best, amazing. But there are other illuminating differences. 1-star reviews use logical negation (no, not), while 5-star reviews use emphatics and emphasize universality (very, highly, every, always). 1star reviews use first person plurals (we, us, our) while 5 star reviews use the second person. 1-star reviews talk about people (manager, waiter, customer) while 5-star reviews talk about dessert and properties of expensive restaurants like courses and atmosphere. See Jurafsky et al. (2014) for more details.
 
+<!--figbox-->
 > 类别 一星评论中的词 类别 五星评论中的词 负面 worst（最差）、rude（粗鲁）、terrible（糟透了）、horrible（可怕）、bad（差）、 正面 great（很棒）、best（最好）、love(d)（喜爱）、delicious（美味）、amazing（令人惊叹）、
 >
 > *Class Words in 1-star reviews Class Words in 5-star reviews Negative worst, rude, terrible, horrible, bad, Positive great, best, love(d), delicious, amazing,*
@@ -953,6 +978,7 @@ Yelp，把一星评论中使用的词与五星评论中使用的词加以比较�
 > 非现实语气 would（会）、should（应该） 助动词／情态动词 is／’s、can、’ve、are 补语标记词 to、that 介词、其他 in（在……里）、of（……的）、die（死）、city（城市）、mouth（嘴）
 >
 > *Irrealis would, should Auxiliaries is/’s, can, ’ve, are modals Comp to, that Prep, other in, of, die, city, mouth*
+<!--/figbox-->
 
 *图 23.12 在一个包含 900,000 条评论的 Yelp 数据集中，使用 Monroe 等人（2008）的方法找出的与一星和五星餐厅评论最相关的前 50 个词（Jurafsky 等，2014）。*
 *Figure 23.12 The top 50 words associated with one–star and five-star restaurant reviews in a Yelp dataset of 900,000 reviews, using the Monroe et al. (2008) method (Jurafsky et al., 2014).*

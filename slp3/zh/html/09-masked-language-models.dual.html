@@ -28,6 +28,12 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -82,7 +88,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>编码器以词元序列为输入，并为每个词元输出一个向量表示。编码器通常是掩码语言模型，也就是说，它们的训练方式是遮蔽掉一个词，并学习通过观察两侧周围的词来预测它。像 BERT、RoBERTa 以及 BERT 家族中的其他模型这样的掩码语言模型都属于编码器模型。编码器模型不是生成式模型；它们不用来生成文本。相反，编码器模型常常被用来</p>
 <blockquote><p>The encoder takes as input a sequence of tokens and outputs a vector representation for each token. Encoders are usually masked language models, meaning they are trained by masking out a word, and learning to predict it by looking at surrounding words on both sides. Masked language models like BERT, RoBERTA, and others in the BERT family are encoder models. Encoder models are not generative models; they aren’t used to generate text. Instead encoder models are often used to</p></blockquote>
 <aside class="term"><code>encoder</code><span class="term-zh">编码器</span><span class="term-explain">把词元序列映射为等长的上下文化向量表示的架构，通常用掩码语言建模预训练，多用于分类等理解型任务。</span></aside>
-<img src="../md/images/fig_p2_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p2_0.png" alt="">
+<p class="caption">图 9.1 语言模型的三种架构：解码器、编码器和编码器-解码器。箭头勾勒出这三种架构中的信息流。解码器以词元为输入并生成词元作为输出。编码器以词元为输入并产生一个编码（每个词元的向量表示）作为输出。编码器-解码器以词元为输入并生成一串词元作为输出。</p>
+<p class="caption">Figure 9.1 Three architectures for language models: decoders, encoders, and encoder-decoders. The arrows sketch out the information flow in the three architectures. Decoders take tokens as input and generate tokens as output. Encoders take tokens as input and produce an encoding (a vector representation of each token) as output. Encoder-decoders take tokens as input and generate a series of tokens as output.</p>
 <p>创建分类器，例如输入是文本、输出是标签（比如情感、主题或其他类别）的分类器。这是通过对它们进行微调（在有监督数据上训练它们）来实现的。我们将在本章介绍编码器模型。</p>
 <blockquote><p>create classifiers, for example where the input is text and the output is a label, for example for sentiment or topic or other classes. This is done by fine-tuning them(training them on supervised data). We’ll introduce encoder models in this chapter.</p></blockquote>
 <aside class="term"><code>encoder- decoder</code><span class="term-zh">编码器-解码器</span><span class="term-explain">先由编码器读入整个输入序列、再由解码器生成输出序列的架构，输入与输出词元集合可以不同，常用于机器翻译和语音识别。</span></aside>
@@ -116,14 +124,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Fig. 9.2a, reproduced here from Chapter 7, shows the information flow in the</p></blockquote>
 <p>第 7 章从左到右方法的信息流。每个词元处的注意力计算都基于前面（以及当前）的输入词元，忽略了位于所考虑词元右侧的潜在有用信息。双向编码器克服了这一限制，允许注意力机制覆盖整个输入，如图 9.2b 所示。</p>
 <blockquote><p>left-to-right approach of Chapter 7. The attention computation at each token is based on the preceding (and current) input tokens, ignoring potentially useful information located to the right of the token under consideration. Bidirectional encoders overcome this limitation by allowing the attention mechanism to range over the entire input, as shown in Fig. 9.2b.</p></blockquote>
-<img src="../md/images/fig_p3_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p3_0.png" alt="">
+<p class="caption">图 9.2 (a) 第 7 章的因果 Transformer，突出显示了词元 3 处的注意力计算。每个词元处的注意力值仅使用上下文中较早出现的信息来计算。(b) 双向注意力模型中的信息流。在处理每个词元时，模型关注所有输入，既包括当前词元之前的，也包括其后的。因此词元 3 的注意力可以利用其后词元的信息。</p>
+<p class="caption">Figure 9.2 (a) The causal transformer from Chapter 7, highlighting the attention computation at token 3. The attention value at each token is computed using only information seen earlier in the context. (b) Information flow in a bidirectional attention model. In processing each token, the model attends to all inputs, both before and after the current one. So attention for token 3 can draw on information from following tokens.</p>
 <p>实现非常简单！我们只需去掉注意力掩码</p>
 <blockquote><p>The implementation is very simple! We simply remove the attention masking</p></blockquote>
 <p>这一步是我们在式 7.35 中引入的。回想第 7 章，对于因果 Transformer，我们必须对 QK⊺ 矩阵进行掩码，使注意力无法看到未来的词元（此处针对单个注意力头重述式 7.35）：</p>
 <blockquote><p>step that we introduced in Eq. 7.35. Recall from Chapter 7 that we had to mask the QK⊺matrix for causal transformers so that attention couldn’t look at future tokens(repeated from Eq. 7.35 for a single attention head):</p></blockquote>
 <p> QK⊺  (9.1) head = softmax mask√dk V图 9.3 展示了 QK⊺ 的掩码版本和未掩码版本。对于双向注意力，我们使用图 9.3b 的未掩码版本。因此注意力</p>
 <blockquote><p>Fig. 9.3 shows the masked version of QK⊺and the unmasked version. For bidirectional attention, we use the unmasked version of Fig. 9.3b. Thus the attention</p></blockquote>
-<img src="../md/images/fig_p4_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p4_0.png" alt="">
+<p class="caption">图 9.3 N ×N 的 QK⊺ 矩阵，展示了 qi ·kj 值。(a) 显示比较矩阵的上三角部分被置零（设为 −∞，softmax 会将其变为零），而 (b) 显示的是未掩码版本。</p>
+<p class="caption">Figure 9.3 The N ×N QK⊺matrix showing the qi ·kj values. (a) shows the upper-triangle portion of the comparisons matrix zeroed out (set to −∞, which the softmax will turn to zero), while (b) shows the unmasked version.</p>
 <p>双向注意力的计算与式 9.1 完全相同，只是去掉了掩码：</p>
 <blockquote><p>computation for bidirectional attention is exactly the same as Eq. 9.1 but with the mask removed:</p></blockquote>
 <p>QK⊺  (9.2) head = softmax√dk V除此之外，注意力计算与我们在第 7 章看到的完全相同，Transformer 块的架构（前馈层、层归一化等）也是如此。与第 7 章一样，输入同样是一系列子词词元，通常由 3 种流行的词元化算法之一计算得到（包括我们已在第 2 章见过的 BPE 算法，以及另外两种：WordPiece 算法和 SentencePiece Unigram LM 算法）。这意味着每个输入句子都必须先经过词元化，后续所有处理都在子词词元而非词上进行。正如下文教科书第三部分将看到的，这要求对于某些需要“词”这一概念的 NLP 任务（如句法分析），我们有时需要把子词映射回词。</p>
@@ -177,7 +189,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We then train the model to guess the correct token for the manipulated tokens. Why the three possible manipulations? Adding the [MASK] token creates a mismatch between pretraining and downstream fine-tuning or inference, since when we employ the MLM model to perform a downstream task, we don’t use any [MASK] tokens. If we just replaced tokens with the [MASK], the model might only predict tokens when it sees a [MASK], but we want the model to try to always predict the input token.</p></blockquote>
 <p>为训练模型做出预测，原始输入序列先使用子词模型进行词元化，并抽取要被操纵的词元。输入中所有词元的词嵌入都从 E 嵌入矩阵中取出，并与位置嵌入相结合，构成 Transformer 的输入，然后通过堆叠的双向 Transformer 块，最后经过语言建模头。MLM 训练目标是预测每个被掩码词元的原始输入，这些预测产生的交叉熵损失驱动模型中全部参数的训练过程。也就是说，所有输入词元都在自注意力过程中发挥作用，但只有被抽样的词元用于学习。</p>
 <blockquote><p>To train the model to make the prediction, the original input sequence is tokenized using a subword model and tokens are sampled to be manipulated. Word embeddings for all of the tokens in the input are retrieved from the E embedding matrix and combined with positional embeddings to form the input to the transformer, passed through the stack of bidirectional transformer blocks, and then the language modeling head. The MLM training objective is to predict the original inputs for each of the masked tokens and the cross-entropy loss from these predictions drives the training process for all the parameters in the model. That is, all of the input tokens play a role in the self-attention process, but only the sampled tokens are used for learning.</p></blockquote>
-<img src="../md/images/fig_p6_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p6_0.png" alt="">
+<p class="caption">图 9.4 掩码语言模型训练。在此例中，输入词元中有三个被选中，其中两个被掩码，第三个被替换为一个不相关的词。模型为这三项分配的概率被用作训练损失。其余 5 个词元不参与训练损失。</p>
+<p class="caption">Figure 9.4 Masked language model training. In this example, three of the input tokens are selected, two of which are masked and the third is replaced with an unrelated word. The probabilities assigned by the model to these three items are used as the training loss. The other 5 tokens don’t play a role in training loss.</p>
 <p>图 9.4 用一个简单的例子说明了这一做法。这里，long、thanks 和</p>
 <blockquote><p>Fig. 9.4 illustrates this approach with a simple example. Here, long, thanks and</p></blockquote>
 <p>the 已从训练序列中抽样出来，其中前两个被掩码，最后一个被替换为随机抽样的词元 apricot。得到的嵌入通过堆叠的双向 Transformer 块。回想第 7 章 7.5 节，为了对每个被掩码词元生成词表上的概率分布，语言建模头取出最终 Transformer 层 L 中每个被掩码词元 i 的输出向量 hL i，将其与解嵌入层 ET 相乘得到 logits u，然后用 softmax 把 logits 转换为词表上的概率 y：</p>
@@ -210,7 +224,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>[CLS] token represents the next sentence prediction. As with the MLM objective, we add a special head, in this case an NSP head, which consists of a learned set of classification weights WNSP ∈Rd×2 that produces a two-class prediction from the raw [CLS] vector hL CLS:</p></blockquote>
 <p>yi = softmax(hL CLSWNSP) 交叉熵用于计算呈现给模型的每个句对的 NSP 损失。图 9.5 展示了 NSP 训练的总体设置。在 BERT 中，NSP 损失与 MLM 训练目标结合使用，构成最终损失。</p>
 <blockquote><p>yi = softmax(hL CLSWNSP) Cross entropy is used to compute the NSP loss for each sentence pair presented to the model. Fig. 9.5 illustrates the overall NSP training setup. In BERT, the NSP loss was used in conjunction with the MLM training objective to form final loss.</p></blockquote>
-<img src="../md/images/fig_p8_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p8_0.png" alt="">
+<p class="caption">图 9.5 NSP 损失计算的一个示例。</p>
+<p class="caption">Figure 9.5 An example of the NSP loss calculation.</p>
 <h3>9.3.3 训练方案</h3>
 <blockquote><p>9.3.3 Training Regimes</p></blockquote>
 <p>BERT 及其他早期基于 Transformer 的语言模型在约 33 亿词上训练（由英文维基百科和一个名为 BooksCorpus 的书籍文本语料库（Zhu 等，2015）组合而成，后者因知识产权原因已不再使用）。现代掩码语言模型现在在规模大得多的网页文本数据集上训练，经过一定过滤，并用维基百科等更高质量的数据加以补充，这与我们在第 7 章讨论的因果大型语言模型所用数据相同。</p>
@@ -245,8 +261,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The power of pretrained language models lies in their ability to extract generalizations from large amounts of text—generalizations that are useful for myriad downstream applications. There are two ways to make practical use of the generalizations to solve downstream tasks. The most common way is to use natural language to prompt the model, putting it in a state where it contextually generates what we want.</p></blockquote>
 <p>本节我们探讨使用预训练语言模型的另一种方式，</p>
 <blockquote><p>In this section we explore an alternative way to use pretrained language models</p></blockquote>
-<p>即用于下游应用的一种微调。在掩码语言模型所采用的这类微调中，我们在预训练模型之上加入针对具体应用的电路（通常称为专用头），并以预训练模型的输出作为它的输入。微调过程就是用该应用的相关标注数据来训练这些额外添加的、针对具体应用的参数。通常，这种训练要么冻结预训练语言模型的参数，要么只对其做极小的调整。</p>
-<blockquote><p>for downstream applications, a kind of fine-tuning. In the kind of fine-tuning used for masked language models, we add application-specific circuitry (often called a special head) on top of pretrained models, taking their output as its input. The fine-tuning process consists of using labeled data about the application to train these additional application-specific parameters. Typically, this training will either freeze or make only minimal adjustments to the pretrained language model parameters.</p></blockquote>
+<p>用于下游应用，也就是一种微调。在所使用的这类微调</p>
+<blockquote><p>for downstream applications, a kind of fine-tuning. In the kind of fine-tuning used</p></blockquote>
+<aside class="term"><code>fine-tuning</code><span class="term-zh">微调</span><span class="term-explain">在预训练模型之上接上任务专用的网络层，再用少量标注数据继续训练，使模型适配具体下游任务的做法。</span></aside>
+<p>我们在预训练模型之上加入针对具体应用的电路（通常称为专用头），并以预训练模型的输出作为它的输入。微调过程就是用该应用的相关标注数据来训练这些额外添加的、针对具体应用的参数。通常，这种训练要么冻结预训练语言模型的参数，要么只对其做极小的调整</p>
+<blockquote><p>for masked language models, we add application-specific circuitry (often called a special head) on top of pretrained models, taking their output as its input. The fine-tuning process consists of using labeled data about the application to train these additional application-specific parameters. Typically, this training will either freeze or make only minimal adjustments to the pretrained language model parameters.</p></blockquote>
 <p>以下各节将介绍针对几种常见类别的</p>
 <blockquote><p>The following sections introduce fine-tuning methods for some common classes</p></blockquote>
 <p>基于文本的应用的微调方法：序列分类、句子对分类和序列标注。</p>
@@ -284,7 +303,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>As mentioned in Section 9.3.2, an important type of problem involves the classification of pairs of input sequences. Practical applications that fall into this class include paraphrase detection (are the two sentences paraphrases of each other?), logical entailment (does sentence A logically entail sentence B?), and discourse coherence(how coherent is sentence B as a follow-on to sentence A?).</p></blockquote>
 <p>针对这类任务之一来微调某个应用的过程，与使用 NSP 目标进行预训练时完全一样。在微调过程中，成对的标注句子取自</p>
 <blockquote><p>Fine-tuning an application for one of these tasks proceeds just as with pretraining using the NSP objective. During fine-tuning, pairs of labeled sentences from a</p></blockquote>
-<img src="../md/images/fig_p11_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p11_0.png" alt="">
+<p class="caption">图 9.6 使用双向 Transformer 编码器进行序列分类。[CLS] 词元的输出向量作为简单分类器的输入。</p>
+<p class="caption">Figure 9.6 Sequence classification with a bidirectional transformer encoder. The output vector for the [CLS] token serves as input to a simple classifier.</p>
 <p>将监督微调集的样本呈现给模型，让它们经过模型的所有层，为每个输入词元产生 h 输出。与序列分类一样，与前置的 [CLS] 词元相关联的输出向量代表模型对输入句对的看法。并且与 NSP 训练一样，两个输入由 [SEP] 词元分隔。为了进行分类，[CLS] 向量与一组已学习的分类权重相乘，并通过 softmax 生成标签预测，随后用这些预测来更新权重。</p>
 <blockquote><p>supervised fine-tuning set are presented to the model, and run through all the layers of the model to produce the h outputs for each input token. As with sequence classification, the output vector associated with the prepended [CLS] token represents the model’s view of the input pair. And as with NSP training, the two inputs are separated by the [SEP] token. To perform classification, the [CLS] vector is multiplied by a set of learned classification weights and passed through a softmax to generate label predictions, which are then used to update the weights.</p></blockquote>
 <p>作为例子，让我们考虑一个蕴含分类任务，使用 Multi-</p>
@@ -335,17 +356,25 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Citing high fuel prices, [ORG United Airlines] said [TIME Friday] it has increased fares by [MONEY $6] per round trip on flights to some cities also served by lower-cost carriers. [ORG American Airlines], a unit of [ORG AMR Corp.], immediately matched the move, spokesman[PER Tim Wagner] said. [ORG United], a unit of [ORG UAL Corp.], said the increase took effect [TIME Thursday] and applies to most routes where it competes against discount carriers, such as [LOC Chicago] to [LOC Dallas] and [LOC Denver] to [LOC San Francisco].</p></blockquote>
 <p>该文本包含 13 处命名实体提及，其中包括 5 个组织、4 个地点、2 个时间、1 个人，以及 1 处货币提及。图 9.7 展示了典型的通用命名实体类型。许多应用还需要使用特定的实体类型，如蛋白质、基因、商业产品或艺术作品。</p>
 <blockquote><p>The text contains 13 mentions of named entities including 5 organizations, 4 locations, 2 times, 1 person, and 1 mention of money. Figure 9.7 shows typical generic named entity types. Many applications will also need to use specific entity types like proteins, genes, commercial products, or works of art.</p></blockquote>
+<div class="figbox">
 <blockquote><p>类型 标签 样例类别 例句 人物 PER 人物、角色 图灵是计算机科学的巨人。</p><p><em>Type Tag Sample Categories Example sentences People PER people, characters Turing is a giant of computer science.</em></p></blockquote>
 <blockquote><p>组织 ORG 公司、运动队 IPCC 对那场气旋发出了警告。</p><p><em>Organization ORG companies, sports teams The IPCC warned about the cyclone.</em></p></blockquote>
 <blockquote><p>地点 LOC 地区、山脉、海洋 Sanitas 山位于 Sunshine Canyon。</p><p><em>Location LOC regions, mountains, seas Mt. Sanitas is in Sunshine Canyon.</em></p></blockquote>
 <blockquote><p>地缘政治实体 GPE 国家、州 帕洛阿尔托正在提高停车费。</p><p><em>Geo-Political Entity GPE countries, states Palo Alto is raising the fees for parking.</em></p></blockquote>
+</div>
+<p class="caption">图 9.7 通用命名实体类型的列表，以及它们所指称的实体种类。</p>
+<p class="caption">Figure 9.7 A list of generic named entity types with the kinds of entities they refer to.</p>
 <p>命名实体识别是各种自然语言处理中的有用步骤，</p>
 <blockquote><p>Named entity recognition is a useful step in various natural language processing</p></blockquote>
 <p>这些任务包括将文本链接到结构化知识源（如维基百科）中的信息、度量文本中对某一特定实体的情感或态度，甚至作为为保护隐私而对文本进行匿名化处理的一部分。NER 任务之所以困难，是因为切分 NER 片段存在歧义——要弄清哪些词元是实体、哪些不是，因为文本中的大多数词都不会是命名实体。另一个困难源于类型歧义。提及 Washington 可能指一个人、一支运动队、一座城市或美国政府，如图 9.8 所示。</p>
 <blockquote><p>tasks, including linking text to information in structured knowledge sources like Wikipedia, measuring sentiment or attitudes toward a particular entity in text, or even as part of anonymizing text for privacy. The NER task is difficult because of the ambiguity of segmenting NER spans, figuring out which tokens are entities and which aren’t, since most words in a text will not be named entities. Another difficulty is caused by type ambiguity. The mention Washington can refer to a person, a sports team, a city, or the US government, as we see in Fig. 9.8.</p></blockquote>
+<div class="figbox">
 <blockquote><p>[PER Washington] 出生在 James Burroughs 的农场，生而为奴。[ORG Washington] 在四场系列赛中以 2 比 1 领先。</p><p><em>[PER Washington] was born into slavery on the farm of James Burroughs.[ORG Washington] went up 2 games to 1 in the four-game series.</em></p></blockquote>
 <blockquote><p>Blair 抵达 [LOC Washington]，进行很可能是他最后一次的国事访问。</p><p><em>Blair arrived in [LOC Washington] for what may well be his last state visit.</em></p></blockquote>
 <blockquote><p>六月，[GPE Washington] 通过了一项主要安全带法。</p><p><em>In June, [GPE Washington] passed a primary seatbelt law.</em></p></blockquote>
+</div>
+<p class="caption">图 9.8 名称 Washington 使用中类型歧义的示例。</p>
+<p class="caption">Figure 9.8 Examples of type ambiguities in the use of the name Washington.</p>
 <h3>9.5.2 BIO 标注</h3>
 <blockquote><p>9.5.2 BIO Tagging</p></blockquote>
 <p>对于像 NER 这样需要识别片段的问题，序列标注的一种标准方法是 BIO 标注（Ramshaw 和 Marcus，1995）。这种方法使我们</p>
@@ -362,7 +391,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>variants called IO tagging and BIOES tagging. In BIO tagging we label any token that begins a span of interest with the label B, tokens that occur inside a span are tagged with an I, and any tokens outside of any span of interest are labeled O. While there is only one O tag, we’ll have distinct B and I tags for each named entity class.</p></blockquote>
 <p>因此标签的数量为 2n+1，其中 n 是实体类型的数量。BIO 标注能够表示与括号标记法完全相同的信息，但它的优势在于，我们可以像词性标注那样，用同样简单的序列建模方式来表示该任务：为每个输入词 xi 分配单个标签 yi：</p>
 <blockquote><p>The number of tags is thus 2n+1, where n is the number of entity types. BIO tagging can represent exactly the same information as the bracketed notation, but has the advantage that we can represent the task in the same simple sequence modeling way as part-of-speech tagging: assigning a single label yi to each input word xi:</p></blockquote>
+<div class="figbox">
 <blockquote><p>词 IO 标签 BIO 标签 BIOES 标签 Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</p><p><em>Words IO Label BIO Label BIOES Label Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</em></p></blockquote>
+</div>
+<p class="caption">图 9.9 把 NER 作为序列模型，展示了 IO、BIO 和 BIOES 标注。</p>
+<p class="caption">Figure 9.9 NER as a sequence model, showing IO, BIO, and BIOES taggings.</p>
 <p>我们还展示了两种变体的标注方案：IO 标注，它通过取消 B 标签而丢失了一些</p>
 <blockquote><p>We’ve also shown two variant tagging schemes: IO tagging, which loses some</p></blockquote>
 <p>信息；以及 BIOES 标注，它为片段的结尾增加了一个结束标签 E，并为仅由一个词构成的片段增加了一个片段标签 S。</p>
@@ -373,7 +406,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In sequence labeling, we pass the final output vector corresponding to each input token to a classifier that produces a softmax distribution over the possible set of tags. For a single feedforward layer classifier, the set of weights to be learned is WK of size [d × k], where k is the number of possible tags for the task. A greedy approach, where the argmax tag for each token is taken as a likely answer, can be used to generate the final output tag sequence. Fig. 9.10 illustrates an example of this approach, where yi is a vector of probabilities over tags, and k indexes the tags.</p></blockquote>
 <p>yi = softmax(hL (9.7) i WK) ti = argmaxk(yi) (9.8)另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。</p>
 <blockquote><p>Alternatively, the distribution over labels provided by the softmax for each input token can be passed to a conditional random field (CRF) layer which can take global tag-level transitions into account (see Chapter 18 on CRFs).</p></blockquote>
-<img src="../md/images/fig_p14_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p14_0.png" alt="">
+<p class="caption">图 9.10 使用双向 Transformer 编码器进行命名实体识别的序列标注。每个输入词元的输出向量被送入一个简单的 k 路分类器。</p>
+<p class="caption">Figure 9.10 Sequence labeling for named entity recognition with a bidirectional transformer encoder. The output vector for each input token is passed to a simple k-way classifier.</p>
 <p>词元化与 NER</p>
 <blockquote><p>Tokenization and NER</p></blockquote>
 <p>请注意，NER 的监督训练数据通常采用 BIO 标签的形式，这些标签与按词切分的文本相对应。例如下面这个包含两个命名实体的句子：</p>

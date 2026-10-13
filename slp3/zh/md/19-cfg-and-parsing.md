@@ -80,7 +80,13 @@ three parties from Brooklyn arrive... a high-class spot such as Mindy’s attrac
 >
 > 释义：文法中与句法规则分开列出的词表，给出每个词所属的词性标记。
 
-表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
+表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由
+
+> `NP`（名词短语）
+>
+> 释义：NP 即 noun phrase（名词短语），是以名词为中心词构成的短语，既可充当句子主语、宾语等成分，也可以由专有名词或“限定词 + Nominal”构成。
+
+一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
 上下文无关规则可以分层嵌套，因此我们可以把前面的规则与其他规则组合起来，例如下面这些表达词库事实的规则：
 
 Det →a Det →the Noun →flight
@@ -125,13 +131,11 @@ CFG 可以从两个角度来理解：一是作为生成句子的装置，
 树中的所有结点（Det、Nom、Noun、a、flight）。我们还可以说，它直接支配结点 Det 和 Nom。
 
 由 CFG 定义的形式语言，是那些可推导出的符号串的集合，
-它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始
+它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。
 
 > `start symbol`（起始符号）
 >
 > 释义：文法中作为推导起点的那个非终结符，通常记为 S，语言即由它推导出的全部串构成。
-
-符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。
 
 让我们再往规则清单中添加几条规则。下面这条规则表达了
 这样一个事实：句子可以由一个名词短语后接一个动词短语构成：
@@ -170,6 +174,7 @@ PP →Preposition NP from Los Angeles
 图 19.2 给出了一个示例词库，图 19.3 汇总了文法规则
 即我们目前所见的这些规则，我们称之为 L0。注意，我们可以用或符号 | 来表示一个非终结符有多种可能的展开。
 
+<!--figbox-->
 > Noun →flights | flight | breeze | trip | morning Verb →is | prefer | like | need | want | fly | do
 
 > Adjective →cheapest | non-stop | first | latest
@@ -183,12 +188,14 @@ PP →Preposition NP from Los Angeles
 > | Chicago | United | American
 
 > Determiner →the | a | an | this | these | that Preposition →from | to | on | near | in Conjunction →and | or | but
+<!--/figbox-->
 
 *图 19.2 L0 的词库。*
 
 我们可以用这个文法生成这种“ATIS 语言”的句子。我们
 从 S 开始，把它展开为 NP VP，然后随机选择 NP 的一个展开（比如展开为
 
+<!--figbox-->
 > 文法  规则  示例
 
 > S →NP VP I + want a morning flight
@@ -206,6 +213,7 @@ PP →Preposition NP from Los Angeles
 > | Verb NP want + a flight| Verb NP PP leave + Boston + in the morning| Verb PP leaving + on Thursday
 
 > PP →Preposition NP from + Los Angeles
+<!--/figbox-->
 
 *图 19.3 L0 的文法，每条规则都附有示例短语。*
 
@@ -272,9 +280,11 @@ N 非终结符（或称变量）的集合 Σ 终结符的集合（与 N 不相�
 
 在本书余下的部分中，当我们讨论上下文无关文法的形式性质时（而不是在解释关于英语或其他语言的特定事实时），都遵循以下约定。
 
+<!--figbox-->
 > 大写字母如 A、B、S 表示非终结符
 
 > S 起始符号 小写希腊字母如 α、β、γ 取自 (Σ∪N)∗ 的串 小写罗马字母如 u、v、w 终结符组成的串
+<!--/figbox-->
 
 语言是通过推导这一概念来定义的。若一个串能经由若干次规则应用被改写为另一个串，则称前者推导出后者。
 
@@ -303,7 +313,7 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > `syntactic`（句法的）
 >
-> 释义：与句子结构相关，即词语如何组合成短语与句子的性质。
+> 释义：与句子成分结构有关的；此处指用来在多个分析中做出选择的句法信息。
 
 > `parsing`（句法分析）
 >
@@ -312,6 +322,10 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 ## 19.3 树库
 
 其中每个句子都标注了解析树的语料库称为树库。
+
+> `treebank`（树库）
+>
+> 释义：用句法结构（解析树）标注过的语料库，其中的句子隐含地构成该语言的一部文法，为句法分析提供带结构标注的数据。
 
 树库在句法分析中，以及在句法现象的语言学研究中，都起着重要作用。
 
@@ -324,15 +338,19 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 英语、阿拉伯语和汉语。宾州树库的词性标注集已在第 18 章定义，但我们会看到各树库之间存在细微的格式差异。用 LISP 风格的括号记法表示树极为常见，它类似于我们先前在（19.1）中见到的括号记法。对于不熟悉这种记法的读者，我们在图 19.6 中给出标准的节点—连线树表示。
 
+<!--figbox-->
 > ((S
 
 > (NP-SBJ (DT That) ((S(JJ cold) (, ,) (NP-SBJ The/DT flight/NN )(JJ empty) (NN sky) ) (VP should/MD(VP (VBD was) (VP arrive/VB(ADJP-PRD (JJ full) (PP-TMP at/IN(PP (IN of) (NP eleven/CD a.m/RB ))(NP (NN fire) (NP-TMP tomorrow/NN )))))(CC and)
 
 > (NN light) ))))
+<!--/figbox-->
 
 (. .) ))
 
+<!--figbox-->
 > (a) (b)
+<!--/figbox-->
 
 *图 19.5 LDC 树库 3 中（a）Brown 与（b）ATIS 句子的分析。*
 
@@ -343,7 +361,9 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 树库中的句子隐含地构成了该语言的一部文法。例如，
 例如，从图 19.5 中已分析的句子可以提取出图 19.7 所示的 CFG 规则（为简单起见去掉了规则后缀 (-SBJ)）。用于分析宾州树库的文法非常扁平，导致规则数量极多。例如，
 
+<!--figbox-->
 > 文法 词库 S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP
+<!--/figbox-->
 
 *图 19.7 由图 19.5 中树库句子得到的 CFG 文法规则与词库。*
 
@@ -363,7 +383,7 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > `equivalent`（等价）
 >
-> 释义：指两个文法生成相同的字符串集合，并且为每个句子赋予相同的短语结构。
+> 释义：文法之间的一种关系，分强等价与弱等价，区别在于是否指派相同的短语结构。
 
 它们生成相同的字符串集合，并且为每个句子赋予相同的短语结构（仅允许对非终结符符号重新命名）。两个
 
@@ -411,9 +431,11 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 A →B C D
 的规则可以转换为下面两条 CNF 规则（练习 19.1 要求读者
 
+<!--figbox-->
 > 文法 词库
 
 > S →NP VP Det →that | this | the | a S →Aux NP VP Noun →book | flight | meal | money S →VP Verb →book | include | prefer NP →Pronoun Pronoun →I | she | me NP →Proper-Noun Proper-Noun →Houston | United NP →Det Nominal Aux →does Nominal →Noun Preposition →from | to | on | near | through Nominal →Nominal Noun Nominal →Nominal PP VP →Verb VP →Verb NP VP →Verb NP PP VP →Verb PP VP →VP PP PP →Preposition NP
+<!--/figbox-->
 
 *图 19.8 L1 微型英语文法与词库。*
 
@@ -575,6 +597,7 @@ A →X1 γX1 →B C
 
 由于我们表中的每个非终结符条目在分析中都有两个女儿，因此对于由条目 [i, j] 表示的每个成分，输入中必定存在一个位置 k，使得它可以在该处被切分为两部分，且 i < k < j。给定这样
 
+<!--figbox-->
 > L1 文法　　L1 的 CNF 形式
 
 > S →NP VP S →NP VP S →Aux NP VP S →X1 VP
@@ -590,6 +613,7 @@ A →X1 γX1 →B C
 > X2 →Verb NP
 
 > VP →Verb PP VP →Verb PP VP →VP PP VP →VP PP PP →Preposition NP PP →Preposition NP
+<!--/figbox-->
 
 *图 19.10 L1 文法及其到 CNF 的转换。注意，虽然这里没有显示，L1 中所有原始的词汇条目也同样原样保留。*
 
@@ -794,11 +818,13 @@ P+R
 
 更多细节参见 Collins（1999）。
 
+<!--figbox-->
 > 父节点 方向 优先级列表 ADJP 左 NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS
 
 > SBAR RB
 
 > ADVP 右 RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN 左 PRT 右 RP QP 左 $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S 左 TO IN VP S SBAR ADJP UCP NP SBAR 左 WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP 左 TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP
+<!--/figbox-->
 
 *图 19.17 取自 Collins（1999）的部分中心词规则。中心词规则也称为中心词渗透表。*
 

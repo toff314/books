@@ -135,7 +135,7 @@ sigmoid 函数（如图 6.1 所示）有许多优点；它把输出
 
 > into the range (0,1), which is useful in squashing outliers toward 0 or 1. And it’s differentiable, which as we saw in Section 4.15 will be handy for learning.
 
-![](images/fig_p2_0.png)
+![](images/06-neural-networks/fig_p2_0.png)
 
 *图 6.1 sigmoid 函数接受一个实数值并将其映射到区间 (0,1)。它在 0 附近近似线性，但离群值会被压缩到接近 0 或 1。*
 *Figure 6.1 The sigmoid function takes a real value and maps it to the range (0,1). It is nearly linear around 0 but outlier values get squashed toward 0 or 1.*
@@ -154,7 +154,7 @@ y = σ(w ·x+b) = (6.4)
 
 > takes 3 input values x1,x2, and x3, and computes a weighted sum, multiplying each value by a weight (w1, w2, and w3, respectively), adds them to a bias term b, and then passes the resulting sum through a sigmoid function to result in a number between 0 and 1.
 
-![](images/fig_p3_0.png)
+![](images/06-neural-networks/fig_p3_0.png)
 
 *图 6.2 一个神经单元，接收 3 个输入 x1、x2 和 x3（以及一个偏置 b，我们把它表示为一个被固定为 +1 的输入的权重），并产生输出 y。我们还引入了一些方便的中间变量：求和运算的输出 z，以及 sigmoid 的输出 a。在这种情况下，单元的输出 y 与 a 相同，但在更深的网络中，我们会保留 y 表示整个网络的最终输出，而让 a 表示单个节点的激活。*
 *Figure 6.2 A neural unit, taking 3 inputs x1, x2, and x3 (and a bias b that we represent as a weight for an input clamped at +1) and producing an output y. We include some convenient intermediate variables: the output of the summation, z, and the output of the sigmoid, a. In this case the output of the unit y is the same as a, but in deeper networks we’ll reserve y to mean the final output of the entire network, leaving a as the activation of an individual node.*
@@ -210,7 +210,7 @@ y = ReLU(z) = max(z,0) (6.6)
 
 > These activation functions have different properties that make them useful for differ-
 
-![](images/fig_p4_0.png)
+![](images/06-neural-networks/fig_p4_0.png)
 
 *图 6.3 tanh 函数与 ReLU 激活函数。*
 *Figure 6.3 The tanh and ReLU activation functions.*
@@ -282,7 +282,7 @@ y = 1, if w ·x+b > 0 (6.7)
 
 > functions of its binary inputs; Fig. 6.4 shows the necessary weights.
 
-![](images/fig_p5_0.png)
+![](images/06-neural-networks/fig_p5_0.png)
 
 *图 6.4 用于计算逻辑函数的感知机的权重 w 与偏置 b。输入记为 x1 和 x2，偏置表示为一个取值为 +1 的特殊节点，它与偏置权重 b 相乘。(a) 逻辑 AND，权重 w1 = 1、w2 = 1，偏置权重 b = −1。(b) 逻辑 OR，权重 w1 = 1、w2 = 1，偏置权重 b = 0。这些权重/偏置只是能够实现这些函数的无穷多组可能权重与偏置中的一组。*
 *Figure 6.4 The weights w and bias b for perceptrons for computing logical functions. The inputs are shown as x1 and x2 and the bias as a special node with value +1 which is multiplied with the bias weight b. (a) logical AND, with weights w1 = 1 and w2 = 1 and bias weight b = −1. (b) logical OR, with weights w1 = 1 and w2 = 1 and bias weight b = 0. These weights/biases are just one from an infinite number of possible sets of weights and biases that would implement the functions.*
@@ -345,12 +345,12 @@ AND 分类器和 OR 分类器的一组可能参数所画出的直线。请注意
 
 > input value by the appropriate weight, sum, and then add the bias b, we get the vector[0, -1], and we then apply the rectified linear transformation to give the output of the h layer as [0, 0]. Now we once again multiply by the weights, sum, and add the
 
-![](images/fig_p6_0.png)
+![](images/06-neural-networks/fig_p6_0.png)
 
 *图 6.5 函数 AND、OR 和 XOR，横轴为输入 x1，纵轴为输入 x2。实心圆表示感知机输出为 1，空心圆表示感知机输出为 0。对于 XOR，无法画出一条直线将这两个类别正确分开。图形样式参照 Russell 和 Norvig（2002）。*
 *Figure 6.5 The functions AND, OR, and XOR, represented with input x1 on the x-axis and input x2 on the y-axis. Filled circles represent perceptron outputs of 1, and white circles perceptron outputs of 0. There is no way to draw a line that correctly separates the two categories for XOR. Figure styled after Russell and Norvig(2002).*
 
-![](images/fig_p6_1.png)
+![](images/06-neural-networks/fig_p6_1.png)
 
 *图 6.6 参照 Goodfellow 等人（2016）的 XOR 解决方案。共有三个 ReLU 单元，分布在两层中；我们称它们为 h1、h2（h 表示“隐藏层”）和 y1。与之前一样，箭头上的数字表示每个单元的权重 w，我们把偏置 b 表示为取值固定为 +1 的单元上的一个权重，偏置权重/单元以灰色显示。*
 *Figure 6.6 XOR solution after Goodfellow et al. (2016). There are three ReLU units, in two layers; we’ve called them h1, h2 (h for “hidden layer”) and y1. As before, the numbers on the arrows represent the weights w for each unit, and we represent the bias b as a weight on a unit clamped to +1, with the bias weights/units in gray.*
@@ -373,7 +373,7 @@ AND 分类器和 OR 分类器的一组可能参数所画出的直线。请注意
 
 > the weights for neural networks are learned automatically using the error backpropagation algorithm to be introduced in Section 6.6. That means the hidden layers will learn to form useful representations. This intuition, that neural networks can automatically learn useful representations of the input, is one of their key advantages, and one that we will return to again and again in later chapters.
 
-![](images/fig_p7_0.png)
+![](images/06-neural-networks/fig_p7_0.png)
 
 *图 6.7 隐藏层形成了输入的一种新表示。(b) 展示了隐藏层的表示 h，与 (a) 中原始输入表示 x 的对比。*
 *Figure 6.7 The hidden layer forming a new representation of the input. (b) shows the representation of the hidden layer, h, compared to the original input representation x in (a).*
@@ -425,9 +425,9 @@ AND 分类器和 OR 分类器的一组可能参数所画出的直线。请注意
 
 > units, and output units.
 
-*图 6.8 给出了一幅示意图。输入层 x 是一个由简单标量值构成的向量，正如*
-*Fig. 6.8 shows a picture. The input layer x is a vector of simple scalar values just*
+图 6.8 给出了一幅示意图。输入层 x 是一个由简单标量值构成的向量，正如
 
+> Fig. 6.8 shows a picture. The input layer x is a vector of simple scalar values just
 我们在图 6.2 中所见。
 
 > as we saw in Fig. 6.2.
@@ -466,7 +466,7 @@ AND 分类器和 OR 分类器的一组可能参数所画出的直线。请注意
 
 > that now the hidden layer computation for a feedforward network can be done very
 
-![](images/fig_p8_0.png)
+![](images/06-neural-networks/fig_p8_0.png)
 
 *图 6.8 一个简单的 2 层前馈网络，包含一个隐藏层、一个输出层和一个输入层（在数层数时通常不把输入层计入）。*
 *Figure 6.8 A simple 2-layer feedforward network, with one hidden layer, one output layer, and one input layer (the input layer is usually not counted when enumerating layers).*
@@ -657,7 +657,7 @@ h j = σ Wji xi ,
 
 > i=0
 
-![](images/fig_p11_0.png)
+![](images/06-neural-networks/fig_p11_0.png)
 
 *图 6.9 用 x0（b）替换偏置节点（如 a 所示）。*
 *Figure 6.9 Replacing the bias node (shown in a) with x0 (b).*
@@ -702,10 +702,10 @@ z = Uh
 
 > Fig. 6.10 shows a sketch of this architecture. As we mentioned earlier, adding this hidden layer to our logistic regression classifier allows the network to represent the non-linear interactions between features. This alone might give us a better sentiment classifier.
 
-![](images/fig_p12_0.png)
+![](images/06-neural-networks/fig_p12_0.png)
 
 *图 6.10 使用传统手工构建特征的前馈网络情感分析*
-*Figure 6.10 Feedforward network sentiment analysis using traditional hand-built features*
+*Figure 6.10 Feedforward network sentiment analysis using traditional hand-built features of the input text.*
 
 ### 6.4.2 向量化以实现并行推理
 
@@ -812,7 +812,7 @@ H = σ(XW⊺+b) Z = HU⊺ˆY = softmax(Z) (6.20)
 
 > selects out the relevant row vector for word i, resulting in the embedding for word i, as depicted in Fig. 6.11.
 
-![](images/fig_p14_1.png)
+![](images/06-neural-networks/fig_p14_1.png)
 
 *图 6.11 用嵌入矩阵 E 乘以一个在第 3 位为 1 的独热向量，从而选出词 V3 的嵌入向量。*
 *Figure 6.11 Selecting the embedding vector for word V3 by multiplying the embedding matrix E with a one-hot vector with a 1 in index 3.*
@@ -824,7 +824,7 @@ H = σ(XW⊺+b) Z = HU⊺ˆY = softmax(Z) (6.20)
 
 > of one-hot vectors, one for each of the N input positions as shown in Fig. 6.12.
 
-![](images/fig_p14_0.png)
+![](images/06-neural-networks/fig_p14_0.png)
 
 *图 6.12 用与词元 id 序列 W 对应的独热矩阵乘以嵌入矩阵 E，从而选出该输入序列的嵌入矩阵。*
 *Figure 6.12 Selecting the embedding matrix for the input sequence of token ids W by multiplying a one-hot matrix corresponding to W by the embedding matrix E.*
@@ -836,17 +836,13 @@ H = σ(XW⊺+b) Z = HU⊺ˆY = softmax(Z) (6.20)
 把嵌入传给分类器有两种常见方式：拼接
 
 > There are two common ways to pass embeddings to a classifier: concatenation
-和池化。第一种，我们可以取这个形状为 [N × d] 的输入，把所有输入向量拼接成一个形状为 [1 × dN] 的很长的向量来重塑它。然后把这个输入传给分类器，让它作出判定。这样能得到大量信息，代价是要使用一个相当大的网络。第二种，我们可以把
+和池化。第一种，我们可以取这个形状为 [N × d] 的输入，把所有输入向量拼接成一个形状为 [1 × dN] 的很长的向量来重塑它。然后把这个输入传给分类器，让它作出判定。这样能得到大量信息，代价是要使用一个相当大的网络。第二种，我们可以把这 N 个嵌入池化为单个嵌入，然后把这个池化后的单个嵌入传给分类器。池化得到的信息比原有全部嵌入所包含的信息要少，但优点是规模小、效率高，而且在那些我们不太在意原始词序的任务中特别有用。下面各举一例：情感任务采用池化，语言建模任务采用拼接。
 
-> and pooling. First, we can take this input of shape [N × d] and reshape it by concatenating all the input vectors into one very long vector of shape [1 × dN]. Then we pass this input to our classifier and let it make its decision. This gives us lots of information, at the cost of using a pretty large network. Second, we can pool the
+> and pooling. First, we can take this input of shape [N × d] and reshape it by concatenating all the input vectors into one very long vector of shape [1 × dN]. Then we pass this input to our classifier and let it make its decision. This gives us lots of information, at the cost of using a pretty large network. Second, we can pool the N embeddings into a single embedding and then pass that single pooled embedding to the classifier. Pooling gives us less information than would have been present in all the original embeddings, but has the advantage of being small and efficient and is especially useful in tasks for which we don’t care as much about the original word order. Let’s give an example of each: pooling for the sentiment task, and concatenation for the language modeling task.
 
 > `pool`（池化）
 >
 > 释义：把一组嵌入向量合并为单个向量的操作，常见形式有取平均或逐维取最大值。
-
-N 个嵌入池化成单个嵌入，再把这个单独的池化嵌入传给分类器。池化提供的信息比所有原始嵌入里本应有的信息要少，但优点是小巧高效，在不太在意原始词序的任务中尤其有用。下面各举一例：情感任务用池化，语言建模任务用拼接。
-
-> N embeddings into a single embedding and then pass that single pooled embedding to the classifier. Pooling gives us less information than would have been present in all the original embeddings, but has the advantage of being small and efficient and is especially useful in tasks for which we don’t care as much about the original word order. Let’s give an example of each: pooling for the sentiment task, and concatenation for the language modeling task.
 
 为情感分析池化输入嵌入 我们先来看看池化如何用于情感分类任务。池化的直觉是：对情感而言，输入的确切位置（像 great 这样的词是第一个词还是第二个词？）不如词本身是什么重要。
 
@@ -921,7 +917,7 @@ z = hU
 
 > Neural language models have many advantages over the n-gram language models of Chapter 3. Neural language models can handle much longer histories, can generalize better over contexts of similar words, and are far more accurate at wordprediction. On the other hand, neural net language models are slower, more complex, need vast amounts of energy to train, and are less interpretable than n-gram models, so for some smaller tasks an n-gram language model is still the right tool.
 
-![](images/fig_p16_0.png)
+![](images/06-neural-networks/fig_p16_0.png)
 
 *图 6.13 使用输入词的池化嵌入进行的前馈网络情感分析。在每个时间步，网络为每个上下文词计算一个 d 维嵌入（用一个独热向量乘以嵌入矩阵 E），并把得到的 N 个嵌入池化，得到一个表示上下文窗口的单一嵌入，作为层 x。*
 *Figure 6.13 Feedforward network sentiment analysis using a pooled embedding of the input words. At each timestep the network computes a d-dimensional embedding for each context word (by multiplying a one-hot vector by the embedding matrix E), and pools the resulting N embeddings to get a single embedding that represents the context window as the layer x.*
@@ -954,7 +950,7 @@ P(wt|w1,...,wt−1) ≈P(wt|wt−N+1,...,wt−1) (6.23)
 
 > but have never seen the words “gets fed” after the word “dog”. Our test set has the prefix “I forgot to make sure that the dog gets”. What’s the next word? An n-gram language model will predict “fed” after “that the cat gets”, but not after “that the dog gets”. But a neural LM, knowing that “cat” and “dog” have similar embeddings, will be able to generalize from the “cat” context to assign a high enough probability to“fed” even after seeing “dog”.
 
-![](images/fig_p17_0.png)
+![](images/06-neural-networks/fig_p17_0.png)
 
 *图 6.14 前馈神经语言模型中的前向推理。在每个时间步 t，网络为 N = 3 个上下文词元中的每一个计算一个 d 维嵌入（用一个独热向量乘以嵌入矩阵 E），并把这三个嵌入拼接起来得到嵌入 e。该嵌入 e 乘以权重矩阵 W，然后逐元素施加激活函数得到隐藏层 h，h 再乘以另一个权重矩阵 U。softmax 层在每个输出节点 i 上预测下一词 wt 为词表词 Vi 的概率。这里把上下文窗口大小 N 画成 3 只是为了适合页面，而在实践中语言建模需要长得多的上下文。*
 *Figure 6.14 Forward inference in a feedforward neural language model. At each timestep t the network computes a d-dimensional embedding for each of the N = 3 context tokens (by multiplying a one-hot vector by the embedding matrix E), and concatenates the three to get the embedding e. This embedding e is multiplied by weight matrix W and then an activation function is applied element-wise to produce the hidden layer h, which is then multiplied by another weight matrix U. A softmax layer predicts at each output node i the probability that the next word wt will be vocabulary word Vi. We show the context window size N as 3 just to fit on the page, but in practice language modeling requires a much longer context.*
@@ -1185,7 +1181,7 @@ d = 2∗b e = a+d L = c∗e
 
 > We can now represent this as a graph, with nodes for each operation, and directed edges showing the outputs from each operation as the inputs to the next, as in Fig. 6.15. The simplest use of computation graphs is to compute the value of the function with some given inputs. In the figure, we’ve assumed the inputs a = 3, b = 1, c = −2, and we’ve shown the result of the forward pass to compute the result L(3,1,−2) = −10. In the forward pass of a computation graph, we apply each operation left to right, passing the outputs of each computation as the input to the next node.
 
-![](images/fig_p21_0.png)
+![](images/06-neural-networks/fig_p21_0.png)
 
 *图 6.15 函数 L(a,b,c) = c(a+2b) 的计算图，输入节点的取值为 a = 3, b = 1, c = −2，图中展示了 L 的前向传播计算过程。*
 *Figure 6.15 Computation graph for the function L(a,b,c) = c(a+2b), with values for input nodes a = 3, b = 1, c = −2, showing the forward pass computation of L.*
@@ -1238,7 +1234,7 @@ L = ce，我们可以直接计算导数 ∂L ∂c：
 ∂L ∂b = ∂L ∂e ∂d
 ∂e ∂d ∂b
 
-![](images/fig_p22_1.png)
+![](images/06-neural-networks/fig_p22_1.png)
 
 *图 6.16 每个节点（如这里的 e）接收一个上游梯度，将其与局部梯度（即其输出对其输入的梯度）相乘，并利用链式法则计算出要传给前一个节点的下游梯度。如果一个节点有多个输入，它就可能对应多个局部梯度。*
 *Figure 6.16 Each node (like e here) takes an upstream gradient, multiplies it by the local gradient (the gradient of its output with respect to its input), and uses the chain rule to compute a downstream gradient to be passed on to a prior node. A node may have multiple local gradients if it has multiple inputs.*
@@ -1270,10 +1266,10 @@ d = 2b : ∂b = 2
 
 > The forward pass conveniently already will have computed the values of the forward intermediate variables we need (like d and e) to compute these derivatives. Fig. 6.17 shows the backward pass.
 
-![](images/fig_p22_0.png)
+![](images/06-neural-networks/fig_p22_0.png)
 
 *图 6.17 函数 L(a,b,c) = c(a+2b) 的计算图，展示了反向传播的计算过程*
-*Figure 6.17 Computation graph for the function L(a,b,c) = c(a+2b), showing the backward pass computa-*
+*Figure 6.17 Computation graph for the function L(a,b,c) = c(a+2b), showing the backward pass computation of ∂L ∂a , ∂L ∂b , and ∂L ∂c .*
 
 神经网络的反向微分
 
@@ -1300,7 +1296,7 @@ LCE(ˆy,y) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.36)
 h i
 LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2]) (6.37)
 
-![](images/fig_p23_0.png)
+![](images/06-neural-networks/fig_p23_0.png)
 
 *图 6.18 一个简单 2 层神经网络（即 1 个隐藏层）的示例计算图，该网络有两个输入单元和 2 个隐藏单元。我们对记号作了少许调整，以避免在节点中写出冗长的公式，只标出所计算的函数及结果变量名。因此，节点 w[1] 11 右侧的 * 表示 w[1] 11 要与 x1 相乘，节点 z[1] = + 则表示 z[1] 的值由输入到该节点的三个节点求和得到（两个乘积项以及偏置项 b[1] i ）。*
 *Figure 6.18 Sample computation graph for a simple 2-layer neural net (= 1 hidden layer) with two input units and 2 hidden units. We’ve adjusted the notation a bit to avoid long equations in the nodes by just mentioning the function that is being computed, and the resulting variable name. Thus the * to the right of node w[1] 11 means that w[1] 11 is to be multiplied by x1, and the node z[1] = + means that the value of z[1] is computed by summing the three nodes that feed into it (the two products, and the bias term b[1] i ).*

@@ -28,6 +28,12 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -47,7 +53,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>People need to know things. So pretty much as soon as there were computers</p></blockquote>
 <p>我们就在向它们提问了。到 1961 年，已经出现了一个系统，可以回答关于美国棒球统计数据的问题，比如“扬基队七月份打了多少场比赛？”（Green 等，1961）。甚至 20 世纪 70 年代道格拉斯·亚当斯在《银河系漫游指南》中虚构出的计算机“深思”（Deep Thought），也回答了“生命、宇宙以及一切终极问题”。1 而且，由于如此多的知识都以文本形式编码，早在大型语言模型出现之前，系统就已经能以人类水平的表现回答问题：IBM 的 Watson 系统在 2011 年赢得了电视游戏节目 Jeopardy!，在回答如下这类问题时超越了人类：</p>
 <blockquote><p>we were asking them questions. By 1961 there was a system to answer questions about American baseball statistics like “How many games did the Yankees play in July?” (Green et al., 1961). Even fictional computers in the 1970s like Deep Thought, invented by Douglas Adams in The Hitchhiker’s Guide to the Galaxy, answered “the Ultimate Question Of Life, The Universe, and Everything”.1 And because so much knowledge is encoded in text, systems were answering questions at human-level performance even before LLMs: IBM’s Watson system won the TV game-show Jeopardy! in 2011, surpassing humans at answering questions like:</p></blockquote>
+<div class="figbox">
 <blockquote><p>威廉·威尔金森的《瓦拉几亚与摩尔达维亚诸公国纪事》启发了这位作家最著名的小说 2</p><p><em>WILLIAM WILKINSON’S “AN ACCOUNT OF THE PRINCIPALITIES OF WALLACHIA AND MOLDOVIA”INSPIRED THIS AUTHOR’S MOST FAMOUS NOVEL 2</em></p></blockquote>
+</div>
 <p>由此自然可以推出，大语言模型的一项重要功能就是</p>
 <blockquote><p>It follows naturally, then, that an important function of large language models is</p></blockquote>
 <p>满足人类的信息需求。而由于大量信息都在线上，找到能满足我们需求的信息就与网络信息检索——即搜索引擎所执行的任务——密切相关。事实上，随着现代搜索引擎与大语言模型相整合，二者的界限正变得越来越模糊。</p>
@@ -93,8 +101,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>that they are static; they were pretrained once, at a particular time. This means that LLMs cannot talk about about rapidly changing information (like something that happened last week) since they won’t have up-to-date information from after their release data.</p></blockquote>
 <p>针对用简单提示生成事实性文本所面临的这诸多问题，一种解决办法是给语言模型提供外部知识来源，例如医疗记录、法律记录等专有文本、个人电子邮件或企业文档，并在回答问题时使用这些文档。这种方法称为检索增强生成，简称 RAG，也正是我们将在本章重点讨论的方法</p>
 <blockquote><p>One solution to all these problems with simple prompting for generating factual text is to give a language model external sources of knowledge, for example proprietary texts like medical or legal records, personal emails, or corporate documents, and to use those documents in answering questions. This method is called retrieval-augmented generation or RAG, and that is the method we will focus on</p></blockquote>
-<aside class="term"><code>RAG</code><span class="term-explain">一种把外部文档检索与大语言模型生成相结合的方法，先取回相关文档，再依据这些文档生成答案。</span></aside>
-<aside class="term"><code>information retrieval</code><span class="term-zh">信息检索</span><span class="term-explain">指在给定用户查询的条件下，从文档集合中挑选出最相关文档的任务，也是搜索引擎的核心功能。</span></aside>
+<aside class="term"><code>RAG</code><span class="term-explain">检索增强生成的英文缩写，指先检索相关文档、再让大语言模型据此生成答案的框架。</span></aside>
+<aside class="term"><code>information retrieval</code><span class="term-zh">信息检索</span><span class="term-explain">指依据用户的信息需求，从各种媒体中检出相关内容的整个研究领域。</span></aside>
 <p>在本章中，我们使用信息检索（IR）技术来检索</p>
 <blockquote><p>in this chapter. In RAG we use information retrieval (IR) techniques to retrieve</p></blockquote>
 <p>那些很可能含有有助于回答该问题的信息的文档。</p>
@@ -145,6 +153,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>一组词项。</p>
 <blockquote><p>a set of terms.</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p3_0.png" alt="">
+<p class="caption">图 11.1 即席信息检索系统的架构。文档排序的做法是：给定查询，为每个候选文档计算一个分数，用以表示它可能在多大程度上满足用户的信息需求。信息检索系统分为两类，它们基于用来表示查询和文档的两类向量：稀疏向量与稠密向量。这两类检索在索引与打分机制的细节上有所不同。</p>
+<p class="caption">Figure 11.1 The architecture of an ad hoc IR system. Document ranking is based on computing a score for each candidate document given the query, expressing how relevant it is likely to be to meet the users information need. There are two classes of IR systems, based on the two classes of vectors that are used to represent queries and documents: sparse vectors and dense vectors. These two kinds of retrieval differ in the details of the indexing and scoring mechanisms.</p>
 <p>即席检索引擎的高层架构如图 11.1 所示。</p>
 <blockquote><p>The high-level architecture of an ad hoc retrieval engine is shown in Fig. 11.1.</p></blockquote>
 <p>该图对两类信息检索系统做了抽象，它们基于用来表示查询和文档的两类向量：稀疏向量与稠密向量。在稀疏检索中，我们用计数向量表示文档和查询，并以 tf-idf 或 BM25 加权。在稠密检索中，我们用嵌入表示文档和查询，嵌入由语言模型（编码器模型或解码器模型）计算得到。本节余下的部分讨论稀疏检索，第 11.3 节转向稠密检索。</p>
@@ -164,6 +174,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>也就是说，一个无序的词语集合，其位置被忽略，只保留它们在文档中的频次。在图中这个例子里，我们不去表示「It manages to be whimsical and romantic」这类短语中的词序，而只是记下：it 一词在整段摘录中出现了 5 次，love、recommend 和 movie 各出现 1 次，如此等等。</p>
 <blockquote><p>that is, an unordered set of words with their position ignored, keeping only their frequency in the document. In the example in the figure, instead of representing the word order in all the phrases like “It manages to be whimsical and romantic”, we simply note that the word it occurred 5 times in the entire excerpt, the words love, recommend, and movie once, and so on.</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p4_0.png" alt="">
+<p class="caption">图 11.2 经典向量空间模型应用于单篇文档的直观示意。词的位置被忽略（即词袋假设），我们利用每个词的频次。</p>
+<p class="caption">Figure 11.2 Intuition of the classic vector space model applied to a single document. The position of the words is ignored (the bag-of-words assumption) and we make use of the frequency of each word.</p>
 <p>因此我们可以设想把图 11.2 中的文档表示为向量 [1 3</p>
 <blockquote><p>We could thus imagine representing the document in Fig. 11.2 as the vector [1 3</p></blockquote>
 <p>1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1]（如果我们只限于这 18 个维度，并忽略英语中所有其他的词）。</p>
@@ -177,13 +189,30 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>A document is represented as a count vector, a column in Fig. 11.4. In the</p></blockquote>
 <p>图 11.4 的示例中，我们特意把文档向量的维度取为 4，只是为了便于在页面上排布；在真实的词项-文档矩阵中，文档向量的维度应为 |V|，即词表的大小。这两个向量的第一个维度都对应 battle 一词出现的次数，而我们可以</p>
 <blockquote><p>example in Fig. 11.4, we’ve chosen to make the document vectors of dimension 4, just so they fit on the page; in real term-document matrices, the document vectors would have dimensionality |V|, the vocabulary size. The first dimension for both these vectors corresponds to the number of times the word battle occurs, and we can</p></blockquote>
+<div class="figbox">
 <blockquote><p>《皆大欢喜》《第十二夜》《尤利乌斯·凯撒》《亨利五世》</p><p><em>As You Like It Twelfth Night Julius Caesar Henry V</em></p></blockquote>
-<blockquote><p>battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 图 11.3 四部莎士比亚戏剧中四个词的词项-文档矩阵。每个单元格包含（行）词在（列）文档中出现的次数。</p><p><em>battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 Figure 11.3 The term-document matrix for four words in four Shakespeare plays. Each cell contains the number of times the (row) word occurs in the (column) document.</em></p></blockquote>
+<blockquote><p>battle 1 0 7 13  good 114 80 62 89  fool 36 58 1 4  wit 20 15 2 3</p><p><em>battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3</em></p></blockquote>
+</div>
+<p class="caption">battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 图 11.3 四部莎士比亚戏剧中四个词的词项-文档矩阵。每个单元格包含（行）词在（列）文档中出现的次数。</p>
+<p class="caption">Figure 11.3 The term-document matrix for four words in four Shakespeare plays. Each cell contains the number of times the (row) word occurs in the (column) document.</p>
 <p>比较每个维度，例如可以注意到《皆大欢喜》（As You Like It）和《第十二夜》（Twelfth Night）的向量在第一个维度上取值相近（分别为 1 和 0）。</p>
 <blockquote><p>compare each dimension, noting for example that the vectors for As You Like It and Twelfth Night have similar values (1 and 0, respectively) for the first dimension.</p></blockquote>
+<blockquote><p>《皆大欢喜》《第十二夜》《尤利乌斯·凯撒》《亨利五世》</p><p><em>As You Like It Twelfth Night Julius Caesar Henry V</em></p></blockquote>
+<blockquote><p>battle 1 0 7 13  good 114 80 62 89  fool 36 58 1 4  wit 20 15 2 3</p><p><em>battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3</em></p></blockquote>
+<p class="caption">图 11.4 四部莎士比亚戏剧中四个词的词项-文档矩阵。红色方框表明每篇文档都被表示为一个长度为 4 的列向量。</p>
+<p class="caption">Figure 11.4 The term-document matrix for four words in four Shakespeare plays. The red boxes show that each document is represented as a column vector of length four.</p>
+<p>由于 4 维空间难以可视化，图 11.5 用两个维度展示了这四个文档向量的可视化；我们随意选取了对应 battle 和 fool 这两个词的维度。</p>
+<blockquote><p>Since 4-dimensional spaces are hard to visualize, Fig. 11.5 shows a visualization of the four document vectors in two dimensions; we’ve arbitrarily chosen the dimensions corresponding to the words battle and fool.</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p5_0.png" alt="">
-<p>或者对图 11.2 中的文档使用 [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1]。相反，我们为文档中的每个词计算一个词项权重。两种词项加权方案</p>
-<blockquote><p>or [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] for the document in Fig. 11.2. Instead we compute a term weight for each document word. Two term weighting schemes are</p></blockquote>
+<p class="caption">图 11.5 四部莎士比亚戏剧的文档向量的空间可视化，仅展示其中两个维度，分别对应 battle 和 fool 这两个词。</p>
+<p class="caption">Figure 11.5 A spatial visualization of the document vectors for the four Shakespeare play documents, showing just two of the dimensions, corresponding to the words battle and fool.</p>
+<blockquote><p>两部喜剧在 fool 维度上取值很高，在 battle 维度上取值很低。</p><p><em>The comedies have high values for the fool dimension and low values for the battle dimension.</em></p></blockquote>
+<p>两篇相似的文档往往会有相似的词，而如果两篇文档含有相似的词，它们的列向量往往也会相似。喜剧《皆大欢喜》[1,114,36,20] 与《第十二夜》[0,80,58,15] 的向量彼此之间相像得多（fool 和 wit 的取值多于 battle），而不那么像《尤利乌斯·凯撒》[7,62,1,2] 或《亨利五世》[13,89,4,3]。</p>
+<blockquote><p>Two documents that are similar will tend to have similar words, and if two documents have similar words their column vectors will tend to be similar. The vectors for the comedies As You Like It [1,114,36,20] and Twelfth Night [0,80,58,15] look a lot more like each other (more fools and wit than battles) than they look like Julius Caesar [7,62,1,2] or Henry V [13,89,4,3].</p></blockquote>
+<h3>11.1.2 词项加权：tf-idf 与 BM25</h3>
+<blockquote><p>11.1.2 Term weighting: tf-idf and BM25</p></blockquote>
+<p>事实上，在 IR 中，我们不使用像《皆大欢喜》的 [1 114 36 20]，或图 11.2 中文档的 [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] 这样的原始词计数。相反，我们为文档中的每个词计算一个词项权重。两种词项加权方案</p>
+<blockquote><p>In fact, in IR, we don’t use raw word counts like [1 114 36 20] for As You Like It, or [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] for the document in Fig. 11.2. Instead we compute a term weight for each document word. Two term weighting schemes are</p></blockquote>
 <aside class="term"><code>term weight BM25</code><span class="term-zh">词项权重 BM25</span><span class="term-explain">给文档中每个词项赋予的数值，用来衡量它对文档内容的区分能力；书中把 BM25 作为一种常用的加权方案。</span></aside>
 <p>常见的有：tf-idf，以及 tf-idf 的一种变体，称为 BM25。</p>
 <blockquote><p>common: tf-idf and a variant of tf-idf called BM25.</p></blockquote>
@@ -251,6 +280,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Document 1 has a higher cosine with the query (0.747) than Document 2 has</p></blockquote>
 <p>与查询的余弦值（0.0779），因此 tf-idf 余弦模型会把文档 1 排在文档 2 之前。鉴于向量空间模型，这一排名是符合直觉的，因为文档 1 两个词项都包含，其中「甜蜜」还出现了两次，而文档 2 则</p>
 <blockquote><p>with the query (0.0779), and so the tf-idf cosine model would rank Document 1 above Document 2. This ranking is intuitive given the vector space model, since Document 1 has both terms including two instances of sweet, while Document 2 is</p></blockquote>
+<div class="figbox">
 <blockquote><p>查询</p><p><em>Query</em></p></blockquote>
 <blockquote><p>单词 计数 tf df idf tf-idf 归一化 = tf-idf/|q|甜蜜 1 1 3 0.125 0.125 0.383 护士 0 0 2 0.301 0 0 爱 1 1 2 0.301 0.301 0.924 多么 0 0 1 0.602 0 0 忧伤 0 0 1 0.602 0 0 是 0 0 1 0.602 0 0</p><p><em>word cnt tf df idf tf-idf n’lized = tf-idf/|q|sweet 1 1 3 0.125 0.125 0.383 nurse 0 0 2 0.301 0 0 love 1 1 2 0.301 0.301 0.924 how 0 0 1 0.602 0 0 sorrow 0 0 1 0.602 0 0 is 0 0 1 0.602 0 0</em></p></blockquote>
 <blockquote><p>√ .1252 +.3012 = .326</p></blockquote>
@@ -260,6 +290,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>√ .1632 +.3012 +.3012 = .456 √ .1252 +.6022 = .615</p></blockquote>
 <blockquote><p>|d1| = |d2| =</p></blockquote>
 <blockquote><p>余弦：该列求和：0.747 余弦：该列求和：0.0779</p><p><em>Cosine: P of column: 0.747 Cosine: P of column: 0.0779</em></p></blockquote>
+</div>
+<p class="caption">图 11.6 使用式 11.4、式 11.5、式 11.6 和式 11.9 计算查询与纳米文档 1（0.747）和纳米文档 2（0.0779）之间的 tf-idf 余弦得分。</p>
+<p class="caption">Figure 11.6 Computation of tf-idf cosine score between the query and nano-documents 1 (0.747) and 2(0.0779), using Eq. 11.4, Eq. 11.5, Eq. 11.6 and Eq. 11.9.</p>
 <p>缺少其中一个词项。文档 3 和文档 4 的计算我们留作读者的练习。</p>
 <blockquote><p>missing one of the terms. We leave the computation for Documents 3 and 4 as an exercise for the reader.</p></blockquote>
 <p>在实践中，式 11.9 有许多变体和近似形式。例如，我们可能选择通过去掉某些项来简化处理。为了看清这一点，我们先展开式 11.9 中的 tf-idf 公式，把式 11.6 中的 tf 项和 idf 项显式写出来：</p>
@@ -305,7 +338,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>postings</code><span class="term-zh">倒排记录</span><span class="term-explain">倒排索引中与词项相关联的文档 ID 列表，通常还记录词频，甚至词项在文档中的精确位置。</span></aside>
 <p>列表（其设计目标是能够被高效访问），其中每一项都指向该词项的倒排列表。倒排列表是与每个词项相关联的文档 ID 列表，其中还可以包含词频，甚至词项在文档中的精确位置等信息。词典还可以存储每个词项的文档频率。例如，上面 4 篇示例文档的一个简单倒排索引可能如下所示：每个词在 {} 中给出它的文档频率，并指向一个在 [] 中给出文档 ID 和词项计数的倒排列表：</p>
 <blockquote><p>of terms (designed to be efficiently accessed), each pointing to a postings list for the term. A postings list is the list of document IDs associated with each term, which can also contain information like the term frequency or even the exact positions of terms in the document. The dictionary can also store the document frequency for each term. For example, a simple inverted index for our 4 sample documents above, with each word containing its document frequency in {}, and a pointer to a postings list that contains document IDs and term counts in [], might look like the following:</p></blockquote>
+<div class="figbox">
 <blockquote><p>how {1} →3 [1] is {1} →3 [1] love {2} →1 [1] →3 [1] nurse {2} →1 [1] →4 [1] sorrow {1} →2 [1] sweet {3} →1 [2] →2 [1] →3 [1]</p></blockquote>
+</div>
 <p>给定查询中的一组词项，我们就能非常高效地得到所有候选</p>
 <blockquote><p>Given a list of terms in query, we can very efficiently get lists of all candidate</p></blockquote>
 <p>文档的列表，以及计算我们所需 tf-idf 分数所必需的信息。</p>
@@ -344,8 +379,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>k Recallk = |前 k 个中的相关文档数|</p>
 <blockquote><p>Recallk = |relevant documents in top k|</p></blockquote>
 <p>9</p>
+<div class="figbox">
 <blockquote><p>排名 判定 精确率 召回率 1 R 1.0 .11 2 N .50 .11 3 R .66 .22 4 N .50 .22 5 R .60 .33 6 R .66 .44 7 N .57 .44 8 R .63 .55 9 N .55 .55 10 N .50 .55 11 R .55 .66 12 N .50 .66 13 N .46 .66 14 N .43 .66 15 R .47 .77 16 N .44 .77 17 N .41 .77 18 R .44 .88 19 N .42 .88 20 N .40 .88 21 N .38 .88 22 N .36 .88 23 N .35 .88 24 N .33 .88 25 R .36 1.0</p><p><em>Rank Judgment PrecisionRank RecallRank 1 R 1.0 .11 2 N .50 .11 3 R .66 .22 4 N .50 .22 5 R .60 .33 6 R .66 .44 7 N .57 .44 8 R .63 .55 9 N .55 .55 10 N .50 .55 11 R .55 .66 12 N .50 .66 13 N .46 .66 14 N .43 .66 15 R .47 .77 16 N .44 .77 17 N .41 .77 18 R .44 .88 19 N .42 .88 20 N .40 .88 21 N .38 .88 22 N .36 .88 23 N .35 .88 24 N .33 .88 25 R .36 1.0</em></p></blockquote>
+</div>
+<p class="caption">图 11.7 在逐条遍历一组排序文档时计算得到的按排名区分的精确率和召回率值（假设文档集合中有 9 篇相关文档）。</p>
+<p class="caption">Figure 11.7 Rank-specific precision and recall values calculated as we proceed down through a set of ranked documents (assuming the collection has 9 relevant documents).</p>
 <img src="../md/images/11-retrieval-based-models/fig_p11_0.png" alt="">
+<p class="caption">图 11.8 表 11.7 中数据的精确率-召回率曲线。</p>
+<p class="caption">Figure 11.8 The precision recall curve for the data in table 11.7.</p>
 <p>注意，召回率是非递减的：当遇到一篇相关文档时，</p>
 <blockquote><p>Note that recall is non-decreasing; when a relevant document is encountered,</p></blockquote>
 <p>召回率会上升；而当遇到的是一篇不相关文档时，它保持不变。</p>
@@ -357,17 +398,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>precision and recall is to plot precision against recall in a precision-recall curve,</p></blockquote>
 <p>就像图 11.8 中针对表 11.7 的数据所展示的那样。</p>
 <blockquote><p>like the one shown in Fig. 11.8 for the data in table 11.7.</p></blockquote>
-<p>图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们</p>
-<blockquote><p>Fig. 11.8 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we</p></blockquote>
+<p>图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，</p>
+<blockquote><p>Fig. 11.8 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we use interpolated precision values for the 11 recall values from the data points we do have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,</p></blockquote>
 <aside class="term"><code>interpolated precision</code><span class="term-zh">插值精确率</span><span class="term-explain">在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。</span></aside>
-<p>就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值</p>
-<blockquote><p>use interpolated precision values for the 11 recall values from the data points we do</p></blockquote>
-<p>来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，</p>
-<blockquote><p>have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,</p></blockquote>
 <p>IntPrecision(r) = max i&gt;=r Precision(i) (11.15)这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。</p>
 <blockquote><p>This interpolation scheme not only lets us average performance over a set of queries, but also helps smooth over the irregular precision values in the original data. It is designed to give systems the benefit of the doubt by assigning the maximum precision value achieved at higher levels of recall from the one being measured. Fig. 11.9 and Fig. 11.10 show the resulting interpolated data points from our example.</p></blockquote>
+<div class="figbox">
 <blockquote><p>插值精确率 召回率</p><p><em>Interpolated Precision Recall</em></p></blockquote>
 <blockquote><p>1.0 0.0 1.0 .10.66 .20.66 .30.66 .40.63 .50.55 .60.47 .70.44 .80.36 .90.36 1.0</p></blockquote>
+</div>
+<p class="caption">图 11.9 由图 11.7 得到的插值数据点。</p>
+<p class="caption">Figure 11.9 Interpolated data points from Fig. 11.7.</p>
 <p>有了像图 11.10 那样的曲线，我们就可以通过比较曲线来比较两个系统或方法。显然，在所有召回率取值上精确率都更高的曲线更可取。不过，这些曲线还能让我们洞悉系统的整体行为。在左侧精确率更高的系统，可能更偏重精确率而非召回率；而更偏重召回率的系统，则在更高的召回率水平上（即右侧）更高。</p>
 <blockquote><p>Given curves such as that in Fig. 11.10 we can compare two systems or approaches by comparing their curves. Clearly, curves that are higher in precision across all recall values are preferred. However, these curves can also provide insight into the overall behavior of a system. Systems that are higher in precision toward the left may favor precision over recall, while systems that are more geared towards recall will be higher at higher levels of recall (to the right).</p></blockquote>
 <aside class="term"><code>mean average precision</code><span class="term-zh">平均精确率均值</span><span class="term-explain">先对每个查询求平均精确率，再对一组查询的这些平均值取平均，得到用于比较不同检索系统或方法的单一指标。</span></aside>
@@ -385,6 +426,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 11.7 中单个查询的 MAP（因而等于 AP）为 0.6。</p>
 <blockquote><p>The MAP for the single query (hence = AP) in Fig. 11.7 is 0.6.</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p13_0.png" alt="">
+<p class="caption">图 11.10 11 点插值精确率-召回率曲线。对每个查询，11 个标准召回率水平中每一水平上的精确率，均由任意更高召回率水平处的最大值插值得到。图中还给出了原始测得的精确率-召回率数据点。</p>
+<p class="caption">Figure 11.10 An 11 point interpolated precision-recall curve. Precision at each of the 11 standard recall levels is interpolated for each query from the maximum at any higher level of recall. The original measured precision recall points are also shown.</p>
 <h2>11.3 使用稠密向量的信息检索</h2>
 <blockquote><p>11.3 Information Retrieval with Dense Vectors</p></blockquote>
 <p>信息检索中经典的 tf-idf 或 BM25 算法长期以来被认为存在一个概念性缺陷：只有当查询与文档之间存在完全相同的词重叠时，它们才奏效。换言之，提出查询（或提出问题）的用户需要准确猜出答案撰写者可能使用了哪些词，这一问题被称为词汇不匹配问题（vocabulary mismatch problem）（Furnas 等，1987）。</p>
@@ -400,6 +443,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>z = BERT(q;[SEP];d)[CLS] score(q,d) = softmax(U(z)) (11.18)这一架构如图 11.11a 所示。通常检索步骤并不是在整篇文档上进行的。相反，文档会被切分成更小的段落，例如互不重叠、长度固定（比如 100 个词元）的文本块，检索器对这些段落进行编码和检索，而不是对整篇文档进行编码和检索。必须让查询和文档能够装进 BERT 的 512 词元窗口，例如把查询截断到 64 个词元，并在必要时截断文档，使文档、查询、[CLS] 和 [SEP] 合计装进 512 个词元。然后，通过收集一批由相关和不相关段落组成的调优数据集，就可以针对相关性任务对 BERT 系统连同线性层 U 一起微调。</p>
 <blockquote><p>This architecture is shown in Fig. 11.11a. Usually the retrieval step is not done on an entire document. Instead documents are broken up into smaller passages, such as non-overlapping fixed-length chunks of say 100 tokens, and the retriever encodes and retrieves these passages rather than entire documents. The query and document have to be made to fit in the BERT 512-token window, for example by truncating the query to 64 tokens and truncating the document if necessary so that it, the query,[CLS], and [SEP] fit in 512 tokens. The BERT system together with the linear layer U can then be fine-tuned for the relevance task by gathering a tuning dataset of relevant and non-relevant passages.</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p14_0.png" alt="">
+<p class="caption">图 11.11 进行稠密检索的两种方式，图中的层间连线用以示意性地表示自注意力：（a）使用单个编码器联合编码查询和文档，并加以微调，通过在 CLS 词元之上的线性层产生相关性分数。这种做法的计算开销太大，除了用于重打分之外无法使用。（b）对查询和文档分别使用独立的编码器，并以查询和文档的 CLS 词元输出之间的点积作为分数。这种做法的计算开销较小，但精度不如前者。</p>
+<p class="caption">Figure 11.11 Two ways to do dense retrieval, illustrated by using lines between layers to schematically represent self-attention: (a) Use a single encoder to jointly encode query and document and fine-tune to produce a relevance score with a linear layer over the CLS token. This is too compute-expensive to use except in rescoring(b) Use separate encoders for query and document, and use the dot product between CLS token outputs for the query and document as the score. This is less compute-expensive, but not as accurate.</p>
 <p>图 11.11a 中完整 BERT 架构的问题在于其</p>
 <blockquote><p>The problem with the full BERT architecture in Fig. 11.11a is the expense in</p></blockquote>
 <p>计算和时间开销。采用这一架构时，每当我们收到一个查询，都必须把整个文档集合里的每一篇文档与这个新查询一起送入 BERT 编码器！这种巨大的资源消耗在实际场景中是不可行的。</p>
@@ -414,6 +459,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Another intermediate approach is the ColBERT approach of Khattab and Zaharia (2020) and Khattab et al. (2021), shown in Fig. 11.12. This method separately encodes the query and document, but rather than encoding the entire query or document into one vector, it separately encodes each of them into contextual representations for each token. These BERT representations of each document word can be pre-stored for efficiency. The relevance score between a query q and a document d is a sum of maximum similarity (MaxSim) operators between tokens in q and tokens in d. Essentially, for each token in q, ColBERT finds the most contextually similar token in d, and then sums up these similarities. A relevant document will have tokens that are contextually very similar to the query.</p></blockquote>
 <aside class="term"><code>ColBERT</code><span class="term-explain">一种后期交互式检索模型：对查询和文档分别编码、为每个词元保留上下文向量，并以词元间最大相似度的求和作为相关性分数。</span></aside>
 <img src="../md/images/11-retrieval-based-models/fig_p15_0.png" alt="">
+<p class="caption">图 11.12 推理阶段 ColBERT 算法的示意图。查询和文档首先分别通过独立的 BERT 编码器。查询与文档之间的相似度，通过把查询中词元与文档中词元的上下文表示之间的软对齐相加来计算。训练是端到端的。（图中未画出各种细节；例如查询前面会加上 [CLS] 和 [Q:] 词元，文档前面会加上 [CLS] 和 [D:] 词元。）图改编自 Khattab 和 Zaharia（2020）。</p>
+<p class="caption">Figure 11.12 A sketch of the ColBERT algorithm at inference time. The query and document are first passed through separate BERT encoders. Similarity between query and document is computed by summing a soft alignment between the contextual representations of tokens in the query and the document. Training is end-to-end. (Various details aren’t depicted; for example the query is prepended by a [CLS] and [Q:] tokens, and the document by [CLS] and [D:] tokens). Figure adapted from Khattab and Zaharia (2020).</p>
 <p>更形式化地说，问题 q 被分词为 [q1,...,qn]，前面加上一个 [CLS]</p>
 <blockquote><p>More formally, a question q is tokenized as [q1,...,qn], prepended with a [CLS]</p></blockquote>
 <p>以及一个特殊的 [Q] 词元，截断到 N=32 个词元（若长度不足则用 [MASK] 词元填充），然后送入 BERT，得到输出向量 q = [q1,...,qN]。词元为 [d1,...,dm] 的段落 d 也以类似方式处理，其中包括一个 [CLS] 和特殊的 [D] 词元。在 d 和 q 之上施加一个线性层以控制输出维度，从而保持向量较小、便于存储，并把向量重新缩放到单位长度，得到最终的向量序列 Eq（长度为 N）和 Ed（长度为 m）。ColBERT 的打分机制为：</p>
@@ -455,6 +502,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>例如，设想用户提出这样一个问题：《魔笛》的首演是在哪一年</p>
 <blockquote><p>For example imagine the user asks the question What year was the premiere</p></blockquote>
 <img src="../md/images/11-retrieval-based-models/fig_p17_0.png" alt="">
+<p class="caption">图 11.13 检索增强生成以用户提示（它可以表达信息需求，如本例中的问题）和可能有助于满足该信息需求的文档语料库作为输入。该方法包含两个阶段：检索，即从文档集合中返回相关文档；生成，即大语言模型以这些文档作为提示来生成文本。有些生成结果会包含知识引证，帮助用户判断是否信任该生成内容，或在感兴趣时进一步追问。</p>
+<p class="caption">Figure 11.13 Retrieval-augmented generation takes as input a user prompt (which may express an information need like this question example), and a corpus of documents that may be useful in meeting the information need. The method has two stages: retrieval, which returns relevant documents from the collection, and generation, in which an LLM generates text given the documents as a prompt. Some generations include a knowledge citation that can help the user decide whether to trust the generation, or follow up if they are interested.</p>
 <p>《魔笛》？我们将这个问题传给稠密检索器，返回一系列关于《魔笛》的段落。</p>
 <blockquote><p>of The Magic Flute?. We pass this question to a dense retriever and return a series of passages about The Magic Flute.</p></blockquote>
 <p>检索增强生成的思路是：以检索到的段落连同某些提示文本作为条件，例如“基于这些文本，回答这个问题：”。因此，给定文档集合 D 和用户查询 q，最基本的 RAG 算法是：</p>
@@ -463,6 +512,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Call a retriever to return R(q) = d1 ···dk, the top-k relevant passages from D</p><p>Create a prompt that includes q and the retrieved passages</p><p>Call an LLM with the prompt</p></blockquote>
 <p>所得到的提示大致如下所示：</p>
 <blockquote><p>The resulting prompts might look something like:</p></blockquote>
+<div class="figbox">
 <p>RAG 提示的示意图</p>
 <blockquote><p>Schematic of a RAG Prompt</p></blockquote>
 <p>检索到的段落 1</p>
@@ -474,6 +524,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>retrieved passage k</p></blockquote>
 <p>基于这些文本，回答这个问题：《魔笛》的首演是在哪一年？</p>
 <blockquote><p>Based on these texts, answer this question: What year was the premiere of The Magic Flute?</p></blockquote>
+</div>
 <p>于是，语言模型的任务是按如下概率模型生成文本：</p>
 <blockquote><p>The task for the language model is then to generate text according to this probability model:</p></blockquote>
 <blockquote><p>n</p></blockquote>
@@ -556,6 +607,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Another dimension of variation is the format of the answer: multiple-choice</p></blockquote>
 <p>还是自由形式。当然，提示方式也存在差异，例如是只把问题给模型（零样本），还是同时提供相似问题的答案示例（少样本）。MMLU 同时提供零样本和少样本两种提示选项。</p>
 <blockquote><p>versus freeform. And of course there are variations in prompting, like whether the model is just the question (zero-shot) or also given demonstrations of answers to similar questions (few-shot). MMLU offers both zero-shot and few-shot prompt options.</p></blockquote>
+<div class="figbox">
 <p>MMLU 示例</p>
 <blockquote><p>MMLU examples</p></blockquote>
 <p>大学计算机科学　任何足以表示所有布尔表达式的布尔运算符集合都称为完备的。下列哪一项不是完备的？(A) AND, NOT(B) NOT, OR(C) AND, OR(D) NAND</p>
@@ -566,6 +618,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>International Law Which of the following is a treaty-based human rights mechanism?(A) The UN Human Rights Committee(B) The UN Human Rights Council(C) The UN Universal Periodic Review(D) The UN special mandates</p></blockquote>
 <p>史前史　与大多数其他早期文明不同，米诺斯文化几乎没有显示出以下哪一方面的证据？(A) 贸易。(B) 战争。(C) 共同宗教的发展。(D) 精英阶层的炫耀性消费。</p>
 <blockquote><p>Prehistory Unlike most other early civilizations, Minoan culture shows little evidence of(A) trade.(B) warfare.(C) the development of a common religion.(D) conspicuous consumption by elites.</p></blockquote>
+</div>
+<p class="caption">图 11.14　MMLU 的示例题目</p>
+<p class="caption">Figure 11.14 Example problems from MMLU</p>
 <h2>11.6 问答评估</h2>
 <blockquote><p>11.6 Evaluating Question Answering</p></blockquote>
 <p>评估问答系统通常采用两种技术，选用哪一种取决于问题的类型和问答场景。对于像 MMLU 中那样的多项选择题，我们报告精确匹配：</p>

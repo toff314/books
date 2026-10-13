@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -75,6 +80,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>这些参与者的语义角色是主题。</p>
 <blockquote><p>The semantic role for these participants is theme.</p></blockquote>
 <aside class="term"><code>theme</code><span class="term-zh">主题</span><span class="term-explain">指受动作影响最直接、或处于某种状态之中的参与者角色。</span></aside>
+<div class="figbox">
 <blockquote><p>题元角色定义</p><p><em>Thematic Role Definition</em></p></blockquote>
 <blockquote><p>事件的意愿性致事</p><p><em>The volitional causer of an event</em></p></blockquote>
 <blockquote><p>施事</p><p><em>AGENT</em></p></blockquote>
@@ -96,6 +102,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>来源</p><p><em>SOURCE</em></p></blockquote>
 <blockquote><p>转移事件中对象的目的地</p><p><em>The destination of an object of a transfer event</em></p></blockquote>
 <blockquote><p>目标</p><p><em>GOAL</em></p></blockquote>
+</div>
 <p class="caption">图 22.1 一些常用的题元角色及其定义。</p>
 <p class="caption">Figure 22.1 Some commonly used thematic roles with their definitions.</p>
 <p>尽管题元角色是最古老的语言学模型之一，但正如上文所见，</p>
@@ -107,6 +114,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>22.2 Diathesis Alternations</p></blockquote>
 <p>计算系统使用语义角色的主要原因是，它可以充当一种浅层意义表示，使我们能够做出仅凭词语表面字符串、甚至句法分析树都无法做出的简单推理。继续用前面的例子说明，如果某篇文档说 Company A 收购了 Company B，我们希望能知道这回答了查询“Company B 是否被收购？”——尽管这两个句子在表层句法上差别很大。类似地，这种浅层语义在机器翻译中可能充当一种有用的中间语言。</p>
 <blockquote><p>The main reason computational systems use semantic roles is to act as a shallow meaning representation that can let us make simple inferences that aren’t possible from the pure surface string of words, or even from the parse tree. To extend the earlier examples, if a document says that Company A acquired Company B, we’d like to know that this answers the query Was Company B acquired? despite the fact that the two sentences have very different surface syntax. Similarly, this shallow semantics might act as a useful intermediate language in machine translation.</p></blockquote>
+<div class="figbox">
 <blockquote><p>题元角色 示例</p><p><em>Thematic Role Example</em></p></blockquote>
 <blockquote><p>服务员把汤洒了。</p><p><em>The waiter spilled the soup.</em></p></blockquote>
 <blockquote><p>施事</p><p><em>AGENT</em></p></blockquote>
@@ -128,6 +136,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>来源</p><p><em>SOURCE</em></p></blockquote>
 <blockquote><p>我开车去了 Portland。</p><p><em>I drove to Portland.</em></p></blockquote>
 <blockquote><p>目标</p><p><em>GOAL</em></p></blockquote>
+</div>
 <p class="caption">图 22.2 各种题元角色的一些典型示例。</p>
 <p class="caption">Figure 22.2 Some prototypical examples of various thematic roles.</p>
 <p>因此，语义角色有助于对谓词论元的不同表层实现方式加以概括。例如，虽然施事常常实现为句子的主语，但在其他情况下主题也可以作主语。考虑动词 break 的题元论元可能出现的以下几种实现方式：</p>
@@ -173,7 +182,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>verb</code><span class="term-zh">动词</span><span class="term-explain">表示动作或状态的词类，在句中通常充当谓词并支配若干论元。</span></aside>
 <p>任意顺序）称为动词交替或语态交替。这种交替</p>
 <blockquote><p>either order) are called verb alternations or diathesis alternations. The alternation</p></blockquote>
-<aside class="term"><code>alternation dative</code><span class="term-zh">交替；与格交替</span><span class="term-explain">指同一动词的论元在不同句法位置之间换位实现的现象，如与格交替中主题与目标互换结构位置。</span></aside>
+<aside class="term"><code>alternation dative alternation</code><span class="term-zh">交替；与格交替</span><span class="term-explain">指同一动词的论元可出现在不同句法位置的现象；其中与格交替指 give 一类动词可在双宾语与介词短语两种结构间替换。</span></aside>
 <p>我们上文为 give 展示的这种交替，即与格交替，似乎只出现在特定的动词语义类别中，包括“将来拥有”类动词（advance、allocate、offer、owe）、“发送”类动词（forward、hand、mail）、“投掷”类动词（kick、pass、throw）等等。Levin (1993) 列出了 3100 个英语动词所属的语义类别（47 个高层类别，又细分为 193 个更具体的类别）以及它们所参与的各种交替。这些动词类别列表已被纳入在线资源 VerbNet (Kipper et al., 2000)，该资源把每个动词同时链接到 WordNet 和 FrameNet 条目。</p>
 <blockquote><p>we showed above for give, the dative alternation, seems to occur with particular semantic classes of verbs, including “verbs of future having” (advance, allocate, offer, owe), “send verbs” (forward, hand, mail), “verbs of throwing” (kick, pass, throw), and so on. Levin (1993) lists for 3100 English verbs the semantic classes to which they belong (47 high-level classes, divided into 193 more specific classes) and the various alternations in which they participate. These lists of verb classes have been incorporated into the online resource VerbNet (Kipper et al., 2000), which links each verb to both WordNet and FrameNet entries.</p></blockquote>
 <h2>22.3 语义角色：题元角色的问题</h2>
@@ -302,6 +311,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>more general properties of time, location, and so on.</p></blockquote>
 <blockquote><p>核心角色</p><p><em>core roles</em></p></blockquote>
 <blockquote><p>非核心角色</p><p><em>non-core roles</em></p></blockquote>
+<div class="figbox">
 <blockquote><p>核心角色</p><p><em>Core Roles</em></p></blockquote>
 <blockquote><p>属性 属性是对象所拥有的标量性质。</p><p><em>ATTRIBUTE The ATTRIBUTE is a scalar property that the ITEM possesses.</em></p></blockquote>
 <blockquote><p>差值 对象在标度上改变其位置的距离。</p><p><em>DIFFERENCE The distance by which an ITEM changes its position on the scale.</em></p></blockquote>
@@ -317,6 +327,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>持续时间 变化发生所持续的时间长度。</p><p><em>DURATION The length of time over which the change takes place.</em></p></blockquote>
 <blockquote><p>速度 取值的变化率。群体 对象在其中以指定方式改变</p><p><em>SPEED The rate of change of the VALUE. GROUP The GROUP in which an ITEM changes the value of an</em></p></blockquote>
 <blockquote><p>属性取值的群体。</p><p><em>ATTRIBUTE in a specified way.</em></p></blockquote>
+</div>
 <p class="caption">图 22.3 FrameNet 标注者指南（Ruppenhofer et al., 2016）中 change position on a scale 框架的框架元素。</p>
 <p class="caption">Figure 22.3 The frame elements in the change position on a scale frame from the FrameNet Labelers Guide (Ruppenhofer et al., 2016).</p>
 <p>以下是一些例句：</p>
@@ -522,11 +533,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Selectional Association</p></blockquote>
 <p>其中最具影响力的之一就是 Resnik 的选择关联模型</p>
 <blockquote><p>One of the most influential has been the selectional association model of Resnik</p></blockquote>
-<aside class="term"><code>selectional preference strength</code><span class="term-zh">选择偏好强度</span><span class="term-explain">衡量一个谓词能在多大程度上告诉我们其论元所属语义类别的信息量。</span></aside>
+<aside class="term"><code>selectional</code><span class="term-zh">选择的（selectional）</span><span class="term-explain">指谓词对其论元所属语义类别的限制或偏好，如 eat 倾向于选择可食用的事物作直接宾语。</span></aside>
 <p>（1993）。Resnik 把选择偏好强度这一概念定义为</p>
 <blockquote><p>(1993). Resnik defines the idea of selectional preference strength as the general</p></blockquote>
-<p>一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38)</p>
-<blockquote><p>amount of information that a predicate tells us about the semantic class of its arguments. For example, the verb eat tells us a lot about the semantic class of its direct objects, since they tend to be edible. The verb be, by contrast, tells us less about its direct objects. The selectional preference strength can be defined by the difference in information between two distributions: the distribution of expected semantic classes P(c) (how likely is it that a direct object will fall into class c) and the distribution of expected semantic classes for the particular verb P(c|v) (how likely is it that the direct object of the specific verb v will fall into semantic class c). The greater the difference between these distributions, the more information the verb is giving us about possible objects. The difference between these two distributions can be quantified by relative entropy, or the Kullback-Leibler divergence (Kullback and Leibler, 1951). The Kullback-Leibler or KL divergence D(P||Q) expresses the difference between two probability distributions P and Q X P(x)log P(x) D(P||Q) = (22.38)</p></blockquote>
+<aside class="term"><code>preference strength</code><span class="term-zh">偏好强度</span><span class="term-explain">指谓词就其论元语义类别所提供的总体信息量，可用两个分布之间的相对熵来度量。</span></aside>
+<p>一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback</p>
+<blockquote><p>amount of information that a predicate tells us about the semantic class of its arguments. For example, the verb eat tells us a lot about the semantic class of its direct objects, since they tend to be edible. The verb be, by contrast, tells us less about its direct objects. The selectional preference strength can be defined by the difference in information between two distributions: the distribution of expected semantic classes P(c) (how likely is it that a direct object will fall into class c) and the distribution of expected semantic classes for the particular verb P(c|v) (how likely is it that the direct object of the specific verb v will fall into semantic class c). The greater the difference between these distributions, the more information the verb is giving us about possible objects. The difference between these two distributions can be quantified by relative entropy, or the Kullback-Leibler divergence (Kullback</p></blockquote>
+<aside class="term"><code>relative entropy KL divergence</code><span class="term-zh">相对熵；KL 散度</span><span class="term-explain">用于度量两个概率分布之间差异的一种指标，在本书中用来量化谓词的选择偏好强度。</span></aside>
+<p>and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38)</p>
+<blockquote><p>and Leibler, 1951). The Kullback-Leibler or KL divergence D(P||Q) expresses the difference between two probability distributions P and Q X P(x)log P(x) D(P||Q) = (22.38)</p></blockquote>
 <p>Q(x)选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。</p>
 <blockquote><p>The selectional preference SR(v) uses the KL divergence to express how much information, in bits, the verb v expresses about the possible semantic class of its argument.</p></blockquote>
 <blockquote><p>x</p></blockquote>
@@ -603,11 +618,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>虽然这种基元分解方法能够解释状态与动作之间、或使役与非使役谓词之间的相似性，但它仍然依赖于拥有大量像 open 这样的谓词。更激进的做法则选择把这些谓词也进一步拆解。其中一种在早期自然语言系统中发挥过作用的动词谓词分解方法，叫作概念依存（CD），它由十个基元谓词组成，如图 22.8 所示。</p>
 <blockquote><p>While this approach to primitive decomposition can explain the similarity between states and actions or causative and non-causative predicates, it still relies on having a large number of predicates like open. More radical approaches choose to break down these predicates as well. One such approach to verbal predicate decomposition that played a role in early natural language systems is conceptual dependency (CD), a set of ten primitive predicates, shown in Fig. 22.8.</p></blockquote>
 <aside class="term"><code>conceptual dependency</code><span class="term-zh">概念依存</span><span class="term-explain">一种用十个基元谓词（如 ATRANS、PTRANS、MTRANS 等）表示句子意义的早期语义表示方法。</span></aside>
+<div class="figbox">
 <blockquote><p>基元 定义 ATRANS 占有权或控制权从一个实体到</p><p><em>Primitive Definition ATRANS The abstract transfer of possession or control from one entity to</em></p></blockquote>
 <blockquote><p>另一个实体的抽象转移</p><p><em>another</em></p></blockquote>
 <blockquote><p>PTRANS 一个对象从一个位置到另一个位置的物理转移 MTRANS 心理概念在实体之间或在</p><p><em>PTRANS The physical transfer of an object from one location to another MTRANS The transfer of mental concepts between entities or within an</em></p></blockquote>
 <blockquote><p>一个实体内部的转移</p><p><em>entity</em></p></blockquote>
 <blockquote><p>MBUILD 在一个实体内部创造新信息 PROPEL 施加物理力以移动一个对象 MOVE 动物对自身某一部分的整体运动 INGEST 动物摄入某种物质 EXPEL 动物排出某物 SPEAK 发出声音的动作 ATTEND 使某一感觉器官聚焦的动作</p><p><em>MBUILD The creation of new information within an entity PROPEL The application of physical force to move an object MOVE The integral movement of a body part by an animal INGEST The taking in of a substance by an animal EXPEL The expulsion of something from an animal SPEAK The action of producing a sound ATTEND The action of focusing a sense organ</em></p></blockquote>
+</div>
 <p class="caption">图 22.8 一组概念依存基元。</p>
 <p class="caption">Figure 22.8 A set of conceptual dependency primitives.</p>
 <p>下面是一个例句及其 CD 表示。动词 brought</p>

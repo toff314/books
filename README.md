@@ -58,6 +58,13 @@ PDF 结构提取 → 多 subagent 并发翻译 → 合并机检 → 中英重排
 
 排版为**内容等价的重新排版**（页数与原书不同）；图片、表格、标题层级保留。
 
+### 交付形态（整本交付）
+
+- **在线阅读**：按章的中文 HTML / 中英对照 HTML（站点直接从工作目录托管）。
+- **整本 PDF**（不再逐章提供）：`zh/pdf/slp3-zh.pdf`（中文整本）、`zh/dual/slp3-dual.pdf`（中英对照整本）。
+  由 `slp3/scripts/build_pdf_book.py` 把各章 HTML 拼成一份书级 HTML 后**只渲染一次**。
+- 逐章 PDF 仍可用 `slp3/scripts/build_book.py --pdf` 显式开启，但不是默认。
+
 ### 与其他翻译方案的区别
 
 | 方案 | 结果 |

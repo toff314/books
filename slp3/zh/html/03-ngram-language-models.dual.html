@@ -19,10 +19,21 @@ img { max-width:100%; height:auto; display:block; margin:1.2em auto; }
 blockquote { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
   border-left:3px solid #c9d2dd; color:#4a4a4a; font-size:14px; }
 blockquote p { margin:.2em 0; }
+.term { margin:.8em 0; padding:.5em 1em; background:#f7f8fa;
+  border-left:3px solid #b9c4d0; color:#4a4a4a; font-size:14px; }
+.term code { background:none; color:var(--accent); margin-right:.5em; }
+.term-zh { color:#333; margin-right:.5em; }
+.term-explain { color:#4a4a4a; }
 table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -69,6 +80,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>systems if they are physically unable to speak or sign but can instead use eye gaze or other movements to select words from a menu. Word prediction can be used to suggest likely words for the menu.</p></blockquote>
 <p>在本章中，我们介绍最简单的一类语言模型：n-gram 语言模型。一个 n-gram 是 n 个词的序列：2-gram（我们称之为 bigram）是两个词的序列，如 The water 或 water of；3-gram（即 trigram）是三个词的序列，如 The water of 或 water of Walden。但我们也会（带着些许术语上的模糊）用 “n-gram” 一词来指代一种概率模型，它可以估计在给定前 n-1 个词的条件下某个词的概率，从而也为整个序列赋予概率。</p>
 <blockquote><p>In this chapter we introduce the simplest kind of language model: the n-gram language model. An n-gram is a sequence of n words: a 2-gram (which we’ll call bigram) is a two-word sequence of words like The water, or water of, and a 3gram (a trigram) is a three-word sequence of words like The water of, or water of Walden. But we also (in a bit of terminological ambiguity) use the word ‘ngram’ to mean a probabilistic model that can estimate the probability of a word given the n-1 previous words, and thereby also to assign probabilities to entire sequences.</p></blockquote>
+<blockquote><p><code>n-gram</code></p></blockquote>
 <p>在后面的章节中，我们将介绍强大得多的神经大型语言模型，它们基于第 7 章的 transformer 架构。但由于 n-gram 具有极其简单而清晰的形式化表述，我们用它们来引入大型语言建模的一些主要概念，包括训练集与测试集、困惑度、采样和插值。</p>
 <blockquote><p>In later chapters we will introduce the much more powerful neural large language models, based on the transformer architecture of Chapter 7. But because n-grams have a remarkably simple and clear formalization, we use them to introduce some major concepts of large language modeling, including training and test sets, perplexity, sampling, and interpolation.</p></blockquote>
 <h2>3.1 N-gram</h2>
@@ -149,7 +161,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Let’s work through an example using a mini-corpus of three sentences. We’ll</p></blockquote>
 <p>首先需要在每个句子的开头为它添加一个特殊符号 &lt;s&gt;，以便为第一个词提供 bigram 上下文。我们还需要一个特殊的结束符号 &lt;/s&gt;。1</p>
 <blockquote><p>first need to augment each sentence with a special symbol &lt;s&gt; at the beginning of the sentence, to give us the bigram context of the first word. We’ll also need a special end-symbol &lt;/s&gt;.1</p></blockquote>
-<p>&lt;s&gt; I am Sam &lt;/s&gt;&lt;s&gt; Sam I am &lt;/s&gt;&lt;s&gt; I do not like green eggs and ham &lt;/s&gt;以下是该语料库中某些 bigram 概率的计算：</p>
+<p>以下是该语料库中某些 bigram 概率的计算：</p>
 <blockquote><p>Here are the calculations for some of the bigram probabilities from this corpus:</p></blockquote>
 <p>P(_1I|&lt;s&gt;) = 2 3 = 0.67 P(Sam|&lt;s&gt;) = 1 3 = 0.33 P(am|I) = 2 3 = 0.67 P(&lt;/s&gt;|Sam) = 1 2 = 0.5 P(Sam|am) = 1 2 = 0.5 P(do|I) = 1 3 = 0.33 对于 MLE N-gram 参数估计的一般情形（N = 2,3,...）：</p>
 <blockquote><p>P(_1I|&lt;s&gt;) = 2 3 = 0.67 P(Sam|&lt;s&gt;) = 1 3 = 0.33 P(am|I) = 2 3 = 0.67 P(&lt;/s&gt;|Sam) = 1 2 = 0.5 P(Sam|am) = 1 2 = 0.5 P(do|I) = 1 3 = 0.33 For the general case of MLE N-gram parameter estimation (N = 2,3,...):</p></blockquote>
@@ -175,6 +187,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 3.1 展示了由文本规范化后的伯克利餐馆项目句子得到的部分 bigram 语法的 bigram 计数。注意，大多数取值都是零。事实上，我们特意选取了彼此之间有关联的示例词；如果从一个随机的八个词集合中选取矩阵，它会更加稀疏。</p>
 <blockquote><p>Figure 3.1 shows the bigram counts from part of a bigram grammar from textnormalized Berkeley Restaurant Project sentences. Note that the majority of the values are zero. In fact, we have chosen the sample words to cohere with each other; a matrix selected from a random set of eight words would be even more sparse.</p></blockquote>
 <table><tr><th></th><th>我<br>i</th><th>想要<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中式<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>我<br>i</td><td>5</td><td>827</td><td>0</td><td>9</td><td>0</td><td>0</td><td>0</td><td>2</td></tr><tr><td>想要<br>want</td><td>2</td><td>0</td><td>608</td><td>1</td><td>6</td><td>6</td><td>5</td><td>1</td></tr><tr><td>去<br>to</td><td>2</td><td>0</td><td>4</td><td>686</td><td>2</td><td>0</td><td>6</td><td>211</td></tr><tr><td>吃<br>eat</td><td>0</td><td>0</td><td>2</td><td>0</td><td>16</td><td>2</td><td>42</td><td>0</td></tr><tr><td>中式<br>chinese</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>82</td><td>1</td><td>0</td></tr><tr><td>食物<br>food</td><td>15</td><td>0</td><td>15</td><td>0</td><td>1</td><td>4</td><td>0</td><td>0</td></tr><tr><td>午餐<br>lunch</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>花费<br>spend</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></table>
+<p class="caption">图 3.1 伯克利餐馆项目语料库（9332 个句子）中八个词（V = 1446 个词中的八个）的 bigram 计数。零计数以灰色显示。每个单元格显示列标签词紧跟在行标签词之后的计数。因此，位于“我”行与“想要”列交叉处的单元格表示在语料库中“想要”跟在“我”之后出现了 827 次。</p>
+<p class="caption">Figure 3.1 Bigram counts for eight of the words (out of V = 1446) in the Berkeley Restaurant Project corpus of 9332 sentences. Zero counts are in gray. Each cell shows the count of the column label word following the row label word. Thus the cell in row i and column want means that want followed i 827 times in the corpus.</p>
 <p>图 3.2 展示了归一化之后的 bigram 概率（即将每个单元格</p>
 <blockquote><p>Figure 3.2 shows the bigram probabilities after normalization (dividing each cell</p></blockquote>
 <p>在图 3.1 中除以其所在行相应的 unigram，这些 unigram 取自下面这组 unigram 计数）：</p>
@@ -183,6 +197,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>i want to eat chinese food lunch spend 2533 927 2417 746 158 1093 341 278</p></blockquote>
 <table><tr><th>我<br>i</th><th>想要<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中式<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>2533</td><td>927</td><td>2417</td><td>746</td><td>158</td><td>1093</td><td>341</td><td>278</td></tr></table>
 <table><tr><th></th><th>我<br>i</th><th>想要<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中式<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>我<br>i</td><td>0.002</td><td>0.33</td><td>0</td><td>0.0036</td><td>0</td><td>0</td><td>0</td><td>0.00079</td></tr><tr><td>想要<br>want</td><td>0.0022</td><td>0</td><td>0.66</td><td>0.0011</td><td>0.0065</td><td>0.0065</td><td>0.0054</td><td>0.0011</td></tr><tr><td>去<br>to</td><td>0.00083</td><td>0</td><td>0.0017</td><td>0.28</td><td>0.00083</td><td>0</td><td>0.0025</td><td>0.087</td></tr><tr><td>吃<br>eat</td><td>0</td><td>0</td><td>0.0027</td><td>0</td><td>0.021</td><td>0.0027</td><td>0.056</td><td>0</td></tr><tr><td>中式<br>chinese</td><td>0.0063</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.52</td><td>0.0063</td><td>0</td></tr><tr><td>食物<br>food</td><td>0.014</td><td>0</td><td>0.014</td><td>0</td><td>0.00092</td><td>0.0037</td><td>0</td><td>0</td></tr><tr><td>午餐<br>lunch</td><td>0.0059</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.0029</td><td>0</td><td>0</td></tr><tr><td>花费<br>spend</td><td>0.0036</td><td>0</td><td>0.0036</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></table>
+<p class="caption">图 3.2 伯克利餐馆项目语料库（9332 个句子）中八个词的 bigram 概率。零概率以灰色显示。</p>
+<p class="caption">Figure 3.2 Bigram probabilities for eight words in the Berkeley Restaurant Project corpus of 9332 sentences. Zero probabilities are in gray.</p>
 <p>以下是一些其他有用的概率：</p>
 <blockquote><p>Here are a few other useful probabilities:</p></blockquote>
 <p>P(i|&lt;s&gt;) = 0.25 P(english|want) = 0.0011 P(food|english) = 0.5 P(&lt;/s&gt;|food) = 0.68现在我们可以计算像 I want English food 或</p>
@@ -211,11 +227,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In practice throughout this book, we’ll use log to mean natural log (ln) when the base is not specified.</p></blockquote>
 <p>更长的上下文 尽管出于教学目的我们只描述了 bigram 模型，但当有足够的训练数据时，我们使用 trigram 模型，它们</p>
 <blockquote><p>Longer context Although for pedagogical purposes we have only described bigram models, when there is sufficient training data we use trigram models, which</p></blockquote>
-<blockquote><p><code>trigram 4-gram 5-gram</code></p></blockquote>
+<aside class="term"><code>trigram</code><span class="term-explain">以当前词前面的两个词为条件来预测下一个词的 n-gram 语言模型。</span></aside>
 <p>以前面两个词为条件，或者使用 4-gram 或 5-gram 模型。对于这些更大的</p>
 <blockquote><p>condition on the previous two words, or 4-gram or 5-gram models. For these larger</p></blockquote>
+<aside class="term"><code>4-gram</code><span class="term-explain">以当前词前面的三个词为条件来预测下一个词的 n-gram 语言模型。</span></aside>
 <p>n-gram，我们需要在句子结尾的左侧和右侧假定额外的上下文。</p>
 <blockquote><p>n-grams, we’ll need to assume extra contexts to the left and right of the sentence end.</p></blockquote>
+<aside class="term"><code>5-gram</code><span class="term-explain">以当前词前面的四个词为条件来预测下一个词的 n-gram 语言模型。</span></aside>
 <p>例如，为了计算句子最开头的 trigram 概率，我们为第一个 trigram 使用两个伪词（即 P(I|&lt;s&gt;&lt;s&gt;)）。</p>
 <blockquote><p>For example, to compute trigram probabilities at the very beginning of the sentence, we use two pseudo-words for the first trigram (i.e., P(I|&lt;s&gt;&lt;s&gt;)).</p></blockquote>
 <p>人们已经创建了一些大型 n-gram 数据集，例如取自当代美国英语语料库的最频繁的一百万个</p>
@@ -236,20 +254,23 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>3.2 Evaluating Language Models: Training and Test Sets</p></blockquote>
 <p>评估语言模型性能的最佳方式，是将其嵌入某个应用中并衡量该应用改善了多少。这种端到端</p>
 <blockquote><p>The best way to evaluate the performance of a language model is to embed it in an application and measure how much the application improves. Such end-to-end</p></blockquote>
-<blockquote><p><code>extrinsic evaluation</code>（外在评估）</p></blockquote>
+<aside class="term"><code>extrinsic</code><span class="term-zh">外在</span><span class="term-explain">指把模型嵌入具体应用中，依据任务效果的改善来评估模型的方法。</span></aside>
 <p>评估被称为外在评估。外在评估是唯一能够</p>
 <blockquote><p>evaluation is called extrinsic evaluation. Extrinsic evaluation is the only way to</p></blockquote>
+<aside class="term"><code>evaluation</code><span class="term-zh">评估</span><span class="term-explain">衡量模型性能的过程；在具体应用中进行、依据任务效果判断的称为外在评估。</span></aside>
 <p>判断语言模型（或任何组件）的某项特定改进是否真的有助于当前任务的方式。因此，对于评估作为语音识别或机器翻译等任务组件的 n-gram 语言模型，我们可以通过运行两次语音识别器或机器翻译器（每次使用一个语言模型），并观察哪一个给出更准确的转写，来比较两个候选语言模型的性能。</p>
 <blockquote><p>know if a particular improvement in the language model (or any component) is really going to help the task at hand. Thus for evaluating n-gram language models that are a component of some task like speech recognition or machine translation, we can compare the performance of two candidate language models by running the speech recognizer or machine translator twice, once with each language model, and seeing which gives the more accurate transcription.</p></blockquote>
 <p>遗憾的是，端到端运行大型 NLP 系统通常非常昂贵。因此，拥有一个可用于快速评估潜在</p>
 <blockquote><p>Unfortunately, running big NLP systems end-to-end is often very expensive. Instead, it’s helpful to have a metric that can be used to quickly evaluate potential</p></blockquote>
-<blockquote><p><code>intrinsic evaluation</code>（内在评估）</p></blockquote>
+<aside class="term"><code>intrinsic</code><span class="term-zh">内在</span><span class="term-explain">指独立于任何具体应用、直接衡量模型自身质量的评估方式。</span></aside>
 <p>改进的指标会很有帮助。内在评估指标是一种独立于任何应用来衡量模型质量的指标。在下一节中，我们将介绍困惑度，它是衡量语言模型性能的标准内在指标，既适用于简单的 n-gram 语言模型，也适用于第 7 章中更复杂的神经大语言模型。</p>
 <blockquote><p>improvements in a language model. An intrinsic evaluation metric is one that measures the quality of a model independent of any application. In the next section we’ll introduce perplexity, which is the standard intrinsic metric for measuring language model performance, both for simple n-gram language models and for the more sophisticated neural large language models of Chapter 7.</p></blockquote>
+<aside class="term"><code>evaluation</code><span class="term-zh">评估</span><span class="term-explain">衡量模型性能的过程；不依赖具体应用、直接度量模型自身质量的称为内在评估。</span></aside>
 <p>为了评估任何机器学习模型，我们至少需要三个</p>
 <blockquote><p>In order to evaluate any machine learning model, we need to have at least three</p></blockquote>
 <p>不同的数据集：训练集、开发集和测试集。</p>
 <blockquote><p>distinct datasets: the training set, the development set, and the test set.</p></blockquote>
+<aside class="term"><code>training set development set test set</code><span class="term-zh">训练集 开发集 测试集</span><span class="term-explain">评估机器学习模型所需的三类数据：用于学习参数的训练集、用于调参的开发集和用于最终评估的测试集。</span></aside>
 <p>训练集是我们用来学习模型参数的数据；对于</p>
 <blockquote><p>The training set is the data we use to learn the parameters of our model; for</p></blockquote>
 <p>简单的 n-gram 语言模型，它是我们从中获取计数、并将其归一化为 n-gram 语言模型概率的语料库。</p>
@@ -386,7 +407,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>This technique of visualizing a language model by sampling was first suggested</p></blockquote>
 <p>香农（1948）以及 Miller 和 Selfridge（1950）在很早的时候就提出。要看清它在 unigram 情形下如何工作最为简单。设想英语中的所有单词覆盖 0 到 1 之间的数轴，每个单词覆盖一个与其频率成比例的区间。图 3.3 给出了使用一个 unigram LM 的可视化</p>
 <blockquote><p>very early on by Shannon (1948) and Miller and Selfridge (1950). It’s simplest to visualize how this works for the unigram case. Imagine all the words of the English language covering the number line between 0 and 1, each word covering an interval proportional to its frequency. Fig. 3.3 shows a visualization, using a unigram LM</p></blockquote>
-<img src="../md/images/fig_p12_0.png" alt="">
+<img src="../md/images/03-ngram-language-models/fig_p12_0.png" alt="">
+<p class="caption">图 3.3 通过反复采样 unigram 来采样句子的采样分布可视化。蓝色条形表示每个单词的相对频率（我们已把它们按从最频繁到最不频繁排序，但顺序的选择是任意的）。数轴显示累积概率。如果我们在 0 到 1 之间选取一个随机数，它会落入对应某个单词的区间。随机数落入某个高频词（the、of、a）的较大区间的期望，远高于落入某个罕见词（polyphonic）的较小区间。</p>
+<p class="caption">Figure 3.3 A visualization of the sampling distribution for sampling sentences by repeatedly sampling unigrams. The blue bar represents the relative frequency of each word (we’ve ordered them from most frequent to least frequent, but the choice of order is arbitrary). The number line shows the cumulative probabilities. If we choose a random number between 0 and 1, it will fall in an interval corresponding to some word. The expectation for the random number to fall in the larger intervals of one of the frequent words (the, of, a) is much higher than in the smaller interval of one of the rare words (polyphonic).</p>
 <p>该 LM 由本书的文本计算得到。我们在 0 到 1 之间选取一个随机值，在概率线上找到该点，并输出其区间包含这个所选值的那个单词。我们不断选取随机数并生成单词，直到随机生成句子结束词元 &lt;/s&gt;。</p>
 <blockquote><p>computed from the text of this book. We choose a random value between 0 and 1, find that point on the probability line, and print the word whose interval includes this chosen value. We continue choosing random numbers and generating words until we randomly generate the sentence-final token &lt;/s&gt;.</p></blockquote>
 <p>我们可以用同样的技术生成 bigram：首先生成一个以 &lt;s&gt; 开头的随机 bigram（依据其 bigram 概率）。假设该 bigram 的第二个单词是 w。接下来我们选择一个以 w 开头的随机 bigram（同样依据其 bigram 概率抽取），依此类推。</p>
@@ -407,6 +430,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>To get an idea of the dependence on the training set, let’s look at LMs trained on a</p></blockquote>
 <p>一个完全不同的语料库上训练的 LM：《华尔街日报》（WSJ）报纸。莎士比亚和《华尔街日报》都是英语，因此我们可能会预期我们的</p>
 <blockquote><p>completely different corpus: the Wall Street Journal (WSJ) newspaper. Shakespeare and the WSJ are both English, so we might have expected some overlap between our</p></blockquote>
+<div class="figbox">
 <blockquote><p>——向 他 吞下 忏悔 听见 两者。哪一个。关于 拯救 在 踪迹 上 为 是 ay 装置 和</p><p><em>–To him swallowed confess hear both. Which. Of save on trail for are ay device and</em></p></blockquote>
 <blockquote><p>1</p></blockquote>
 <blockquote><p>死记 生活 拥有</p><p><em>rote life have</em></p></blockquote>
@@ -423,8 +447,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>4</p></blockquote>
 <blockquote><p>盛大 的 宴会 已 上席；</p><p><em>great banquet serv’d in;</em></p></blockquote>
 <blockquote><p>gram——它 只能 如此。</p><p><em>gram –It cannot be but so.</em></p></blockquote>
+</div>
+<p class="caption">图 3.4 由在莎士比亚作品上计算得到的四个 n-gram 模型随机生成的八个句子。所有字符都被映射为小写，标点符号被当作单词处理。为提高可读性，输出中的大小写经过人工校正。</p>
+<p class="caption">Figure 3.4 Eight sentences randomly generated from four n-gram models computed from Shakespeare’s works. All characters were mapped to lower-case and punctuation marks were treated as words. Output is hand-corrected for capitalization to improve readability.</p>
 <p>两类文体的 n-gram 之间会有一些重叠。图 3.5 给出了由在 WSJ 的 4000 万词上训练得到的 unigram、bigram 和 trigram 模型生成的句子。</p>
 <blockquote><p>n-grams for the two genres. Fig. 3.5 shows sentences generated by unigram, bigram, and trigram models trained on 40 million words from WSJ.</p></blockquote>
+<div class="figbox">
 <blockquote><p>1</p></blockquote>
 <blockquote><p>数月 这 我的 与 发行 的 年 外国的 新 交易所的 九月 是 衰退 交易所 新 背书 一 获取 到 六 高管</p><p><em>Months the my and issue of year foreign new exchange’s september were recession exchange new endorsed a acquire to six executives</em></p></blockquote>
 <blockquote><p>gram</p></blockquote>
@@ -436,6 +464,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>3</p></blockquote>
 <blockquote><p>百分之四零六三的利率，商店如墨西哥和</p><p><em>four oh six three percent of the rates of interest stores as Mexico and</em></p></blockquote>
 <blockquote><p>gram 巴西关于市场状况</p><p><em>gram Brazil on market conditions</em></p></blockquote>
+</div>
+<p class="caption">图 3.5 由三个 n-gram 模型随机生成的三句话，这些模型基于《华尔街日报》4000 万词计算得出，其中所有字符都转为小写并标点视为词。输出随后经人工校正大小写以提高可读性。</p>
+<p class="caption">Figure 3.5 Three sentences randomly generated from three n-gram models computed from 40 million words of the Wall Street Journal, lower-casing all characters and treating punctuation as words. Output was then hand-corrected for capitalization to improve readability.</p>
 <p>将这些例子与图 3.4 中的伪莎士比亚文本相比较。尽管它们两者</p>
 <blockquote><p>Compare these examples to the pseudo-Shakespeare in Fig. 3.4. While they both</p></blockquote>
 <p>都建模“类似英语的句子”，但生成的句子之间毫无重叠，即使在小短语上也几乎没有重叠。如果训练集和测试集像莎士比亚与《华尔街日报》那样不同，统计模型作为预测器就基本毫无用处。</p>
@@ -496,6 +527,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>餐馆项目 bigram。图 3.6 给出了图 3.1 中各 bigram 的加一平滑计数。</p>
 <blockquote><p>Restaurant Project bigrams. Figure 3.6 shows the add-one smoothed counts for the bigrams in Fig. 3.1.</p></blockquote>
 <table><tr><th></th><th>我<br>i</th><th>想<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中餐<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>我<br>i</td><td>6</td><td>828</td><td>1</td><td>10</td><td>1</td><td>1</td><td>1</td><td>3</td></tr><tr><td>想<br>want</td><td>3</td><td>1</td><td>609</td><td>2</td><td>7</td><td>7</td><td>6</td><td>2</td></tr><tr><td>去<br>to</td><td>3</td><td>1</td><td>5</td><td>687</td><td>3</td><td>1</td><td>7</td><td>212</td></tr><tr><td>吃<br>eat</td><td>1</td><td>1</td><td>3</td><td>1</td><td>17</td><td>3</td><td>43</td><td>1</td></tr><tr><td>中餐<br>chinese</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>83</td><td>2</td><td>1</td></tr><tr><td>食物<br>food</td><td>16</td><td>1</td><td>16</td><td>1</td><td>2</td><td>5</td><td>1</td><td>1</td></tr><tr><td>午餐<br>lunch</td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td></tr><tr><td>花费<br>spend</td><td>2</td><td>1</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></table>
+<p class="caption">图 3.6 伯克利餐馆项目语料库（9332 个句子）中八个词（词表共 V = 1446 个词）的加一平滑 bigram 计数。此前为零的计数以灰色显示。</p>
+<p class="caption">Figure 3.6 Add-one smoothed bigram counts for eight of the words (out of V = 1446) in the Berkeley Restaurant Project corpus of 9332 sentences. Previously-zero counts are in gray.</p>
 <p>图 3.7 给出了图 3.2 中各 bigram 的加一平滑概率，</p>
 <blockquote><p>Figure 3.7 shows the add-one smoothed probabilities for the bigrams in Fig. 3.2,</p></blockquote>
 <p>其计算由下文式 3.26 给出。回忆一下，普通的 bigram 概率是用 unigram 计数对每一行计数进行归一化得到的：</p>
@@ -512,11 +545,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>This adjusted count C∗is the count that, if divided by C(wn−1), would result in the smoothed probability. This adjusted count is easier to compare directly with the MLE counts. That is, the Laplace probability can equally be expressed as the adjusted count divided by the (non-smoothed) denominator from Eq. 3.25:</p></blockquote>
 <p>PLaplace(wn|wn−1) = C(wn−1wn)+1 = C∗(wn−1wn) C(wn−1)+V C(wn−1)</p>
 <table><tr><th></th><th>我<br>i</th><th>想<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中餐<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>我<br>i</td><td>0.0015</td><td>0.21</td><td>0.00025</td><td>0.0025</td><td>0.00025</td><td>0.00025</td><td>0.00025</td><td>0.00075</td></tr><tr><td>想<br>want</td><td>0.0013</td><td>0.00042</td><td>0.26</td><td>0.00084</td><td>0.0029</td><td>0.0029</td><td>0.0025</td><td>0.00084</td></tr><tr><td>去<br>to</td><td>0.00078</td><td>0.00026</td><td>0.0013</td><td>0.18</td><td>0.00078</td><td>0.00026</td><td>0.0018</td><td>0.055</td></tr><tr><td>吃<br>eat</td><td>0.00046</td><td>0.00046</td><td>0.0014</td><td>0.00046</td><td>0.0078</td><td>0.0014</td><td>0.02</td><td>0.00046</td></tr><tr><td>中餐<br>chinese</td><td>0.0012</td><td>0.00062</td><td>0.00062</td><td>0.00062</td><td>0.00062</td><td>0.052</td><td>0.0012</td><td>0.00062</td></tr><tr><td>食物<br>food</td><td>0.0063</td><td>0.00039</td><td>0.0063</td><td>0.00039</td><td>0.00079</td><td>0.002</td><td>0.00039</td><td>0.00039</td></tr><tr><td>午餐<br>lunch</td><td>0.0017</td><td>0.00056</td><td>0.00056</td><td>0.00056</td><td>0.00056</td><td>0.0011</td><td>0.00056</td><td>0.00056</td></tr><tr><td>花费<br>spend</td><td>0.0012</td><td>0.00058</td><td>0.0012</td><td>0.00058</td><td>0.00058</td><td>0.00058</td><td>0.00058</td><td>0.00058</td></tr></table>
+<p class="caption">图 3.7 由式 3.26 计算的 BeRP 语料库（9332 个句子）中八个词（词表共 V = 1446 个词）的加一平滑 bigram 概率。此前为零的概率以灰色显示。</p>
+<p class="caption">Figure 3.7 Add-one smoothed bigram probabilities for eight of the words (out of V = 1446) in the BeRP corpus of 9332 sentences computed by Eq. 3.26. Previously-zero probabilities are in gray.</p>
 <p>重新整理各项，可以解出 C∗(wn−1wn)：</p>
 <blockquote><p>Rearranging terms, we can solve for C∗(wn−1wn) :</p></blockquote>
 <p>C∗(wn−1wn) = [C(wn−1wn)+1]×C(wn−1) (3.27) C(wn−1)+V图 3.8 给出了由式 3.27 计算的重建计数。</p>
 <blockquote><p>Figure 3.8 shows the reconstructed counts, computed by Eq. 3.27.</p></blockquote>
 <table><tr><th></th><th>我<br>i</th><th>想<br>want</th><th>去<br>to</th><th>吃<br>eat</th><th>中餐<br>chinese</th><th>食物<br>food</th><th>午餐<br>lunch</th><th>花费<br>spend</th></tr><tr><td>我<br>i</td><td>3.8</td><td>527</td><td>0.64</td><td>6.4</td><td>0.64</td><td>0.64</td><td>0.64</td><td>1.9</td></tr><tr><td>想<br>want</td><td>1.2</td><td>0.39</td><td>238</td><td>0.78</td><td>2.7</td><td>2.7</td><td>2.3</td><td>0.78</td></tr><tr><td>去<br>to</td><td>1.9</td><td>0.63</td><td>3.1</td><td>430</td><td>1.9</td><td>0.63</td><td>4.4</td><td>133</td></tr><tr><td>吃<br>eat</td><td>0.34</td><td>0.34</td><td>1</td><td>0.34</td><td>5.8</td><td>1</td><td>15</td><td>0.34</td></tr><tr><td>中餐<br>chinese</td><td>0.2</td><td>0.098</td><td>0.098</td><td>0.098</td><td>0.098</td><td>8.2</td><td>0.2</td><td>0.098</td></tr><tr><td>食物<br>food</td><td>6.9</td><td>0.43</td><td>6.9</td><td>0.43</td><td>0.86</td><td>2.2</td><td>0.43</td><td>0.43</td></tr><tr><td>午餐<br>lunch</td><td>0.57</td><td>0.19</td><td>0.19</td><td>0.19</td><td>0.19</td><td>0.38</td><td>0.19</td><td>0.19</td></tr><tr><td>花费<br>spend</td><td>0.32</td><td>0.16</td><td>0.32</td><td>0.16</td><td>0.16</td><td>0.16</td><td>0.16</td><td>0.16</td></tr></table>
+<p class="caption">图 3.8 由式 3.27 计算的 BeRP 语料库（9332 个句子）中八个词（V = 1446）的加一重建计数。此前为零的计数以灰色显示。</p>
+<p class="caption">Figure 3.8 Add-one reconstituted counts for eight words (of V = 1446) in the BeRP corpus of 9332 sentences, computed by Eq. 3.27. Previously-zero counts are in gray.</p>
 <p>注意，加一平滑使计数发生了很大的变化。把图 3.8 与图 3.1 中的原始计数相比，可以看到 C(want to) 从 608 变成了 238。在概率空间中也能看到这一点：P(to|want) 从平滑前的 0.66 降到平滑后的 0.26。观察折扣 d（它定义为新计数与旧计数之比），可以看出每个前缀词的计数被削减得多么惊人：bigram want to 的折扣为 0.39，而 Chinese food 的折扣为 0.10，相差 10 倍。出现这种剧烈变化，是因为有太多概率质量被挪到了所有的零计数上。</p>
 <blockquote><p>Note that add-one smoothing has made a very big change to the counts. Comparing Fig. 3.8 to the original counts in Fig. 3.1, we can see that C(want to) changed from 608 to 238. We can see this in probability space as well: P(to|want) decreases from 0.66 in the unsmoothed case to 0.26 in the smoothed case. Looking at the discount d, defined as the ratio between new and old counts, shows us how strikingly the counts for each prefix word have been reduced; the discount for the bigram want to is 0.39, while the discount for Chinese food is 0.10, a factor of 10. The sharp change occurs because too much probability mass is moved to all the zeros.</p></blockquote>
 <h3>3.6.2 加 k 平滑</h3>
@@ -546,14 +583,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>training corpus, so-called because we hold it out from the training data, that we use to set these λ values.3 We do so by choosing the λ values that maximize the likelihood of the held-out corpus. That is, we fix the n-gram probabilities and then search for the λ values that—when plugged into Eq. 3.29—give us the highest probability of the held-out set. There are various ways to find this optimal set of λs. One way is to use the EM algorithm, an iterative learning algorithm that converges on locally optimal λs (Jelinek and Mercer, 1980).</p></blockquote>
 <h3>3.6.4 愚蠢回退</h3>
 <blockquote><p>3.6.4 Stupid Backoff</p></blockquote>
-<p>插值的一种替代方案是回退。在回退模型中，如果我们需要的 n-gram</p>
-<blockquote><p>An alternative to interpolation is backoff. In a backoff model, if the n-gram we need</p></blockquote>
+<p>插值的一种替代方案是回退。在回退模型中，如果我们需要的 n-gram 计数为零，我们就回退到 (n-1)-gram 来近似它。我们持续回退，直到回溯到一个具有计数的历史。为使回退模型给出正确的概率分布，我们必须对高阶 n-gram 进行折扣，以便为低阶 n-gram 保留一些概率质量。在实践中，人们常常不做折扣，而是使用一种简单得多的、不做折扣的回退算法，称为愚蠢回退（stupid backoff）（Brants et al., 2007）。</p>
+<blockquote><p>An alternative to interpolation is backoff. In a backoff model, if the n-gram we need has zero counts, we approximate it by backing off to the (n-1)-gram. We continue backing off until we reach a history that has some counts. For a backoff model to give a correct probability distribution, we have to discount the higher-order n-grams to save some probability mass for the lower order n-grams. In practice, instead of discounting, it’s common to use a much simpler non-discounted backoff algorithm called stupid backoff (Brants et al., 2007).</p></blockquote>
 <blockquote><p><code>backoff</code>（回退）</p></blockquote>
-<p>的计数为零，我们就通过回退到 (n-1)-gram 来近似它。我们持续回退，直到达到一个有计数的历史。为了让回退模型给出正确的概率分布，我们必须对高阶 n-gram 进行折扣</p>
-<blockquote><p>has zero counts, we approximate it by backing off to the (n-1)-gram. We continue backing off until we reach a history that has some counts. For a backoff model to give a correct probability distribution, we have to discount the higher-order n-grams</p></blockquote>
 <blockquote><p><code>discount</code>（折扣）</p></blockquote>
-<p>以便为低阶 n-gram 保留一些概率质量。在实践中，人们通常不做折扣，而是使用一种简单得多的、不做折扣的回退算法，称为愚蠢回退（Brants et al., 2007）。</p>
-<blockquote><p>to save some probability mass for the lower order n-grams. In practice, instead of discounting, it’s common to use a much simpler non-discounted backoff algorithm called stupid backoff (Brants et al., 2007).</p></blockquote>
 <blockquote><p><code>stupid backoff</code>（愚蠢回退）</p></blockquote>
 <p>愚蠢回退放弃了试图让语言模型成为真正的</p>
 <blockquote><p>Stupid backoff gives up the idea of trying to make the language model a true</p></blockquote>
@@ -590,10 +623,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Can we do better? Suppose that the spread is the actual distribution of the bets</p></blockquote>
 <p>并且我们把它表示为每匹马的先验概率，如下所示：</p>
 <blockquote><p>placed and that we represent it as the prior probability of each horse as follows:</p></blockquote>
-<blockquote><p>马 1 ^(1/2)马 5^(1/64)</p><p><em>Horse 1 ^(1/2)Horse 5^(1/64)</em></p></blockquote>
-<blockquote><p>马 2 ^(1/4)马 6^(1/64)</p><p><em>Horse 2 ^(1/4)Horse 6^(1/64)</em></p></blockquote>
-<blockquote><p>马 3 ^(1/8)马 7^(1/64)</p><p><em>Horse 3 ^(1/8)Horse 7^(1/64)</em></p></blockquote>
-<blockquote><p>马 4 ^(1/16)马 8^(1/64)</p><p><em>Horse 4 ^(1/16)Horse 8^(1/64)</em></p></blockquote>
+<p>Horse 1 ^(1/2)Horse 5^(1/64)</p>
+<p>Horse 2 ^(1/4)Horse 6^(1/64)</p>
+<p>Horse 3 ^(1/8)Horse 7^(1/64)</p>
+<p>Horse 4 ^(1/16)Horse 8^(1/64)</p>
 <p>取值范围涵盖各匹马的随机变量 X 的熵，为我们给出了比特数的一个下</p>
 <blockquote><p>The entropy of the random variable X that ranges over horses gives us a lower</p></blockquote>
 <p>界，该下界为</p>
@@ -705,13 +738,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>unsmoothed or smoothed? Explain why.</p></blockquote>
 <p>3.4 我们给定以下语料库，它修改自本章中的那个：</p>
 <blockquote><p>3.4 We are given the following corpus, modified from the one in the chapter:</p></blockquote>
-<p>&lt;s&gt; I am Sam &lt;/s&gt;&lt;s&gt; Sam I am &lt;/s&gt;&lt;s&gt; I am Sam &lt;/s&gt;&lt;s&gt; I do not like green eggs and Sam &lt;/s&gt;使用带加一平滑的 bigram 语言模型，P(Sam |am) 是多少？在你的计数中像对待任何其他词元一样包含 &lt;s&gt; 和 &lt;/s&gt;。</p>
+<p>使用带加一平滑的 bigram 语言模型，P(Sam |am) 是多少？在你的计数中像对待任何其他词元一样包含 &lt;s&gt; 和 &lt;/s&gt;。</p>
 <blockquote><p>Using a bigram language model with add-one smoothing, what is P(Sam |am)? Include &lt;s&gt; and &lt;/s&gt; in your counts just like any other token.</p></blockquote>
 <p>3.5 假设我们不使用结束符号 &lt;/s&gt;。训练一个未平滑的 bigram</p>
 <blockquote><p>3.5 Suppose we didn’t use the end-symbol &lt;/s&gt;. Train an unsmoothed bigram</p></blockquote>
 <p>文法，使用以下训练语料库，且不使用结束符号 &lt;/s&gt;：</p>
 <blockquote><p>grammar on the following training corpus without using the end-symbol &lt;/s&gt;:</p></blockquote>
-<p>&lt;s&gt; a b&lt;s&gt; b b&lt;s&gt; b a&lt;s&gt; a a证明你的 bigram 模型并没有在所有句子长度上分配单一的概率分布，方法是展示：字母表 {a,b} 上四种可能的 2 词句子的概率之和为 1.0，且字母表 {a,b} 上所有可能的 3 词句子的概率之和也为 1.0。</p>
+<p>证明你的 bigram 模型并没有在所有句子长度上分配单一的概率分布，方法是展示：字母表 {a,b} 上四种可能的 2 词句子的概率之和为 1.0，且字母表 {a,b} 上所有可能的 3 词句子的概率之和也为 1.0。</p>
 <blockquote><p>Demonstrate that your bigram model does not assign a single probability distribution across all sentence lengths by showing that the sum of the probability of the four possible 2 word sentences over the alphabet {a,b} is 1.0, and the sum of the probability of all possible 3 word sentences over the alphabet {a,b} is also 1.0.</p></blockquote>
 <p>3.6 假设我们在一个</p>
 <blockquote><p>3.6 Suppose we train a trigram language model with add-one smoothing on a</p></blockquote>
@@ -719,7 +752,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>given corpus. The corpus contains V word types. Express a formula for estimating P(w3|w1,w2), where w3 is a word which follows the bigram (w1,w2), in terms of various n-gram counts and V. Use the notation c(w1,w2,w3) to denote the number of times that trigram (w1,w2,w3) occurs in the corpus, and so on for bigrams and unigrams.</p></blockquote>
 <p>3.7 我们给定以下语料库，它修改自本章中的那个：</p>
 <blockquote><p>3.7 We are given the following corpus, modified from the one in the chapter:</p></blockquote>
-<p>&lt;s&gt; I am Sam &lt;/s&gt;&lt;s&gt; Sam I am &lt;/s&gt;&lt;s&gt; I am Sam &lt;/s&gt;&lt;s&gt; I do not like green eggs and Sam &lt;/s&gt;如果我们使用线性插值平滑，在最大似然 bigram 模型和最大似然 unigram 模型之间插值，取 λ1 = 1 2 且 λ2 =</p>
+<p>如果我们使用线性插值平滑，在最大似然 bigram 模型和最大似然 unigram 模型之间插值，取 λ1 = 1 2 且 λ2 =</p>
 <blockquote><p>If we use linear interpolation smoothing between a maximum-likelihood bigram model and a maximum-likelihood unigram model with λ1 = 1 2 and λ2 =</p></blockquote>
 <p>2,^1 那么 P(Sam|am) 是多少？在你的计数中像对待任何其他词元一样包含 &lt;s&gt; 和 &lt;/s&gt;。</p>
 <blockquote><p>2,^1 what is P(Sam|am)? Include &lt;s&gt; and &lt;/s&gt; in your counts just like any other token.</p></blockquote>

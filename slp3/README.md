@@ -30,8 +30,8 @@ slp3/
 |---|---|
 | 中文 Markdown | `zh/md/NN-*.md`，按章组织，便于校对与二次加工 |
 | 中文 HTML | `zh/html/NN-*.html`，浏览器直接阅读 |
-| 中文 PDF | `zh/pdf/NN-*-zh.pdf`，保留图片与表格的重新排版 |
-| 中英对照 PDF | `zh/dual/NN-*-dual.pdf`，段段对照，便于核校 |
+| 中文整本 PDF | `zh/pdf/slp3-zh.pdf`，**全书合成一份**，保留图片与表格的重新排版 |
+| 中英对照整本 PDF | `zh/dual/slp3-dual.pdf`，**全书合成一份**，段段对照便于核校 |
 | 英文原版 | `source/ed3book_aug26.pdf` |
 
 ## 章节进度
@@ -60,6 +60,8 @@ slp3/
 本书的构建脚本位于 [`scripts/`](scripts/)。```bash
 # 1. 结构提取（需要 pdf-translate 技能的 venv）
 # 2. 分片并并发翻译
-# 3. 合并 → 生成 Markdown / HTML / PDF
-python3 scripts/build_book.py --chapter 01
+# 3. 逐章 → Markdown / HTML（在线阅读用）
+python3 scripts/build_book.py --slug 01-introduction --title "第 1 章 引言" --dual
+# 4. 全书 → 一份中文整本 PDF + 一份中英对照整本 PDF（只渲染一次）
+python3 scripts/build_pdf_book.py
 ```

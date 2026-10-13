@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -74,7 +79,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>1888. But in this chapter we’ll instead represent phones with the ARPAbet (Shoup, 1980), a simple phonetic alphabet (Fig. 15.1) that conveniently uses ASCII symbols to represent an American-English subset of the IPA.</p></blockquote>
 <p>IPA 和 ARPAbet 的许多符号与人们熟悉的罗马字母相同。因此，举例来说，ARPAbet 音子 [p] 表示这样一个辅音，它出现在</p>
 <blockquote><p>Many of the IPA and ARPAbet symbols are equivalent to familiar Roman letters. So, for example, the ARPAbet phone [p] represents the consonant sound at the</p></blockquote>
+<div class="figbox">
 <blockquote><p>ARPAbet IPA ARPAbet ARPAbet IPA ARPAbet 符号 符号 单词 转写 符号 符号 单词 转写[p] [p] parsley [p aa r s l iy] [iy] [i] lily [l ih l iy][t] [t] tea [t iy] [ih] [I] lily [l ih l iy][k] [k] cook [k uh k] [ey] [eI] daisy [d ey z iy][b] [b] bay [b ey] [eh] [E] pen [p eh n][d] [d] dill [d ih l] [ae] [æ] aster [ae s t axr][g] [g] garlic [g aa r l ix k] [aa] [A] poppy [p aa p iy][m] [m] mint [m ih n t] [ao] [O] orchid [ao r k ix d][n] [n] nutmeg [n ah t m eh g] [uh] [U] wood [w uh d][ng] [N] baking [b ey k ix ng] [ow] [oU] lotus [l ow dx ax s][f] [f] flour [f l aw axr] [uw] [u] tulip [t uw l ix p][v] [v] clove [k l ow v] [ah] [2] butter [b ah dx axr][th] [T] thick [th ih k] [er] [Ç] bird [b er d][dh] [D] those [dh ow z] [ay] [aI] iris [ay r ix s][s] [s] soup [s uw p] [aw] [aU] flower [f l aw axr][z] [z] eggs [eh g z] [oy] [oI] soil [s oy l][sh] [S] squash [s k w aa sh] [ax] [@] pita [p iy t ax][zh] [Z] ambrosia [ae m b r ow zh ax][ch] [tS] cherry [ch eh r iy][jh] [dZ] jar [jh aa r][l] [l] licorice [l ih k axr ix sh][w] [w] kiwi [k iy w iy][r] [r] rice [r ay s][y] [j] yellow [y eh l ow][h] [h] honey [h ah n iy]</p><p><em>ARPAbet IPA ARPAbet ARPAbet IPA ARPAbet Symbol Symbol Word Transcription Symbol Symbol Word Transcription[p] [p] parsley [p aa r s l iy] [iy] [i] lily [l ih l iy][t] [t] tea [t iy] [ih] [I] lily [l ih l iy][k] [k] cook [k uh k] [ey] [eI] daisy [d ey z iy][b] [b] bay [b ey] [eh] [E] pen [p eh n][d] [d] dill [d ih l] [ae] [æ] aster [ae s t axr][g] [g] garlic [g aa r l ix k] [aa] [A] poppy [p aa p iy][m] [m] mint [m ih n t] [ao] [O] orchid [ao r k ix d][n] [n] nutmeg [n ah t m eh g] [uh] [U] wood [w uh d][ng] [N] baking [b ey k ix ng] [ow] [oU] lotus [l ow dx ax s][f] [f] flour [f l aw axr] [uw] [u] tulip [t uw l ix p][v] [v] clove [k l ow v] [ah] [2] butter [b ah dx axr][th] [T] thick [th ih k] [er] [Ç] bird [b er d][dh] [D] those [dh ow z] [ay] [aI] iris [ay r ix s][s] [s] soup [s uw p] [aw] [aU] flower [f l aw axr][z] [z] eggs [eh g z] [oy] [oI] soil [s oy l][sh] [S] squash [s k w aa sh] [ax] [@] pita [p iy t ax][zh] [Z] ambrosia [ae m b r ow zh ax][ch] [tS] cherry [ch eh r iy][jh] [dZ] jar [jh aa r][l] [l] licorice [l ih k axr ix sh][w] [w] kiwi [k iy w iy][r] [r] rice [r ay s][y] [j] yellow [y eh l ow][h] [h] honey [h ah n iy]</em></p></blockquote>
+</div>
 <p class="caption">图 15.1 英语辅音（左）与元音（右）的 ARPAbet 与 IPA 符号。</p>
 <p class="caption">Figure 15.1 ARPAbet and IPA symbols for English consonants (left) and vowels (right).</p>
 <p>platypus、puma 和 plantain 的开头，leopard 的中间，或 antelope 的结尾。不过总体而言，英语正字法的字母与音子之间的对应关系相当不透明；同一个字母在不同语境下可以表示非常不同的语音。英语字母 c 在 cougar [k uw g axr] 中对应音子 [k]，但在 cell [s eh l] 中对应音子 [s]。音子 [k] 除了写作 c 和 k 之外，还可以作为 x 的一部分出现（fox [f aa k s]），写作 ck（jackal [jh ae k el]），以及写作 cc（raccoon [r ae k uw n]）。许多其他语言，例如西班牙语，其语音与正字法的对应关系比英语透明得多。</p>
@@ -91,14 +98,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The result is a time-aligned transcription: a transcription in which each phone is</p></blockquote>
 <p>与波形中的一个起始时间和一个结束时间相关联，如图 15.2 的例子所示。</p>
 <blockquote><p>associated with a start and end time in the waveform, like the example in Fig. 15.2.</p></blockquote>
+<div class="figbox">
 <blockquote><p>她一整年都把你的深色西装泡在油腻的洗涤水里 sh iy hv ae dcl jh axr dcl d aa r kcl s ux q en gcl g r iy s ix w aa sh q w aa dx axr q aa l y ix axr</p><p><em>she had your dark suit in greasy wash water all year sh iy hv ae dcl jh axr dcl d aa r kcl s ux q en gcl g r iy s ix w aa sh q w aa dx axr q aa l y ix axr</em></p></blockquote>
+</div>
 <p class="caption">图 15.2 来自 TIMIT 语料库的语音转写，使用特殊的 ARPAbet 特征进行窄式转写，例如 had 中 [d] 的腭化、dark 末尾塞音的不除阻、suit 末尾 [t] 喉化为 [q]，以及 water 中 [t] 的闪音。TIMIT 语料库还包含时间对齐信息（图中未显示）。</p>
 <p class="caption">Figure 15.2 Phonetic transcription from the TIMIT corpus, using special ARPAbet features for narrow transcription, such as the palatalization of [d] in had, unreleased final stop in dark, glottalization of final [t] in suit to [q], and flap of [t] in water. The TIMIT corpus also includes time-alignments (not shown).</p>
 <p>Switchboard 转写项目所建立的语音标注语料库包含</p>
 <blockquote><p>The Switchboard Transcription Project phonetically annotated corpus consists</p></blockquote>
 <p>从 Switchboard 语料库中抽取的 3.5 小时句子（Greenberg et al., 1996），并附有在音节层面时间对齐的转写。图 15.3 给出一个例子。</p>
 <blockquote><p>of 3.5 hours of sentences extracted from the Switchboard corpus (Greenberg et al., 1996), together with transcriptions time-aligned at the syllable level. Figure 15.3 shows an example .</p></blockquote>
+<div class="figbox">
 <blockquote><p>0.470 0.640 0.720 0.900 0.953 1.279 1.410 1.630 dh er k aa n ax v ih m b ix t w iy n r ay n aw</p></blockquote>
+</div>
 <p class="caption">图 15.3 Switchboard 短语 they’re kind of in between right now 的语音转写。注意 they’re 和 of 中的元音弱化、kind 和 right 中的音节尾脱落，以及重新音节划分（of 的 [v] 附着为 in 的音节首）。时间以从句子开始到每个音节起点的秒数表示。</p>
 <p class="caption">Figure 15.3 Phonetic transcription of the Switchboard phrase they’re kind of in between right now. Note vowel reduction in they’re and of, coda deletion in kind and right, and resyllabification (the [v] of of attaches as the onset of in). Time is given in number of seconds from the beginning of sentence to the start of each syllable.</p>
 <p>Buckeye 语料库（Pitt et al. 2007, Pitt et al. 2005）是一个经语音转写的美国自然口语语料库，包含来自 40 位说话人的约 300,000 个词。其他语言也有经语音转写的语料库，包括德语的 Kiel 语料库，以及中国社会科学院转写的汉语普通话语料库（Li et al., 2000）。</p>
@@ -115,8 +126,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图15.4展示了发音器官。声音由空气的快速运动产生。人类发出口语中大多数音的方式，是把空气从肺部经气管（windpipe，学名 trachea）排出，再经嘴或鼻送出体外。空气在穿过气管时经过喉（larynx），也就是通常所说的喉结或声匣。喉内有两片细小的肌肉皱褶，即声带（vocal folds，非专业场合常称 vocal cords），它们可以合拢，也可以分开。这两片皱褶之间的空隙称为声门。如果两片皱褶靠得很近（但并未紧贴闭合），那么当空气</p>
 <blockquote><p>Figure 15.4 shows the organs of speech. Sound is produced by the rapid movement of air. Humans produce most sounds in spoken languages by expelling air from the lungs through the windpipe (technically, the trachea) and then out the mouth or nose. As it passes through the trachea, the air passes through the larynx, commonly known as the Adam’s apple or voice box. The larynx contains two small folds of muscle, the vocal folds (often referred to non-technically as the vocal cords), which can be moved together or apart. The space between these two folds is called the glottis. If the folds are close together (but not tightly closed), they will vibrate as air</p></blockquote>
 <aside class="term"><code>glottis</code><span class="term-zh">声门</span><span class="term-explain">两片声带之间的开口，气流由此通过；其开合状态决定所发出的音是否带声。</span></aside>
-<p>从它们中间通过时，它们就会振动；如果两片皱褶相距很远，就不会振动。声带合拢并振动时发出的音称为带声（浊音）；没有这种声带振动而发出的音称为不带声或清音。带声的音包括 [b]、[d]、[g]、</p>
-<blockquote><p>passes through them; if they are far apart, they won’t vibrate. Sounds made with the vocal folds together and vibrating are called voiced; sounds made without this vocal cord vibration are called unvoiced or voiceless. Voiced sounds include [b], [d], [g],</p></blockquote>
+<p>从它们中间通过时，它们就会振动；如果两片皱褶相距很远，就不会振动。声带合拢并振动时发出的音称为带声（浊音）；没有这种声带</p>
+<blockquote><p>passes through them; if they are far apart, they won’t vibrate. Sounds made with the vocal folds together and vibrating are called voiced; sounds made without this vocal</p></blockquote>
+<aside class="term"><code>voiced sound unvoiced sound</code><span class="term-zh">带声、不带声</span><span class="term-explain">按声带是否合拢振动区分的两类音：合拢振动时发出的为带声（浊音），不振动的为不带声（清音）。</span></aside>
+<p>振动而发出的音称为不带声或清音。带声的音包括 [b]、[d]、[g]、</p>
+<blockquote><p>cord vibration are called unvoiced or voiceless. Voiced sounds include [b], [d], [g],</p></blockquote>
 <img src="../md/images/15-phonetics-and-speech/fig_p4_0.png" alt="">
 <p class="caption">图15.4 发音器官的侧视图。（图片来自 OpenStax University Physics，CC BY 4.0）</p>
 <p class="caption">Figure 15.4 The vocal organs, shown in side view. (Figure from OpenStax University Physics, CC BY 4.0)</p>
@@ -126,7 +140,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The area above the trachea is called the vocal tract; it consists of the oral tract</p></blockquote>
 <p>和鼻腔通道组成。空气离开气管后，可以从嘴或鼻排出体外。大多数音是空气通过口腔发出的。空气通过鼻腔发出的音称为鼻音；鼻音（如</p>
 <blockquote><p>and the nasal tract. After the air leaves the trachea, it can exit the body through the mouth or the nose. Most sounds are made by air passing through the mouth. Sounds made by air passing through the nose are called nasal sounds; nasal sounds (like</p></blockquote>
-<aside class="term"><code>nasal</code><span class="term-zh">鼻音</span><span class="term-explain">气流经鼻腔排出、并以口腔和鼻腔共同作为共鸣腔所发出的一类音。</span></aside>
+<aside class="term"><code>nasal</code><span class="term-zh">鼻音</span><span class="term-explain">软腭下降、气流经鼻腔流出并产生共鸣的辅音，如英语的 [m]、[n]、[ng]。</span></aside>
 <p>英语的 [m]、[n] 和 [ng]）同时把口腔通道和鼻腔通道用作共鸣腔。</p>
 <blockquote><p>English [m], [n], and [ng]) use both the oral and nasal tracts as resonating cavities.</p></blockquote>
 <p>音子分为两大类：辅音和元音。这两类</p>
@@ -202,11 +216,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>airflow that results from the constriction produces a characteristic “hissing” sound.</p></blockquote>
 <p>英语的唇齿擦音 [f] 和 [v] 是下唇抵住上齿、使气流受限制地从上齿间通过而发出的。</p>
 <blockquote><p>The English labiodental fricatives [f] and [v] are produced by pressing the lower lip against the upper teeth, allowing a restricted airflow between the upper teeth.</p></blockquote>
-<p>齿擦音 [th] 和 [dh] 让气流从牙齿之间绕过舌头流出。齿龈擦音 [s] 和 [z] 是舌抵住齿龈、迫使气流从牙齿边缘通过而发出的。在齿龈腭擦音 [sh] 和 [zh] 中，舌面位于齿龈后部，迫使气流通过舌面形成的沟槽。音高较高的擦音（英语中的 [s]、[z]、[sh] 和 [zh]）称为咝音。紧随擦音之后出现的塞音</p>
-<blockquote><p>The dental fricatives [th] and [dh] allow air to flow around the tongue between the teeth. The alveolar fricatives [s] and [z] are produced with the tongue against the alveolar ridge, forcing air over the edge of the teeth. In the palato-alveolar fricatives[sh] and [zh], the tongue is at the back of the alveolar ridge, forcing air through a groove formed in the tongue. The higher-pitched fricatives (in English [s], [z], [sh] and [zh]) are called sibilants. Stops that are followed immediately by fricatives are</p></blockquote>
+<p>齿擦音 [th] 和 [dh] 让气流从牙齿之间绕过舌头流出。齿龈擦音 [s] 和 [z] 是舌抵住齿龈、迫使气流从牙齿边缘通过而发出的。在齿龈腭擦音 [sh] 和 [zh] 中，舌面位于齿龈后部，迫使气流通过舌面形成的沟槽。音高较高的擦音（英语中的 [s]、[z]、[sh] 和 [zh]）称为咝音。紧随擦音之后出现的塞音称为塞擦音；英语中的 [ch]（chicken）和 [jh]（giraffe）即属此类。</p>
+<blockquote><p>The dental fricatives [th] and [dh] allow air to flow around the tongue between the teeth. The alveolar fricatives [s] and [z] are produced with the tongue against the alveolar ridge, forcing air over the edge of the teeth. In the palato-alveolar fricatives[sh] and [zh], the tongue is at the back of the alveolar ridge, forcing air through a groove formed in the tongue. The higher-pitched fricatives (in English [s], [z], [sh] and [zh]) are called sibilants. Stops that are followed immediately by fricatives are called affricates; these include English [ch] (chicken) and [jh] (giraffe).</p></blockquote>
 <aside class="term"><code>sibilants</code><span class="term-zh">咝音</span><span class="term-explain">音高较高、带有尖锐嘶声的一类擦音，英语中如 [s]、[z]、[sh]、[zh]。</span></aside>
-<p>称为塞擦音；英语中的 [ch]（chicken）和 [jh]（giraffe）即属此类。</p>
-<blockquote><p>called affricates; these include English [ch] (chicken) and [jh] (giraffe).</p></blockquote>
 <p>在近音中，两个发音器官彼此靠近，但还没有近到</p>
 <blockquote><p>In approximants, the two articulators are close together but not close enough to</p></blockquote>
 <aside class="term"><code>approximant</code><span class="term-zh">近音</span><span class="term-explain">两个发音器官靠近但缝隙较宽，气流通过时不产生湍流噪声的辅音。</span></aside>
@@ -242,6 +254,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Figure 15.7 shows a schematic characterization of the height of different vowels.</p></blockquote>
 <p>之所以说是示意性的，是因为高度这一抽象属性只与实际的舌位大致对应；事实上，它更准确地反映的是声学事实。注意该图中有两类元音：一类把舌位高度表示为一个点，另一类则表示为一条路径。发音过程中舌位发生明显变化的元音是双元音。En-</p>
 <blockquote><p>It is schematic because the abstract property height correlates only roughly with actual tongue positions; it is, in fact, a more accurate reflection of acoustic facts. Note that the chart has two kinds of vowels: those in which tongue height is represented as a point and those in which it is represented as a path. A vowel in which the tongue position changes markedly during the production of the vowel is a diphthong. En-</p></blockquote>
+<aside class="term"><code>diphthong</code><span class="term-zh">双元音</span><span class="term-explain">发音过程中舌位发生明显变化、在元音图中表示为一条路径而非单一点的元音；英语中的双元音尤其丰富。</span></aside>
 <img src="../md/images/15-phonetics-and-speech/fig_p7_0.png" alt="">
 <p class="caption">图 15.7 英语元音的示意性“元音空间”。</p>
 <p class="caption">Figure 15.7 The schematic “vowel space” for English vowels.</p>
@@ -292,7 +305,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>15.3.1 Prosodic Prominence: Accent, Stress and Schwa</p></blockquote>
 <p>在美式英语的自然话语中，有些词听起来比</p>
 <blockquote><p>In a natural utterance of American English, some words sound more prominent than</p></blockquote>
-<aside class="term"><code>prominence</code><span class="term-zh">突显</span><span class="term-explain">听者感知上更显著的程度；说话人通过更响、更长或改变 F0 使某词或音节更突出。</span></aside>
+<aside class="term"><code>prominence</code><span class="term-zh">突显</span><span class="term-explain">指某个音节或词在语流中被听者感知为比周围成分更突出的程度，由重音、音高和音长等因素共同决定。</span></aside>
 <p>另一些词更突显，而这些词中的某些音节也比其他音节更突显。</p>
 <blockquote><p>others, and certain syllables in these words are also more prominent than others.</p></blockquote>
 <p>我们所说的突显，是指这些词或音节在听者感知上更为显著。在英语中，说话人通过把词或音节说得更响、说得更慢（因而时长更长），或在说这个词时改变 F0、使其更高或更富于变化，来使它更显著。</p>
@@ -378,12 +391,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>boundary tone</code><span class="term-zh">边界调</span><span class="term-explain">出现在韵律短语末尾的音高目标，用来标示短语边界，并贡献话语末尾的调型信息。</span></aside>
 <p>调型在话语末尾方面的特征。许多语言都有各自版本的 ToBI。</p>
 <blockquote><p>the utterance final aspects of tune. There are version of ToBI for many languages.</p></blockquote>
+<div class="figbox">
 <blockquote><p>音高重音　边界调</p><p><em>Pitch Accents Boundary Tones</em></p></blockquote>
 <blockquote><p>H* 峰值重音 L-L%“句末下降”：美式的“陈述句调型”</p><p><em>H</em> peak accent L-L% “final fall”: “declarative contour” of American*</p></blockquote>
 <blockquote><p>英语</p><p><em>English</em></p></blockquote>
 <blockquote><p>L<em> 低重音 L-H% 延续上升 L</em>+H 勺形重音 H-H%“疑问上升”：典型的是非问句</p><p><em>L</em> low accent L-H% continuation rise L<em>+H scooped accent H-H% “question rise”: cantonical yes-no question</em></p></blockquote>
 <blockquote><p>调型</p><p><em>contour</em></p></blockquote>
 <blockquote><p>L+H<em> 上升峰值重音 H-L% 句末持平 H+!H</em> 阶梯下降</p><p><em>L+H</em> rising peak accent H-L% final level plateau H+!H<em> step down</em></p></blockquote>
+</div>
 <p class="caption">图 15.9 美式英语语调的 ToBI 转写系统中的重音调与边界调标签（Beckman and Ayers 1997, Beckman and Hirschberg 1994）。</p>
 <p class="caption">Figure 15.9 The accent and boundary tones labels from the ToBI transcription system for American English intonation (Beckman and Ayers 1997, Beckman and Hirschberg 1994).</p>
 <h2>15.4 声学语音学与信号</h2>
@@ -401,23 +416,21 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">Figure 15.10 A sine wave with a frequency of 10 Hz and an amplitude of 1.</p>
 <p>回顾基础数学可知，波的两个重要特征是</p>
 <blockquote><p>Recall from basic mathematics that two important characteristics of a wave are</p></blockquote>
-<p>它的频率和振幅。频率是波每秒重复自身的次数，也就是周期数。我们通常以每秒周期数来度量频率。图 15.10 中的信号在 0.5 秒内重复 5 次，因而是每秒 10 个周期。每秒周期数通常称为赫兹（简称</p>
-<blockquote><p>its frequency and amplitude. The frequency is the number of times a second that a wave repeats itself, that is, the number of cycles. We usually measure frequency in cycles per second. The signal in Fig. 15.10 repeats itself 5 times in .5 seconds, hence 10 cycles per second. Cycles per second are usually called hertz (shortened</p></blockquote>
+<p>它的频率和振幅。频率是波每秒重复自身的次数，也就是周期数。我们通常以每秒周期数来度量频率。图 15.10 中的信号在 0.5 秒内重复 5 次，因而是每秒 10 个周期。每秒周期数通常称为赫兹（简称为 Hz），因此图 15.10 中的频率可描述为 10 Hz。正弦波的振幅 A 是 Y 轴上的最大值。波的周期 T 是一个循环完成所需的时间，定义为</p>
+<blockquote><p>its frequency and amplitude. The frequency is the number of times a second that a wave repeats itself, that is, the number of cycles. We usually measure frequency in cycles per second. The signal in Fig. 15.10 repeats itself 5 times in .5 seconds, hence 10 cycles per second. Cycles per second are usually called hertz (shortened to Hz), so the frequency in Fig. 15.10 would be described as 10 Hz. The amplitude A of a sine wave is the maximum value on the Y axis. The period T of the wave is the time it takes for one cycle to complete, defined as</p></blockquote>
+<aside class="term"><code>frequency</code><span class="term-zh">频率</span><span class="term-explain">波在单位时间内重复的次数，单位为赫兹（Hz）；语音中多数有用信息都在 10,000 Hz 以下。</span></aside>
+<aside class="term"><code>amplitude</code><span class="term-zh">振幅</span><span class="term-explain">正弦波在 Y 轴上的最大值，表示压强偏离常态的最大幅度；振幅越高，声音听起来越响。</span></aside>
 <aside class="term"><code>Hertz</code><span class="term-zh">赫兹</span><span class="term-explain">频率的单位，表示每秒重复的周期数，语音学中用来度量声音信号的频率高低。</span></aside>
-<p>为 Hz），因此图 15.10 中的频率可描述为 10 Hz。正弦波的振幅 A 是 Y 轴上的最大值。波的周期 T 是</p>
-<blockquote><p>to Hz), so the frequency in Fig. 15.10 would be described as 10 Hz. The amplitude A of a sine wave is the maximum value on the Y axis. The period T of the wave is</p></blockquote>
 <aside class="term"><code>period</code><span class="term-zh">周期</span><span class="term-explain">波完成一个完整循环所需的时间，其数值等于频率的倒数。</span></aside>
-<p>一个循环完成所需的时间，定义为</p>
-<blockquote><p>the time it takes for one cycle to complete, defined as</p></blockquote>
 <p>T = 1 (15.4) f图 15.10 中每个周期持续十分之一秒；因此 T = 0.1 秒。</p>
 <blockquote><p>Each cycle in Fig. 15.10 lasts a tenth of a second; hence T = .1 seconds.</p></blockquote>
 <h3>15.4.2 语音声波</h3>
 <blockquote><p>15.4.2 Speech Sound Waves</p></blockquote>
 <p>让我们从假想的波转向声波。语音识别器的输入与人耳的输入一样，是一系列复杂的气压变化。</p>
 <blockquote><p>Let’s turn from hypothetical waves to sound waves. The input to a speech recognizer, like the input to the human ear, is a complex series of changes in air pressure.</p></blockquote>
-<p>这些气压变化显然源于说话人，是由气流通过声门并从口腔或鼻腔流出的特定方式造成的。我们通过绘制气压随时间的变化来表示声波。</p>
+<p>这些空气压力变化显然源自说话人，是由空气通过声门、再经口腔或鼻腔流出的特定方式造成的。我们通过在时间轴上绘制空气压力的变化来表示声波。</p>
 <blockquote><p>These changes in air pressure obviously originate with the speaker and are caused by the specific way that air passes through the glottis and out the oral or nasal cavities. We represent sound waves by plotting the change in air pressure over time.</p></blockquote>
-<p>有时有助于理解这类图的一个比喻是：用一块竖直的板挡住气压波（也许就是说话人嘴前麦克风中的那个部件，或是听者耳中的鼓膜）。该图度量的是这块板所在处空气分子的压缩或稀疏（非压缩）程度。</p>
+<p>有一种比喻有时有助于理解这些图形，即设想一块垂直的板挡住空气压力波（也许是说话人嘴前麦克风里的板，或者是听者耳中的鼓膜）。图形测量的是这块板处空气分子的压缩或稀疏（非压缩）量。</p>
 <blockquote><p>One metaphor which sometimes helps in understanding these graphs is that of a vertical plate blocking the air pressure waves (perhaps in a microphone in front of a speaker’s mouth, or the eardrum in a hearer’s ear). The graph measures the amount of compression or rarefaction (uncompression) of the air molecules at this plate.</p></blockquote>
 <p>图 15.11 显示了取自电话语音 Switchboard 语料库的一小段波形，是某人说“she just had a baby”时元音 [iy] 的波形。</p>
 <blockquote><p>Figure 15.11 shows a short segment of a waveform taken from the Switchboard corpus of telephone speech of the vowel [iy] from someone saying “she just had a baby”.</p></blockquote>
@@ -425,17 +438,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 15.11 元音 [iy] 的波形，该话语见后文第 342 页的图 15.15。y 轴表示高于和低于正常大气压的气压水平。x 轴表示时间。</p>
 <p class="caption">Figure 15.11 A waveform of the vowel [iy] from an utterance shown later in Fig. 15.15 on page 342. The y-axis shows the level of air pressure above and below normal atmospheric pressure. The x-axis shows time.</p>
 <blockquote><p>注意，该波有规律地重复。</p><p><em>Notice that the wave repeats regularly.</em></p></blockquote>
-<p>对图 15.11 这样的声波进行数字化，第一步是把模拟</p>
+<p>把像图 15.11 这样的声波数字化的第一步，是把模拟</p>
 <blockquote><p>The first step in digitizing a sound wave like Fig. 15.11 is to convert the analog</p></blockquote>
-<p>表示（先是气压，然后是麦克风中的模拟电信号）转换为数字信号。这种模数转换有两个步骤：采样和</p>
+<p>表示（先是空气压力，然后是麦克风中的模拟电信号）转换成数字信号。这种模数转换有两个步骤：采样和</p>
 <blockquote><p>representations (first air pressure and then analog electric signals in a microphone) into a digital signal. This analog-to-digital conversion has two steps: sampling and</p></blockquote>
-<aside class="term"><code>sampling</code><span class="term-zh">采样</span><span class="term-explain">在特定时刻测量信号振幅，把连续信号变为一串离散样本的处理过程。</span></aside>
-<p>量化。要对信号采样，我们就在特定时刻测量其振幅；采样率是每秒采集的样本数。要准确测量一个波，每个周期至少要有两个样本：一个测量波的正半部分，一个测量波的负半部分。每个周期多于两个样本可以提高振幅的精度，但少于两个样本则会使波的频率被完全漏掉。因此，能够测量的最高频率的波，其频率等于采样率的一半（因为每个周期需要两个样本）。对于给定的采样率，这一最高频率</p>
+<aside class="term"><code>sampling</code><span class="term-zh">采样</span><span class="term-explain">按固定时间间隔测量模拟信号的振幅并记录数值，从而把连续信号变成离散的样本序列。</span></aside>
+<p>量化。要对一个信号采样，我们在特定的时刻测量它的振幅；采样率是每秒采集的样本数。要准确地测量一个波，每个周期至少要有两个样本：一个测量波的正半部分，一个测量负半部分。每个周期的样本多于两个会提高振幅的准确度，但少于两个就会完全漏掉该波的频率。因此，能够被测量的最高频率的波，其频率是采样率的一半（因为每个周期都需要两个样本）。给定采样率下的这个最高频率被称为</p>
 <blockquote><p>quantization. To sample a signal, we measure its amplitude at a particular time; the sampling rate is the number of samples taken per second. To accurately measure a wave, we must have at least two samples in each cycle: one measuring the positive part of the wave and one measuring the negative part. More than two samples per cycle increases the amplitude accuracy, but fewer than two samples causes the frequency of the wave to be completely missed. Thus, the maximum frequency wave that can be measured is one whose frequency is half the sample rate (since every cycle needs two samples). This maximum frequency for a given sampling rate is</p></blockquote>
 <aside class="term"><code>Nyquist frequency</code><span class="term-zh">奈奎斯特频率</span><span class="term-explain">给定采样率下能够正确测量到的最高频率，数值等于采样率的一半。</span></aside>
-<p>被称为奈奎斯特频率。人类语音中的大部分信息都位于频率</p>
+<p>奈奎斯特频率。人类语音中的大部分信息都位于</p>
 <blockquote><p>called the Nyquist frequency. Most information in human speech is in frequencies</p></blockquote>
-<p>低于 10,000 Hz 的范围内；因此，要做到完全准确就需要 20,000 Hz 的采样率。但电话语音会被交换网络滤波，电话只传输低于 4,000 Hz 的频率。因此，对于 Switchboard 语料库这类电话带宽语音，8,000 Hz 的采样率就足够了，而麦克风语音则常用 16,000 Hz 采样。</p>
+<p>低于 10,000 Hz 的频率范围内；因此，要达到完全的准确度就需要 20,000 Hz 的采样率。但电话语音经过交换网络的滤波，电话只传输低于 4,000 Hz 的频率。因此，对于像 Switchboard 语料库这样的电话带宽语音，8,000 Hz 的采样率已经足够，而麦克风语音通常使用 16,000 Hz 的采样。</p>
 <blockquote><p>below 10,000 Hz; thus, a 20,000 Hz sampling rate would be necessary for complete accuracy. But telephone speech is filtered by the switching network, and only frequencies less than 4,000 Hz are transmitted by telephones. Thus, an 8,000 Hz sampling rate is sufficient for telephone-bandwidth speech like the Switchboard corpus, while 16,000 Hz sampling is often used for microphone speech.</p></blockquote>
 <p>即使是 8,000 Hz 的采样率，每</p>
 <blockquote><p>Even an 8,000 Hz sampling rate requires 8000 amplitude measurements for each</p></blockquote>
@@ -443,18 +456,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>second of speech, so it is important to store amplitude measurements efficiently.</p></blockquote>
 <p>它们通常以整数形式存储，或用 8 位（取值范围 -128–127），或用 16 位（取值范围 -32768–32767）。这种把实数值表示为整数的过程称为量化，因为两个整数之间的差充当</p>
 <blockquote><p>They are usually stored as integers, either 8 bit (values from -128–127) or 16 bit(values from -32768–32767). This process of representing real-valued numbers as integers is called quantization because the difference between two integers acts as</p></blockquote>
-<aside class="term"><code>quantization</code><span class="term-zh">量化</span><span class="term-explain">把连续取值的实数值近似表示为离散整数的过程，会带来一定的数值误差。</span></aside>
+<aside class="term"><code>quantization</code><span class="term-zh">量化</span><span class="term-explain">把连续的实数值振幅近似为有限个整数值的过程，差距小于量化步长的取值会被表示成同一个数。</span></aside>
 <p>存在一个最小粒度（量子大小），凡是彼此差距小于该量子大小的取值，都会被表示成完全相同的形式。</p>
 <blockquote><p>a minimum granularity (a quantum size) and all values that are closer together than this quantum size are represented identically.</p></blockquote>
-<p>数据一经量化，便会以各种格式存储起来。这些</p>
+<p>数据一旦被量化，就会以各种格式存储。这些格式的一个参数</p>
 <blockquote><p>Once data is quantized, it is stored in various formats. One parameter of these</p></blockquote>
-<p>格式的参数之一是前面讨论过的采样率和样本位数；电话语音通常以 8 kHz 采样并存储为 8 位样本，麦克风数据通常以 16 kHz 采样并存储为 16 位样本。另一个参数是声道数。对于立体声数据或双方对话，我们既可以把两个声道</p>
+<p>格式就是上面讨论过的采样率和样本大小；电话语音通常以 8 kHz 采样并存储为 8 位样本，而麦克风数据通常以 16 kHz 采样并存储为 16 位样本。另一个参数是声道数。对于立体声数据或双方对话，我们可以把两个声道</p>
 <blockquote><p>formats is the sample rate and sample size discussed above; telephone speech is often sampled at 8 kHz and stored as 8-bit samples, and microphone data is often sampled at 16 kHz and stored as 16-bit samples. Another parameter is the number of channels. For stereo data or for two-party conversations, we can store both channels</p></blockquote>
-<aside class="term"><code>channel</code><span class="term-zh">声道</span><span class="term-explain">音频文件中相互独立的一路声音信号，如立体声或双方通话各有两路，可存于同一文件或分开存放。</span></aside>
-<p>存放在同一个文件里，也可以把它们分别存放在不同文件中。最后一个参数是单个样本的存储方式——线性存储还是压缩存储。电话语音常用的一种压缩格式是 µ-law（常写作 u-law，但仍读作 mu-law）。像 µ-law 这类对数压缩算法的直觉依据是：人耳在小强度处比在大强度处更敏感；对数以在大数值上产生更大误差为代价，换取对小数值更忠实的表示。线性（未取对数）的取值通常称为线性 PCM 取值（PCM 代表脉冲编码</p>
+<aside class="term"><code>channel</code><span class="term-zh">通道</span><span class="term-explain">此处指梅尔滤波器组中单个滤波器的输出数值，代表某一梅尔频带的对数能量。</span></aside>
+<p>存放在同一个文件里，也可以把它们存放在不同的文件里。最后一个参数是单个样本的存储方式——线性存储还是压缩存储。电话语音常用的一种压缩格式是 µ-law（常写作 u-law，但读音仍是 mu-law）。像 µ-law 这样的对数压缩算法的直觉依据是：人耳对小强度声音比对大强度声音更敏感；对数表示对小数值的保真度更高，代价是在大数值上误差更大。未经对数变换的线性值通常称为线性 PCM 值（PCM 是脉冲编码</p>
 <blockquote><p>in the same file or we can store them in separate files. A final parameter is individual sample storage—linearly or compressed. One common compression format used for telephone speech is µ-law (often written u-law but still pronounced mu-law). The intuition of log compression algorithms like µ-law is that human hearing is more sensitive at small intensities than large ones; the log represents small values with more faithfulness at the expense of more error on large values. The linear (unlogged) values are generally referred to as linear PCM values (PCM stands for pulse code</p></blockquote>
-<aside class="term"><code>PCM</code><span class="term-explain">脉冲编码调制，一种把连续声音波形按固定采样率和量化位数转成数字取值的编码方式，通常为线性存储。</span></aside>
-<p>调制，不过这一点无须深究）。下面是把线性 PCM 样本值 x 压缩为 8 位 µ-law 的公式（8 位时 µ=255）：</p>
+<aside class="term"><code>PCM</code><span class="term-explain">脉冲编码调制，即把模拟语音按固定的采样率和量化精度转成数字样本的最基本编码方式。</span></aside>
+<p>调制，不过不必在意这一点）。下面是把线性 PCM 样本值 x 压缩成 8 位 µ-law 的公式（8 位时 µ=255）：</p>
 <blockquote><p>modulation, but never mind that). Here’s the equation for compressing a linear PCM sample value x to 8-bit µ-law, (where µ=255 for 8 bits):</p></blockquote>
 <p>F(x) = sgn(x)log(1+ µ|x|)−1 ≤x ≤1 (15.5) log(1+ µ)存储数字化后得到的波形文件有多种标准文件格式，例如微软的 .wav 和苹果的 AIFF，它们都带有特殊的文件头；此外也使用简单的、不带文件头的“裸”（raw）文件。例如，.wav 格式是微软面向多媒体文件的 RIFF 格式的一个子集；RIFF 是一种通用格式，能够表示一系列相互嵌套的数据块与控制信息块。图 15.12 展示了一个只含单个数据块的简单 .wav 文件，以及它的格式块。</p>
 <blockquote><p>There are a number of standard file formats for storing the resulting digitized wavefile, such as Microsoft’s .wav and Apple’s AIFF all of which have special headers; simple headerless “raw” files are also used. For example, the .wav format is a subset of Microsoft’s RIFF format for multimedia files; RIFF is a general format that can represent a series of nested chunks of data and control information. Figure 15.12 shows a simple .wav file with a single data chunk together with its format chunk.</p></blockquote>
@@ -490,11 +503,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>need to know the average amplitude over some time range, to give us some idea of how great the average displacement of air pressure is. But we can’t just take the average of the amplitude values over a range; the positive and negative values would (mostly) cancel out, leaving us with a number close to zero. Instead, we generally use the RMS (root-mean-square) amplitude, which squares each number before averaging (making it positive), and then takes the square root at the end.</p></blockquote>
 <p>v u u t 1 X RMS amplitudeN i=1 = x2 (15.6) N信号的功率与振幅的平方有关。若一段声音的样本数为 N，则功率为</p>
 <blockquote><p>The power of the signal is related to the square of the amplitude. If the number of samples of a sound is N, the power is</p></blockquote>
-<p>Power = 1 X x2 (15.7) N比起功率，我们更常提到声音的强度，它</p>
-<blockquote><p>Rather than power, we more often refer to the intensity of the sound, which</p></blockquote>
 <blockquote><p>N</p></blockquote>
 <blockquote><p>i</p></blockquote>
+<aside class="term"><code>power</code><span class="term-zh">功率</span><span class="term-explain">信号振幅平方的均值，反映声音所含能量的多少；书中把它相对于人耳听阈归一化，得到以分贝度量的强度。</span></aside>
 <blockquote><p>N</p></blockquote>
+<p>Power = 1 X x2 (15.7) N比起功率，我们更常提到声音的强度，它</p>
+<blockquote><p>Rather than power, we more often refer to the intensity of the sound, which</p></blockquote>
 <blockquote><p>i</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <aside class="term"><code>intensity</code><span class="term-zh">强度</span><span class="term-explain">声音能量的对数量度，以人耳听阈为参考进行归一化，单位为分贝，其峰值常用来定位音节核。</span></aside>
@@ -670,11 +684,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>15.5 Feature Extraction for Speech Recognition: Log</p></blockquote>
 <h2>梅尔频谱</h2>
 <blockquote><p>Mel Spectrum</p></blockquote>
-<p>我们用来分析波形声学语音学的那些工具，也常常被用作语音处理算法的输入。本节介绍一条信号处理流水线，它常被用作自动语音识别（ASR）等任务的一部分，我们将在第 16 章看到。语音处理的第一步通常是把输入波形转换成一个声学特征向量序列，每个向量表示某个短时间窗内的信息，</p>
-<blockquote><p>The same tools that we used to analyze the acoustic phonetics of the waveforms are also often used as inputs to speech processing algorithms. In this section we introduce a signal processing pipeline that is often used as part of tasks like automatic speech recognition (ASR), as we will see in Chapter 16. The first step in speech processing is often to transform the input waveform into a sequence of acoustic fea- ture vectors, each vector representing the information in a small time window of</p></blockquote>
+<p>我们用来分析波形声学语音学的那些工具，也常常被用作语音处理算法的输入。本节介绍一条信号处理流水线，它常被用作自动语音识别（ASR）等任务的一部分，我们将在第 16 章看到。语音处理的第一步通常是把输入波形转换成一个声学特征向量序列，每个向量表示信号中某个短时间窗内的信息。有时语音识别或语音处理算法会直接从波形入手，在这种情况下，该处理由我们将在第 16 章介绍的卷积网络（convnet）完成。</p>
+<blockquote><p>The same tools that we used to analyze the acoustic phonetics of the waveforms are also often used as inputs to speech processing algorithms. In this section we introduce a signal processing pipeline that is often used as part of tasks like automatic speech recognition (ASR), as we will see in Chapter 16. The first step in speech processing is often to transform the input waveform into a sequence of acoustic fea- ture vectors, each vector representing the information in a small time window of the signal. Sometimes speech recognition or processing algorithms will start with the waveform, in which case that processing is done by the convolutional networks(convnets) that we will introduce in Chapter 16.</p></blockquote>
 <aside class="term"><code>feature vector</code><span class="term-zh">特征向量</span><span class="term-explain">用一串数值概括信号在某个短时窗内声学信息的向量，是语音处理算法的基本输入单位。</span></aside>
-<p>即该信号的信息。有时语音识别或语音处理算法会直接从波形入手，在这种情况下，该处理由我们将在第 16 章介绍的卷积网络（convnet）完成。</p>
-<blockquote><p>the signal. Sometimes speech recognition or processing algorithms will start with the waveform, in which case that processing is done by the convolutional networks(convnets) that we will introduce in Chapter 16.</p></blockquote>
 <p>另一些系统则从更高的层次开始，即对数梅尔频谱。因此，</p>
 <blockquote><p>Other systems begin instead at a higher level, with the log mel spectrum. So in</p></blockquote>
 <p>本节我们介绍这种常用的特征向量：对数梅尔频谱向量序列。在下一节中，我们将介绍另一种向量，即 MFCC 表示。我们将以相对高层的视角介绍这些概念；如需更多细节，建议修读一门语音信号处理课程。</p>
@@ -722,7 +734,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Once data is quantized, it is stored in various formats. One parameter of these</p></blockquote>
 <p>格式就是上面讨论过的采样率和样本大小；电话语音通常以 8 kHz 采样并存储为 8 位样本，而麦克风数据通常以 16 kHz 采样并存储为 16 位样本。另一个参数是声道数。对于立体声数据或双方对话，我们可以把两个声道</p>
 <blockquote><p>formats is the sample rate and sample size discussed above; telephone speech is often sampled at 8 kHz and stored as 8-bit samples, and microphone data is often sampled at 16 kHz and stored as 16-bit samples. Another parameter is the number of channels. For stereo data or for two-party conversations, we can store both channels</p></blockquote>
-<aside class="term"><code>channel</code><span class="term-zh">声道</span><span class="term-explain">音频信号的一条独立通路；立体声或双方通话时，两路信号可以各占一条，也可以分别存放于不同文件。</span></aside>
+<aside class="term"><code>channel</code><span class="term-zh">通道</span><span class="term-explain">此处指梅尔滤波器组中单个滤波器的输出数值，代表某一梅尔频带的对数能量。</span></aside>
 <p>存放在同一个文件里，也可以把它们存放在不同的文件里。最后一个参数是单个样本的存储方式——线性存储还是压缩存储。电话语音常用的一种压缩格式是 µ-law（常写作 u-law，但读音仍是 mu-law）。像 µ-law 这样的对数压缩算法的直觉依据是：人耳对小强度声音比对大强度声音更敏感；对数表示对小数值的保真度更高，代价是在大数值上误差更大。未经对数变换的线性值通常称为线性 PCM 值（PCM 是脉冲编码</p>
 <blockquote><p>in the same file or we can store them in separate files. A final parameter is individual sample storage—linearly or compressed. One common compression format used for telephone speech is µ-law (often written u-law but still pronounced mu-law). The intuition of log compression algorithms like µ-law is that human hearing is more sensitive at small intensities than large ones; the log represents small values with more faithfulness at the expense of more error on large values. The linear (unlogged) values are generally referred to as linear PCM values (PCM stands for pulse code</p></blockquote>
 <aside class="term"><code>PCM</code><span class="term-explain">脉冲编码调制，即把模拟语音按固定的采样率和量化精度转成数字样本的最基本编码方式。</span></aside>
@@ -753,6 +765,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>value of the windowing function at time n, w[n]:</p></blockquote>
 <p>y[n] = w[n]s[n] (15.11)图 15.26 中画出的窗形状是矩形窗；可以看到，经加窗提取</p>
 <blockquote><p>The window shape sketched in Fig. 15.26 is rectangular; you can see the ex-</p></blockquote>
+<aside class="term"><code>rectangular</code><span class="term-zh">矩形</span><span class="term-explain">指窗内取值恒为 1、在边界处突然截断信号的窗形状；它在傅里叶分析中会带来问题，因此构造声学特征时更常用汉明窗。</span></aside>
 <img src="../md/images/15-phonetics-and-speech/fig_p23_1.png" alt="">
 <p class="caption">图 15.26 加窗示意，展示一个 25 ms 的矩形窗，其步长为 10 ms。</p>
 <p class="caption">Figure 15.26 Windowing, showing a 25 ms rectangular window with a 10ms stride.</p>
@@ -808,6 +821,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We implement this intuition by collecting energies, not equally at each frequency</p></blockquote>
 <p>频带，而是按照梅尔刻度——一种听觉频率刻度。梅尔（Stevens 等 1937，Stevens 与 Volkmann 1940）是音高的单位。在感知上音高间距相等的两对声音，其梅尔数之差也相等。梅尔频率 m 可由原始声学频率经对数变换算得：</p>
 <blockquote><p>band, but according to the mel scale, an auditory frequency scale. A mel (Stevens et al. 1937, Stevens and Volkmann 1940) is a unit of pitch. Pairs of sounds that are perceptually equidistant in pitch are separated by an equal number of mels. The mel frequency m can be computed from the raw acoustic frequency by a log transformation:</p></blockquote>
+<aside class="term"><code>mel</code><span class="term-zh">梅尔</span><span class="term-explain">一种音高单位，属于听觉频率刻度；感知上音高间距相等的两对声音，其梅尔数之差也相等。</span></aside>
 <p>f mel(f) = 1127ln(1+ (15.16) 700)我们通过构造一组滤波器来实现这一直觉：这些滤波器从各个频带收集能量，按对数方式分布，从而使我们在低频处具有很细的分辨率，在高频处分辨率较低。图 15.29 给出了一组实现该思路的三角形滤波器示例，将其与频谱相乘即可得到梅尔频谱。</p>
 <blockquote><p>We implement this intuition by creating a bank of filters that collect energy from each frequency band, spread logarithmically so that we have very fine resolution at low frequencies, and less resolution at high frequencies. Figure 15.29 shows a sample bank of triangular filters that implement this idea, that can be multiplied by the spectrum to get a mel spectrum.</p></blockquote>
 <img src="../md/images/15-phonetics-and-speech/fig_p25_0.png" alt="">

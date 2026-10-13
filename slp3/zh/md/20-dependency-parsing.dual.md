@@ -54,9 +54,9 @@ I prefer the morning flight through Denver
 
 > arcs from heads to dependents. We call this a typed dependency structure because
 
-> `dependency`（依存（dependency））
+> `dependency`（依存关系）
 >
-> 释义：指词与词之间一个词支配另一个词的单向句法联系，句子的结构全靠这类有向关系来描写。
+> 释义：指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。
 
 这些标签取自一份固定的语法关系清单。根节点明确标出树的根，也就是整个结构的中心词。
 
@@ -154,12 +154,10 @@ I prefer the morning flight through Denver
 
 > Linguists have developed taxonomies of relations that go well beyond the familiar notions of subject and object. While there is considerable variation from theory
 
+<!--figbox-->
 > 从句论元关系 描述
 >
 > *Clausal Argument Relations Description*
-
-*图 20.2 部分通用依存关系（de Marneffe 等，2021）。*
-*Figure 20.2 Some of the Universal Dependency relations (de Marneffe et al., 2021).*
 
 > 名词性主语
 >
@@ -234,6 +232,10 @@ I prefer the morning flight through Denver
 > *Coordinating conjunction*
 
 > CC
+<!--/figbox-->
+
+*图 20.2 部分通用依存关系（de Marneffe 等，2021）。*
+*Figure 20.2 Some of the Universal Dependency relations (de Marneffe et al., 2021).*
 
 从一种理论到另一种理论，都存在足够的共性，因此跨语言的标准已经
 
@@ -309,12 +311,10 @@ United canceled the morning flights to Houston
 
 > these dependency structures. Among the more frequent restrictions are that the structures must be connected, have a designated root node, and be acyclic or planar. Of most relevance to the parsing approaches discussed in this chapter is the common,
 
+<!--figbox-->
 > 关系　带有中心词与依存词的示例
 >
 > *Relation Examples with head and dependent*
-
-*图 20.3 一些通用依存关系的示例。*
-*Figure 20.3 Examples of some Universal Dependency relations.*
 
 > United canceled the flight.
 
@@ -359,6 +359,10 @@ United canceled the morning flights to Houston
 > Book the flight through Houston.
 
 > CASE
+<!--/figbox-->
+
+*图 20.3 一些通用依存关系的示例。*
+*Figure 20.3 Examples of some Universal Dependency relations.*
 
 > `dependency`（依存关系）
 >
@@ -461,7 +465,9 @@ JetBlue canceled our flight this morning which was already late
 
 > punct
 
+<!--figbox-->
 > obl obl:tmod
+<!--/figbox-->
 
 > case case
 
@@ -631,24 +637,29 @@ Book me the morning flight
 
 > The correct operator to apply here is RIGHTARC which assigns book as the head of me and pops me from the stack resulting in the following configuration.
 
+<!--figbox-->
 > 栈 词表 关系[root, book] [the, morning, flight] (book →me)
 >
 > *Stack Word List Relations[root, book] [the, morning, flight] (book →me)*
+<!--/figbox-->
 
 在随后几次应用 SHIFT 操作符之后，第 6 步的格局如下所示：
 
 > After several subsequent applications of the SHIFT operator, the configuration in Step 6 looks like the following:
 
+<!--figbox-->
 > 栈 词表 关系
 >
 > *Stack Word List Relations*
 
 > [root, book, the, morning, flight] [] (book →me)
+<!--/figbox-->
 
 这里，所有剩余的词语都已被传递到栈上，剩下要做的就是应用适当的归约操作符。在当前格局中，我们采用 LEFTARC 操作符，得到以下状态。
 
 > Here, all the remaining words have been passed onto the stack and all that is left to do is to apply the appropriate reduce operators. In the current configuration, we employ the LEFTARC operator resulting in the following state.
 
+<!--figbox-->
 > 栈 词表 关系
 >
 > *Stack Word List Relations*
@@ -656,6 +667,7 @@ Book me the morning flight
 > [root, book, the, flight] [] (book →me)
 
 > (morning ←flight)
+<!--/figbox-->
 
 此时，该句子的句法分析结果由以下结构构成。
 
@@ -682,12 +694,10 @@ Book me the morning flight (20.8)
 
 > As a result, given the greedy nature of this algorithm, incorrect choices will lead to incorrect parses since the parser has no opportunity to go back and pursue alternative choices. Section 20.2.4 will introduce several techniques that allow transition-based approaches to explore the search space more fully.
 
+<!--figbox-->
 > 步 栈 词表 动作 添加的关系 0 [root] [book, me, the, morning, flight]
 >
 > *Step Stack Word List Action Relation Added 0 [root] [book, me, the, morning, flight]*
-
-*图 20.6 基于转移的句法分析轨迹。*
-*Figure 20.6 Trace of a transition-based parse.*
 
 > SHIFT
 
@@ -708,6 +718,10 @@ Book me the morning flight (20.8)
 > SHIFT
 
 > 6 [root, book, the, morning, flight] [] LEFTARC (morning ←flight) 7 [root, book, the, flight] [] LEFTARC (the ←flight) 8 [root, book, flight] [] RIGHTARC (book →flight) 9 [root, book] [] RIGHTARC (root →book) 10 [root] [] Done
+<!--/figbox-->
+
+*图 20.6 基于转移的句法分析轨迹。*
+*Figure 20.6 Trace of a transition-based parse.*
 
 最后，为简单起见，我们在说明该示例时没有标注依存关系上的标签
 
@@ -750,6 +764,7 @@ Book me the morning flight (20.8)
 
 > a default initial configuration where the stack contains the ROOT, the input list is just the list of words, and the set of relations is empty. The LEFTARC and RIGHTARC operators each add relations between the words at the top of the stack to the set of relations being accumulated for a given sentence. Since we have a gold-standard reference parse for each training sentence, we know which dependency relations are valid for a given sentence. Therefore, we can use the reference parse to guide the
 
+<!--figbox-->
 > 步 栈 词表 预测动作 0 [root] [book, the, flight, through, houston]
 >
 > *Step Stack Word List Predicted Action 0 [root] [book, the, flight, through, houston]*
@@ -773,6 +788,7 @@ Book me the morning flight (20.8)
 > SHIFT
 
 > 6 [root, book, flight, through, houston] [] LEFTARC 7 [root, book, flight, houston ] [] RIGHTARC 8 [root, book, flight] [] RIGHTARC 9 [root, book] [] RIGHTARC 10 [root] [] Done
+<!--/figbox-->
 
 *图 20.7 用给定的参考依存树模拟一次句法分析，生成由“格局／预测动作”对构成的训练样本。*
 *Figure 20.7 Generating training items consisting of configuration/predicted action pairs by simulating a parse with a given reference parse.*
@@ -917,7 +933,7 @@ Book the flight through Houston
 ![](images/20-dependency-parsing/fig_p12_0.png)
 
 *图 20.8 用于基于转移的分析器之神谕的神经分类器。分析器取栈顶 2 个词和缓冲区首个词，用它们的编码（来自将整句送入编码器）来表示它们，拼接这些嵌入，并*
-*Figure 20.8 Neural classifier for the oracle for the transition-based parser. The parser takes the top 2 words on the stack and the first word of the buffer, represents them by their encodings(from running the whole sentence through the encoder), concatenates the embeddings and*
+*Figure 20.8 Neural classifier for the oracle for the transition-based parser. The parser takes the top 2 words on the stack and the first word of the buffer, represents them by their encodings(from running the whole sentence through the encoder), concatenates the embeddings and passes through a softmax to choose a parser action (transition).*
 
 ### 20.2.4 基于转移的句法分析中的进阶方法
 
@@ -983,12 +999,10 @@ LEFTARC 和 RIGHTARC 操作符作用于栈顶以及
 
 > In addition to demonstrating the arc-eager transition system, this example demonstrates the power and flexibility of the overall transition-based approach. We were able to swap in a new transition system without having to make any changes to the
 
+<!--figbox-->
 > 步骤 栈 词表 动作 新增关系 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]
 >
 > *Step Stack Word List Action Relation Added 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]*
-
-*图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。*
-*Figure 20.9 A processing trace of Book the flight through Houston using the arc-eager transition operators.*
 
 > SHIFT
 
@@ -1009,6 +1023,10 @@ LEFTARC 和 RIGHTARC 操作符作用于栈顶以及
 > REDUCE
 
 > 10 [root] [] Done
+<!--/figbox-->
+
+*图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。*
+*Figure 20.9 A processing trace of Book the flight through Houston using the arc-eager transition operators.*
 
 底层的句法分析算法做任何改动。这种灵活性促成了多样化的转移系统的发展，它们处理句法和语义的不同方面，包括：指派词性标注（Choi and Palmer, 2011a）、允许生成非投射依存结构（Nivre, 2009）、指派语义角色（Choi and Palmer, 2011b），以及分析包含多种语言的文本（Bhat et al., 2017）。
 
@@ -1074,17 +1092,13 @@ ConfigScore(c0) = 0.0 ConfigScore(ci) = ConfigScore(ci−1)+Score(ti,ci−1)
 
 > given sentence for a tree (or trees) that maximize some score. These methods encode the search space as directed graphs and employ methods drawn from graph theory to search the space for optimal solutions. More formally, given a sentence S we’re looking for the best dependency tree in Gs, the space of all possible trees for that sentence, that maximizes some score.
 
-ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，
+ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，也就是说，一棵树的总体分数是构成该树的各条边的分数之和。
 
-> ˆT(S) = argmax Score(t,S) We’ll make the simplifying assumption that this score can be edge-factored,
+> ˆT(S) = argmax Score(t,S) We’ll make the simplifying assumption that this score can be edge-factored, meaning that the overall score for a tree is the sum of the scores of each of the scores of the edges that comprise the tree.
 
 > `edge-factored`（边因子化的）
 >
 > 释义：指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。
-
-也就是说，一棵树的总体分数是构成该树的各条边的分数之和。
-
-> meaning that the overall score for a tree is the sum of the scores of each of the scores of the edges that comprise the tree.
 
 X
 Score(t,S) = Score(e)

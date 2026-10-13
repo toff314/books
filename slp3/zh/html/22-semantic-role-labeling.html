@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -57,6 +62,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>施事是表示诸如意愿性致使这类抽象概念的题元角色。类似地，这两个动词的直接宾语，即 BrokenThing 和 OpenedThing，典型地都是以某种方式受到动作影响的无生命物体。</p>
 <p>这些参与者的语义角色是主题。</p>
 <aside class="term"><code>theme</code><span class="term-zh">主题</span><span class="term-explain">指受动作影响最直接、或处于某种状态之中的参与者角色。</span></aside>
+<div class="figbox">
 <blockquote><p>题元角色定义</p></blockquote>
 <blockquote><p>事件的意愿性致事</p></blockquote>
 <blockquote><p>施事</p></blockquote>
@@ -78,11 +84,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>来源</p></blockquote>
 <blockquote><p>转移事件中对象的目的地</p></blockquote>
 <blockquote><p>目标</p></blockquote>
+</div>
 <p class="caption">图 22.1 一些常用的题元角色及其定义。</p>
 <p>尽管题元角色是最古老的语言学模型之一，但正如上文所见，它们的现代表述归功于 Fillmore (1968) 和 Gruber (1965)。尽管并不存在普遍公认的角色集合，图 22.1 和图 22.2 仍列出了一些在各种计算语言学论文中使用过的题元角色，并附有粗略的定义和示例。大多数题元角色集合包含十几个角色，但我们会看到角色数量更少、含义更加抽象的集合，以及角色数量非常多、针对具体情境的集合。我们将用统称“语义角色”来指代所有这类角色集合，无论其规模大小。</p>
 <aside class="term"><code>semantic roles</code><span class="term-zh">语义角色</span><span class="term-explain">统称各种规模的题元角色集合，刻画谓词论元在句中承担的意义功能。</span></aside>
 <h2>22.2 语态交替</h2>
 <p>计算系统使用语义角色的主要原因是，它可以充当一种浅层意义表示，使我们能够做出仅凭词语表面字符串、甚至句法分析树都无法做出的简单推理。继续用前面的例子说明，如果某篇文档说 Company A 收购了 Company B，我们希望能知道这回答了查询“Company B 是否被收购？”——尽管这两个句子在表层句法上差别很大。类似地，这种浅层语义在机器翻译中可能充当一种有用的中间语言。</p>
+<div class="figbox">
 <blockquote><p>题元角色 示例</p></blockquote>
 <blockquote><p>服务员把汤洒了。</p></blockquote>
 <blockquote><p>施事</p></blockquote>
@@ -104,6 +112,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>来源</p></blockquote>
 <blockquote><p>我开车去了 Portland。</p></blockquote>
 <blockquote><p>目标</p></blockquote>
+</div>
 <p class="caption">图 22.2 各种题元角色的一些典型示例。</p>
 <p>因此，语义角色有助于对谓词论元的不同表层实现方式加以概括。例如，虽然施事常常实现为句子的主语，但在其他情况下主题也可以作主语。考虑动词 break 的题元论元可能出现的以下几种实现方式：</p>
 <p>(22.3) John 打破了窗户。</p>
@@ -128,7 +137,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>这些多重的论元结构实现（即 break 可以带施事、工具或主题作主语，而 give 可以把其主题和目标实现于</p>
 <aside class="term"><code>verb</code><span class="term-zh">动词</span><span class="term-explain">表示动作或状态的词类，在句中通常充当谓词并支配若干论元。</span></aside>
 <p>任意顺序）称为动词交替或语态交替。这种交替</p>
-<aside class="term"><code>alternation dative</code><span class="term-zh">交替；与格交替</span><span class="term-explain">指同一动词的论元在不同句法位置之间换位实现的现象，如与格交替中主题与目标互换结构位置。</span></aside>
+<aside class="term"><code>alternation dative alternation</code><span class="term-zh">交替；与格交替</span><span class="term-explain">指同一动词的论元可出现在不同句法位置的现象；其中与格交替指 give 一类动词可在双宾语与介词短语两种结构间替换。</span></aside>
 <p>我们上文为 give 展示的这种交替，即与格交替，似乎只出现在特定的动词语义类别中，包括“将来拥有”类动词（advance、allocate、offer、owe）、“发送”类动词（forward、hand、mail）、“投掷”类动词（kick、pass、throw）等等。Levin (1993) 列出了 3100 个英语动词所属的语义类别（47 个高层类别，又细分为 193 个更具体的类别）以及它们所参与的各种交替。这些动词类别列表已被纳入在线资源 VerbNet (Kipper et al., 2000)，该资源把每个动词同时链接到 WordNet 和 FrameNet 条目。</p>
 <h2>22.3 语义角色：题元角色的问题</h2>
 <p>在题元角色层面表示意义，看似应当有助于处理诸如语态交替这样的复杂问题。然而事实证明，提出一套标准角色集相当困难，为施事、主题或工具这类角色给出形式化定义也同样困难。</p>
@@ -184,6 +193,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>该框架中的一些语义角色（框架元素）的定义如下，见图 22.3。请注意，这些角色被分为核心角色，即特定于具体框架的角色，以及非核心角色，它们更像是 PropBank 中的 Arg-M 论元，表达时间、地点等更为一般的属性。</p>
 <blockquote><p>核心角色</p></blockquote>
 <blockquote><p>非核心角色</p></blockquote>
+<div class="figbox">
 <blockquote><p>核心角色</p></blockquote>
 <blockquote><p>属性 属性是对象所拥有的标量性质。</p></blockquote>
 <blockquote><p>差值 对象在标度上改变其位置的距离。</p></blockquote>
@@ -199,6 +209,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>持续时间 变化发生所持续的时间长度。</p></blockquote>
 <blockquote><p>速度 取值的变化率。群体 对象在其中以指定方式改变</p></blockquote>
 <blockquote><p>属性取值的群体。</p></blockquote>
+</div>
 <p class="caption">图 22.3 FrameNet 标注者指南（Ruppenhofer et al., 2016）中 change position on a scale 框架的框架元素。</p>
 <p>以下是一些例句：</p>
 <p>(22.20) [对象 Oil] rose [属性 in price] [差值 by 2%]。(22.21) [对象 It] has increased [最终状态 to having them 1 day a month]。(22.22) [对象 Microsoft shares] fell [最终值 to 7 5/8]。(22.23) [对象 Colon cancer incidence] fell [差值 by 50%] [群体 among men]。</p>
@@ -287,8 +298,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>（22.37）在他的两次冠军赛中，Kulkarni 先生空着肚子吃下了玻璃，只配着水和茶。</p>
 <p>因此，现代的选择偏好系统用某种软约束来刻画谓词与其可能论元之间的关系。</p>
 <p>选择关联其中最具影响力的之一就是 Resnik 的选择关联模型</p>
-<aside class="term"><code>selectional preference strength</code><span class="term-zh">选择偏好强度</span><span class="term-explain">衡量一个谓词能在多大程度上告诉我们其论元所属语义类别的信息量。</span></aside>
-<p>（1993）。Resnik 把选择偏好强度这一概念定义为一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38) Q(x)选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。</p>
+<aside class="term"><code>selectional</code><span class="term-zh">选择的（selectional）</span><span class="term-explain">指谓词对其论元所属语义类别的限制或偏好，如 eat 倾向于选择可食用的事物作直接宾语。</span></aside>
+<p>（1993）。Resnik 把选择偏好强度这一概念定义为</p>
+<aside class="term"><code>preference strength</code><span class="term-zh">偏好强度</span><span class="term-explain">指谓词就其论元语义类别所提供的总体信息量，可用两个分布之间的相对熵来度量。</span></aside>
+<p>一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback</p>
+<aside class="term"><code>relative entropy KL divergence</code><span class="term-zh">相对熵；KL 散度</span><span class="term-explain">用于度量两个概率分布之间差异的一种指标，在本书中用来量化谓词的选择偏好强度。</span></aside>
+<p>and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38) Q(x)选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。</p>
 <blockquote><p>x</p></blockquote>
 <p>SR(v) = D(P(c|v)||P(c)) X P(c|v)log P(c|v) = P(c) (22.39)</p>
 <blockquote><p>c</p></blockquote>
@@ -320,11 +335,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>（22.44）John 打开了门。⇒CAUSE(John, BECOME(OPEN(door)))（22.45）门开了。⇒BECOME(OPEN(door)) （22.46）门是开着的。⇒OPEN(door) 分解式方法断言，这些例子背后都存在一个与 open 相关联的、类似状态的单一谓词。这些例子的意义差异，源于该单一谓词与基元 CAUSE 和 BECOME 的组合。</p>
 <p>虽然这种基元分解方法能够解释状态与动作之间、或使役与非使役谓词之间的相似性，但它仍然依赖于拥有大量像 open 这样的谓词。更激进的做法则选择把这些谓词也进一步拆解。其中一种在早期自然语言系统中发挥过作用的动词谓词分解方法，叫作概念依存（CD），它由十个基元谓词组成，如图 22.8 所示。</p>
 <aside class="term"><code>conceptual dependency</code><span class="term-zh">概念依存</span><span class="term-explain">一种用十个基元谓词（如 ATRANS、PTRANS、MTRANS 等）表示句子意义的早期语义表示方法。</span></aside>
+<div class="figbox">
 <blockquote><p>基元 定义 ATRANS 占有权或控制权从一个实体到</p></blockquote>
 <blockquote><p>另一个实体的抽象转移</p></blockquote>
 <blockquote><p>PTRANS 一个对象从一个位置到另一个位置的物理转移 MTRANS 心理概念在实体之间或在</p></blockquote>
 <blockquote><p>一个实体内部的转移</p></blockquote>
 <blockquote><p>MBUILD 在一个实体内部创造新信息 PROPEL 施加物理力以移动一个对象 MOVE 动物对自身某一部分的整体运动 INGEST 动物摄入某种物质 EXPEL 动物排出某物 SPEAK 发出声音的动作 ATTEND 使某一感觉器官聚焦的动作</p></blockquote>
+</div>
 <p class="caption">图 22.8 一组概念依存基元。</p>
 <p>下面是一个例句及其 CD 表示。动词 brought被翻译为两个基元 ATRANS 和 PTRANS，以表示服务员既把账单在实体上递给了 Mary，也把对它的控制权交给了她。注意，CD 还为每个基元关联一组固定的题元角色，以表示动作中的各个参与者。</p>
 <p>(22.47) 服务员把账单递给了 Mary。</p>

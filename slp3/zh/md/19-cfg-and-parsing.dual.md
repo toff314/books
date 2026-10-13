@@ -132,9 +132,17 @@ three parties from Brooklyn arrive... a high-class spot such as Mindy’s attrac
 >
 > 释义：文法中与句法规则分开列出的词表，给出每个词所属的词性标记。
 
-表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
+表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由
 
-> express that an NP (or noun phrase) can be composed of either a ProperNoun or a determiner (Det) followed by a Nominal; a Nominal in turn can consist of one or more Nouns.1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
+> express that an NP (or noun phrase) can be composed of either a ProperNoun or
+
+> `NP`（名词短语）
+>
+> 释义：NP 即 noun phrase（名词短语），是以名词为中心词构成的短语，既可充当句子主语、宾语等成分，也可以由专有名词或“限定词 + Nominal”构成。
+
+一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
+
+> a determiner (Det) followed by a Nominal; a Nominal in turn can consist of one or more Nouns.1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun
 上下文无关规则可以分层嵌套，因此我们可以把前面的规则与其他规则组合起来，例如下面这些表达词库事实的规则：
 
 > Context-free rules can be hierarchically embedded, so we can combine the previous rules with others, like the following, that express facts about the lexicon:
@@ -208,17 +216,13 @@ CFG 可以从两个角度来理解：一是作为生成句子的装置，
 由 CFG 定义的形式语言，是那些可推导出的符号串的集合，
 
 > The formal language defined by a CFG is the set of strings that are derivable
-它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始
+它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。
 
-> from the designated start symbol. Each grammar must have one designated start
+> from the designated start symbol. Each grammar must have one designated start symbol, which is often called S. Since context-free grammars are often used to define sentences, S is usually interpreted as the “sentence” node, and the set of strings that are derivable from S is the set of sentences in some simplified version of English.
 
 > `start symbol`（起始符号）
 >
 > 释义：文法中作为推导起点的那个非终结符，通常记为 S，语言即由它推导出的全部串构成。
-
-符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。
-
-> symbol, which is often called S. Since context-free grammars are often used to define sentences, S is usually interpreted as the “sentence” node, and the set of strings that are derivable from S is the set of sentences in some simplified version of English.
 
 让我们再往规则清单中添加几条规则。下面这条规则表达了
 
@@ -281,6 +285,7 @@ PP →Preposition NP from Los Angeles
 
 > we’ve seen so far, which we’ll call L0. Note that we can use the or-symbol | to indicate that a non-terminal has alternate possible expansions.
 
+<!--figbox-->
 > Noun →flights | flight | breeze | trip | morning Verb →is | prefer | like | need | want | fly | do
 
 > Adjective →cheapest | non-stop | first | latest
@@ -294,6 +299,7 @@ PP →Preposition NP from Los Angeles
 > | Chicago | United | American
 
 > Determiner →the | a | an | this | these | that Preposition →from | to | on | near | in Conjunction →and | or | but
+<!--/figbox-->
 
 *图 19.2 L0 的词库。*
 *Figure 19.2 The lexicon for L0.*
@@ -305,6 +311,7 @@ PP →Preposition NP from Los Angeles
 
 > start with S, expand it to NP VP, then choose a random expansion of NP (let’s say, to
 
+<!--figbox-->
 > 文法  规则  示例
 >
 > *Grammar Rules Examples*
@@ -324,6 +331,7 @@ PP →Preposition NP from Los Angeles
 > | Verb NP want + a flight| Verb NP PP leave + Boston + in the morning| Verb PP leaving + on Thursday
 
 > PP →Preposition NP from + Los Angeles
+<!--/figbox-->
 
 *图 19.3 L0 的文法，每条规则都附有示例短语。*
 *Figure 19.3 The grammar for L0, with example phrases for each rule.*
@@ -418,6 +426,7 @@ N 非终结符（或称变量）的集合 Σ 终结符的集合（与 N 不相�
 
 > For the remainder of the book we adhere to the following conventions when discussing the formal properties of context-free grammars (as opposed to explaining particular facts about English or other languages).
 
+<!--figbox-->
 > 大写字母如 A、B、S 表示非终结符
 >
 > *Capital letters like A, B, and S Non-terminals*
@@ -425,6 +434,7 @@ N 非终结符（或称变量）的集合 Σ 终结符的集合（与 N 不相�
 > S 起始符号 小写希腊字母如 α、β、γ 取自 (Σ∪N)∗ 的串 小写罗马字母如 u、v、w 终结符组成的串
 >
 > *S The start symbol Lower-case Greek letters like α, β, and γ Strings drawn from (Σ∪N)∗Lower-case Roman letters like u, v, and w Strings of terminals*
+<!--/figbox-->
 
 语言是通过推导这一概念来定义的。若一个串能经由若干次规则应用被改写为另一个串，则称前者推导出后者。
 
@@ -475,7 +485,7 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > `syntactic`（句法的）
 >
-> 释义：与句子结构相关，即词语如何组合成短语与句子的性质。
+> 释义：与句子成分结构有关的；此处指用来在多个分析中做出选择的句法信息。
 
 > `parsing`（句法分析）
 >
@@ -488,6 +498,10 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 其中每个句子都标注了解析树的语料库称为树库。
 
 > A corpus in which every sentence is annotated with a parse tree is called a treebank.
+
+> `treebank`（树库）
+>
+> 释义：用句法结构（解析树）标注过的语料库，其中的句子隐含地构成该语言的一部文法，为句法分析提供带结构标注的数据。
 
 树库在句法分析中，以及在句法现象的语言学研究中，都起着重要作用。
 
@@ -508,15 +522,19 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > English, Arabic, and Chinese. The Penn Treebank part-of-speech tagset was defined in Chapter 18, but we’ll see minor formatting differences across treebanks. The use of LISP-style parenthesized notation for trees is extremely common and resembles the bracketed notation we saw earlier in (19.1). For those who are not familiar with it we show a standard node-and-line tree representation in Fig. 19.6.
 
+<!--figbox-->
 > ((S
 
 > (NP-SBJ (DT That) ((S(JJ cold) (, ,) (NP-SBJ The/DT flight/NN )(JJ empty) (NN sky) ) (VP should/MD(VP (VBD was) (VP arrive/VB(ADJP-PRD (JJ full) (PP-TMP at/IN(PP (IN of) (NP eleven/CD a.m/RB ))(NP (NN fire) (NP-TMP tomorrow/NN )))))(CC and)
 
 > (NN light) ))))
+<!--/figbox-->
 
 (. .) ))
 
+<!--figbox-->
 > (a) (b)
+<!--/figbox-->
 
 *图 19.5 LDC 树库 3 中（a）Brown 与（b）ATIS 句子的分析。*
 *Figure 19.5 Parses from the LDC Treebank3 for (a) Brown and (b) ATIS sentences.*
@@ -533,9 +551,11 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > example, from the parsed sentences in Fig. 19.5 we can extract the CFG rules shown in Fig. 19.7 (with rule suffixes (-SBJ) stripped for simplicity). The grammar used to parse the Penn Treebank is very flat, resulting in very many rules. For example,
 
+<!--figbox-->
 > 文法 词库 S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP
 >
 > *Grammar Lexicon S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP*
+<!--/figbox-->
 
 *图 19.7 由图 19.5 中树库句子得到的 CFG 文法规则与词库。*
 *Figure 19.7 CFG grammar rules and lexicon from the treebank sentences in Fig. 19.5.*
@@ -564,7 +584,7 @@ LG = {w|w 属于 Σ∗ 且 S ∗⇒w}
 
 > `equivalent`（等价）
 >
-> 释义：指两个文法生成相同的字符串集合，并且为每个句子赋予相同的短语结构。
+> 释义：文法之间的一种关系，分强等价与弱等价，区别在于是否指派相同的短语结构。
 
 它们生成相同的字符串集合，并且为每个句子赋予相同的短语结构（仅允许对非终结符符号重新命名）。两个
 
@@ -636,11 +656,13 @@ A →B C D
 
 > can be converted into the following two CNF rules (Exercise 19.1 asks the reader to
 
+<!--figbox-->
 > 文法 词库
 >
 > *Grammar Lexicon*
 
 > S →NP VP Det →that | this | the | a S →Aux NP VP Noun →book | flight | meal | money S →VP Verb →book | include | prefer NP →Pronoun Pronoun →I | she | me NP →Proper-Noun Proper-Noun →Houston | United NP →Det Nominal Aux →does Nominal →Noun Preposition →from | to | on | near | through Nominal →Nominal Noun Nominal →Nominal PP VP →Verb VP →Verb NP VP →Verb NP PP VP →Verb PP VP →VP PP PP →Preposition NP
+<!--/figbox-->
 
 *图 19.8 L1 微型英语文法与词库。*
 *Figure 19.8 The L1 miniature English grammar and lexicon.*
@@ -919,6 +941,7 @@ A →X1 γX1 →B C
 
 > Since each non-terminal entry in our table has two daughters in the parse, it follows that for each constituent represented by an entry [i, j], there must be a position in the input, k, where it can be split into two parts such that i < k < j. Given such
 
+<!--figbox-->
 > L1 文法　　L1 的 CNF 形式
 >
 > *L1 Grammar L1 in CNF*
@@ -936,6 +959,7 @@ A →X1 γX1 →B C
 > X2 →Verb NP
 
 > VP →Verb PP VP →Verb PP VP →VP PP VP →VP PP PP →Preposition NP PP →Preposition NP
+<!--/figbox-->
 
 *图 19.10 L1 文法及其到 CNF 的转换。注意，虽然这里没有显示，L1 中所有原始的词汇条目也同样原样保留。*
 *Figure 19.10 L1 Grammar and its conversion to CNF. Note that although they aren’t shown here, all the original lexical entries from L1 carry over unchanged as well.*
@@ -1303,6 +1327,7 @@ P+R
 
 > See Collins (1999) for more details.
 
+<!--figbox-->
 > 父节点 方向 优先级列表 ADJP 左 NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS
 >
 > *Parent Direction Priority List ADJP Left NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS*
@@ -1312,6 +1337,7 @@ P+R
 > ADVP 右 RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN 左 PRT 右 RP QP 左 $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S 左 TO IN VP S SBAR ADJP UCP NP SBAR 左 WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP 左 TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP
 >
 > *ADVP Right RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN Left PRT Right RP QP Left $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S Left TO IN VP S SBAR ADJP UCP NP SBAR Left WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP Left TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP*
+<!--/figbox-->
 
 *图 19.17 取自 Collins（1999）的部分中心词规则。中心词规则也称为中心词渗透表。*
 *Figure 19.17 Some head rules from Collins (1999). The head rules are also called a head percolation table.*

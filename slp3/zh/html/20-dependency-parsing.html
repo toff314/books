@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -53,7 +58,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>I prefer the morning flight through Denver词与词之间的关系在句子上方用有向、带标签的</p>
 <aside class="term"><code>typed</code><span class="term-zh">带类型的（typed）</span><span class="term-explain">指依存弧上带有语法关系标签，标签取自一份固定的语法关系清单，如 nsubj、obj 等。</span></aside>
 <p>弧从中心词指向依存词来标示。我们称之为带类型的依存结构，因为</p>
-<aside class="term"><code>dependency</code><span class="term-zh">依存（dependency）</span><span class="term-explain">指词与词之间一个词支配另一个词的单向句法联系，句子的结构全靠这类有向关系来描写。</span></aside>
+<aside class="term"><code>dependency</code><span class="term-zh">依存关系</span><span class="term-explain">指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。</span></aside>
 <p>这些标签取自一份固定的语法关系清单。根节点明确标出树的根，也就是整个结构的中心词。</p>
 <p>下一页的图 20.1 展示了式 20.1 的依存分析，但以树的形式可视化，并与上一章所给出的那种相应的短语结构分析并列。注意，依存分析中不存在与短语成分或词汇类别相对应的节点；依存分析的内部结构仅由词与词之间的有向关系构成。这些中心词-依存词关系直接编码了往往被埋没在更复杂的短语结构分析中的重要信息。例如，动词 prefer 的论元在依存结构中直接与它相连，而在短语结构树中，它们与主要动词的联系则要疏远得多。同样，作为 flight 的修饰语的 morning 和 Denver，在依存结构中直接与之相连。</p>
 <p>中心词-依存词关系能够很好地代表谓语与其论元之间的语义关系，这一事实是依存语法目前在自然语言处理中比成分结构语法更为常见的一个重要原因。</p>
@@ -75,8 +80,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>grammatical function</code><span class="term-zh">语法功能</span><span class="term-explain">对中心词-依存词关系所做的类别划分，也就是主语、宾语、修饰语等句法角色的名称。</span></aside>
 <p>我们对语法关系的种类，或者说这些关系所承担的语法功能，进行分类，即依存词相对于其中心词所扮演的角色。这些关系包括主语、直接宾语和间接宾语等人们熟悉的概念。在英语中，这些概念与句子中的位置以及成分类型密切相关，但绝不决定它们，因此与短语结构树中所能找到的那类信息在一定程度上有所重复。然而，在语序更为灵活的语言中，这些语法关系直接编码的信息至关重要，因为基于短语的成分句法几乎提供不了什么帮助。</p>
 <p>语言学家们已经发展出各种关系的分类体系，远远超出人们熟悉的主语和宾语概念。尽管不同理论之间存在相当大的差异，</p>
+<div class="figbox">
 <blockquote><p>从句论元关系 描述</p></blockquote>
-<p class="caption">图 20.2 部分通用依存关系（de Marneffe 等，2021）。</p>
 <blockquote><p>名词性主语</p></blockquote>
 <blockquote><p>NSUBJ</p></blockquote>
 <blockquote><p>直接宾语</p></blockquote>
@@ -101,6 +106,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>CONJ</p></blockquote>
 <blockquote><p>并列连词</p></blockquote>
 <blockquote><p>CC</p></blockquote>
+</div>
+<p class="caption">图 20.2 部分通用依存关系（de Marneffe 等，2021）。</p>
 <p>从一种理论到另一种理论，都存在足够的共性，因此跨语言的标准已经</p>
 <aside class="term"><code>Universal</code><span class="term-zh">通用（Universal）</span><span class="term-explain">此处为通用依存（UD）标注体系名称的一部分，指该体系力图跨语言通用，覆盖 100 多种语言。</span></aside>
 <p>被制定出来。通用依存（Universal Dependencies，UD）项目（de Marneffe 等，2021），</p>
@@ -119,8 +126,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>依存结构可以表示为一个有向图 G = (V,A)，它由一个顶点集合 V 和一个顶点有序对集合 A 组成，我们把 A 中的元素称为弧。</p>
 <p>在大多数情况下，我们将假定顶点集合 V 恰好对应给定句子中的词集合。不过，它们也可能对应于标点符号；而在处理形态复杂的语言时，顶点集合还可能由词干和词缀构成。弧集合 A 刻画了 V 中各元素之间的中心词-依存词关系与语法功能关系。</p>
 <p>不同的语法理论或形式体系可能还会对这些依存结构施加更多限制。较为常见的限制包括：结构必须连通、具有一个指定的根节点，并且是无环的或平面的。与本章所讨论的句法分析方法关系最大的，是那种常见的、</p>
+<div class="figbox">
 <blockquote><p>关系　带有中心词与依存词的示例</p></blockquote>
-<p class="caption">图 20.3 一些通用依存关系的示例。</p>
 <blockquote><p>United canceled the flight.</p></blockquote>
 <blockquote><p>NSUBJ</p></blockquote>
 <blockquote><p>United diverted the flight to Reno.</p></blockquote>
@@ -143,6 +150,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>CC</p></blockquote>
 <blockquote><p>Book the flight through Houston.</p></blockquote>
 <blockquote><p>CASE</p></blockquote>
+</div>
+<p class="caption">图 20.3 一些通用依存关系的示例。</p>
 <aside class="term"><code>dependency</code><span class="term-zh">依存关系</span><span class="term-explain">指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。</span></aside>
 <p>出于计算动机的限制，即限定为有根树。也就是说，一棵依存树</p>
 <aside class="term"><code>tree</code><span class="term-zh">树</span><span class="term-explain">指满足连通、无环、只有一个根节点且除根外每个顶点恰有一条入弧等约束的有向图，用来表示依存结构。</span></aside>
@@ -167,7 +176,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>依存树库的创建方式是，让人类标注者直接为给定语料生成依存结构，或者人工修正自动分析器的输出。少数早期的树库还基于使用一个确定性过程，把已有的基于成分的树库转换为依存树。</p>
 <p>构建依存树的最大开放社区项目是上文介绍的 Universal Dependencies 项目，其网址为 https://universaldependencies.org/，它目前拥有 100 多种语言的近 200 个依存树库（de Marneffe et al., 2021）。下面给出几个 UD 示例，展示西班牙语、巴斯克语和汉语普通话句子的依存树：</p>
 <blockquote><p>punct</p></blockquote>
+<div class="figbox">
 <blockquote><p>obl obl:tmod</p></blockquote>
+</div>
 <blockquote><p>case case</p></blockquote>
 <blockquote><p>det det</p></blockquote>
 <p>VERB ADP DET NOUN ADP DET NUM PUNCT Subiremos a el tren a las cinco . we-will-board on the train at the five .</p>
@@ -213,21 +224,27 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>Book me the morning flight让我们考虑第 2 步的格局状态，此时词 me 已经被压入栈中。</p>
 <table><tr><th>栈</th><th>词表</th><th>关系</th></tr><tr><td>[root, book, me]</td><td>[the, morning, flight]</td><td></td></tr></table>
 <p>[root, book, me] [the, morning, flight]这里要应用的正确操作符是 RIGHTARC，它将 book 指定为 me 的中心词，并把 me 从栈中弹出，得到以下格局。</p>
+<div class="figbox">
 <blockquote><p>栈 词表 关系[root, book] [the, morning, flight] (book →me)</p></blockquote>
+</div>
 <p>在随后几次应用 SHIFT 操作符之后，第 6 步的格局如下所示：</p>
+<div class="figbox">
 <blockquote><p>栈 词表 关系</p></blockquote>
 <blockquote><p>[root, book, the, morning, flight] [] (book →me)</p></blockquote>
+</div>
 <p>这里，所有剩余的词语都已被传递到栈上，剩下要做的就是应用适当的归约操作符。在当前格局中，我们采用 LEFTARC 操作符，得到以下状态。</p>
+<div class="figbox">
 <blockquote><p>栈 词表 关系</p></blockquote>
 <blockquote><p>[root, book, the, flight] [] (book →me)</p></blockquote>
 <blockquote><p>(morning ←flight)</p></blockquote>
+</div>
 <p>此时，该句子的句法分析结果由以下结构构成。</p>
 <blockquote><p>iobj compound</p></blockquote>
 <p>Book me the morning flight (20.8)在考察如下这类序列时，有几点重要之处需要注意图 20.6 中的那一个。首先，所给出的序列并不是唯一可能导出合理解析的序列。一般来说，可能存在不止一条通向相同结果的路径；并且由于歧义的存在，还可能有其他转移序列，导出不同的、但同样有效的解析。</p>
 <p>其次，我们假设神谕在解析的每个时刻总是给出正确的操作符——这一假设在实践中不太可能成立。</p>
 <p>因此，鉴于该算法的贪心性质，错误的选择将导致错误的解析，因为分析器没有机会回退并尝试其他选择。20.2.4 节将介绍若干技术，使基于转移的方法能够更充分地探索搜索空间。</p>
+<div class="figbox">
 <blockquote><p>步 栈 词表 动作 添加的关系 0 [root] [book, me, the, morning, flight]</p></blockquote>
-<p class="caption">图 20.6 基于转移的句法分析轨迹。</p>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>1 [root, book] [me, the, morning, flight]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
@@ -238,6 +255,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>5 [root, book, the, morning] [flight]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>6 [root, book, the, morning, flight] [] LEFTARC (morning ←flight) 7 [root, book, the, flight] [] LEFTARC (the ←flight) 8 [root, book, flight] [] RIGHTARC (book →flight) 9 [root, book] [] RIGHTARC (root →book) 10 [root] [] Done</p></blockquote>
+</div>
+<p class="caption">图 20.6 基于转移的句法分析轨迹。</p>
 <p>最后，为简单起见，我们在说明该示例时没有标注依存关系上的标签依存关系。为了生成带标签的依存树，我们可以用依存标签对 LEFTARC 和 RIGHTARC 操作符进行参数化，例如 LEFTARC(NSUBJ) 或 RIGHTARC(OBJ)。这相当于把转移操作符集合从最初的三个扩展为一个集合，其中对所使用的依存关系集合中的每个关系都包含相应的 LEFTARC 和 RIGHTARC 操作符，另外再加上一个用于 SHIFT 操作符。当然，这使神谕的工作变得更加困难，因为它现在可选的操作符集合大得多。</p>
 <h3>20.2.1 构建神谕</h3>
 <p>用于贪心地选择合适转移的神谕通过有监督机器学习来训练。与所有有监督机器学习方法一样，我们需要训练数据：标注了应采取的正确转移的格局。我们可以从依存树中获取这些数据。此外，我们还需要提取格局的特征。我们将介绍通过嵌入来表示格局的神经分类器，以及使用人工设计特征的经典系统。</p>
@@ -246,6 +265,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>training oracle</code><span class="term-zh">训练神谕</span><span class="term-explain">在生成训练数据时用来模拟分析器运作、为每个格局给出正确转移操作符的神谕。</span></aside>
 <p>后续格局给出正确的转移操作符。</p>
 <p>要理解其运作方式，我们先回顾一下分析器的工作过程。它从一个默认的初始格局开始，其中栈包含 ROOT，输入列表就是词的列表，关系集合为空。LEFTARC 和 RIGHTARC 操作符各自把栈顶词之间的关系加入为给定句子累积的关系集合中。由于我们对每个训练句子都有一个黄金标准参考解析，我们知道哪些依存关系对给定句子是有效的。因此，我们可以利用参考解析来引导</p>
+<div class="figbox">
 <blockquote><p>步 栈 词表 预测动作 0 [root] [book, the, flight, through, houston]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>1 [root, book] [the, flight, through, houston]</p></blockquote>
@@ -257,6 +277,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>5 [root, book, flight, through] [houston]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>6 [root, book, flight, through, houston] [] LEFTARC 7 [root, book, flight, houston ] [] RIGHTARC 8 [root, book, flight] [] RIGHTARC 9 [root, book] [] RIGHTARC 10 [root] [] Done</p></blockquote>
+</div>
 <p class="caption">图 20.7 用给定的参考依存树模拟一次句法分析，生成由“格局／预测动作”对构成的训练样本。</p>
 <p>也就是分析器逐步走过一系列格局时对操作符的选择。</p>
 <p>更确切地说，给定一棵参考依存树和一个格局，训练神谕按如下方式进行：</p>
@@ -301,8 +322,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <ul><li>LEFTARC：在输入缓冲区前端的词与栈顶的词之间确立中心词-依存词关系；弹出栈顶。</li><li>RIGHTARC：在栈顶的词与输入缓冲区前端的词之间确立中心词-依存词关系；将输入缓冲区前端的词移到栈上。</li><li>SHIFT：从输入缓冲区前端移除该词，并将其压入栈。</li><li>REDUCE：弹出栈顶。</li></ul>
 <p>LEFTARC 和 RIGHTARC 操作符作用于栈顶以及输入缓冲区前端，而不是像标准弧（arc-standard）方法那样作用于栈顶的两个元素。RIGHTARC 操作符现在把依存词从缓冲区移到栈上，而不是将其移除，从而使其可以充当后续词的中心词。新的 REDUCE 操作符则移除栈顶元素。这些改动共同使得一个词可以被尽早指派中心词，同时仍能充当后续依存词的中心词。图 20.9 所示的轨迹说明了此例的新决策序列。</p>
 <p>除了展示弧急切（arc-eager）转移系统之外，此例还展示了整个基于转移的方法的强大与灵活。我们能够换入一个新的转移系统，而无需对</p>
+<div class="figbox">
 <blockquote><p>步骤 栈 词表 动作 新增关系 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]</p></blockquote>
-<p class="caption">图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。</p>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>2 [root, book, the] [flight, through, houston] LEFTARC (the ←flight) 3 [root, book] [flight, through, houston] RIGHTARC (book →flight) 4 [root, book, flight] [through, houston]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
@@ -313,6 +334,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>9 [root, book] []</p></blockquote>
 <blockquote><p>REDUCE</p></blockquote>
 <blockquote><p>10 [root] [] Done</p></blockquote>
+</div>
+<p class="caption">图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。</p>
 <p>底层的句法分析算法做任何改动。这种灵活性促成了多样化的转移系统的发展，它们处理句法和语义的不同方面，包括：指派词性标注（Choi and Palmer, 2011a）、允许生成非投射依存结构（Nivre, 2009）、指派语义角色（Choi and Palmer, 2011b），以及分析包含多种语言的文本（Bhat et al., 2017）。</p>
 <p>束搜索前面讨论的基于转移的方法的计算效率源于这样一个事实：它只对句子做一遍处理，贪心地作出决策而不考虑其他备选方案。当然，这也是一个弱点——一旦作出决策就无法撤销，即使句子后面出现压倒性的证据也无济于事。我们可以使用束搜索来探索其他</p>
 <aside class="term"><code>beam search</code><span class="term-zh">束搜索</span><span class="term-explain">一种带启发式剪枝的广度优先搜索，在固定的束宽内保留若干最优候选格局。</span></aside>
@@ -327,9 +350,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h2>20.3 基于图的依存句法分析</h2>
 <p>基于图的方法是第二类重要的依存句法分析算法。基于图的分析器比基于转移的分析器更准确，在长句上尤其如此；当中心词与依存词相距很远时，基于转移的方法会遇到困难（McDonald and Nivre, 2011）。基于图的方法通过对整棵树打分来避免这一困难，而不是依赖贪心的局部决策。此外，与基于转移的方法不同，基于图的分析器能够生成非投射的树。尽管投射性对英语而言不是重要问题，但对世界上许多语言而言确实是个问题。</p>
 <p>基于图的依存句法分析器会在所有可能的树构成的空间中搜索，为给定句子寻找使某个分数最大化的树（或若干棵树）。这些方法把搜索空间编码为有向图，并采用图论中的方法来在该空间中搜索最优解。更形式化地说，给定一个句子 S，我们要在 Gs（该句子所有可能的树构成的空间）中寻找使某个分数最大化的最优依存树。</p>
-<p>ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，</p>
+<p>ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，也就是说，一棵树的总体分数是构成该树的各条边的分数之和。</p>
 <aside class="term"><code>edge-factored</code><span class="term-zh">边因子化的</span><span class="term-explain">指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。</span></aside>
-<p>也就是说，一棵树的总体分数是构成该树的各条边的分数之和。</p>
 <p>X Score(t,S) = Score(e)基于图的算法必须解决两个问题：（1）为每条边赋予分数；（2）在给定所有可能边的分数的情况下找出最佳分析树。</p>
 <blockquote><p>e∈t</p></blockquote>
 <p>在接下来的几节中，我们将介绍这两个问题的解决方案，先从第二个问题（寻找树）开始，然后给出一种基于特征的算法和一种神经算法，用于解决第一个问题（赋予分数）。</p>

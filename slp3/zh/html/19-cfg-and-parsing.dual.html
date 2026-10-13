@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -96,8 +101,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>表达了该语言的符号可以被组合和排序的方式，此外还包含一个由词与符号构成的词库。例如，下面的产生式</p>
 <blockquote><p>expresses the ways that symbols of the language can be grouped and ordered together, and a lexicon of words and symbols. For example, the following productions</p></blockquote>
 <aside class="term"><code>lexicon</code><span class="term-zh">词库</span><span class="term-explain">文法中与句法规则分开列出的词表，给出每个词所属的词性标记。</span></aside>
-<p>表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun</p>
-<blockquote><p>express that an NP (or noun phrase) can be composed of either a ProperNoun or a determiner (Det) followed by a Nominal; a Nominal in turn can consist of one or more Nouns.1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun</p></blockquote>
+<p>表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由</p>
+<blockquote><p>express that an NP (or noun phrase) can be composed of either a ProperNoun or</p></blockquote>
+<aside class="term"><code>NP</code><span class="term-zh">名词短语</span><span class="term-explain">NP 即 noun phrase（名词短语），是以名词为中心词构成的短语，既可充当句子主语、宾语等成分，也可以由专有名词或“限定词 + Nominal”构成。</span></aside>
+<p>一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun</p>
+<blockquote><p>a determiner (Det) followed by a Nominal; a Nominal in turn can consist of one or more Nouns.1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun</p></blockquote>
 <p>上下文无关规则可以分层嵌套，因此我们可以把前面的规则与其他规则组合起来，例如下面这些表达词库事实的规则：</p>
 <blockquote><p>Context-free rules can be hierarchically embedded, so we can combine the previous rules with others, like the following, that express facts about the lexicon:</p></blockquote>
 <p>Det →a Det →the Noun →flight CFG 中使用的符号分为两类。与语言中的词（「the」「nightclub」）相对应的符号称为终结符</p>
@@ -133,11 +141,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>all the nodes in the tree (Det, Nom, Noun, a, flight). We can say further that it immediately dominates the nodes Det and Nom.</p></blockquote>
 <p>由 CFG 定义的形式语言，是那些可推导出的符号串的集合，</p>
 <blockquote><p>The formal language defined by a CFG is the set of strings that are derivable</p></blockquote>
-<p>它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始</p>
-<blockquote><p>from the designated start symbol. Each grammar must have one designated start</p></blockquote>
+<p>它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。</p>
+<blockquote><p>from the designated start symbol. Each grammar must have one designated start symbol, which is often called S. Since context-free grammars are often used to define sentences, S is usually interpreted as the “sentence” node, and the set of strings that are derivable from S is the set of sentences in some simplified version of English.</p></blockquote>
 <aside class="term"><code>start symbol</code><span class="term-zh">起始符号</span><span class="term-explain">文法中作为推导起点的那个非终结符，通常记为 S，语言即由它推导出的全部串构成。</span></aside>
-<p>符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。</p>
-<blockquote><p>symbol, which is often called S. Since context-free grammars are often used to define sentences, S is usually interpreted as the “sentence” node, and the set of strings that are derivable from S is the set of sentences in some simplified version of English.</p></blockquote>
 <p>让我们再往规则清单中添加几条规则。下面这条规则表达了</p>
 <blockquote><p>Let’s add a few additional rules to our inventory. The following rule expresses</p></blockquote>
 <p>这样一个事实：句子可以由一个名词短语后接一个动词短语构成：</p>
@@ -164,6 +170,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Figure 19.2 gives a sample lexicon, and Fig. 19.3 summarizes the grammar rules</p></blockquote>
 <p>即我们目前所见的这些规则，我们称之为 L0。注意，我们可以用或符号 | 来表示一个非终结符有多种可能的展开。</p>
 <blockquote><p>we’ve seen so far, which we’ll call L0. Note that we can use the or-symbol | to indicate that a non-terminal has alternate possible expansions.</p></blockquote>
+<div class="figbox">
 <blockquote><p>Noun →flights | flight | breeze | trip | morning Verb →is | prefer | like | need | want | fly | do</p></blockquote>
 <blockquote><p>Adjective →cheapest | non-stop | first | latest</p></blockquote>
 <blockquote><p>| other | direct</p></blockquote>
@@ -171,12 +178,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Proper-Noun →Alaska | Baltimore | Los Angeles</p></blockquote>
 <blockquote><p>| Chicago | United | American</p></blockquote>
 <blockquote><p>Determiner →the | a | an | this | these | that Preposition →from | to | on | near | in Conjunction →and | or | but</p></blockquote>
+</div>
 <p class="caption">图 19.2 L0 的词库。</p>
 <p class="caption">Figure 19.2 The lexicon for L0.</p>
 <p>我们可以用这个文法生成这种“ATIS 语言”的句子。我们</p>
 <blockquote><p>We can use this grammar to generate sentences of this “ATIS-language”. We</p></blockquote>
 <p>从 S 开始，把它展开为 NP VP，然后随机选择 NP 的一个展开（比如展开为</p>
 <blockquote><p>start with S, expand it to NP VP, then choose a random expansion of NP (let’s say, to</p></blockquote>
+<div class="figbox">
 <blockquote><p>文法  规则  示例</p><p><em>Grammar Rules Examples</em></p></blockquote>
 <blockquote><p>S →NP VP I + want a morning flight</p></blockquote>
 <blockquote><p>NP →Pronoun I</p></blockquote>
@@ -186,6 +195,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>VP →Verb do</p></blockquote>
 <blockquote><p>| Verb NP want + a flight| Verb NP PP leave + Boston + in the morning| Verb PP leaving + on Thursday</p></blockquote>
 <blockquote><p>PP →Preposition NP from + Los Angeles</p></blockquote>
+</div>
 <p class="caption">图 19.3 L0 的文法，每条规则都附有示例短语。</p>
 <p class="caption">Figure 19.3 The grammar for L0, with example phrases for each rule.</p>
 <img src="../md/images/19-cfg-and-parsing/fig_p5_0.png" alt="">
@@ -225,8 +235,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>N</th><th>非终结符（或称变量）的集合<br>a set of non-terminal symbols (or variables)</th></tr><tr><td>Σ</td><td>终结符的集合（与 N 不相交）<br>a set of terminal symbols (disjoint from N)</td></tr><tr><td>R</td><td>规则或产生式的集合，每条形如 A →β ，<br>a set of rules or productions, each of the form A →β ,</td></tr><tr><td></td><td>其中 A 是非终结符，<br>where A is a non-terminal,</td></tr><tr><td></td><td>β 是取自无限字符串集合 (Σ∪N)∗ 的一个符号串<br>β is a string of symbols from the infinite set of strings (Σ∪N)∗</td></tr><tr><td>S</td><td>指定的起始符号，且是 N 的一个成员<br>a designated start symbol and a member of N</td></tr></table>
 <p>在本书余下的部分中，当我们讨论上下文无关文法的形式性质时（而不是在解释关于英语或其他语言的特定事实时），都遵循以下约定。</p>
 <blockquote><p>For the remainder of the book we adhere to the following conventions when discussing the formal properties of context-free grammars (as opposed to explaining particular facts about English or other languages).</p></blockquote>
+<div class="figbox">
 <blockquote><p>大写字母如 A、B、S 表示非终结符</p><p><em>Capital letters like A, B, and S Non-terminals</em></p></blockquote>
 <blockquote><p>S 起始符号 小写希腊字母如 α、β、γ 取自 (Σ∪N)∗ 的串 小写罗马字母如 u、v、w 终结符组成的串</p><p><em>S The start symbol Lower-case Greek letters like α, β, and γ Strings drawn from (Σ∪N)∗Lower-case Roman letters like u, v, and w Strings of terminals</em></p></blockquote>
+</div>
 <p>语言是通过推导这一概念来定义的。若一个串能经由若干次规则应用被改写为另一个串，则称前者推导出后者。</p>
 <blockquote><p>A language is defined through the concept of derivation. One string derives another one if it can be rewritten as the second one by some series of rule applications.</p></blockquote>
 <p>更形式化地说，依据 Hopcroft 和 Ullman（1979），</p>
@@ -251,12 +263,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>LG = {w|w is in Σ∗and S ∗⇒w}</p></blockquote>
 <p>从词串映射到其解析树的问题称为句法分析，我们将在 19.6 节中看到。</p>
 <blockquote><p>The problem of mapping from a string of words to its parse tree is called syntactic parsing, as we’ll see in Section 19.6.</p></blockquote>
-<aside class="term"><code>syntactic</code><span class="term-zh">句法的</span><span class="term-explain">与句子结构相关，即词语如何组合成短语与句子的性质。</span></aside>
+<aside class="term"><code>syntactic</code><span class="term-zh">句法的</span><span class="term-explain">与句子成分结构有关的；此处指用来在多个分析中做出选择的句法信息。</span></aside>
 <aside class="term"><code>parsing</code><span class="term-zh">句法分析</span><span class="term-explain">为输入词串指派句法结构（如解析树）的过程。</span></aside>
 <h2>19.3 树库</h2>
 <blockquote><p>19.3 Treebanks</p></blockquote>
 <p>其中每个句子都标注了解析树的语料库称为树库。</p>
 <blockquote><p>A corpus in which every sentence is annotated with a parse tree is called a treebank.</p></blockquote>
+<aside class="term"><code>treebank</code><span class="term-zh">树库</span><span class="term-explain">用句法结构（解析树）标注过的语料库，其中的句子隐含地构成该语言的一部文法，为句法分析提供带结构标注的数据。</span></aside>
 <p>树库在句法分析中，以及在句法现象的语言学研究中，都起着重要作用。</p>
 <blockquote><p>Treebanks play an important role in parsing as well as in linguistic investigations of syntactic phenomena.</p></blockquote>
 <p>树库通常是这样制作的：先用分析器处理每个句子，然后</p>
@@ -266,11 +279,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>Penn Treebank</code><span class="term-zh">宾州树库（Penn Treebank）</span><span class="term-explain">涵盖英语、阿拉伯语、汉语等的句法标注语料库，为句法分析与评测提供带解析树的数据。</span></aside>
 <p>英语、阿拉伯语和汉语。宾州树库的词性标注集已在第 18 章定义，但我们会看到各树库之间存在细微的格式差异。用 LISP 风格的括号记法表示树极为常见，它类似于我们先前在（19.1）中见到的括号记法。对于不熟悉这种记法的读者，我们在图 19.6 中给出标准的节点—连线树表示。</p>
 <blockquote><p>English, Arabic, and Chinese. The Penn Treebank part-of-speech tagset was defined in Chapter 18, but we’ll see minor formatting differences across treebanks. The use of LISP-style parenthesized notation for trees is extremely common and resembles the bracketed notation we saw earlier in (19.1). For those who are not familiar with it we show a standard node-and-line tree representation in Fig. 19.6.</p></blockquote>
+<div class="figbox">
 <blockquote><p>((S</p></blockquote>
 <blockquote><p>(NP-SBJ (DT That) ((S(JJ cold) (, ,) (NP-SBJ The/DT flight/NN )(JJ empty) (NN sky) ) (VP should/MD(VP (VBD was) (VP arrive/VB(ADJP-PRD (JJ full) (PP-TMP at/IN(PP (IN of) (NP eleven/CD a.m/RB ))(NP (NN fire) (NP-TMP tomorrow/NN )))))(CC and)</p></blockquote>
 <blockquote><p>(NN light) ))))</p></blockquote>
+</div>
 <p>(. .) ))</p>
+<div class="figbox">
 <blockquote><p>(a) (b)</p></blockquote>
+</div>
 <p class="caption">图 19.5 LDC 树库 3 中（a）Brown 与（b）ATIS 句子的分析。</p>
 <p class="caption">Figure 19.5 Parses from the LDC Treebank3 for (a) Brown and (b) ATIS sentences.</p>
 <img src="../md/images/19-cfg-and-parsing/fig_p7_0.png" alt="">
@@ -280,7 +297,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The sentences in a treebank implicitly constitute a grammar of the language. For</p></blockquote>
 <p>例如，从图 19.5 中已分析的句子可以提取出图 19.7 所示的 CFG 规则（为简单起见去掉了规则后缀 (-SBJ)）。用于分析宾州树库的文法非常扁平，导致规则数量极多。例如，</p>
 <blockquote><p>example, from the parsed sentences in Fig. 19.5 we can extract the CFG rules shown in Fig. 19.7 (with rule suffixes (-SBJ) stripped for simplicity). The grammar used to parse the Penn Treebank is very flat, resulting in very many rules. For example,</p></blockquote>
+<div class="figbox">
 <blockquote><p>文法 词库 S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP</p><p><em>Grammar Lexicon S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP</em></p></blockquote>
+</div>
 <p class="caption">图 19.7 由图 19.5 中树库句子得到的 CFG 文法规则与词库。</p>
 <p class="caption">Figure 19.7 CFG grammar rules and lexicon from the treebank sentences in Fig. 19.5.</p>
 <p>在约 4,500 条用于展开 VP 的不同规则中，有分别针对任意长度的 PP 序列以及动词论元各种可能排列方式的规则：</p>
@@ -293,7 +312,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>strongly</code><span class="term-zh">强等价</span><span class="term-explain">指两部文法不仅生成相同的语言，还为每句话指派相同的短语结构树。</span></aside>
 <p>生成相同的语言。我们说两部文法是强等价的，如果</p>
 <blockquote><p>generate the same language. We say that two grammars are strongly equivalent if</p></blockquote>
-<aside class="term"><code>equivalent</code><span class="term-zh">等价</span><span class="term-explain">指两个文法生成相同的字符串集合，并且为每个句子赋予相同的短语结构。</span></aside>
+<aside class="term"><code>equivalent</code><span class="term-zh">等价</span><span class="term-explain">文法之间的一种关系，分强等价与弱等价，区别在于是否指派相同的短语结构。</span></aside>
 <p>它们生成相同的字符串集合，并且为每个句子赋予相同的短语结构（仅允许对非终结符符号重新命名）。两个</p>
 <blockquote><p>they generate the same set of strings and if they assign the same phrase structure to each sentence (allowing merely for renaming of the non-terminal symbols). Two</p></blockquote>
 <aside class="term"><code>weakly</code><span class="term-zh">弱</span><span class="term-explain">构成弱等价关系时的限定语，指两文法生成相同字符串集合但结构指派并不相同。</span></aside>
@@ -324,8 +343,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>normal form grammar. For example, a rule of the form</p></blockquote>
 <p>A →B C D的规则可以转换为下面两条 CNF 规则（练习 19.1 要求读者</p>
 <blockquote><p>can be converted into the following two CNF rules (Exercise 19.1 asks the reader to</p></blockquote>
+<div class="figbox">
 <blockquote><p>文法 词库</p><p><em>Grammar Lexicon</em></p></blockquote>
 <blockquote><p>S →NP VP Det →that | this | the | a S →Aux NP VP Noun →book | flight | meal | money S →VP Verb →book | include | prefer NP →Pronoun Pronoun →I | she | me NP →Proper-Noun Proper-Noun →Houston | United NP →Det Nominal Aux →does Nominal →Noun Preposition →from | to | on | near | through Nominal →Nominal Noun Nominal →Nominal PP VP →Verb VP →Verb NP VP →Verb NP PP VP →Verb PP VP →VP PP PP →Preposition NP</p></blockquote>
+</div>
 <p class="caption">图 19.8 L1 微型英语文法与词库。</p>
 <p class="caption">Figure 19.8 The L1 miniature English grammar and lexicon.</p>
 <p>构造完整的算法）：</p>
@@ -457,6 +478,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the posts between segments of fencing. It follows then that the cell that represents the entire input resides in position [0,n] in the matrix.</p></blockquote>
 <p>由于我们表中的每个非终结符条目在分析中都有两个女儿，因此对于由条目 [i, j] 表示的每个成分，输入中必定存在一个位置 k，使得它可以在该处被切分为两部分，且 i &lt; k &lt; j。给定这样</p>
 <blockquote><p>Since each non-terminal entry in our table has two daughters in the parse, it follows that for each constituent represented by an entry [i, j], there must be a position in the input, k, where it can be split into two parts such that i &lt; k &lt; j. Given such</p></blockquote>
+<div class="figbox">
 <blockquote><p>L1 文法　　L1 的 CNF 形式</p><p><em>L1 Grammar L1 in CNF</em></p></blockquote>
 <blockquote><p>S →NP VP S →NP VP S →Aux NP VP S →X1 VP</p></blockquote>
 <blockquote><p>X1 →Aux NP</p></blockquote>
@@ -465,6 +487,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>NP →Pronoun NP →I | she | me NP →Proper-Noun NP →United | Houston NP →Det Nominal NP →Det Nominal Nominal →Noun Nominal →book | flight | meal | money Nominal →Nominal Noun Nominal →Nominal Noun Nominal →Nominal PP Nominal →Nominal PP VP →Verb VP →book | include | prefer VP →Verb NP VP →Verb NP VP →Verb NP PP VP →X2 PP</p></blockquote>
 <blockquote><p>X2 →Verb NP</p></blockquote>
 <blockquote><p>VP →Verb PP VP →Verb PP VP →VP PP VP →VP PP PP →Preposition NP PP →Preposition NP</p></blockquote>
+</div>
 <p class="caption">图 19.10 L1 文法及其到 CNF 的转换。注意，虽然这里没有显示，L1 中所有原始的词汇条目也同样原样保留。</p>
 <p class="caption">Figure 19.10 L1 Grammar and its conversion to CNF. Note that although they aren’t shown here, all the original lexical entries from L1 carry over unchanged as well.</p>
 <p>的某个位置 k，第一个成分 [i,k] 必定位于第 i 行中条目 [i, j] 左侧的某处，而第二个条目 [k, j] 必定位于它的下方、沿第 j 列。</p>
@@ -643,9 +666,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>rules of the form VP →Y1 ··· Yn, the algorithm would start from the left of Y1 ···Yn looking for the first Yi of type TO; if no TOs are found, it would search for the first Yi of type VBD; if no VBDs are found, it would search for a VBN, and so on.</p></blockquote>
 <p>更多细节参见 Collins（1999）。</p>
 <blockquote><p>See Collins (1999) for more details.</p></blockquote>
+<div class="figbox">
 <blockquote><p>父节点 方向 优先级列表 ADJP 左 NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS</p><p><em>Parent Direction Priority List ADJP Left NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS</em></p></blockquote>
 <blockquote><p>SBAR RB</p></blockquote>
 <blockquote><p>ADVP 右 RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN 左 PRT 右 RP QP 左 $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S 左 TO IN VP S SBAR ADJP UCP NP SBAR 左 WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP 左 TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP</p><p><em>ADVP Right RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN Left PRT Right RP QP Left $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S Left TO IN VP S SBAR ADJP UCP NP SBAR Left WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP Left TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP</em></p></blockquote>
+</div>
 <p class="caption">图 19.17 取自 Collins（1999）的部分中心词规则。中心词规则也称为中心词渗透表。</p>
 <p class="caption">Figure 19.17 Some head rules from Collins (1999). The head rules are also called a head percolation table.</p>
 <h2>19.10 小结</h2>

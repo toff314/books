@@ -1,4 +1,4 @@
-# 第 26 章 会话及其结构
+# 26-conversation-structure
 
 ### 第 26 章
 
@@ -13,6 +13,7 @@
 
 当人与人彼此交谈时，会发生哪些会话现象？人与机器之间的会话是否不同？请思考图 26.1 中摘录的一位人类旅行代理人与一位人类客户之间对话中所发生的事。
 
+<!--figbox-->
 > C1: ……我需要在五月出行。 A2: 那么，你想在五月哪一天出行？ C3: 好的，呃，我需要到那里参加一个从 12 号到 15 号的会议。
 
 > A4: 你要飞往哪个城市？ C5: 西雅图。 A6: 你想什么时候离开匹兹堡？
@@ -34,6 +35,7 @@
 > A18: 是星期五。 C19: 呃，嗯。我会考虑在那里多待一天，待到星期天。
 
 > A20: 好的……好的。星期天我有……
+<!--/figbox-->
 
 *图 26.1 一位人类旅行代理人（A）与一位人类客户（C）之间一段电话对话的片段。A16 和 C17 中由 # 标出的片段表示话语重叠。*
 
@@ -249,12 +251,15 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 
 在受其启发的 DAMSL（Dialogue Act Markup in Several Layers，多层对话行为标注）体系结构中，
 
+<!--figbox-->
 > 标记 示例 THANK 谢谢 GREET 你好，Dan INTRODUCE 又是我 BYE 好的，再见 REQUEST-COMMENT 那看起来怎么样？SUGGEST 从 6 月 13 日到 17 日 REJECT 不行，周五我全天都排满了 ACCEPT 周六听起来可以 REQUEST-SUGGEST 一周中哪天对你合适？
 
 > INIT 我想和你约个时间 GIVE REASON 因为我整个下午都有会 FEEDBACK 好的 DELIBERATE 让我先看一下日程 CONFIRM 好的，那太好了 CLARIFY 好的，你是指 23 号那个周二吗？DIGRESS [我们可以一起吃午饭]，再吃好多冰淇淋 MOTIVATE 我们应该去拜访我们在慕尼黑的分公司 GARBAGE 哎呀，我—
+<!--/figbox-->
 
 *图 26.2 会议安排任务中的 18 个高层对话行为，来自 Verbmobil-1 系统（耶卡特等，1995）。*
 
+<!--figbox-->
 > 标记 Sys User 说明 HELLO(a = x,b = y,...) ✓ ✓ 开启对话并给出信息 a = x,b = y,...
 
 > INFORM(a = x,b = y,...) ✓ ✓ 给出信息 a = x,b = y,...
@@ -268,11 +273,13 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 > CONFREQ(a = x,...,d) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 SELECT(a = x,a = y) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 AFFIRM(a = x,b = y,...) ✓ ✓ 肯定并给出进一步信息 a = x,b = y,...
 
 > NEGATE(a = x) χ ✓ 否定并给出更正后的取值 a = x DENY(a = x) χ ✓ 否认 a = x BYE() ✓ ✓ 关闭对话
+<!--/figbox-->
 
 *图 26.3 扬等（2010）的 HIS 餐馆推荐系统所使用的对话行为。Sys 和 User 两列分别表示哪些行为可作为系统输出和用户输入。*
 
 克拉克（Clark）和谢弗（Schaefer）（1989）、Allwood 等（1992）以及（Allwood，1995）的工作中，每个话语都被标注两类功能：前向功能，如言语行为功能；后向功能，如共同基础建立和回答，这类功能会“回指”对话者此前的话语（艾伦和 Core，1997；Walker 等，1996；Carletta 等，1997；Core 等，1999）。
 
+<!--figbox-->
 > 话语 对话行为
 
 > U: 你好，我想找个地方吃饭。hello(task = find,type=restaurant) S: 你在找一家餐馆。什么 confreq(type = restaurant, food)
@@ -292,6 +299,7 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 > 区间。 moderate)
 
 > U: 电话号码是多少？ request(phone) S: Roma 的电话号码是 385456。 inform(name = "Roma", phone = "385456") U: 好的，谢谢，再见。 bye()
+<!--/figbox-->
 
 *图 26.4 来自扬等（2010）HIS 系统的一段示例对话，其中使用了图 26.3 的对话行为。*
 

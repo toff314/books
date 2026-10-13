@@ -88,6 +88,7 @@
 >
 > 释义：指受动作影响最直接、或处于某种状态之中的参与者角色。
 
+<!--figbox-->
 > 题元角色定义
 >
 > *Thematic Role Definition*
@@ -171,6 +172,7 @@
 > 目标
 >
 > *GOAL*
+<!--/figbox-->
 
 *图 22.1 一些常用的题元角色及其定义。*
 *Figure 22.1 Some commonly used thematic roles with their definitions.*
@@ -194,6 +196,7 @@
 
 > The main reason computational systems use semantic roles is to act as a shallow meaning representation that can let us make simple inferences that aren’t possible from the pure surface string of words, or even from the parse tree. To extend the earlier examples, if a document says that Company A acquired Company B, we’d like to know that this answers the query Was Company B acquired? despite the fact that the two sentences have very different surface syntax. Similarly, this shallow semantics might act as a useful intermediate language in machine translation.
 
+<!--figbox-->
 > 题元角色 示例
 >
 > *Thematic Role Example*
@@ -277,6 +280,7 @@
 > 目标
 >
 > *GOAL*
+<!--/figbox-->
 
 *图 22.2 各种题元角色的一些典型示例。*
 *Figure 22.2 Some prototypical examples of various thematic roles.*
@@ -381,9 +385,9 @@ break：
 
 > either order) are called verb alternations or diathesis alternations. The alternation
 
-> `alternation dative`（交替；与格交替）
+> `alternation dative alternation`（交替；与格交替）
 >
-> 释义：指同一动词的论元在不同句法位置之间换位实现的现象，如与格交替中主题与目标互换结构位置。
+> 释义：指同一动词的论元可出现在不同句法位置的现象；其中与格交替指 give 一类动词可在双宾语与介词短语两种结构间替换。
 
 我们上文为 give 展示的这种交替，即与格交替，似乎只出现在特定的动词语义类别中，包括“将来拥有”类动词（advance、allocate、offer、owe）、“发送”类动词（forward、hand、mail）、“投掷”类动词（kick、pass、throw）等等。Levin (1993) 列出了 3100 个英语动词所属的语义类别（47 个高层类别，又细分为 193 个更具体的类别）以及它们所参与的各种交替。这些动词类别列表已被纳入在线资源 VerbNet (Kipper et al., 2000)，该资源把每个动词同时链接到 WordNet 和 FrameNet 条目。
 
@@ -647,6 +651,7 @@ FrameNet 中的框架是一种背景知识结构，它定义了一组
 >
 > *non-core roles*
 
+<!--figbox-->
 > 核心角色
 >
 > *Core Roles*
@@ -706,6 +711,7 @@ FrameNet 中的框架是一种背景知识结构，它定义了一组
 > 属性取值的群体。
 >
 > *ATTRIBUTE in a specified way.*
+<!--/figbox-->
 
 *图 22.3 FrameNet 标注者指南（Ruppenhofer et al., 2016）中 change position on a scale 框架的框架元素。*
 *Figure 22.3 The frame elements in the change position on a scale frame from the FrameNet Labelers Guide (Ruppenhofer et al., 2016).*
@@ -1138,16 +1144,29 @@ FrameNet（22.27）使用许多特定于框架的框架元素作为角色，而 
 
 > One of the most influential has been the selectional association model of Resnik
 
-> `selectional preference strength`（选择偏好强度）
+> `selectional`（选择的（selectional））
 >
-> 释义：衡量一个谓词能在多大程度上告诉我们其论元所属语义类别的信息量。
+> 释义：指谓词对其论元所属语义类别的限制或偏好，如 eat 倾向于选择可食用的事物作直接宾语。
 
 （1993）。Resnik 把选择偏好强度这一概念定义为
 
 > (1993). Resnik defines the idea of selectional preference strength as the general
-一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38)
 
-> amount of information that a predicate tells us about the semantic class of its arguments. For example, the verb eat tells us a lot about the semantic class of its direct objects, since they tend to be edible. The verb be, by contrast, tells us less about its direct objects. The selectional preference strength can be defined by the difference in information between two distributions: the distribution of expected semantic classes P(c) (how likely is it that a direct object will fall into class c) and the distribution of expected semantic classes for the particular verb P(c|v) (how likely is it that the direct object of the specific verb v will fall into semantic class c). The greater the difference between these distributions, the more information the verb is giving us about possible objects. The difference between these two distributions can be quantified by relative entropy, or the Kullback-Leibler divergence (Kullback and Leibler, 1951). The Kullback-Leibler or KL divergence D(P||Q) expresses the difference between two probability distributions P and Q X P(x)log P(x) D(P||Q) = (22.38)
+> `preference strength`（偏好强度）
+>
+> 释义：指谓词就其论元语义类别所提供的总体信息量，可用两个分布之间的相对熵来度量。
+
+一个谓词告诉我们关于其论元语义类别的信息量。例如，动词 eat 关于其直接宾语的语义类别告诉我们的信息很多，因为它们往往是可食用的。相比之下，动词 be 关于其直接宾语告诉我们的信息就较少。选择偏好强度可以用两个分布之间的信息差来定义：期望语义类别的分布 P(c)（某个直接宾语落入类别 c 的可能性有多大），以及特定动词的期望语义类别分布 P(c|v)（特定动词 v 的直接宾语落入语义类别 c 的可能性有多大）。这两个分布之间的差异越大，动词就向我们提供了越多关于可能宾语的信息。这两个分布之间的差异可以用相对熵，即 Kullback-Leibler 散度来量化（Kullback
+
+> amount of information that a predicate tells us about the semantic class of its arguments. For example, the verb eat tells us a lot about the semantic class of its direct objects, since they tend to be edible. The verb be, by contrast, tells us less about its direct objects. The selectional preference strength can be defined by the difference in information between two distributions: the distribution of expected semantic classes P(c) (how likely is it that a direct object will fall into class c) and the distribution of expected semantic classes for the particular verb P(c|v) (how likely is it that the direct object of the specific verb v will fall into semantic class c). The greater the difference between these distributions, the more information the verb is giving us about possible objects. The difference between these two distributions can be quantified by relative entropy, or the Kullback-Leibler divergence (Kullback
+
+> `relative entropy KL divergence`（相对熵；KL 散度）
+>
+> 释义：用于度量两个概率分布之间差异的一种指标，在本书中用来量化谓词的选择偏好强度。
+
+and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38)
+
+> and Leibler, 1951). The Kullback-Leibler or KL divergence D(P||Q) expresses the difference between two probability distributions P and Q X P(x)log P(x) D(P||Q) = (22.38)
 Q(x)
 选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。
 
@@ -1308,6 +1327,7 @@ et al. 1992b, Sch¨utze 1992a）。伪词是把某个上下文中的测试词（
 >
 > 释义：一种用十个基元谓词（如 ATRANS、PTRANS、MTRANS 等）表示句子意义的早期语义表示方法。
 
+<!--figbox-->
 > 基元 定义 ATRANS 占有权或控制权从一个实体到
 >
 > *Primitive Definition ATRANS The abstract transfer of possession or control from one entity to*
@@ -1327,6 +1347,7 @@ et al. 1992b, Sch¨utze 1992a）。伪词是把某个上下文中的测试词（
 > MBUILD 在一个实体内部创造新信息 PROPEL 施加物理力以移动一个对象 MOVE 动物对自身某一部分的整体运动 INGEST 动物摄入某种物质 EXPEL 动物排出某物 SPEAK 发出声音的动作 ATTEND 使某一感觉器官聚焦的动作
 >
 > *MBUILD The creation of new information within an entity PROPEL The application of physical force to move an object MOVE The integral movement of a body part by an animal INGEST The taking in of a substance by an animal EXPEL The expulsion of something from an animal SPEAK The action of producing a sound ATTEND The action of focusing a sense organ*
+<!--/figbox-->
 
 *图 22.8 一组概念依存基元。*
 *Figure 22.8 A set of conceptual dependency primitives.*

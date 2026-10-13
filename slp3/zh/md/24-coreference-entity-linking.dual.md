@@ -1,4 +1,4 @@
-# 第 24 章 共指消解与实体链接
+# 24-coreference-entity-linking
 
 ### 章
 
@@ -180,7 +180,7 @@
 
 > `entity linking`（实体链接）
 >
-> 释义：把文本中的提及映射到知识库中某个现实世界实体（如某个 Wikipedia 页面）的任务。
+> 释义：指把文本中出现的提及映射到知识库中某个具体实体的表示，从而确定其指向的现实对象。
 
 a_2 话语实体映射到某个现实世界个体。3 我们通常把实体
 
@@ -213,7 +213,7 @@ a_2 话语实体映射到某个现实世界个体。3 我们通常把实体
 > (24.2) The city council denied the demonstrators a permit because
 
 - 他们害怕暴力。
-- 他们主张暴力。
+- 他们鼓吹暴力。
 
 > they feared violence.
 > they advocated violence.
@@ -902,9 +902,11 @@ It is Modaladjective that S　It is Modaladjective (for NP) to VP　It is Cogv-e
 
 > Mention-detection rules are sometimes designed specifically for particular evaluation campaigns. For OntoNotes, for example, mentions are not embedded within larger mentions, and while numeric quantities are annotated, they are rarely coreferential. Thus for OntoNotes tasks like CoNLL 2012 (Pradhan et al., 2012a), a common first pass rule-based mention detection algorithm (Lee et al., 2013) is:
 
+<!--figbox-->
 > 取所有 NP、物主代词和命名实体。
 >
 > *Take all NPs, possessive pronouns, and named entities.*
+<!--/figbox-->
 
 然而，基于规则的系统通常不足以处理提及检测，因此现代系统会引入某种学习得到的提及检测组件，例如指称性分类器、回指性分类器（检测某个 NP 是否为回指语），或新引入话语分类器（检测某个提及是否是新引入话语、是否是未来回指语的潜在先行语）。
 
@@ -1002,7 +1004,7 @@ make it in advance 一样频繁，但 make them in Hollywood 则完全没有出�
 
 > `mention-pair`（提及对）
 >
-> 释义：共指架构中最简单的一类：用一个分类器判断候选回指语与其候选先行语这两条提及是否共指。
+> 释义：一种共指模型：把回指语与每个候选先行语配成对，逐对判定二者是否指向同一实体。
 
 共指架构，它引入了许多更复杂算法的特征，尽管其他架构表现更好。提及对架构围绕一个分类器构建，顾名思义，该分类器接收一对提及——一个候选回指语和一个候选先行语——并做出二元分类决策：是否共指。
 
@@ -1186,6 +1188,7 @@ make it in advance 一样频繁，但 make them in Hollywood 则完全没有出�
 
 > Entity-based models can make additional use of two additional classes: (iv) feature of all mentions from the antecedent’s entity cluster, and (v) features of the relation between the anaphor and the mentions in the antecedent entity cluster.
 
+<!--figbox-->
 > 回指语或先行语提及的特征
 >
 > *Features of the Anaphor or Antecedent Mention*
@@ -1257,6 +1260,7 @@ make it in advance 一样频繁，但 make them in Hollywood 则完全没有出�
 > 词语包含 F 回指语簇中的所有词语都包含在先行语簇中
 >
 > *Word Inclusion F All words in anaphor cluster included in antecedent cluster*
+<!--/figbox-->
 
 *图 24.4 基于特征的共指：回指语“she”与潜在先行语“Victoria Chen”的示例特征值。*
 *Figure 24.4 Feature-based coreference: sample feature values for anaphor “she” and potential antecedent“Victoria Chen”.*

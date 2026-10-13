@@ -18,9 +18,11 @@
 
 > we were asking them questions. By 1961 there was a system to answer questions about American baseball statistics like “How many games did the Yankees play in July?” (Green et al., 1961). Even fictional computers in the 1970s like Deep Thought, invented by Douglas Adams in The Hitchhiker’s Guide to the Galaxy, answered “the Ultimate Question Of Life, The Universe, and Everything”.1 And because so much knowledge is encoded in text, systems were answering questions at human-level performance even before LLMs: IBM’s Watson system won the TV game-show Jeopardy! in 2011, surpassing humans at answering questions like:
 
+<!--figbox-->
 > 威廉·威尔金森的《瓦拉几亚与摩尔达维亚诸公国纪事》启发了这位作家最著名的小说 2
 >
 > *WILLIAM WILKINSON’S “AN ACCOUNT OF THE PRINCIPALITIES OF WALLACHIA AND MOLDOVIA”INSPIRED THIS AUTHOR’S MOST FAMOUS NOVEL 2*
+<!--/figbox-->
 
 由此自然可以推出，大语言模型的一项重要功能就是
 
@@ -111,11 +113,11 @@
 
 > `RAG`
 >
-> 释义：一种把外部文档检索与大语言模型生成相结合的方法，先取回相关文档，再依据这些文档生成答案。
+> 释义：检索增强生成的英文缩写，指先检索相关文档、再让大语言模型据此生成答案的框架。
 
 > `information retrieval`（信息检索）
 >
-> 释义：指在给定用户查询的条件下，从文档集合中挑选出最相关文档的任务，也是搜索引擎的核心功能。
+> 释义：指依据用户的信息需求，从各种媒体中检出相关内容的整个研究领域。
 
 在本章中，我们使用信息检索（IR）技术来检索
 
@@ -297,32 +299,58 @@
 
 > example in Fig. 11.4, we’ve chosen to make the document vectors of dimension 4, just so they fit on the page; in real term-document matrices, the document vectors would have dimensionality |V|, the vocabulary size. The first dimension for both these vectors corresponds to the number of times the word battle occurs, and we can
 
+<!--figbox-->
 > 《皆大欢喜》《第十二夜》《尤利乌斯·凯撒》《亨利五世》
 >
 > *As You Like It Twelfth Night Julius Caesar Henry V*
 
-*图 11.3 四部莎士比亚戏剧中四个词的词项-文档矩阵。每个*
-*Figure 11.3 The term-document matrix for four words in four Shakespeare plays. Each*
-
-> battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 图 11.3 四部莎士比亚戏剧中四个词的词项-文档矩阵。每个单元格包含（行）词在（列）文档中出现的次数。
+> battle 1 0 7 13  good 114 80 62 89  fool 36 58 1 4  wit 20 15 2 3
 >
-> *battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 Figure 11.3 The term-document matrix for four words in four Shakespeare plays. Each cell contains the number of times the (row) word occurs in the (column) document.*
+> *battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3*
+<!--/figbox-->
+
+*battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3 图 11.3 四部莎士比亚戏剧中四个词的词项-文档矩阵。每个单元格包含（行）词在（列）文档中出现的次数。*
+*Figure 11.3 The term-document matrix for four words in four Shakespeare plays. Each cell contains the number of times the (row) word occurs in the (column) document.*
 
 比较每个维度，例如可以注意到《皆大欢喜》（As You Like It）和《第十二夜》（Twelfth Night）的向量在第一个维度上取值相近（分别为 1 和 0）。
 
 > compare each dimension, noting for example that the vectors for As You Like It and Twelfth Night have similar values (1 and 0, respectively) for the first dimension.
 
-*图 11.4 四部莎士比亚戏剧中四个词的词项-文档矩阵。红色*
-*Figure 11.4 The term-document matrix for four words in four Shakespeare plays. The red*
+> 《皆大欢喜》《第十二夜》《尤利乌斯·凯撒》《亨利五世》
+>
+> *As You Like It Twelfth Night Julius Caesar Henry V*
+
+> battle 1 0 7 13  good 114 80 62 89  fool 36 58 1 4  wit 20 15 2 3
+>
+> *battle 1 0 7 13 good 114 80 62 89 fool 36 58 1 4 wit 20 15 2 3*
+
+*图 11.4 四部莎士比亚戏剧中四个词的词项-文档矩阵。红色方框表明每篇文档都被表示为一个长度为 4 的列向量。*
+*Figure 11.4 The term-document matrix for four words in four Shakespeare plays. The red boxes show that each document is represented as a column vector of length four.*
+
+由于 4 维空间难以可视化，图 11.5 用两个维度展示了这四个文档向量的可视化；我们随意选取了对应 battle 和 fool 这两个词的维度。
+
+> Since 4-dimensional spaces are hard to visualize, Fig. 11.5 shows a visualization of the four document vectors in two dimensions; we’ve arbitrarily chosen the dimensions corresponding to the words battle and fool.
 
 ![](images/11-retrieval-based-models/fig_p5_0.png)
 
-*图 11.5 四部莎士比亚戏剧的文档向量的空间可视化*
-*Figure 11.5 A spatial visualization of the document vectors for the four Shakespeare play*
+*图 11.5 四部莎士比亚戏剧的文档向量的空间可视化，仅展示其中两个维度，分别对应 battle 和 fool 这两个词。*
+*Figure 11.5 A spatial visualization of the document vectors for the four Shakespeare play documents, showing just two of the dimensions, corresponding to the words battle and fool.*
 
-或者对图 11.2 中的文档使用 [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1]。相反，我们为文档中的每个词计算一个词项权重。两种词项加权方案
+> 两部喜剧在 fool 维度上取值很高，在 battle 维度上取值很低。
+>
+> *The comedies have high values for the fool dimension and low values for the battle dimension.*
 
-> or [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] for the document in Fig. 11.2. Instead we compute a term weight for each document word. Two term weighting schemes are
+两篇相似的文档往往会有相似的词，而如果两篇文档含有相似的词，它们的列向量往往也会相似。喜剧《皆大欢喜》[1,114,36,20] 与《第十二夜》[0,80,58,15] 的向量彼此之间相像得多（fool 和 wit 的取值多于 battle），而不那么像《尤利乌斯·凯撒》[7,62,1,2] 或《亨利五世》[13,89,4,3]。
+
+> Two documents that are similar will tend to have similar words, and if two documents have similar words their column vectors will tend to be similar. The vectors for the comedies As You Like It [1,114,36,20] and Twelfth Night [0,80,58,15] look a lot more like each other (more fools and wit than battles) than they look like Julius Caesar [7,62,1,2] or Henry V [13,89,4,3].
+
+### 11.1.2 词项加权：tf-idf 与 BM25
+
+> 11.1.2 Term weighting: tf-idf and BM25
+
+事实上，在 IR 中，我们不使用像《皆大欢喜》的 [1 114 36 20]，或图 11.2 中文档的 [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] 这样的原始词计数。相反，我们为文档中的每个词计算一个词项权重。两种词项加权方案
+
+> In fact, in IR, we don’t use raw word counts like [1 114 36 20] for As You Like It, or [1 3 1 1 1 1 1 5 6 1 2 1 4 1 3 1 1 1] for the document in Fig. 11.2. Instead we compute a term weight for each document word. Two term weighting schemes are
 
 > `term weight BM25`（词项权重 BM25）
 >
@@ -470,6 +498,7 @@ qi∈q tf-idf 2(qi,q) di∈d tf-idf 2(di,d)
 
 > with the query (0.0779), and so the tf-idf cosine model would rank Document 1 above Document 2. This ranking is intuitive given the vector space model, since Document 1 has both terms including two instances of sweet, while Document 2 is
 
+<!--figbox-->
 > 查询
 >
 > *Query*
@@ -497,6 +526,7 @@ qi∈q tf-idf 2(qi,q) di∈d tf-idf 2(di,d)
 > 余弦：该列求和：0.747 余弦：该列求和：0.0779
 >
 > *Cosine: P of column: 0.747 Cosine: P of column: 0.0779*
+<!--/figbox-->
 
 *图 11.6 使用式 11.4、式 11.5、式 11.6 和式 11.9 计算查询与纳米文档 1（0.747）和纳米文档 2（0.0779）之间的 tf-idf 余弦得分。*
 *Figure 11.6 Computation of tf-idf cosine score between the query and nano-documents 1 (0.747) and 2(0.0779), using Eq. 11.4, Eq. 11.5, Eq. 11.6 and Eq. 11.9.*
@@ -612,7 +642,9 @@ k 1−b+b +tft,d
 
 > of terms (designed to be efficiently accessed), each pointing to a postings list for the term. A postings list is the list of document IDs associated with each term, which can also contain information like the term frequency or even the exact positions of terms in the document. The dictionary can also store the document frequency for each term. For example, a simple inverted index for our 4 sample documents above, with each word containing its document frequency in {}, and a pointer to a postings list that contains document IDs and term counts in [], might look like the following:
 
+<!--figbox-->
 > how {1} →3 [1] is {1} →3 [1] love {2} →1 [1] →3 [1] nurse {2} →1 [1] →4 [1] sorrow {1} →2 [1] sweet {3} →1 [2] →2 [1] →3 [1]
+<!--/figbox-->
 
 给定查询中的一组词项，我们就能非常高效地得到所有候选
 
@@ -686,9 +718,11 @@ Recallk = |前 k 个中的相关文档数|
 > Recallk = |relevant documents in top k|
 9
 
+<!--figbox-->
 > 排名 判定 精确率 召回率 1 R 1.0 .11 2 N .50 .11 3 R .66 .22 4 N .50 .22 5 R .60 .33 6 R .66 .44 7 N .57 .44 8 R .63 .55 9 N .55 .55 10 N .50 .55 11 R .55 .66 12 N .50 .66 13 N .46 .66 14 N .43 .66 15 R .47 .77 16 N .44 .77 17 N .41 .77 18 R .44 .88 19 N .42 .88 20 N .40 .88 21 N .38 .88 22 N .36 .88 23 N .35 .88 24 N .33 .88 25 R .36 1.0
 >
 > *Rank Judgment PrecisionRank RecallRank 1 R 1.0 .11 2 N .50 .11 3 R .66 .22 4 N .50 .22 5 R .60 .33 6 R .66 .44 7 N .57 .44 8 R .63 .55 9 N .55 .55 10 N .50 .55 11 R .55 .66 12 N .50 .66 13 N .46 .66 14 N .43 .66 15 R .47 .77 16 N .44 .77 17 N .41 .77 18 R .44 .88 19 N .42 .88 20 N .40 .88 21 N .38 .88 22 N .36 .88 23 N .35 .88 24 N .33 .88 25 R .36 1.0*
+<!--/figbox-->
 
 *图 11.7 在逐条遍历一组排序文档时计算得到的按排名区分的精确率和召回率值（假设文档集合中有 9 篇相关文档）。*
 *Figure 11.7 Rank-specific precision and recall values calculated as we proceed down through a set of ranked documents (assuming the collection has 9 relevant documents).*
@@ -720,33 +754,29 @@ Recallk = |前 k 个中的相关文档数|
 
 > like the one shown in Fig. 11.8 for the data in table 11.7.
 
-图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们
+图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，
 
-> Fig. 11.8 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we
+> Fig. 11.8 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we use interpolated precision values for the 11 recall values from the data points we do have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,
 
 > `interpolated precision`（插值精确率）
 >
 > 释义：在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。
 
-就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值
-
-> use interpolated precision values for the 11 recall values from the data points we do
-来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，
-
-> have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,
 IntPrecision(r) = max i>=r Precision(i) (11.15)
 这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。
 
 > This interpolation scheme not only lets us average performance over a set of queries, but also helps smooth over the irregular precision values in the original data. It is designed to give systems the benefit of the doubt by assigning the maximum precision value achieved at higher levels of recall from the one being measured. Fig. 11.9 and Fig. 11.10 show the resulting interpolated data points from our example.
 
+<!--figbox-->
 > 插值精确率 召回率
 >
 > *Interpolated Precision Recall*
 
+> 1.0 0.0 1.0 .10.66 .20.66 .30.66 .40.63 .50.55 .60.47 .70.44 .80.36 .90.36 1.0
+<!--/figbox-->
+
 *图 11.9 由图 11.7 得到的插值数据点。*
 *Figure 11.9 Interpolated data points from Fig. 11.7.*
-
-> 1.0 0.0 1.0 .10.66 .20.66 .30.66 .40.63 .50.55 .60.47 .70.44 .80.36 .90.36 1.0
 
 有了像图 11.10 那样的曲线，我们就可以通过比较曲线来比较两个系统或方法。显然，在所有召回率取值上精确率都更高的曲线更可取。不过，这些曲线还能让我们洞悉系统的整体行为。在左侧精确率更高的系统，可能更偏重精确率而非召回率；而更偏重召回率的系统，则在更高的召回率水平上（即右侧）更高。
 
@@ -960,23 +990,29 @@ RAG 系统基于两大组件：检索器和生成器（出于历史原因，后�
 
 > The resulting prompts might look something like:
 
+<!--figbox-->
 RAG 提示的示意图
 
 > Schematic of a RAG Prompt
+
 检索到的段落 1
 
 > retrieved passage 1
+
 检索到的段落 2
 
 > retrieved passage 2
+
 ...
 
 检索到的段落 k
 
 > retrieved passage k
+
 基于这些文本，回答这个问题：《魔笛》的首演是在哪一年？
 
 > Based on these texts, answer this question: What year was the premiere of The Magic Flute?
+<!--/figbox-->
 
 于是，语言模型的任务是按如下概率模型生成文本：
 
@@ -1156,21 +1192,27 @@ TyDi QA 数据集包含来自 11 种类型学上差异显著的语言的 20.4 �
 
 > versus freeform. And of course there are variations in prompting, like whether the model is just the question (zero-shot) or also given demonstrations of answers to similar questions (few-shot). MMLU offers both zero-shot and few-shot prompt options.
 
+<!--figbox-->
 MMLU 示例
 
 > MMLU examples
+
 大学计算机科学　任何足以表示所有布尔表达式的布尔运算符集合都称为完备的。下列哪一项不是完备的？(A) AND, NOT(B) NOT, OR(C) AND, OR(D) NAND
 
 > College Computer Science Any set of Boolean operators that is sufficient to represent all Boolean expressions is said to be complete. Which of the following is NOT complete?(A) AND, NOT(B) NOT, OR(C) AND, OR(D) NAND
+
 大学物理　太阳能量的主要来源是一系列热核反应，其中产生的能量是以下哪两者的质量差的 c2 倍？(A) 两个氢原子与一个氦原子(B) 四个氢原子与一个氦原子(C) 六个氢原子与两个氦原子(D) 三个氦原子与一个碳原子
 
 > College Physics The primary source of the Sun’s energy is a series of thermonuclear reactions in which the energy produced is c2 times the mass difference between(A) two hydrogen atoms and one helium atom(B) four hydrogen atoms and one helium atom(C) six hydrogen atoms and two helium atoms(D) three helium atoms and one carbon atom
+
 国际法　下列哪一项是基于条约的人权机制？(A) 联合国人权事务委员会(B) 联合国人权理事会(C) 联合国普遍定期审议(D) 联合国特别程序
 
 > International Law Which of the following is a treaty-based human rights mechanism?(A) The UN Human Rights Committee(B) The UN Human Rights Council(C) The UN Universal Periodic Review(D) The UN special mandates
+
 史前史　与大多数其他早期文明不同，米诺斯文化几乎没有显示出以下哪一方面的证据？(A) 贸易。(B) 战争。(C) 共同宗教的发展。(D) 精英阶层的炫耀性消费。
 
 > Prehistory Unlike most other early civilizations, Minoan culture shows little evidence of(A) trade.(B) warfare.(C) the development of a common religion.(D) conspicuous consumption by elites.
+<!--/figbox-->
 
 *图 11.14　MMLU 的示例题目*
 *Figure 11.14 Example problems from MMLU*

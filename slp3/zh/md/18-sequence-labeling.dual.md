@@ -36,7 +36,7 @@
 
 > `named entity`（命名实体）
 >
-> 释义：大致指可以用专有名词指称的对象，如人名、地名、机构名等；该术语通常还被扩展使用，以涵盖并非严格意义上实体的事物（如时间、数量、事件等）。
+> 释义：大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。
 
 专有名词指称的东西：一个人、一个地点、一个组织；不过正如我们将看到的，这个术语通常被扩展使用，以包含并非严格意义上实体的事物。
 
@@ -89,6 +89,7 @@
 
 > In this section we give more complete definitions. While word classes do have semantic tendencies—adjectives, for example, often describe properties and nouns describe people—parts of speech are defined instead based on their grammatical relationship with neighboring words or the morphological properties of their affixes.
 
+<!--figbox-->
 > 标记 描述 示例 ADJ 形容词：描述属性的名词修饰语 red、young、awesome
 >
 > *Tag Description Example ADJ Adjective: noun modifiers describing properties red, young, awesome*
@@ -136,6 +137,7 @@
 > SYM 像 $ 或 emoji 这样的符号 $、%X 其他 asdf、qwfg
 >
 > *SYM Symbols like $ or emoji $, %X Other asdf, qwfg*
+<!--/figbox-->
 
 *图 18.1 通用依存（Universal Dependencies）标记集中的 17 种词性（de Marneffe 等，2021）。可以添加特征来做更细粒度的区分（借助数、格、有定性等属性）。*
 *Figure 18.1 The 17 parts of speech in the Universal Dependencies tagset (de Marneffe et al., 2021). Features can be added to make finer-grained distinctions (with properties like number, case, definiteness, and so on).*
@@ -201,6 +203,10 @@
 不可数名词。可数名词既有单数形式也有复数形式（goat/goats、relationship/relationships），并且可以计数（one goat、two goats）。当某事物被概念化为一个同质的整体时，就使用不可数名词。因此 snow、salt 和 communism 不能计数（即不说 *two snows 或 *two communisms）。专有名词，如 Regina、Colorado 和 IBM，是特定人物或实体的名称。
 
 > mass nouns. Count nouns can occur in the singular and plural (goat/goats, relationship/relationships) and can be counted (one goat, two goats). Mass nouns are used when something is conceptualized as a homogeneous group. So snow, salt, and communism are not counted (i.e., *two snows or *two communisms). Proper nouns, like Regina, Colorado, and IBM, are names of specific persons or entities.
+
+> `proper noun`（专有名词）
+>
+> 释义：开放类名词中的一类，指称特定人物或实体的名称，如 Regina、Colorado、IBM；与普通名词相对，英语中专有名词一般不与限定词连用、通常不用复数。
 
 动词指动作和过程，包括 draw、provide、
 
@@ -345,17 +351,13 @@ Actually, I ran home extremely quickly yesterday（实际上，我昨天极其�
 >
 > 释义：补语化标记（complementizer）指像 that 那样把动词与其论元连接起来的从属连词；代词（pronoun）则用作指代实体或事件的简写形式。
 
-代词用作指代实体或事件的简写形式。人称代词指代人或实体（you、she、I、it、me 等）。物主代词是人称代词的各种形式，表示实际的占有，但更多时候只是表示人与某物之间的抽象关系（my、your、his、her、its、one’s、our、their）。Wh-代词（what、who、whom、whoever）用于某些疑问
+代词用作指代实体或事件的简写形式。人称代词指代人或实体（you、she、I、it、me 等）。物主代词是人称代词的各种形式，表示实际的占有，但更多时候只是表示人与某物之间的抽象关系（my、your、his、her、its、one’s、our、their）。Wh-代词（what、who、whom、whoever）用于某些疑问形式，或充当补语化标记（Frida, who married Diego...）。
 
-> Pronouns act as a shorthand for referring to an entity or event. Personal pronouns refer to persons or entities (you, she, I, it, me, etc.). Possessive pronouns are forms of personal pronouns that indicate either actual possession or more often just an abstract relation between the person and some object (my, your, his, her, its, one’s, our, their). Wh-pronouns (what, who, whom, whoever) are used in certain question
+> Pronouns act as a shorthand for referring to an entity or event. Personal pronouns refer to persons or entities (you, she, I, it, me, etc.). Possessive pronouns are forms of personal pronouns that indicate either actual possession or more often just an abstract relation between the person and some object (my, your, his, her, its, one’s, our, their). Wh-pronouns (what, who, whom, whoever) are used in certain question forms, or act as complementizers (Frida, who married Diego...).
 
 > `wh`（wh-词）
 >
 > 释义：以 wh 开头的疑问代词（what、who、whom、whoever），用于构成某些疑问形式，也可充当补语化标记（如 Frida, who married Diego...）。
-
-形式中，或充当补语化标记（Frida, who married Diego...）。
-
-> forms, or act as complementizers (Frida, who married Diego...).
 
 助动词标记主动词的语义特征，如它的时态、是否
 
@@ -392,12 +394,10 @@ Actually, I ran home extremely quickly yesterday（实际上，我昨天极其�
 
 > in Fig. 18.2, has been used to label many syntactically annotated corpora like the Penn Treebank corpora, so it is worth knowing about.
 
+<!--figbox-->
 > 标记 说明 示例 标记 说明 示例 标记 说明 示例 CC and, but, or NNP 专有名词，单数 IBM TO to
 >
 > *Tag Description Example Tag Description Example Tag Description Example CC and, but, or NNP proper noun, sing. IBM TO to*
-
-*图 18.2 Penn Treebank 核心 36 个词性标记。*
-*Figure 18.2 Penn Treebank core 36 part-of-speech tags.*
 
 > 并列连词 不定式 to
 >
@@ -476,6 +476,10 @@ Actually, I ran home extremely quickly yesterday（实际上，我昨天极其�
 > 符号
 >
 > *symbol*
+<!--/figbox-->
+
+*图 18.2 Penn Treebank 核心 36 个词性标记。*
+*Figure 18.2 Penn Treebank core 36 part-of-speech tags.*
 
 下面我们给出一些例子，其中每个词都同时按照 UD
 
@@ -554,9 +558,11 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 
 > tags that match human gold labels) is extremely high. One study found accuracies over 97% across 15 languages from the Universal Dependency (UD) treebank (Wu and Dredze, 2019). Accuracies on various English treebanks are also 97% (no matter the algorithm; HMMs, CRFs, BERT perform similarly). This 97% number is also about the human performance on this task, at least for English (Manning, 2011).
 
+<!--figbox-->
 > 词类型：WSJ Brown 无歧义（1 个标记）44,432 (86%) 45,799 (85%) 有歧义（2 个及以上标记）7,025 (14%) 8,050 (15%) 词元：无歧义（1 个标记）577,421 (45%) 384,349 (33%) 有歧义（2 个及以上标记）711,780 (55%) 786,646 (67%)
 >
 > *Types: WSJ Brown Unambiguous (1 tag) 44,432 (86%) 45,799 (85%) Ambiguous (2+ tags) 7,025 (14%) 8,050 (15%) Tokens: Unambiguous (1 tag) 577,421 (45%) 384,349 (33%) Ambiguous (2+ tags) 711,780 (55%) 786,646 (67%)*
+<!--/figbox-->
 
 *图 18.4 Brown 和 WSJ 语料库中的标记歧义（Treebank-3 的 45 个标记的标记集）。*
 *Figure 18.4 Tag ambiguity in the Brown and WSJ corpora (Treebank-3 45-tag tagset).*
@@ -607,7 +613,7 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 
 > `named entity`（命名实体）
 >
-> 释义：语义上指称某一特定种类事物的词或短语，例如人名（Janet）、机构名（Stanford University）、地名（Colorado），以及时间、数量、货币等。
+> 释义：大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。
 
 见第 9.5 节，供尚未读过第 9 章的读者参考。
 
@@ -644,12 +650,10 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 
 > The text contains 13 mentions of named entities including 5 organizations, 4 locations, 2 times, 1 person, and 1 mention of money. Figure 18.5 shows typical generic named entity types. Many applications will also need to use specific entity types like proteins, genes, commercial products, or works of art.
 
+<!--figbox-->
 > 类型 标记 示例类别 例句 人名 PER 人物、角色 图灵是计算机科学界的巨人。
 >
 > *Type Tag Sample Categories Example sentences People PER people, characters Turing is a giant of computer science.*
-
-*图 18.5 通用命名实体类型列表，以及它们所指代的实体种类。*
-*Figure 18.5 A list of generic named entity types with the kinds of entities they refer to.*
 
 > 机构名 ORG 公司、运动队 IPCC 曾就这场气旋发出警告。
 >
@@ -662,6 +666,10 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 > 地缘政治实体 GPE 国家、州 帕洛阿尔托正在提高停车费。
 >
 > *Geo-Political Entity GPE countries, states Palo Alto is raising the fees for parking.*
+<!--/figbox-->
+
+*图 18.5 通用命名实体类型列表，以及它们所指代的实体种类。*
+*Figure 18.5 A list of generic named entity types with the kinds of entities they refer to.*
 
 命名实体标注是许多自然语言处理任务中有用的第一步
 
@@ -677,12 +685,10 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 
 > each word gets one tag, the task of named entity recognition is to find and label spans of text, and is difficult partly because of the ambiguity of segmentation; we need to decide what’s an entity and what isn’t, and where the boundaries are. Indeed, most words in a text will not be named entities. Another difficulty is caused by type ambiguity. The mention JFK can refer to a person, the airport in New York, or any number of schools, bridges, and streets around the United States. Some examples of this kind of cross-type confusion are given in Figure 18.6.
 
+<!--figbox-->
 > [PER 华盛顿] 出生在 James Burroughs 的农场，生而为奴。[ORG 华盛顿] 在四场系列赛中以 2 比 1 领先。
 >
 > *[PER Washington] was born into slavery on the farm of James Burroughs.[ORG Washington] went up 2 games to 1 in the four-game series.*
-
-*图 18.6 名称 Washington 在使用中出现类型歧义的例子。*
-*Figure 18.6 Examples of type ambiguities in the use of the name Washington.*
 
 > 布莱尔抵达 [LOC 华盛顿]，进行很可能是一次最后的国事访问。
 >
@@ -691,6 +697,10 @@ thought that your flight was earlier）。词性标注的目标就是消解这�
 > 六月，[GPE 华盛顿] 通过了一项可直接执法的强制安全带法。
 >
 > *In June, [GPE Washington] passed a primary seatbelt law.*
+<!--/figbox-->
+
+*图 18.6 名称 Washington 在使用中出现类型歧义的例子。*
+*Figure 18.6 Examples of type ambiguities in the use of the name Washington.*
 
 对于像
 
@@ -719,9 +729,11 @@ NER 这样需要在片段层面进行识别的问题，序列标注的标准做�
 
 > The number of tags is thus 2n+1 tags, where n is the number of entity types. BIO tagging can represent exactly the same information as the bracketed notation, but has the advantage that we can represent the task in the same simple sequence modeling way as part-of-speech tagging: assigning a single label yi to each input word xi:
 
+<!--figbox-->
 > 词语 IO 标记 BIO 标记 BIOES 标记 Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O
 >
 > *Words IO Label BIO Label BIOES Label Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O*
+<!--/figbox-->
 
 *图 18.7 把 NER 视为序列模型，展示 IO、BIO 和 BIOES 三种标注。*
 *Figure 18.7 NER as a sequence model, showing IO, BIO, and BIOES taggings.*
@@ -752,27 +764,59 @@ HMM 是一个经典模型，它引出了序列建模的许多关键概念，这�
 HMM 是一种概率序列模型：给定一个单元序列（词、
 
 > An HMM is a probabilistic sequence model: given a sequence of units (words,
-字母、语素、句子，等等），它计算一个概率分布，该分布定义在
+字母、语素、句子，等等），它计算一个概率分布，该分布定义在可能的标记序列上，并选择最好的标记序列。
 
-> letters, morphemes, sentences, whatever), it computes a probability distribution over
+> letters, morphemes, sentences, whatever), it computes a probability distribution over possible sequences of labels and chooses the best label sequence.
+
+### 18.4.1 马尔可夫链
+
+> 18.4.1 Markov Chains
+
+HMM 建立在扩展马尔可夫链的基础上。马尔可夫链是一种模型
+
+> The HMM is based on augmenting the Markov chain. A Markov chain is a model
 
 > `Markov chain`（马尔可夫链）
 >
 > 释义：一种状态序列的随机过程模型，其中下一状态的概率只取决于当前状态（马尔可夫假设）。
 
+它告诉我们关于随机变量序列（即状态）的某种概率信息，其中每个状态都可以取某个集合中的值。这些集合可以是词、标记，或代表任何事物的符号，例如天气。马尔可夫链作了一个非常强的假设：如果我们要预测序列中的未来，那么重要的只是当前状态。当前状态之前的所有状态都不会影响未来，除非经由当前状态起作用。这就好比预测明天的天气时，你可以查看今天的天气，却不允许查看昨天的天气。
+
+> that tells us something about the probabilities of sequences of random variables, states, each of which can take on values from some set. These sets can be words, or tags, or symbols representing anything, for example the weather. A Markov chain makes a very strong assumption that if we want to predict the future in the sequence, all that matters is the current state. All the states before the current state have no impact on the future except via the current state. It’s as if to predict tomorrow’s weather you could examine today’s weather but you weren’t allowed to look at yesterday’s weather.
+
 ![](images/18-sequence-labeling/fig_p8_0.png)
 
-*图 18.8 用于天气的马尔可夫链（a）和用于词的马尔可夫链（b），展示了状态和*
-*Figure 18.8 A Markov chain for weather (a) and one for words (b), showing states and*
+*图 18.8 用于天气的马尔可夫链（a）和用于词的马尔可夫链（b），展示了状态和转移。需要一个起始分布 π；对（a）取 π = [0.1, 0.7, 0.2] 就意味着以概率 0.7 从状态 2（cold）开始，以概率 0.1 从状态 1（hot）开始，等等。*
+*Figure 18.8 A Markov chain for weather (a) and one for words (b), showing states and transitions. A start distribution π is required; setting π = [0.1, 0.7, 0.2] for (a) would mean a probability 0.7 of starting in state 2 (cold), probability 0.1 of starting in state 1 (hot), etc.*
 
-> `Markov assumption`（马尔可夫假设）
+更形式化地说，考虑一个状态变量序列 q1,q2,...,qi。马尔可夫
+
+> More formally, consider a sequence of state variables q1,q2,...,qi. A Markov
+
+> `Markov`（马尔可夫）
 >
-> 释义：隐马尔可夫模型中的一条简化假设：某个状态的概率只依赖于前一个状态，即 P(qi|q1,...,qi−1) = P(qi|qi−1)。
+> 释义：指以俄国数学家 A. A. 马尔可夫命名的随机过程思想；本书的“马尔可夫链”“马尔可夫假设”都强调序列的未来只取决于当前状态。
 
+模型体现了关于该序列概率的马尔可夫假设：即
+
+> model embodies the Markov assumption on the probabilities of this sequence: that
+
+> `assumption`（假设）
+>
+> 释义：在本书中特指马尔可夫假设，即序列中某个状态的概率只依赖于前一个状态，而与更早的状态无关。
+
+在预测未来时，过去并不重要，重要的只有现在。
+
+> when predicting the future, the past doesn’t matter, only the present.
+
+马尔可夫假设：P(qi = a|q1...qi−1) = P(qi = a|qi−1) (18.3)
+
+> Markov Assumption: P(qi = a|q1...qi−1) = P(qi = a|qi−1) (18.3)
 图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。
 
 > Figure 18.8a shows a Markov chain for assigning a probability to a sequence of weather events, for which the vocabulary consists of HOT, COLD, and WARM. The states are represented as nodes in the graph, and the transitions, with their probabilities, as edges. The transitions are probabilities: the values of arcs leaving a given state must sum to 1. Figure 18.8b shows a Markov chain for assigning a probability to a sequence of words w1...wt. This Markov chain should be familiar; in fact, it represents a bigram language model, with each edge expressing the probability p(wi|wj)! Given the two models in Fig. 18.8, we can assign a probability to any sequence from our vocabulary.
 
+<!--figbox-->
 > 形式化地，马尔可夫链由以下组成部分指定：Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11a12 ...aN1 ...aNN，转移概率矩阵 A，其中每个 aij 表示从状态 i 转移到状态 j 的概率，满足 Pn j=1 aij = 1 ∀i
 >
 > *Formally, a Markov chain is specified by the following components: Q = q1q2 ...qN a set of N states A = a11a12 ...aN1 ...aNN a transition probability matrix A, each aij representing the probability of moving from state i to state j, s.t. Pn j=1 aij = 1 ∀i*
@@ -786,6 +830,7 @@ HMM 是一种概率序列模型：给定一个单元序列（词、
 > *probability that the Markov chain will start in state i. be initial states. Also, Pn Some states j may have πj = 0, meaning that they cannot*
 
 > i=1 πi = 1
+<!--/figbox-->
 
 继续往下之前，请使用图 18.8a 中的示例概率（取 π = [0.1,0.7,0.2]）
 
@@ -826,6 +871,7 @@ HMM 是一种概率序列模型：给定一个单元序列（词、
 
 > (like words that we see in the input) and hidden events (like part-of-speech tags) that we think of as causal factors in our probabilistic model. An HMM is specified by the following components:
 
+<!--figbox-->
 > Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11 ...ai j ...aNN，转移概率矩阵 A，其中每个 aij 表示……的概率
 >
 > *Q = q1q2 ...qN a set of N states A = a11 ...ai j ...aNN a transition probability matrix A, each aij representing the probability*
@@ -847,6 +893,7 @@ HMM 是一种概率序列模型：给定一个单元序列（词、
 > *the Markov chain will start in state i. Some states j may have π j = 0, meaning that they cannot be initial states. Also, Pn*
 
 > i=1 πi = 1
+<!--/figbox-->
 
 HMM 的输入为 O = o1o2 ...oT：由 T 个观测组成的序列，其中每个
 
@@ -916,10 +963,20 @@ C(ti)
 
 > Of the 13124 occurrences of MD in the WSJ corpus, it is associated with will 4046 times:
 
+P(will|MD) = C(MD,will) = 4046
+13124 = .31 (18.11)
+C(MD)
+我们在附录 B 中见过这类贝叶斯建模；回忆一下，这个似然
+
+> We saw this kind of Bayesian modeling in Appendix B; recall that this likelihood
+项并不是在问“will 这个词最可能的标记是哪个？”那是后验概率 P(MD|will)。相反，P(will|MD) 回答的是一个略显反直觉的问题：“如果我们要生成一个 MD，那么这条情态动词是 will 的可能性有多大？”
+
+> term is not asking “which is the most likely tag for the word will?” That would be the posterior P(MD|will). Instead, P(will|MD) answers the slightly counterintuitive question “If we were going to generate a MD, how likely is it that this modal would be will?”
+
 ![](images/18-sequence-labeling/fig_p10_0.png)
 
-*图 18.9 HMM 表示的两个组成部分的示意图：A 转移*
-*Figure 18.9 An illustration of the two parts of an HMM representation: the A transition*
+*图 18.9 HMM 表示的两个组成部分的示意图：用于计算先验概率的 A 转移概率，以及与每个状态相关联的 B 观测似然，每个可能的观测词各有一个似然。*
+*Figure 18.9 An illustration of the two parts of an HMM representation: the A transition probabilities used to compute the prior probability, and the B observation likelihoods that are associated with each state, one likelihood for each possible observation word.*
 
 HMM 的 A 转移概率和 B 观测似然
 
@@ -1050,8 +1107,15 @@ vt(j) = max i=1 vt−1(i) aij bj(ot) (18.19)
 
 ![](images/18-sequence-labeling/fig_p13_0.png)
 
-*图 18.11 Janet will back the bill 的网格示意图，显示了可能的标记*
-*Figure 18.11 A sketch of the lattice for Janet will back the bill, showing the possible tags*
+*图 18.11 Janet will back the bill 的网格示意图，显示了每个词可能的标记（qi），并高亮出穿过隐藏状态、对应正确标记序列的那条路径。根据 B 矩阵生成某个特定词的概率为零的状态（词性）（例如限定词 DT 被实现为 Janet 的概率），在图中以灰色显示。*
+*Figure 18.11 A sketch of the lattice for Janet will back the bill, showing the possible tags(qi) for each word and highlighting the path corresponding to the correct tag sequence through the hidden states. States (parts of speech) which have a zero probability of generating a particular word according to the B matrix (such as the probability that a determiner DT will be realized as Janet) are greyed out.*
+
+vt−1(i)：来自前一时间步的维特比路径概率；ai j：从前一状态 qi 到当前状态 qj 的转移概率；bj(ot)：给定
+
+> vt−1(i) the previous Viterbi path probability from the previous time step ai j the transition probability from previous state qi to current state qj bj(ot) the state observation likelihood of the observation symbol ot given
+当前状态 j 时观测符号 ot 的状态观测似然
+
+> the current state j
 
 ### 18.4.6 完整走一遍一个例子
 
@@ -1359,9 +1423,11 @@ prefix(xi) = w prefix(xi) = we suffix(xi) = ed suffix(xi) = d word-shape(xi) = x
 
 > A CRF for NER makes use of very similar features to a POS tagger, as shown in Figure 18.15.
 
+<!--figbox-->
 > wi 本身、相邻词本身 wi 的嵌入、相邻词的嵌入 wi 的词性、相邻词的词性 wi 是否出现在地名词典中 wi 含有某个特定前缀（取自所有长度 ≤4 的前缀） wi 含有某个特定后缀（取自所有长度 ≤4 的后缀） wi 的词形、相邻词的词形 wi 的短词形、相邻词的短词形 地名词典特征
 >
 > *identity of wi, identity of neighboring words embeddings for wi, embeddings for neighboring words part of speech of wi, part of speech of neighboring words presence of wi in a gazetteer wi contains a particular prefix (from all prefixes of length ≤4) wi contains a particular suffix (from all suffixes of length ≤4) word shape of wi, word shape of neighboring words short word shape of wi, short word shape of neighboring words gazetteer features*
+<!--/figbox-->
 
 *图 18.15 基于特征的 NER 系统的典型特征。*
 *Figure 18.15 Typical features for a feature-based NER system.*
@@ -1390,9 +1456,11 @@ prefix(xi) = L suffix(xi) = tane prefix(xi) = L’ suffix(xi) = ane prefix(xi) =
 
 > information to our earlier example.
 
+<!--figbox-->
 > 词 词性 短词形 地名词典 BIO 标签 Jane NNP Xx 0 B-PER Villanueva NNP Xx 1 I-PER of IN x 0 O United NNP Xx 0 B-ORG Airlines NNP Xx 0 I-ORG Holding NNP Xx 0 I-ORG discussed VBD x 0 O the DT x 0 O Chicago NNP Xx 1 B-LOC route NN x 0 O. . . 0 O
 >
 > *Words POS Short shape Gazetteer BIO Label Jane NNP Xx 0 B-PER Villanueva NNP Xx 1 I-PER of IN x 0 O United NNP Xx 0 B-ORG Airlines NNP Xx 0 I-ORG Holding NNP Xx 0 I-ORG discussed VBD x 0 O the DT x 0 O Chicago NNP Xx 1 B-LOC route NN x 0 O. . . 0 O*
+<!--/figbox-->
 
 *图 18.16 示例句子的若干 NER 特征，假设 Chicago 和 Villanueva 在地名词典中被列为地点。我们假设特征只取 0 或 1 两种取值，因此例如第一个词性特征会表示为 1{POS = NNP}。*
 *Figure 18.16 Some NER features for a sample sentence, assuming that Chicago and Villanueva are listed as locations in a gazetteer. We assume features only take on the values 0 or 1, so the first POS feature, for example, would be represented as 1{POS = NNP}.*

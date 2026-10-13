@@ -1,4 +1,4 @@
-# 第 26 章 会话及其结构
+# 26-conversation-structure
 
 ### 第 26 章
 
@@ -27,6 +27,7 @@
 
 > What are the conversational phenomena that take place when humans converse with each other? Are conversations between humans and machines different? Consider what goes on in the conversation between a human travel agent and a human client excerpted in Fig. 26.1.
 
+<!--figbox-->
 > C1: ……我需要在五月出行。 A2: 那么，你想在五月哪一天出行？ C3: 好的，呃，我需要到那里参加一个从 12 号到 15 号的会议。
 >
 > *C1: ...I need to travel in May. A2: And, what day in May did you want to travel? C3: OK uh I need to be there for a meeting that’s from the 12th to the 15th.*
@@ -70,6 +71,7 @@
 > A20: 好的……好的。星期天我有……
 >
 > *A20: OK...OK. On Sunday I have ...*
+<!--/figbox-->
 
 *图 26.1 一位人类旅行代理人（A）与一位人类客户（C）之间一段电话对话的片段。A16 和 C17 中由 # 标出的片段表示话语重叠。*
 *Figure 26.1 Part of a phone conversation between a human travel agent (A) and human client (C). The passages framed by # in A16 and C17 indicate overlaps in speech.*
@@ -454,6 +456,7 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 
 > In the DAMSL (Dialogue Act Markup in Several Layers) architecture inspired by
 
+<!--figbox-->
 > 标记 示例 THANK 谢谢 GREET 你好，Dan INTRODUCE 又是我 BYE 好的，再见 REQUEST-COMMENT 那看起来怎么样？SUGGEST 从 6 月 13 日到 17 日 REJECT 不行，周五我全天都排满了 ACCEPT 周六听起来可以 REQUEST-SUGGEST 一周中哪天对你合适？
 >
 > *Tag Example THANK Thanks GREET Hello Dan INTRODUCE It’s me again BYE Alright bye REQUEST-COMMENT How does that look? SUGGEST from thirteenth through seventeenth June REJECT No Friday I’m booked all day ACCEPT Saturday sounds fine REQUEST-SUGGEST What is a good day of the week for you?*
@@ -461,10 +464,12 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 > INIT 我想和你约个时间 GIVE REASON 因为我整个下午都有会 FEEDBACK 好的 DELIBERATE 让我先看一下日程 CONFIRM 好的，那太好了 CLARIFY 好的，你是指 23 号那个周二吗？DIGRESS [我们可以一起吃午饭]，再吃好多冰淇淋 MOTIVATE 我们应该去拜访我们在慕尼黑的分公司 GARBAGE 哎呀，我—
 >
 > *INIT I wanted to make an appointment with you GIVE REASON Because I have meetings all afternoon FEEDBACK Okay DELIBERATE Let me check my calendar here CONFIRM Okay, that would be wonderful CLARIFY Okay, do you mean Tuesday the 23rd? DIGRESS [we could meet for lunch] and eat lots of ice cream MOTIVATE We should go to visit our subsidiary in Munich GARBAGE Oops, I-*
+<!--/figbox-->
 
 *图 26.2 会议安排任务中的 18 个高层对话行为，来自 Verbmobil-1 系统（耶卡特等，1995）。*
 *Figure 26.2 The 18 high-level dialogue acts for a meeting scheduling task, from the Verbmobil-1 system (Jekat et al., 1995).*
 
+<!--figbox-->
 > 标记 Sys User 说明 HELLO(a = x,b = y,...) ✓ ✓ 开启对话并给出信息 a = x,b = y,...
 >
 > *Tag Sys User Description HELLO(a = x,b = y,...) ✓ ✓ Open a dialogue and give info a = x,b = y,...*
@@ -492,6 +497,7 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 > NEGATE(a = x) χ ✓ 否定并给出更正后的取值 a = x DENY(a = x) χ ✓ 否认 a = x BYE() ✓ ✓ 关闭对话
 >
 > *NEGATE(a = x) χ ✓ Negate and give corrected value a = x DENY(a = x) χ ✓ Deny that a = x BYE() ✓ ✓ Close a dialogue*
+<!--/figbox-->
 
 *图 26.3 扬等（2010）的 HIS 餐馆推荐系统所使用的对话行为。Sys 和 User 两列分别表示哪些行为可作为系统输出和用户输入。*
 *Figure 26.3 Dialogue acts used by the HIS restaurant recommendation system of Young et al. (2010). The Sys and User columns indicate which acts are valid as system outputs and user inputs, respectively.*
@@ -500,6 +506,7 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 
 > the work of Clark and Schaefer (1989), Allwood et al. (1992), and (Allwood, 1995), each utterance is tagged for two types of functions, forward-looking functions like speech act functions, and backward-looking functions, like grounding and answering, which “look back” to the interlocutor’s previous utterance (Allen and Core, 1997; Walker et al., 1996; Carletta et al., 1997; Core et al., 1999).
 
+<!--figbox-->
 > 话语 对话行为
 >
 > *Utterance Dialogue act*
@@ -539,6 +546,7 @@ Nickerson，1976）。然而在正常的人际对话中，更常见的情况是�
 > U: 电话号码是多少？ request(phone) S: Roma 的电话号码是 385456。 inform(name = "Roma", phone = "385456") U: 好的，谢谢，再见。 bye()
 >
 > *U: What is the phone number? request(phone) S: The number of Roma is 385456. inform(name = "Roma", phone = "385456") U: Ok, thank you goodbye. bye()*
+<!--/figbox-->
 
 *图 26.4 来自扬等（2010）HIS 系统的一段示例对话，其中使用了图 26.3 的对话行为。*
 *Figure 26.4 A sample dialogue from the HIS System of Young et al. (2010) using the dialogue acts in Fig. 26.3.*

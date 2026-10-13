@@ -36,9 +36,9 @@ I prefer the morning flight through Denver
 
 弧从中心词指向依存词来标示。我们称之为带类型的依存结构，因为
 
-> `dependency`（依存（dependency））
+> `dependency`（依存关系）
 >
-> 释义：指词与词之间一个词支配另一个词的单向句法联系，句子的结构全靠这类有向关系来描写。
+> 释义：指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。
 
 这些标签取自一份固定的语法关系清单。根节点明确标出树的根，也就是整个结构的中心词。
 
@@ -97,9 +97,8 @@ I prefer the morning flight through Denver
 
 语言学家们已经发展出各种关系的分类体系，远远超出人们熟悉的主语和宾语概念。尽管不同理论之间存在相当大的差异，
 
+<!--figbox-->
 > 从句论元关系 描述
-
-*图 20.2 部分通用依存关系（de Marneffe 等，2021）。*
 
 > 名词性主语
 
@@ -148,6 +147,9 @@ I prefer the morning flight through Denver
 > 并列连词
 
 > CC
+<!--/figbox-->
+
+*图 20.2 部分通用依存关系（de Marneffe 等，2021）。*
 
 从一种理论到另一种理论，都存在足够的共性，因此跨语言的标准已经
 
@@ -195,9 +197,8 @@ United canceled the morning flights to Houston
 不同的语法理论或形式体系可能还会对
 这些依存结构施加更多限制。较为常见的限制包括：结构必须连通、具有一个指定的根节点，并且是无环的或平面的。与本章所讨论的句法分析方法关系最大的，是那种常见的、
 
+<!--figbox-->
 > 关系　带有中心词与依存词的示例
-
-*图 20.3 一些通用依存关系的示例。*
 
 > United canceled the flight.
 
@@ -242,6 +243,9 @@ United canceled the morning flights to Houston
 > Book the flight through Houston.
 
 > CASE
+<!--/figbox-->
+
+*图 20.3 一些通用依存关系的示例。*
 
 > `dependency`（依存关系）
 >
@@ -304,7 +308,9 @@ JetBlue canceled our flight this morning which was already late
 
 > punct
 
+<!--figbox-->
 > obl obl:tmod
+<!--/figbox-->
 
 > case case
 
@@ -417,21 +423,27 @@ Book me the morning flight
 [root, book, me] [the, morning, flight]
 这里要应用的正确操作符是 RIGHTARC，它将 book 指定为 me 的中心词，并把 me 从栈中弹出，得到以下格局。
 
+<!--figbox-->
 > 栈 词表 关系[root, book] [the, morning, flight] (book →me)
+<!--/figbox-->
 
 在随后几次应用 SHIFT 操作符之后，第 6 步的格局如下所示：
 
+<!--figbox-->
 > 栈 词表 关系
 
 > [root, book, the, morning, flight] [] (book →me)
+<!--/figbox-->
 
 这里，所有剩余的词语都已被传递到栈上，剩下要做的就是应用适当的归约操作符。在当前格局中，我们采用 LEFTARC 操作符，得到以下状态。
 
+<!--figbox-->
 > 栈 词表 关系
 
 > [root, book, the, flight] [] (book →me)
 
 > (morning ←flight)
+<!--/figbox-->
 
 此时，该句子的句法分析结果由以下结构构成。
 
@@ -446,9 +458,8 @@ Book me the morning flight (20.8)
 
 因此，鉴于该算法的贪心性质，错误的选择将导致错误的解析，因为分析器没有机会回退并尝试其他选择。20.2.4 节将介绍若干技术，使基于转移的方法能够更充分地探索搜索空间。
 
+<!--figbox-->
 > 步 栈 词表 动作 添加的关系 0 [root] [book, me, the, morning, flight]
-
-*图 20.6 基于转移的句法分析轨迹。*
 
 > SHIFT
 
@@ -469,6 +480,9 @@ Book me the morning flight (20.8)
 > SHIFT
 
 > 6 [root, book, the, morning, flight] [] LEFTARC (morning ←flight) 7 [root, book, the, flight] [] LEFTARC (the ←flight) 8 [root, book, flight] [] RIGHTARC (book →flight) 9 [root, book] [] RIGHTARC (root →book) 10 [root] [] Done
+<!--/figbox-->
+
+*图 20.6 基于转移的句法分析轨迹。*
 
 最后，为简单起见，我们在说明该示例时没有标注依存关系上的标签
 依存关系。为了生成带标签的依存树，我们可以用依存标签对 LEFTARC 和 RIGHTARC 操作符进行参数化，例如 LEFTARC(NSUBJ) 或 RIGHTARC(OBJ)。这相当于把转移操作符集合从最初的三个扩展为一个集合，其中对所使用的依存关系集合中的每个关系都包含相应的 LEFTARC 和 RIGHTARC 操作符，另外再加上一个用于 SHIFT 操作符。当然，这使神谕的工作变得更加困难，因为它现在可选的操作符集合大得多。
@@ -491,6 +505,7 @@ Book me the morning flight (20.8)
 要理解其运作方式，我们先回顾一下分析器的工作过程。它从
 一个默认的初始格局开始，其中栈包含 ROOT，输入列表就是词的列表，关系集合为空。LEFTARC 和 RIGHTARC 操作符各自把栈顶词之间的关系加入为给定句子累积的关系集合中。由于我们对每个训练句子都有一个黄金标准参考解析，我们知道哪些依存关系对给定句子是有效的。因此，我们可以利用参考解析来引导
 
+<!--figbox-->
 > 步 栈 词表 预测动作 0 [root] [book, the, flight, through, houston]
 
 > SHIFT
@@ -512,6 +527,7 @@ Book me the morning flight (20.8)
 > SHIFT
 
 > 6 [root, book, flight, through, houston] [] LEFTARC 7 [root, book, flight, houston ] [] RIGHTARC 8 [root, book, flight] [] RIGHTARC 9 [root, book] [] RIGHTARC 10 [root] [] Done
+<!--/figbox-->
 
 *图 20.7 用给定的参考依存树模拟一次句法分析，生成由“格局／预测动作”对构成的训练样本。*
 
@@ -630,9 +646,8 @@ LEFTARC 和 RIGHTARC 操作符作用于栈顶以及
 
 除了展示弧急切（arc-eager）转移系统之外，此例还展示了整个基于转移的方法的强大与灵活。我们能够换入一个新的转移系统，而无需对
 
+<!--figbox-->
 > 步骤 栈 词表 动作 新增关系 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]
-
-*图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。*
 
 > SHIFT
 
@@ -653,6 +668,9 @@ LEFTARC 和 RIGHTARC 操作符作用于栈顶以及
 > REDUCE
 
 > 10 [root] [] Done
+<!--/figbox-->
+
+*图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。*
 
 底层的句法分析算法做任何改动。这种灵活性促成了多样化的转移系统的发展，它们处理句法和语义的不同方面，包括：指派词性标注（Choi and Palmer, 2011a）、允许生成非投射依存结构（Nivre, 2009）、指派语义角色（Choi and Palmer, 2011b），以及分析包含多种语言的文本（Bhat et al., 2017）。
 
@@ -691,13 +709,11 @@ ConfigScore(c0) = 0.0 ConfigScore(ci) = ConfigScore(ci−1)+Score(ti,ci−1)
 基于图的依存句法分析器会在所有可能的树构成的空间中搜索，为
 给定句子寻找使某个分数最大化的树（或若干棵树）。这些方法把搜索空间编码为有向图，并采用图论中的方法来在该空间中搜索最优解。更形式化地说，给定一个句子 S，我们要在 Gs（该句子所有可能的树构成的空间）中寻找使某个分数最大化的最优依存树。
 
-ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，
+ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，也就是说，一棵树的总体分数是构成该树的各条边的分数之和。
 
 > `edge-factored`（边因子化的）
 >
 > 释义：指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。
-
-也就是说，一棵树的总体分数是构成该树的各条边的分数之和。
 
 X
 Score(t,S) = Score(e)

@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -62,7 +67,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>typed</code><span class="term-zh">带类型的（typed）</span><span class="term-explain">指依存弧上带有语法关系标签，标签取自一份固定的语法关系清单，如 nsubj、obj 等。</span></aside>
 <p>弧从中心词指向依存词来标示。我们称之为带类型的依存结构，因为</p>
 <blockquote><p>arcs from heads to dependents. We call this a typed dependency structure because</p></blockquote>
-<aside class="term"><code>dependency</code><span class="term-zh">依存（dependency）</span><span class="term-explain">指词与词之间一个词支配另一个词的单向句法联系，句子的结构全靠这类有向关系来描写。</span></aside>
+<aside class="term"><code>dependency</code><span class="term-zh">依存关系</span><span class="term-explain">指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。</span></aside>
 <p>这些标签取自一份固定的语法关系清单。根节点明确标出树的根，也就是整个结构的中心词。</p>
 <blockquote><p>the labels are drawn from a fixed inventory of grammatical relations. A root node explicitly marks the root of the tree, the head of the entire structure.</p></blockquote>
 <p>下一页的图 20.1 展示了式 20.1 的依存分析，但</p>
@@ -109,9 +114,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>dependent plays with respect to its head. These include familiar notions such as subject, direct object and indirect object. In English these notions strongly correlate with, but by no means determine, both position in a sentence and constituent type and are therefore somewhat redundant with the kind of information found in phrase-structure trees. However, in languages with more flexible word order, the information encoded directly in these grammatical relations is critical since phrasebased constituent syntax provides little help.</p></blockquote>
 <p>语言学家们已经发展出各种关系的分类体系，远远超出人们熟悉的主语和宾语概念。尽管不同理论之间存在相当大的差异，</p>
 <blockquote><p>Linguists have developed taxonomies of relations that go well beyond the familiar notions of subject and object. While there is considerable variation from theory</p></blockquote>
+<div class="figbox">
 <blockquote><p>从句论元关系 描述</p><p><em>Clausal Argument Relations Description</em></p></blockquote>
-<p class="caption">图 20.2 部分通用依存关系（de Marneffe 等，2021）。</p>
-<p class="caption">Figure 20.2 Some of the Universal Dependency relations (de Marneffe et al., 2021).</p>
 <blockquote><p>名词性主语</p><p><em>Nominal subject</em></p></blockquote>
 <blockquote><p>NSUBJ</p></blockquote>
 <blockquote><p>直接宾语</p><p><em>Direct object</em></p></blockquote>
@@ -136,6 +140,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>CONJ</p></blockquote>
 <blockquote><p>并列连词</p><p><em>Coordinating conjunction</em></p></blockquote>
 <blockquote><p>CC</p></blockquote>
+</div>
+<p class="caption">图 20.2 部分通用依存关系（de Marneffe 等，2021）。</p>
+<p class="caption">Figure 20.2 Some of the Universal Dependency relations (de Marneffe et al., 2021).</p>
 <p>从一种理论到另一种理论，都存在足够的共性，因此跨语言的标准已经</p>
 <blockquote><p>to theory, there is enough commonality that cross-linguistic standards have been</p></blockquote>
 <aside class="term"><code>Universal</code><span class="term-zh">通用（Universal）</span><span class="term-explain">此处为通用依存（UD）标注体系名称的一部分，指该体系力图跨语言通用，覆盖 100 多种语言。</span></aside>
@@ -171,9 +178,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Different grammatical theories or formalisms may place further constraints on</p></blockquote>
 <p>这些依存结构施加更多限制。较为常见的限制包括：结构必须连通、具有一个指定的根节点，并且是无环的或平面的。与本章所讨论的句法分析方法关系最大的，是那种常见的、</p>
 <blockquote><p>these dependency structures. Among the more frequent restrictions are that the structures must be connected, have a designated root node, and be acyclic or planar. Of most relevance to the parsing approaches discussed in this chapter is the common,</p></blockquote>
+<div class="figbox">
 <blockquote><p>关系　带有中心词与依存词的示例</p><p><em>Relation Examples with head and dependent</em></p></blockquote>
-<p class="caption">图 20.3 一些通用依存关系的示例。</p>
-<p class="caption">Figure 20.3 Examples of some Universal Dependency relations.</p>
 <blockquote><p>United canceled the flight.</p></blockquote>
 <blockquote><p>NSUBJ</p></blockquote>
 <blockquote><p>United diverted the flight to Reno.</p></blockquote>
@@ -196,6 +202,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>CC</p></blockquote>
 <blockquote><p>Book the flight through Houston.</p></blockquote>
 <blockquote><p>CASE</p></blockquote>
+</div>
+<p class="caption">图 20.3 一些通用依存关系的示例。</p>
+<p class="caption">Figure 20.3 Examples of some Universal Dependency relations.</p>
 <aside class="term"><code>dependency</code><span class="term-zh">依存关系</span><span class="term-explain">指词与词之间由中心词支配依存词而形成的非对称二元关系，是依存句法分析中语法关系的载体。</span></aside>
 <p>出于计算动机的限制，即限定为有根树。也就是说，一棵依存树</p>
 <blockquote><p>computationally-motivated, restriction to rooted trees. That is, a dependency tree</p></blockquote>
@@ -243,7 +252,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>构建依存树的最大开放社区项目是上文介绍的 Universal Dependencies 项目，其网址为 https://universaldependencies.org/，它目前拥有 100 多种语言的近 200 个依存树库（de Marneffe et al., 2021）。下面给出几个 UD 示例，展示西班牙语、巴斯克语和汉语普通话句子的依存树：</p>
 <blockquote><p>The largest open community project for building dependency trees is the Universal Dependencies project at https://universaldependencies.org/ introduced above, which currently has almost 200 dependency treebanks in more than 100 languages (de Marneffe et al., 2021). Here are a few UD examples showing dependency trees for sentences in Spanish, Basque, and Mandarin Chinese:</p></blockquote>
 <blockquote><p>punct</p></blockquote>
+<div class="figbox">
 <blockquote><p>obl obl:tmod</p></blockquote>
+</div>
 <blockquote><p>case case</p></blockquote>
 <blockquote><p>det det</p></blockquote>
 <p>VERB ADP DET NOUN ADP DET NUM PUNCT Subiremos a el tren a las cinco . we-will-board on the train at the five .</p>
@@ -323,16 +334,22 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>栈<br>Stack</th><th>词表<br>Word List</th><th>关系<br>Relations</th></tr><tr><td>[root, book, me]</td><td>[the, morning, flight]</td><td></td></tr></table>
 <p>[root, book, me] [the, morning, flight]这里要应用的正确操作符是 RIGHTARC，它将 book 指定为 me 的中心词，并把 me 从栈中弹出，得到以下格局。</p>
 <blockquote><p>The correct operator to apply here is RIGHTARC which assigns book as the head of me and pops me from the stack resulting in the following configuration.</p></blockquote>
+<div class="figbox">
 <blockquote><p>栈 词表 关系[root, book] [the, morning, flight] (book →me)</p><p><em>Stack Word List Relations[root, book] [the, morning, flight] (book →me)</em></p></blockquote>
+</div>
 <p>在随后几次应用 SHIFT 操作符之后，第 6 步的格局如下所示：</p>
 <blockquote><p>After several subsequent applications of the SHIFT operator, the configuration in Step 6 looks like the following:</p></blockquote>
+<div class="figbox">
 <blockquote><p>栈 词表 关系</p><p><em>Stack Word List Relations</em></p></blockquote>
 <blockquote><p>[root, book, the, morning, flight] [] (book →me)</p></blockquote>
+</div>
 <p>这里，所有剩余的词语都已被传递到栈上，剩下要做的就是应用适当的归约操作符。在当前格局中，我们采用 LEFTARC 操作符，得到以下状态。</p>
 <blockquote><p>Here, all the remaining words have been passed onto the stack and all that is left to do is to apply the appropriate reduce operators. In the current configuration, we employ the LEFTARC operator resulting in the following state.</p></blockquote>
+<div class="figbox">
 <blockquote><p>栈 词表 关系</p><p><em>Stack Word List Relations</em></p></blockquote>
 <blockquote><p>[root, book, the, flight] [] (book →me)</p></blockquote>
 <blockquote><p>(morning ←flight)</p></blockquote>
+</div>
 <p>此时，该句子的句法分析结果由以下结构构成。</p>
 <blockquote><p>At this point, the parse for this sentence consists of the following structure.</p></blockquote>
 <blockquote><p>iobj compound</p></blockquote>
@@ -346,9 +363,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>at each point in the parse—an assumption that is unlikely to be true in practice.</p></blockquote>
 <p>因此，鉴于该算法的贪心性质，错误的选择将导致错误的解析，因为分析器没有机会回退并尝试其他选择。20.2.4 节将介绍若干技术，使基于转移的方法能够更充分地探索搜索空间。</p>
 <blockquote><p>As a result, given the greedy nature of this algorithm, incorrect choices will lead to incorrect parses since the parser has no opportunity to go back and pursue alternative choices. Section 20.2.4 will introduce several techniques that allow transition-based approaches to explore the search space more fully.</p></blockquote>
+<div class="figbox">
 <blockquote><p>步 栈 词表 动作 添加的关系 0 [root] [book, me, the, morning, flight]</p><p><em>Step Stack Word List Action Relation Added 0 [root] [book, me, the, morning, flight]</em></p></blockquote>
-<p class="caption">图 20.6 基于转移的句法分析轨迹。</p>
-<p class="caption">Figure 20.6 Trace of a transition-based parse.</p>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>1 [root, book] [me, the, morning, flight]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
@@ -359,6 +375,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>5 [root, book, the, morning] [flight]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>6 [root, book, the, morning, flight] [] LEFTARC (morning ←flight) 7 [root, book, the, flight] [] LEFTARC (the ←flight) 8 [root, book, flight] [] RIGHTARC (book →flight) 9 [root, book] [] RIGHTARC (root →book) 10 [root] [] Done</p></blockquote>
+</div>
+<p class="caption">图 20.6 基于转移的句法分析轨迹。</p>
+<p class="caption">Figure 20.6 Trace of a transition-based parse.</p>
 <p>最后，为简单起见，我们在说明该示例时没有标注依存关系上的标签</p>
 <blockquote><p>Finally, for simplicity, we have illustrated this example without the labels on</p></blockquote>
 <p>依存关系。为了生成带标签的依存树，我们可以用依存标签对 LEFTARC 和 RIGHTARC 操作符进行参数化，例如 LEFTARC(NSUBJ) 或 RIGHTARC(OBJ)。这相当于把转移操作符集合从最初的三个扩展为一个集合，其中对所使用的依存关系集合中的每个关系都包含相应的 LEFTARC 和 RIGHTARC 操作符，另外再加上一个用于 SHIFT 操作符。当然，这使神谕的工作变得更加困难，因为它现在可选的操作符集合大得多。</p>
@@ -380,6 +399,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>To see how this works, let’s first review the operation of our parser. It begins with</p></blockquote>
 <p>一个默认的初始格局开始，其中栈包含 ROOT，输入列表就是词的列表，关系集合为空。LEFTARC 和 RIGHTARC 操作符各自把栈顶词之间的关系加入为给定句子累积的关系集合中。由于我们对每个训练句子都有一个黄金标准参考解析，我们知道哪些依存关系对给定句子是有效的。因此，我们可以利用参考解析来引导</p>
 <blockquote><p>a default initial configuration where the stack contains the ROOT, the input list is just the list of words, and the set of relations is empty. The LEFTARC and RIGHTARC operators each add relations between the words at the top of the stack to the set of relations being accumulated for a given sentence. Since we have a gold-standard reference parse for each training sentence, we know which dependency relations are valid for a given sentence. Therefore, we can use the reference parse to guide the</p></blockquote>
+<div class="figbox">
 <blockquote><p>步 栈 词表 预测动作 0 [root] [book, the, flight, through, houston]</p><p><em>Step Stack Word List Predicted Action 0 [root] [book, the, flight, through, houston]</em></p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>1 [root, book] [the, flight, through, houston]</p></blockquote>
@@ -391,6 +411,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>5 [root, book, flight, through] [houston]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>6 [root, book, flight, through, houston] [] LEFTARC 7 [root, book, flight, houston ] [] RIGHTARC 8 [root, book, flight] [] RIGHTARC 9 [root, book] [] RIGHTARC 10 [root] [] Done</p></blockquote>
+</div>
 <p class="caption">图 20.7 用给定的参考依存树模拟一次句法分析，生成由“格局／预测动作”对构成的训练样本。</p>
 <p class="caption">Figure 20.7 Generating training items consisting of configuration/predicted action pairs by simulating a parse with a given reference parse.</p>
 <p>也就是分析器逐步走过一系列格局时对操作符的选择。</p>
@@ -458,7 +479,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The oracle can also be implemented by a neural classifier. A standard architecture is simply to pass the sentence through an encoder, then take the presentation of the top 2 words on the stack and the first word of the buffer, concatenate them, and present to a feedforward network that predicts the transition to take (Kiperwasser and Goldberg, 2016; Kulmizev et al., 2019). Fig. 20.8 sketches this model. Learning can be done with cross-entropy loss.</p></blockquote>
 <img src="../md/images/20-dependency-parsing/fig_p12_0.png" alt="">
 <p class="caption">图 20.8 用于基于转移的分析器之神谕的神经分类器。分析器取栈顶 2 个词和缓冲区首个词，用它们的编码（来自将整句送入编码器）来表示它们，拼接这些嵌入，并</p>
-<p class="caption">Figure 20.8 Neural classifier for the oracle for the transition-based parser. The parser takes the top 2 words on the stack and the first word of the buffer, represents them by their encodings(from running the whole sentence through the encoder), concatenates the embeddings and</p>
+<p class="caption">Figure 20.8 Neural classifier for the oracle for the transition-based parser. The parser takes the top 2 words on the stack and the first word of the buffer, represents them by their encodings(from running the whole sentence through the encoder), concatenates the embeddings and passes through a softmax to choose a parser action (transition).</p>
 <h3>20.2.4 基于转移的句法分析中的进阶方法</h3>
 <blockquote><p>20.2.4 Advanced Methods in Transition-Based Parsing</p></blockquote>
 <p>通过解决该方法中一些最明显的缺陷，可以以多种方式对基本的基于转移的方法加以改进，从而提升性能。</p>
@@ -489,9 +510,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the front of the input buffer, instead of the top two elements of the stack as in the arc-standard approach. The RIGHTARC operator now moves the dependent to the stack from the buffer rather than removing it, thus making it available to serve as the head of following words. The new REDUCE operator removes the top element from the stack. Together these changes permit a word to be eagerly assigned its head and still allow it to serve as the head for later dependents. The trace shown in Fig. 20.9 illustrates the new decision sequence for this example.</p></blockquote>
 <p>除了展示弧急切（arc-eager）转移系统之外，此例还展示了整个基于转移的方法的强大与灵活。我们能够换入一个新的转移系统，而无需对</p>
 <blockquote><p>In addition to demonstrating the arc-eager transition system, this example demonstrates the power and flexibility of the overall transition-based approach. We were able to swap in a new transition system without having to make any changes to the</p></blockquote>
+<div class="figbox">
 <blockquote><p>步骤 栈 词表 动作 新增关系 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]</p><p><em>Step Stack Word List Action Relation Added 0 [root] [book, the, flight, through, houston] RIGHTARC (root →book) 1 [root, book] [the, flight, through, houston]</em></p></blockquote>
-<p class="caption">图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。</p>
-<p class="caption">Figure 20.9 A processing trace of Book the flight through Houston using the arc-eager transition operators.</p>
 <blockquote><p>SHIFT</p></blockquote>
 <blockquote><p>2 [root, book, the] [flight, through, houston] LEFTARC (the ←flight) 3 [root, book] [flight, through, houston] RIGHTARC (book →flight) 4 [root, book, flight] [through, houston]</p></blockquote>
 <blockquote><p>SHIFT</p></blockquote>
@@ -502,6 +522,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>9 [root, book] []</p></blockquote>
 <blockquote><p>REDUCE</p></blockquote>
 <blockquote><p>10 [root] [] Done</p></blockquote>
+</div>
+<p class="caption">图 20.9 使用弧急切（arc-eager）转移操作符对 Book the flight through Houston 的处理轨迹。</p>
+<p class="caption">Figure 20.9 A processing trace of Book the flight through Houston using the arc-eager transition operators.</p>
 <p>底层的句法分析算法做任何改动。这种灵活性促成了多样化的转移系统的发展，它们处理句法和语义的不同方面，包括：指派词性标注（Choi and Palmer, 2011a）、允许生成非投射依存结构（Nivre, 2009）、指派语义角色（Choi and Palmer, 2011b），以及分析包含多种语言的文本（Bhat et al., 2017）。</p>
 <blockquote><p>underlying parsing algorithm. This flexibility has led to the development of a diverse set of transition systems that address different aspects of syntax and semantics including: assigning part of speech tags (Choi and Palmer, 2011a), allowing the generation of non-projective dependency structures (Nivre, 2009), assigning semantic roles (Choi and Palmer, 2011b), and parsing texts containing multiple languages(Bhat et al., 2017).</p></blockquote>
 <p>束搜索</p>
@@ -533,11 +556,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Graph-based dependency parsers search through the space of possible trees for a</p></blockquote>
 <p>给定句子寻找使某个分数最大化的树（或若干棵树）。这些方法把搜索空间编码为有向图，并采用图论中的方法来在该空间中搜索最优解。更形式化地说，给定一个句子 S，我们要在 Gs（该句子所有可能的树构成的空间）中寻找使某个分数最大化的最优依存树。</p>
 <blockquote><p>given sentence for a tree (or trees) that maximize some score. These methods encode the search space as directed graphs and employ methods drawn from graph theory to search the space for optimal solutions. More formally, given a sentence S we’re looking for the best dependency tree in Gs, the space of all possible trees for that sentence, that maximizes some score.</p></blockquote>
-<p>ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，</p>
-<blockquote><p>ˆT(S) = argmax Score(t,S) We’ll make the simplifying assumption that this score can be edge-factored,</p></blockquote>
+<p>ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，也就是说，一棵树的总体分数是构成该树的各条边的分数之和。</p>
+<blockquote><p>ˆT(S) = argmax Score(t,S) We’ll make the simplifying assumption that this score can be edge-factored, meaning that the overall score for a tree is the sum of the scores of each of the scores of the edges that comprise the tree.</p></blockquote>
 <aside class="term"><code>edge-factored</code><span class="term-zh">边因子化的</span><span class="term-explain">指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。</span></aside>
-<p>也就是说，一棵树的总体分数是构成该树的各条边的分数之和。</p>
-<blockquote><p>meaning that the overall score for a tree is the sum of the scores of each of the scores of the edges that comprise the tree.</p></blockquote>
 <p>X Score(t,S) = Score(e)基于图的算法必须解决两个问题：（1）为</p>
 <blockquote><p>Graph-based algorithms have to solve two problems: (1) assigning a score to</p></blockquote>
 <p>每条边赋予分数；（2）在给定所有可能边的分数的情况下找出最佳分析树。</p>

@@ -76,6 +76,8 @@
 
 > In this chapter we introduce the simplest kind of language model: the n-gram language model. An n-gram is a sequence of n words: a 2-gram (which we’ll call bigram) is a two-word sequence of words like The water, or water of, and a 3gram (a trigram) is a three-word sequence of words like The water of, or water of Walden. But we also (in a bit of terminological ambiguity) use the word ‘ngram’ to mean a probabilistic model that can estimate the probability of a word given the n-1 previous words, and thereby also to assign probabilities to entire sequences.
 
+> `n-gram`
+
 在后面的章节中，我们将介绍强大得多的神经大型语言模型，它们基于第 7 章的 transformer 架构。但由于 n-gram 具有极其简单而清晰的形式化表述，我们用它们来引入大型语言建模的一些主要概念，包括训练集与测试集、困惑度、采样和插值。
 
 > In later chapters we will introduce the much more powerful neural large language models, based on the transformer architecture of Chapter 7. But because n-grams have a remarkably simple and clear formalization, we use them to introduce some major concepts of large language modeling, including training and test sets, perplexity, sampling, and interpolation.
@@ -402,14 +404,25 @@ p1 × p2 × p3 × p4 = exp(log p1 +log p2 +log p3 +log p4) (3.13)
 
 > Longer context Although for pedagogical purposes we have only described bigram models, when there is sufficient training data we use trigram models, which
 
-> `trigram 4-gram 5-gram`
+> `trigram`
+>
+> 释义：以当前词前面的两个词为条件来预测下一个词的 n-gram 语言模型。
 
 以前面两个词为条件，或者使用 4-gram 或 5-gram 模型。对于这些更大的
 
 > condition on the previous two words, or 4-gram or 5-gram models. For these larger
+
+> `4-gram`
+>
+> 释义：以当前词前面的三个词为条件来预测下一个词的 n-gram 语言模型。
+
 n-gram，我们需要在句子结尾的左侧和右侧假定额外的上下文。
 
 > n-grams, we’ll need to assume extra contexts to the left and right of the sentence end.
+
+> `5-gram`
+>
+> 释义：以当前词前面的四个词为条件来预测下一个词的 n-gram 语言模型。
 
 例如，为了计算句子最开头的 trigram 概率，我们为第一个 trigram 使用两个伪词（即 P(I|<s><s>)）。
 
@@ -448,11 +461,18 @@ n-gram，它们取自当代美国英语语料库（Corpus of Contemporary Americ
 
 > The best way to evaluate the performance of a language model is to embed it in an application and measure how much the application improves. Such end-to-end
 
-> `extrinsic evaluation`（外在评估）
+> `extrinsic`（外在）
+>
+> 释义：指把模型嵌入具体应用中，依据任务效果的改善来评估模型的方法。
 
 评估被称为外在评估。外在评估是唯一能够
 
 > evaluation is called extrinsic evaluation. Extrinsic evaluation is the only way to
+
+> `evaluation`（评估）
+>
+> 释义：衡量模型性能的过程；在具体应用中进行、依据任务效果判断的称为外在评估。
+
 判断语言模型（或任何组件）的某项特定改进是否真的有助于当前任务的方式。因此，对于评估作为语音识别或机器翻译等任务组件的 n-gram 语言模型，我们可以通过运行两次语音识别器或机器翻译器（每次使用一个语言模型），并观察哪一个给出更准确的转写，来比较两个候选语言模型的性能。
 
 > know if a particular improvement in the language model (or any component) is really going to help the task at hand. Thus for evaluating n-gram language models that are a component of some task like speech recognition or machine translation, we can compare the performance of two candidate language models by running the speech recognizer or machine translator twice, once with each language model, and seeing which gives the more accurate transcription.
@@ -461,11 +481,17 @@ n-gram，它们取自当代美国英语语料库（Corpus of Contemporary Americ
 
 > Unfortunately, running big NLP systems end-to-end is often very expensive. Instead, it’s helpful to have a metric that can be used to quickly evaluate potential
 
-> `intrinsic evaluation`（内在评估）
+> `intrinsic`（内在）
+>
+> 释义：指独立于任何具体应用、直接衡量模型自身质量的评估方式。
 
 改进的指标会很有帮助。内在评估指标是一种独立于任何应用来衡量模型质量的指标。在下一节中，我们将介绍困惑度，它是衡量语言模型性能的标准内在指标，既适用于简单的 n-gram 语言模型，也适用于第 7 章中更复杂的神经大语言模型。
 
 > improvements in a language model. An intrinsic evaluation metric is one that measures the quality of a model independent of any application. In the next section we’ll introduce perplexity, which is the standard intrinsic metric for measuring language model performance, both for simple n-gram language models and for the more sophisticated neural large language models of Chapter 7.
+
+> `evaluation`（评估）
+>
+> 释义：衡量模型性能的过程；不依赖具体应用、直接度量模型自身质量的称为内在评估。
 
 为了评估任何机器学习模型，我们至少需要三个
 
@@ -473,6 +499,10 @@ n-gram，它们取自当代美国英语语料库（Corpus of Contemporary Americ
 不同的数据集：训练集、开发集和测试集。
 
 > distinct datasets: the training set, the development set, and the test set.
+
+> `training set development set test set`（训练集 开发集 测试集）
+>
+> 释义：评估机器学习模型所需的三类数据：用于学习参数的训练集、用于调参的开发集和用于最终评估的测试集。
 
 训练集是我们用来学习模型参数的数据；对于
 
@@ -752,7 +782,7 @@ perplexityB(T) = PB(red red red red blue)−1/5
 
 > very early on by Shannon (1948) and Miller and Selfridge (1950). It’s simplest to visualize how this works for the unigram case. Imagine all the words of the English language covering the number line between 0 and 1, each word covering an interval proportional to its frequency. Fig. 3.3 shows a visualization, using a unigram LM
 
-![](images/fig_p12_0.png)
+![](images/03-ngram-language-models/fig_p12_0.png)
 
 *图 3.3 通过反复采样 unigram 来采样句子的采样分布可视化。蓝色条形表示每个单词的相对频率（我们已把它们按从最频繁到最不频繁排序，但顺序的选择是任意的）。数轴显示累积概率。如果我们在 0 到 1 之间选取一个随机数，它会落入对应某个单词的区间。随机数落入某个高频词（the、of、a）的较大区间的期望，远高于落入某个罕见词（polyphonic）的较小区间。*
 *Figure 3.3 A visualization of the sampling distribution for sampling sentences by repeatedly sampling unigrams. The blue bar represents the relative frequency of each word (we’ve ordered them from most frequent to least frequent, but the choice of order is arbitrary). The number line shows the cumulative probabilities. If we choose a random number between 0 and 1, it will fall in an interval corresponding to some word. The expectation for the random number to fall in the larger intervals of one of the frequent words (the, of, a) is much higher than in the smaller interval of one of the rare words (polyphonic).*
@@ -795,6 +825,7 @@ n-gram 模型和许多统计模型一样，依赖于训练语料库。
 
 > completely different corpus: the Wall Street Journal (WSJ) newspaper. Shakespeare and the WSJ are both English, so we might have expected some overlap between our
 
+<!--figbox-->
 > ——向 他 吞下 忏悔 听见 两者。哪一个。关于 拯救 在 踪迹 上 为 是 ay 装置 和
 >
 > *–To him swallowed confess hear both. Which. Of save on trail for are ay device and*
@@ -850,6 +881,7 @@ n-gram 模型和许多统计模型一样，依赖于训练语料库。
 > gram——它 只能 如此。
 >
 > *gram –It cannot be but so.*
+<!--/figbox-->
 
 *图 3.4 由在莎士比亚作品上计算得到的四个 n-gram 模型随机生成的八个句子。所有字符都被映射为小写，标点符号被当作单词处理。为提高可读性，输出中的大小写经过人工校正。*
 *Figure 3.4 Eight sentences randomly generated from four n-gram models computed from Shakespeare’s works. All characters were mapped to lower-case and punctuation marks were treated as words. Output is hand-corrected for capitalization to improve readability.*
@@ -858,6 +890,7 @@ n-gram 模型和许多统计模型一样，依赖于训练语料库。
 
 > n-grams for the two genres. Fig. 3.5 shows sentences generated by unigram, bigram, and trigram models trained on 40 million words from WSJ.
 
+<!--figbox-->
 > 1
 
 > 数月 这 我的 与 发行 的 年 外国的 新 交易所的 九月 是 衰退 交易所 新 背书 一 获取 到 六 高管
@@ -893,6 +926,7 @@ n-gram 模型和许多统计模型一样，依赖于训练语料库。
 > gram 巴西关于市场状况
 >
 > *gram Brazil on market conditions*
+<!--/figbox-->
 
 *图 3.5 由三个 n-gram 模型随机生成的三句话，这些模型基于《华尔街日报》4000 万词计算得出，其中所有字符都转为小写并标点视为词。输出随后经人工校正大小写以提高可读性。*
 *Figure 3.5 Three sentences randomly generated from three n-gram models computed from 40 million words of the Wall Street Journal, lower-casing all characters and treating punctuation as words. Output was then hand-corrected for capitalization to improve readability.*
@@ -1161,21 +1195,13 @@ C(wn−1)+kV
 
 > 3.6.4 Stupid Backoff
 
-插值的一种替代方案是回退。在回退模型中，如果我们需要的 n-gram
+插值的一种替代方案是回退。在回退模型中，如果我们需要的 n-gram 计数为零，我们就回退到 (n-1)-gram 来近似它。我们持续回退，直到回溯到一个具有计数的历史。为使回退模型给出正确的概率分布，我们必须对高阶 n-gram 进行折扣，以便为低阶 n-gram 保留一些概率质量。在实践中，人们常常不做折扣，而是使用一种简单得多的、不做折扣的回退算法，称为愚蠢回退（stupid backoff）（Brants et al., 2007）。
 
-> An alternative to interpolation is backoff. In a backoff model, if the n-gram we need
+> An alternative to interpolation is backoff. In a backoff model, if the n-gram we need has zero counts, we approximate it by backing off to the (n-1)-gram. We continue backing off until we reach a history that has some counts. For a backoff model to give a correct probability distribution, we have to discount the higher-order n-grams to save some probability mass for the lower order n-grams. In practice, instead of discounting, it’s common to use a much simpler non-discounted backoff algorithm called stupid backoff (Brants et al., 2007).
 
 > `backoff`（回退）
 
-的计数为零，我们就通过回退到 (n-1)-gram 来近似它。我们持续回退，直到达到一个有计数的历史。为了让回退模型给出正确的概率分布，我们必须对高阶 n-gram 进行折扣
-
-> has zero counts, we approximate it by backing off to the (n-1)-gram. We continue backing off until we reach a history that has some counts. For a backoff model to give a correct probability distribution, we have to discount the higher-order n-grams
-
 > `discount`（折扣）
-
-以便为低阶 n-gram 保留一些概率质量。在实践中，人们通常不做折扣，而是使用一种简单得多的、不做折扣的回退算法，称为愚蠢回退（Brants et al., 2007）。
-
-> to save some probability mass for the lower order n-grams. In practice, instead of discounting, it’s common to use a much simpler non-discounted backoff algorithm called stupid backoff (Brants et al., 2007).
 
 > `stupid backoff`（愚蠢回退）
 
@@ -1246,21 +1272,13 @@ H(X) = − p(x)log2 p(x) (3.32)
 
 > placed and that we represent it as the prior probability of each horse as follows:
 
-> 马 1 ^(1/2)马 5^(1/64)
->
-> *Horse 1 ^(1/2)Horse 5^(1/64)*
+Horse 1 ^(1/2)Horse 5^(1/64)
 
-> 马 2 ^(1/4)马 6^(1/64)
->
-> *Horse 2 ^(1/4)Horse 6^(1/64)*
+Horse 2 ^(1/4)Horse 6^(1/64)
 
-> 马 3 ^(1/8)马 7^(1/64)
->
-> *Horse 3 ^(1/8)Horse 7^(1/64)*
+Horse 3 ^(1/8)Horse 7^(1/64)
 
-> 马 4 ^(1/16)马 8^(1/64)
->
-> *Horse 4 ^(1/16)Horse 8^(1/64)*
+Horse 4 ^(1/16)Horse 8^(1/64)
 
 取值范围涵盖各匹马的随机变量 X 的熵，为我们给出了比特数的一个下
 

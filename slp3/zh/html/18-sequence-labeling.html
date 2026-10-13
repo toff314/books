@@ -28,6 +28,12 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -44,7 +50,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>代词、介词、副词、连词、分词和冠词。尽管更早的学者（包括亚里士多德以及斯多葛学派）有他们自己的词性清单，但正是 Thrax 的这八种词性成为此后 2000 年间欧洲语言描述的基础。（一路延续到我们童年时代的 Schoolhouse Rock 教育电视节目，那里面有讲述 8 种词性的歌曲，比如已故的伟大歌手 Bob Dorough 的 Conjunction Junction。）词性能够延续两千年之久，正说明了它们在人类语言模型中的核心地位。</p>
 <p>专有名词是另一个重要且自古以来就被研究的语言类别。</p>
 <p>词性一般是分配给单个词或语素的，而专有名词往往是一个完整的多词短语，比如人名“玛丽·居里”、地名“纽约市”或机构名“斯坦福大学”。我们将用“命名实体”这个术语来指代，大致上说，任何可以用</p>
-<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的对象，如人名、地名、机构名等；该术语通常还被扩展使用，以涵盖并非严格意义上实体的事物（如时间、数量、事件等）。</span></aside>
+<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。</span></aside>
 <p>专有名词指称的东西：一个人、一个地点、一个组织；不过正如我们将看到的，这个术语通常被扩展使用，以包含并非严格意义上实体的事物。</p>
 <p>词性（也称为 POS）和命名实体是有用的线索，可用来推断</p>
 <aside class="term"><code>POS</code><span class="term-zh">词性</span><span class="term-explain">part of speech 的缩写，即词性/词类。本书中也用于指词性标记集里的具体标记，如 NOUN、VERB。</span></aside>
@@ -57,6 +63,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h2>18.1（主要是）英语词类</h2>
 <p>到目前为止，我们一直在相当随意地使用像名词和动词这样的词性术语。</p>
 <p>在本节中，我们给出更完整的定义。虽然词类确实存在语义倾向——例如形容词常常描述属性，名词描述人或事物——但词性的定义依据的却是词与邻近词的语法关系，或者其词缀的形态属性。</p>
+<div class="figbox">
 <blockquote><p>标记 描述 示例 ADJ 形容词：描述属性的名词修饰语 red、young、awesome</p></blockquote>
 <blockquote><p>开放类 ADV 副词：表时间、地点、方式的动词修饰语 very、slowly、home、yesterday</p></blockquote>
 <blockquote><p>NOUN 表示人、地点、事物等的词 algorithm、cat、mango、beauty VERB 表示动作和过程的词 draw、provide、go PROPN 专有名词：人、组织、地点等的名称 Regina、IBM、Colorado INTJ 感叹词：感叹、问候、是/否回答等 oh、um、yes、hello ADP 附置词（前置词/后置词）：标记名词的 in、on、by、under</p></blockquote>
@@ -69,6 +76,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>从句（如句子补语）连接起来</p></blockquote>
 <blockquote><p>其他 PUNCT 标点 ˙、,、()</p></blockquote>
 <blockquote><p>SYM 像 $ 或 emoji 这样的符号 $、%X 其他 asdf、qwfg</p></blockquote>
+</div>
+<p class="caption">图 18.1 通用依存（Universal Dependencies）标记集中的 17 种词性（de Marneffe 等，2021）。可以添加特征来做更细粒度的区分（借助数、格、有定性等属性）。</p>
 <p>词性分为两大范畴：封闭类和开放类。</p>
 <aside class="term"><code>closed class open class</code><span class="term-zh">封闭类 开放类</span><span class="term-explain">封闭类指成员相对固定、很少新增的词类（如介词、限定词、连词）；开放类指不断有新成员被创造或借用的词类（如名词、动词、形容词）。</span></aside>
 <p>封闭类是成员相对固定的那些词类，比如介词——新的介词很少被创造出来。相比之下，名词和动词是开放类——像 iPhone 或 to fax 这样的新名词和新动词不断被创造或借用。</p>
@@ -83,6 +92,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>包括英语在内的许多语言，都把普通名词分为可数名词和</p>
 <aside class="term"><code>count noun mass noun</code><span class="term-zh">可数名词；不可数名词</span><span class="term-explain">可数名词（count noun）有单数和复数形式，并可以直接计数，如 one goat、two goats；不可数名词（mass noun）用于把事物概念化为一个同质的整体，通常不能计数，如 snow、salt、communism（不说 <em>two snows、</em>two communisms）。</span></aside>
 <p>不可数名词。可数名词既有单数形式也有复数形式（goat/goats、relationship/relationships），并且可以计数（one goat、two goats）。当某事物被概念化为一个同质的整体时，就使用不可数名词。因此 snow、salt 和 communism 不能计数（即不说 <em>two snows 或 </em>two communisms）。专有名词，如 Regina、Colorado 和 IBM，是特定人物或实体的名称。</p>
+<aside class="term"><code>proper noun</code><span class="term-zh">专有名词</span><span class="term-explain">开放类名词中的一类，指称特定人物或实体的名称，如 Regina、Colorado、IBM；与普通名词相对，英语中专有名词一般不与限定词连用、通常不用复数。</span></aside>
 <p>动词指动作和过程，包括 draw、provide、</p>
 <aside class="term"><code>verb</code><span class="term-zh">动词</span><span class="term-explain">开放类之一，表示动作或过程；英语动词有屈折变化，如非第三人称单数（eat）、第三人称单数（eats）、进行式（eating）、过去分词（eaten）。</span></aside>
 <p>和 go 这类主要动词。英语动词有屈折变化（非第三人称单数（eat）、第三人称单数（eats）、进行式（eating）、过去分词（eaten））。许多学者相信所有人类语言都有名词和动词这两个范畴，但也有人主张，某些语言（如廖内印尼语和汤加语）甚至不作这种区分（Broschart 1997; Evans 2000; Gil 2000）。</p>
@@ -118,9 +128,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>连词连接两个短语、子句或句子。像 and、or 和 but 这样的并列连词连接两个地位相等的成分。当其中一个成分具有某种内嵌地位时，就使用从属连词。例如，在“I thought that you might like some milk”中，从属连词 that 把主句 I thought 与从句 you might like some milk 连接起来。这个从句之所以被称为从属从句，是因为整个从句都是主动词 thought 的“内容”。像 that 这样以这种方式把动词与其论元连接起来的从属连词，也称为补语化标记。</p>
 <aside class="term"><code>conjunction</code><span class="term-zh">连词</span><span class="term-explain">连接两个短语、子句或句子的词，分为连接地位相等成分的并列连词和连接具有内嵌地位成分的从属连词。</span></aside>
 <aside class="term"><code>complementizer pronoun</code><span class="term-zh">补语化标记代词</span><span class="term-explain">补语化标记（complementizer）指像 that 那样把动词与其论元连接起来的从属连词；代词（pronoun）则用作指代实体或事件的简写形式。</span></aside>
-<p>代词用作指代实体或事件的简写形式。人称代词指代人或实体（you、she、I、it、me 等）。物主代词是人称代词的各种形式，表示实际的占有，但更多时候只是表示人与某物之间的抽象关系（my、your、his、her、its、one’s、our、their）。Wh-代词（what、who、whom、whoever）用于某些疑问</p>
+<p>代词用作指代实体或事件的简写形式。人称代词指代人或实体（you、she、I、it、me 等）。物主代词是人称代词的各种形式，表示实际的占有，但更多时候只是表示人与某物之间的抽象关系（my、your、his、her、its、one’s、our、their）。Wh-代词（what、who、whom、whoever）用于某些疑问形式，或充当补语化标记（Frida, who married Diego...）。</p>
 <aside class="term"><code>wh</code><span class="term-zh">wh-词</span><span class="term-explain">以 wh 开头的疑问代词（what、who、whom、whoever），用于构成某些疑问形式，也可充当补语化标记（如 Frida, who married Diego...）。</span></aside>
-<p>形式中，或充当补语化标记（Frida, who married Diego...）。</p>
 <p>助动词标记主动词的语义特征，如它的时态、是否</p>
 <aside class="term"><code>auxiliary</code><span class="term-zh">助动词</span><span class="term-explain">标记主动词语义特征（时态、体、极性、情态等）的动词；英语助动词包括系动词 be、动词 do 和 have 的各种形式，以及情态动词。</span></aside>
 <p>完成（体）、是否被否定（极性），以及一个动作是必要的、可能的、被建议的还是被期望的（情态）。英语助动词包括系动词 be、do 和 have 这两个动词的各种形式，以及用来</p>
@@ -129,6 +138,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>modal</code><span class="term-zh">情态动词</span><span class="term-explain">用于标记主词所描述事件情态的助动词，如 can 表示能力或可能性、may 表示许可或可能性、must 表示必要性。</span></aside>
 <p>能力或可能性，may 表示许可或可能性，must 表示必要性。</p>
 <p>一个英语专用的标记集，即 Penn Treebank 标记集（Marcus 等，1993），如图 18.2 所示，一直被用于标注许多句法标注语料库，如 Penn Treebank 语料库，因此值得了解。</p>
+<div class="figbox">
 <blockquote><p>标记 说明 示例 标记 说明 示例 标记 说明 示例 CC and, but, or NNP 专有名词，单数 IBM TO to</p></blockquote>
 <blockquote><p>并列连词 不定式 to</p></blockquote>
 <blockquote><p>CD 基数词 one, two NNPS 专有名词，复数 Carolinas UH ah, oops</p></blockquote>
@@ -151,6 +161,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>小品词 wh-所有格</p></blockquote>
 <blockquote><p>NN 单数名词或不可数名词 llama SYM 符号 +、%、&amp; WRB wh-副词 how、where</p></blockquote>
 <blockquote><p>符号</p></blockquote>
+</div>
+<p class="caption">图 18.2 Penn Treebank 核心 36 个词性标记。</p>
 <p>下面我们给出一些例子，其中每个词都同时按照 UD（蓝色）和 Penn（红色）两个标记集进行了标注。请注意，Penn 标记集区分动词的时态和分词形式，并且为英语中的存在句 there 结构设置了一个专门的标记。还要注意，由于 London Journal of Medicine 是专有名词，两个标记集都把它包含的名词标注为 PROPN/NNP，包括 journal 和 medicine，否则它们可能会被标注为普通名词（NOUN/NN）。</p>
 <p>(18.1) There/PRON/EX are/VERB/VBP 70/NUM/CD children/NOUN/NNS there/ADV/RB ./PUNC/.</p>
 <p>(18.2) Preliminary/ADJ/JJ findings/NOUN/NNS were/AUX/VBD reported/VERB/VBN in/ADP/IN today/NOUN/NN ’s/PART/POS London/PROPN/NNP Journal/PROPN/NNP of/ADP/IN Medicine/PROPN/NNP</p>
@@ -163,13 +175,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>可能的词性——标注的目标就是找到适合当前情境的正确标记。</p>
 <p>例如，book 可以是动词（book that flight），也可以是名词（hand me that book）。</p>
 <img src="../md/images/18-sequence-labeling/fig_p5_0.png" alt="">
+<p class="caption">图 18.3 词性标注任务：从输入词 x1,x2,...,xn 映射到输出词性标记 y1,y2,...,yn 。</p>
 <p>That 可以是限定词（Does that flight serve dinner），也可以是补语化标记（I</p>
 <aside class="term"><code>ambiguity resolution</code><span class="term-zh">歧义消解</span><span class="term-explain">在多个可能的解释中选出与上下文相符的那一个，例如为一个有歧义的词选定正确的词性标记。</span></aside>
 <p>thought that your flight was earlier）。词性标注的目标就是消解这些歧义，为上下文选择恰当的标记。</p>
 <p>词性标注算法的准确率（即测试集中</p>
 <aside class="term"><code>accuracy</code><span class="term-zh">准确率</span><span class="term-explain">测试集中标记与人工金标准标签相一致的百分比。</span></aside>
 <p>标记与人工金标准标签相符的比例）极高。一项研究在通用依存（Universal Dependency，UD）树库的 15 种语言上得到的准确率都超过 97%（Wu 和 Dredze, 2019）。在多个英语树库上的准确率同样是 97%（无论采用什么算法；HMM、CRF、BERT 的表现都差不多）。这个 97% 大致也就是该任务上人类的表现，至少对英语而言如此（Manning, 2011）。</p>
+<div class="figbox">
 <blockquote><p>词类型：WSJ Brown 无歧义（1 个标记）44,432 (86%) 45,799 (85%) 有歧义（2 个及以上标记）7,025 (14%) 8,050 (15%) 词元：无歧义（1 个标记）577,421 (45%) 384,349 (33%) 有歧义（2 个及以上标记）711,780 (55%) 786,646 (67%)</p></blockquote>
+</div>
+<p class="caption">图 18.4 Brown 和 WSJ 语料库中的标记歧义（Treebank-3 的 45 个标记的标记集）。</p>
 <p>我们将在接下来几节中介绍用于该任务的算法，不过首先让我们先来考察一下这个任务。它究竟有多难？图 18.4 表明，大多数词类型（85%–86%）都是无歧义的（Janet 总是 NNP，hesitantly 总是 RB）。但是，有歧义的词虽然只占词表的 14%–15%，却非常常用，实际文本中有 55%–67% 的词元是有歧义的。歧义特别多的常用词包括 that、back、down、put 和 set；下面是 back 一词的 6 种不同词性的例子：</p>
 <p>收益增长退到了 back/JJ 座（earnings growth took a back seat） 后方的一座小楼（a small building in the back/NN） 参议员的明确多数支持 back/VBP 该法案（a clear majority of senators back the bill） Dave 开始 back/VB 向门口（Dave began to back toward the door） 使该国能够回购 back/RP 债务（enable the country to buy back debt） 那时我二十一岁 back/RB（I was twenty-one back then）尽管如此，许多词很容易消歧，因为它们的不同标记并非同等可能。例如，a 可以是限定词，也可以是字母 a，但限定词这一义项的可能性要大得多。</p>
 <p>这一想法提示了一个有用的基线：给定一个歧义词，选择在训练语料中出现最频繁的那个标记。这是一个关键概念：</p>
@@ -178,7 +194,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h2>18.3 命名实体与命名实体标注</h2>
 <p>词性标注可以告诉我们，Janet、Stanford University 和 Colorado 这类词都是专有名词；作专有名词是这些词的语法属性。但从语义的角度看，这些专有名词指称的是不同种类的实体：Janet 是人名，Stanford University 是机构名，Colorado 是地名。</p>
 <p>这里我们再次引入命名实体的概念，它此前也曾在</p>
-<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">语义上指称某一特定种类事物的词或短语，例如人名（Janet）、机构名（Stanford University）、地名（Colorado），以及时间、数量、货币等。</span></aside>
+<aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。</span></aside>
 <p>见第 9.5 节，供尚未读过第 9 章的读者参考。</p>
 <p>粗略地说，命名实体就是任何可以用一个</p>
 <aside class="term"><code>named entity</code><span class="term-zh">命名实体</span><span class="term-explain">大致指可以用专有名词指称的事物，如人名、地名、机构名；广义上也包括日期、时间、金额等其他表达。</span></aside>
@@ -187,36 +203,55 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>该实体的类型。最常见的实体标记有四种：PER（人名）、LOC（地名）、ORG（机构名）或 GPE（地缘政治实体）。不过，“命名实体”这一术语通常被扩展使用，用来涵盖本身并非实体的东西，包括日期、时间以及其他各种时间表达，甚至像价格这样的数值表达。下面是 NER 标注器的一个输出示例：</p>
 <p>以高油价为由，[ORG United Airlines] 表示，[TIME 周五] 它已将飞往某些同时由低成本航空公司服务的城市的往返票价每程上调了 [MONEY 6 美元]。[ORG American Airlines]——[ORG AMR Corp.] 的一个下属单位——立即跟进，其发言人 [PER Tim Wagner] 说。[ORG United]——[ORG UAL Corp.] 的一个下属单位——表示此次涨价从 [TIME 周四] 起生效，适用于它与折扣航空公司竞争的大多数航线，例如 [LOC 芝加哥] 到 [LOC 达拉斯]，以及 [LOC 丹佛] 到 [LOC 旧金山]。</p>
 <p>这段文字包含 13 处命名实体提及，其中 5 处机构名、4 处地名、2 处时间、1 处人名，以及 1 处金额。图 18.5 列出了典型的通用命名实体类型。许多应用还需要使用更具体的实体类型，如蛋白质、基因、商品或艺术作品。</p>
+<div class="figbox">
 <blockquote><p>类型 标记 示例类别 例句 人名 PER 人物、角色 图灵是计算机科学界的巨人。</p></blockquote>
 <blockquote><p>机构名 ORG 公司、运动队 IPCC 曾就这场气旋发出警告。</p></blockquote>
 <blockquote><p>地名 LOC 地区、山脉、海洋 Sanitas 山位于 Sunshine Canyon。</p></blockquote>
 <blockquote><p>地缘政治实体 GPE 国家、州 帕洛阿尔托正在提高停车费。</p></blockquote>
+</div>
+<p class="caption">图 18.5 通用命名实体类型列表，以及它们所指代的实体种类。</p>
 <p>命名实体标注是许多自然语言处理任务中有用的第一步。在情感分析中，我们可能想知道消费者对某个特定实体的情感倾向。在问答中，或者在把文本链接到维基百科这类结构化知识源中的信息时，实体都是有用的第一步。命名实体标注对于构建语义表示的任务（例如抽取事件以及参与者之间的关系）也处于核心地位。</p>
 <p>与词性标注不同——词性标注不存在切分问题，因为每个词都只得到一个标记——命名实体识别的任务是找出并标注文本片段，其困难部分来自切分的歧义：我们需要判断什么是实体、什么不是实体，以及实体的边界在哪里。事实上，文本中的大多数词都不是命名实体。另一个困难来自类型歧义。提及 JFK 既可以指一个人，也可以指纽约的机场，还可以指美国各地众多学校、桥梁和街道中的任何一个。图 18.6 给出了这类跨类型混淆的一些例子。</p>
+<div class="figbox">
 <blockquote><p>[PER 华盛顿] 出生在 James Burroughs 的农场，生而为奴。[ORG 华盛顿] 在四场系列赛中以 2 比 1 领先。</p></blockquote>
 <blockquote><p>布莱尔抵达 [LOC 华盛顿]，进行很可能是一次最后的国事访问。</p></blockquote>
 <blockquote><p>六月，[GPE 华盛顿] 通过了一项可直接执法的强制安全带法。</p></blockquote>
+</div>
+<p class="caption">图 18.6 名称 Washington 在使用中出现类型歧义的例子。</p>
 <p>对于像NER 这样需要在片段层面进行识别的问题，序列标注的标准做法是 BIO 标注（Ramshaw 和 Marcus，1995）。这种方法让我们可以借助同时捕捉边界和命名实体类型的标记，把 NER 当作逐词的序列标注任务来处理。请看下面这个句子：</p>
 <p>[ORG United]（[ORG United Airlines Holding] 的一个下属单位）的 [PER Jane Villanueva] 表示，该票价适用于 [LOC 芝加哥] 航线。</p>
 <p>图 18.7 展示了同一段文字用 BIO 标注表示的结果，以及</p>
 <aside class="term"><code>BIO</code><span class="term-explain">一种序列标注方案：B 表示实体片段的开始（begin），I 表示片段内部（inside），O 表示不属于任何片段（outside）。</span></aside>
 <p>称为 IO 标注和 BIOES 标注的两种变体。在 BIO 标注中，我们把任何位于感兴趣片段起始处的词元标为 B，把出现在片段内部的词元标为 I，而把位于所有感兴趣片段之外的词元标为 O。虽然 O 标记只有一个，但每个命名实体类别都会有各自不同的 B 标记和 I 标记。</p>
 <p>因此标记的总数为 2n+1 个，其中 n 是实体类型的数量。BIO 标注能够表示与方括号记法完全相同的信息，但优点在于我们可以像词性标注那样，用同样简单的序列建模方式来表示这个任务：为每个输入词 xi 分配一个标记 yi：</p>
+<div class="figbox">
 <blockquote><p>词语 IO 标记 BIO 标记 BIOES 标记 Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</p></blockquote>
+</div>
+<p class="caption">图 18.7 把 NER 视为序列模型，展示 IO、BIO 和 BIOES 三种标注。</p>
 <p>我们还展示了两种变体标注方案：IO 标注，它丢失了一部分信息，因为它取消了 B 标记；以及 BIOES 标注，它增加了一个表示片段结束的结束标记 E，和一个用于仅由单个词构成的片段的片段标记 S。</p>
 <p>序列标注器（HMM、CRF、RNN、Transformer 等）经过训练后，能够为文本中的每个词元打上标记，以表明特定种类的命名实体存在（或不存在）。</p>
 <h2>18.4 HMM 词性标注</h2>
 <p>本节介绍我们的第一个序列标注算法——隐马尔可夫模型，并演示如何把它应用于词性标注。回忆一下，序列标注器是一类模型，其任务是为序列中的每个单元分配一个标记，从而把一个观测序列映射为长度相同的标记序列。</p>
 <p>HMM 是一个经典模型，它引出了序列建模的许多关键概念，这些概念在更现代的模型中还会再次出现。</p>
-<p>HMM 是一种概率序列模型：给定一个单元序列（词、字母、语素、句子，等等），它计算一个概率分布，该分布定义在</p>
+<p>HMM 是一种概率序列模型：给定一个单元序列（词、字母、语素、句子，等等），它计算一个概率分布，该分布定义在可能的标记序列上，并选择最好的标记序列。</p>
+<h3>18.4.1 马尔可夫链</h3>
+<p>HMM 建立在扩展马尔可夫链的基础上。马尔可夫链是一种模型</p>
 <aside class="term"><code>Markov chain</code><span class="term-zh">马尔可夫链</span><span class="term-explain">一种状态序列的随机过程模型，其中下一状态的概率只取决于当前状态（马尔可夫假设）。</span></aside>
+<p>它告诉我们关于随机变量序列（即状态）的某种概率信息，其中每个状态都可以取某个集合中的值。这些集合可以是词、标记，或代表任何事物的符号，例如天气。马尔可夫链作了一个非常强的假设：如果我们要预测序列中的未来，那么重要的只是当前状态。当前状态之前的所有状态都不会影响未来，除非经由当前状态起作用。这就好比预测明天的天气时，你可以查看今天的天气，却不允许查看昨天的天气。</p>
 <img src="../md/images/18-sequence-labeling/fig_p8_0.png" alt="">
-<aside class="term"><code>Markov assumption</code><span class="term-zh">马尔可夫假设</span><span class="term-explain">隐马尔可夫模型中的一条简化假设：某个状态的概率只依赖于前一个状态，即 P(qi|q1,...,qi−1) = P(qi|qi−1)。</span></aside>
-<p>图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。</p>
+<p class="caption">图 18.8 用于天气的马尔可夫链（a）和用于词的马尔可夫链（b），展示了状态和转移。需要一个起始分布 π；对（a）取 π = [0.1, 0.7, 0.2] 就意味着以概率 0.7 从状态 2（cold）开始，以概率 0.1 从状态 1（hot）开始，等等。</p>
+<p>更形式化地说，考虑一个状态变量序列 q1,q2,...,qi。马尔可夫</p>
+<aside class="term"><code>Markov</code><span class="term-zh">马尔可夫</span><span class="term-explain">指以俄国数学家 A. A. 马尔可夫命名的随机过程思想；本书的“马尔可夫链”“马尔可夫假设”都强调序列的未来只取决于当前状态。</span></aside>
+<p>模型体现了关于该序列概率的马尔可夫假设：即</p>
+<aside class="term"><code>assumption</code><span class="term-zh">假设</span><span class="term-explain">在本书中特指马尔可夫假设，即序列中某个状态的概率只依赖于前一个状态，而与更早的状态无关。</span></aside>
+<p>在预测未来时，过去并不重要，重要的只有现在。</p>
+<p>马尔可夫假设：P(qi = a|q1...qi−1) = P(qi = a|qi−1) (18.3)图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。</p>
+<div class="figbox">
 <blockquote><p>形式化地，马尔可夫链由以下组成部分指定：Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11a12 ...aN1 ...aNN，转移概率矩阵 A，其中每个 aij 表示从状态 i 转移到状态 j 的概率，满足 Pn j=1 aij = 1 ∀i</p></blockquote>
 <blockquote><p>π = π1,π2,...,πN，状态上的初始概率分布。πi 是</p></blockquote>
 <blockquote><p>马尔可夫链将从状态 i 开始的概率。作为初始状态。另外，Pn 某些状态 j 可能有 πj = 0，意味着它们不能</p></blockquote>
 <blockquote><p>i=1 πi = 1</p></blockquote>
+</div>
 <p>继续往下之前，请使用图 18.8a 中的示例概率（取 π = [0.1,0.7,0.2]）来计算以下每个序列的概率：</p>
 <p>(18.4) hot hot hot hot(18.5) cold hot cold hot这些概率上的差异，就图 18.8a 所编码的现实天气事实而言，说明了什么？</p>
 <h3>18.4.2 隐马尔可夫模型</h3>
@@ -225,12 +260,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>文本中的词性标记。相反，我们看到的是词，必须从词序列中推断出标记。我们把这类标记称为隐藏的，原因就在于它们没有被观测到。</p>
 <aside class="term"><code>hidden Markov model</code><span class="term-zh">隐马尔可夫模型</span><span class="term-explain">一种序列模型，同时建模可观测事件（如输入中的词）与隐藏事件（如词性标记），由状态集 Q、转移概率矩阵 A、发射概率 B 和初始概率分布 π 指定。缩写作 HMM。</span></aside>
 <p>隐马尔可夫模型（HMM）使我们能够同时讨论观测事件（如我们在输入中看到的词）和隐藏事件（如词性标记），后者被我们视为概率模型中的因果因素。HMM 由以下组成部分指定：</p>
+<div class="figbox">
 <blockquote><p>Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11 ...ai j ...aNN，转移概率矩阵 A，其中每个 aij 表示……的概率</p></blockquote>
 <blockquote><p>从状态 i 转移到状态 j 的概率，满足 PN j=1 aij = 1 ∀i</p></blockquote>
 <blockquote><p>B = bi(ot)，观测似然序列，也称为发射概率，每个表示观测 ot（取自词表 V = v1,v2,...,vV）由状态 qi 生成的概率</p></blockquote>
 <blockquote><p>π = π1,π2,...,πN，状态上的初始概率分布。πi 是……的概率</p></blockquote>
 <blockquote><p>马尔可夫链从状态 i 开始的概率。某些状态 j 可能有 π j = 0，意味着它们不能作为初始状态。另外，Pn</p></blockquote>
 <blockquote><p>i=1 πi = 1</p></blockquote>
+</div>
 <p>HMM 的输入为 O = o1o2 ...oT：由 T 个观测组成的序列，其中每个观测都取自词表 V。</p>
 <p>一阶隐马尔可夫模型实例化了两条简化假设。</p>
 <p>第一，与一阶马尔可夫链一样，某个特定状态的概率只依赖于前一个状态：</p>
@@ -240,7 +277,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>18.4.3 HMM 标注器的组成部分</h3>
 <p>HMM 有两个组成部分，即 A 概率和 B 概率，二者都是通过在带标记的训练语料上计数来估计的。（本示例中我们将使用带标记的 WSJ 语料库。）A 矩阵包含标记转移概率 P(ti|ti−1)，它表示在给定前一个标记的条件下某个标记出现的概率。例如，像 will 这样的情态动词后面非常可能跟着一个原形动词，即 VB，如 race，因此我们预期这个概率会很高。我们通过计数来计算该转移概率的最大似然估计：在标注语料中看到第一个标记的所有次数里，第一个标记后面跟着第二个标记的频率：</p>
 <p>P(ti|ti−1) = C(ti−1,ti) (18.8) C(ti−1)例如在 WSJ 语料库中，MD 出现了 13124 次，其中它后面跟着后接 VB 的有 10471 次，其 MLE 估计为P(VB|MD) = C(MD,VB) = 10471 13124 = .80 (18.9) C(MD) B 发射概率 P(wi|ti) 表示：给定一个标记（比如MD）时，它与某个给定词（比如 will）相关联的概率。发射概率的 MLE 为P(wi|ti) = C(ti,wi) (18.10) C(ti)在 WSJ 语料库中 MD 的 13124 次出现里，有 4046 次与 will 相关联：</p>
+<p>P(will|MD) = C(MD,will) = 4046 13124 = .31 (18.11) C(MD)我们在附录 B 中见过这类贝叶斯建模；回忆一下，这个似然项并不是在问“will 这个词最可能的标记是哪个？”那是后验概率 P(MD|will)。相反，P(will|MD) 回答的是一个略显反直觉的问题：“如果我们要生成一个 MD，那么这条情态动词是 will 的可能性有多大？”</p>
 <img src="../md/images/18-sequence-labeling/fig_p10_0.png" alt="">
+<p class="caption">图 18.9 HMM 表示的两个组成部分的示意图：用于计算先验概率的 A 转移概率，以及与每个状态相关联的 B 观测似然，每个可能的观测词各有一个似然。</p>
 <p>HMM 的 A 转移概率和 B 观测似然如图 18.9 所示，这里以 HMM 词性标注器中的三个状态为例进行了说明；完整的标注器则会为每个标记设置一个状态。</p>
 <h3>18.4.4 把 HMM 标注视为解码</h3>
 <p>对于任何包含隐藏变量的模型（例如 HMM），确定与观测序列相对应的隐藏变量序列这一任务称为解码。更形式化地说，</p>
@@ -263,6 +302,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>n</p></blockquote>
 <blockquote><p>t1... tn t1... tn i=1</p></blockquote>
 <img src="../md/images/18-sequence-labeling/fig_p12_0.png" alt="">
+<p class="caption">图 18.10 用于寻找最优标记序列的维特比算法。给定一个观测序列和一个 HMM λ = (A,B)，该算法返回 HMM 中使该观测序列似然最大的那条状态路径。</p>
 <h3>18.4.5 维特比算法</h3>
 <aside class="term"><code>Viterbi algorithm</code><span class="term-zh">维特比算法</span><span class="term-explain">一种用于 HMM 解码的动态规划算法：给定观测序列和模型参数，逐步填充网格中的每个单元格，从而找出使观测序列概率最大的隐藏状态序列。</span></aside>
 <p>HMM 的解码算法就是图 18.10 所示的维特比算法。</p>
@@ -271,16 +311,20 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>网格中的每个单元格 vt(j) 表示：给定 HMM λ，在观测到前 t 个观测值、并经过最可能的状态序列 q1,...,qt−1 之后，HMM 处于状态 j 的概率。每个单元格 vt(j) 的值，是通过递归地取能够到达该单元格的最可能路径计算出来的。形式上，每个单元格所表示的概率为vt(j) = q1,...,qt−1 P(q1...qt−1,o1,o2 ...ot,qt = j|λ) max (18.18)我们通过对所有可能的取值取最大值来表示最可能的路径，即前一状态序列 q1,...,qt−1。与其他动态规划算法一样，维特比中的 max 递归地填充每个单元格。既然我们已经算出 t −1 时刻处于每个状态的概率，就可以通过取通向当前单元格的各条路径之延伸中最可能的那一个，来计算维特比概率。对于 t 时刻的给定状态 qj，其值 vt(j) 计算为vt(j) = max i=1 vt−1(i) aij bj(ot) (18.19)式 18.19 中，为把之前的路径延伸出去、以计算 t 时刻的维特比概率，所相乘的三个因子是</p>
 <blockquote><p>N</p></blockquote>
 <img src="../md/images/18-sequence-labeling/fig_p13_0.png" alt="">
+<p class="caption">图 18.11 Janet will back the bill 的网格示意图，显示了每个词可能的标记（qi），并高亮出穿过隐藏状态、对应正确标记序列的那条路径。根据 B 矩阵生成某个特定词的概率为零的状态（词性）（例如限定词 DT 被实现为 Janet 的概率），在图中以灰色显示。</p>
+<p>vt−1(i)：来自前一时间步的维特比路径概率；ai j：从前一状态 qi 到当前状态 qj 的转移概率；bj(ot)：给定当前状态 j 时观测符号 ot 的状态观测似然</p>
 <h3>18.4.6 完整走一遍一个例子</h3>
 <p>让我们给句子 Janet will back the bill 标注；目标是得到正确的标记序列（另见图 18.11）：</p>
 <p>(18.20) Janet/NNP will/MD back/VB the/DT bill/NN</p>
 <table><tr><th></th><th>NNP</th><th>MD</th><th>VB</th><th>JJ</th><th>NN</th><th>RB</th><th>DT</th></tr><tr><td>&lt;s&gt;</td><td>0.2767</td><td>0.0006</td><td>0.0031</td><td>0.0453</td><td>0.0449</td><td>0.0510</td><td>0.2026</td></tr><tr><td>NNP</td><td>0.3777</td><td>0.0110</td><td>0.0009</td><td>0.0084</td><td>0.0584</td><td>0.0090</td><td>0.0025</td></tr><tr><td>MD</td><td>0.0008</td><td>0.0002</td><td>0.7968</td><td>0.0005</td><td>0.0008</td><td>0.1698</td><td>0.0041</td></tr><tr><td>VB</td><td>0.0322</td><td>0.0005</td><td>0.0050</td><td>0.0837</td><td>0.0615</td><td>0.0514</td><td>0.2231</td></tr><tr><td>JJ</td><td>0.0366</td><td>0.0004</td><td>0.0001</td><td>0.0733</td><td>0.4509</td><td>0.0036</td><td>0.0036</td></tr><tr><td>NN</td><td>0.0096</td><td>0.0176</td><td>0.0014</td><td>0.0086</td><td>0.1216</td><td>0.0177</td><td>0.0068</td></tr><tr><td>RB</td><td>0.0068</td><td>0.0102</td><td>0.1011</td><td>0.1012</td><td>0.0120</td><td>0.0728</td><td>0.0479</td></tr><tr><td>DT</td><td>0.1147</td><td>0.0021</td><td>0.0002</td><td>0.2157</td><td>0.4744</td><td>0.0102</td><td>0.0017</td></tr></table>
-<p>&lt;s&gt; 0.2767 0.0006 0.0031 0.0453 0.0449 0.0510 0.2026 NNP 0.3777 0.0110 0.0009 0.0084 0.0584 0.0090 0.0025 MD 0.0008 0.0002 0.7968 0.0005 0.0008 0.1698 0.0041 VB 0.0322 0.0005 0.0050 0.0837 0.0615 0.0514 0.2231 JJ 0.0366 0.0004 0.0001 0.0733 0.4509 0.0036 0.0036 NN 0.0096 0.0176 0.0014 0.0086 0.1216 0.0177 0.0068 RB 0.0068 0.0102 0.1011 0.1012 0.0120 0.0728 0.0479 DT 0.1147 0.0021 0.0002 0.2157 0.4744 0.0102 0.0017</p>
+<p class="caption">图 18.12 从 WSJ 语料库计算得到的 A 转移概率 P(ti|ti−1)，未做平滑。各行以条件事件为标签；因此 P(VB|MD) 为 0.7968。&lt;s&gt; 是起始词元。</p>
 <p>设 HMM 由图 18.12 和图 18.13 中的两张表定义。图 18.12 列出了在隐藏状态（词性标记）之间转移的 ai j 概率。图 18.13 给出了 bi(ot) 概率，即给定标记时单词的观测似然。该表（略有简化）来自 WSJ 语料库中的计数。因此，单词 Janet 只以 NNP 出现，而 back 有 4 种可能的词性</p>
 <table><tr><th></th><th>Janet</th><th>will</th><th>back</th><th>the</th><th>bill</th></tr><tr><td>NNP</td><td>0.000032</td><td>0</td><td>0</td><td>0.000048</td><td>0</td></tr><tr><td>MD</td><td>0</td><td>0.308431</td><td>0</td><td>0</td><td>0</td></tr><tr><td>VB</td><td>0</td><td>0.000028</td><td>0.000672</td><td>0</td><td>0.000028</td></tr><tr><td>JJ</td><td>0</td><td>0</td><td>0.000340</td><td>0</td><td>0</td></tr><tr><td>NN</td><td>0</td><td>0.000200</td><td>0.000223</td><td>0</td><td>0.002337</td></tr><tr><td>RB</td><td>0</td><td>0</td><td>0.010446</td><td>0</td><td>0</td></tr><tr><td>DT</td><td>0</td><td>0</td><td>0</td><td>0.506099</td><td>0</td></tr></table>
 <p>NNP 0.000032 0 0 0.000048 0 MD 0 0.308431 0 0 0 VB 0 0.000028 0.000672 0 0.000028 JJ 0 0 0.000340 0 0 NN 0 0.000200 0.000223 0 0.002337 RB 0 0 0.010446 0 0 DT 0 0 0 0.506099 0</p>
+<p class="caption">图 18.13 从 WSJ 语料库计算得到的观测似然 B，未做平滑，略有简化。</p>
 <p>，而单词 the 既可以作为限定词出现，也可以作为 NNP 出现（在像“Somewhere Over the Rainbow”这样的标题中，所有词都被标注为 NNP）。</p>
 <img src="../md/images/18-sequence-labeling/fig_p14_0.png" alt="">
+<p class="caption">图 18.14 维特比算法中各状态列的前几项。每个单元格保存迄今为止最优路径的概率，以及指向该路径上前一个单元格的指针。我们只填出了第 1 列和第 2 列；为避免杂乱，大多数值为 0 的单元格留空。其余部分留给读者作为练习。单元格填满之后，从结束状态开始回溯，我们应当能够重建出正确的状态序列 NNP MD VB DT NN。</p>
 <p>图 18.14 展示了我们在图 18.11 中看到的示意图的完整版本，也就是为观测序列 Janet will back the bill 计算最优隐藏状态序列的维特比网格。</p>
 <p>共有 N = 5 个状态列。我们从第 1 列（对应单词 Janet）开始，把每个单元格中的维特比值设为 π 转移概率（即状态 i 的起始概率，取自图 18.12 的 &lt;s&gt; 那一行）与给定该单元格的标记时单词 Janet 的观测似然之积。由于单词 Janet 不可能是这些标记中的任何一个，该列中大多数单元格都为零。读者应在图 18.14 中找到这一结果。</p>
 <p>接下来，will 列中的每个单元格都会被更新。对于每个状态，我们计算值 viterbi[s,t]：按照式 18.19，对前一列中通向当前单元格的所有路径的延伸取最大值。我们已给出 MD、VB 和 NN 三个单元格的值。每个单元格取前一列 7 个值中的最大值，再乘以相应的转移概率；在本例中恰好如此，前一列里它们大多是零。剩下的那个值再乘以相关的观测概率，并取（平凡的）最大值。在本例中，最终值 2.772e-8 来自前一列的 NNP 状态。读者应填满图 18.14 中网格的其余部分，并回溯，看看维特比算法是否返回金标准状态序列 NNP MD VB DT NN。</p>
@@ -336,13 +380,19 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>请记住，在 CRF 中我们并不为这些局部特征 fk 逐个学习权重。相反，我们先把每个局部特征（例如特征 f3743）在整个句子上的取值求和，得到每个全局特征（例如 F3743）。随后与权重 w3743 相乘的正是这些全局特征。因此，尽管每个句子的长度不同，训练和推理时始终是固定的 K 个特征和 K 个权重。</p>
 <h3>18.5.2 CRF 命名实体识别器的特征</h3>
 <p>用于 NER 的 CRF 所使用的特征与词性标注器非常相似，如图 18.15 所示。</p>
+<div class="figbox">
 <blockquote><p>wi 本身、相邻词本身 wi 的嵌入、相邻词的嵌入 wi 的词性、相邻词的词性 wi 是否出现在地名词典中 wi 含有某个特定前缀（取自所有长度 ≤4 的前缀） wi 含有某个特定后缀（取自所有长度 ≤4 的后缀） wi 的词形、相邻词的词形 wi 的短词形、相邻词的短词形 地名词典特征</p></blockquote>
+</div>
+<p class="caption">图 18.15 基于特征的 NER 系统的典型特征。</p>
 <p>对地名尤为有用的一类特征是地名词典，即一份地点</p>
 <aside class="term"><code>gazetteer</code><span class="term-zh">地名词典</span><span class="term-explain">一种收录地名及其地理、政治等属性信息的词典或列表资源，通常包含数百万条地点条目。在命名实体识别中作为外部知识来源：若某个短语出现在地名词典中，就提示它可能是地名；实际使用时常被实现为一个二值特征。</span></aside>
 <p>名称，常常为地点提供数百万条条目，并附有详细的地理与政治信息。3 这可以实现为一个二值特征，用来表示某个短语是否出现在该列表中。其他相关资源也可以使用，例如来自美国人口普查局4的名称列表；同样可用的还有其他实体词典，如公司或产品列表，尽管它们可能不如地名词典那样有用（Mikheev 等，1999）。</p>
 <p>示例中的命名实体词元 L’Occitane 会产生以下非零特征值（假设 L’Occitane 既不在该地名词典中，也不在人口普查列表中）。</p>
 <p>prefix(xi) = L suffix(xi) = tane prefix(xi) = L’ suffix(xi) = ane prefix(xi) = L’O suffix(xi) = ne prefix(xi) = L’Oc suffix(xi) = e word-shape(xi) = X’Xxxxxxxx short-word-shape(xi) = X’Xx图 18.16 展示了在我们之前的例子中加入词性标记以及一些词形信息之后的结果。</p>
+<div class="figbox">
 <blockquote><p>词 词性 短词形 地名词典 BIO 标签 Jane NNP Xx 0 B-PER Villanueva NNP Xx 1 I-PER of IN x 0 O United NNP Xx 0 B-ORG Airlines NNP Xx 0 I-ORG Holding NNP Xx 0 I-ORG discussed VBD x 0 O the DT x 0 O Chicago NNP Xx 1 B-LOC route NN x 0 O. . . 0 O</p></blockquote>
+</div>
+<p class="caption">图 18.16 示例句子的若干 NER 特征，假设 Chicago 和 Villanueva 在地名词典中被列为地点。我们假设特征只取 0 或 1 两种取值，因此例如第一个词性特征会表示为 1{POS = NNP}。</p>
 <h3>18.5.3 CRF 的推理与训练</h3>
 <p>对于给定的输入 X，我们如何找到最佳标记序列 ˆY？我们从式 18.22 开始：</p>
 <p>ˆY = argmax P(Y|X) K !</p>

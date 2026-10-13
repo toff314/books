@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第 26 章 会话及其结构</title>
+<title>26-conversation-structure</title>
 <style>
 :root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
 * { box-sizing: border-box; }
@@ -42,13 +42,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 </style>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/26-conversation-structure.md">Markdown 源文件</a></div>
-<h1>第 26 章 会话及其结构</h1>
+<h1>26-conversation-structure</h1>
 <h3>第 26 章</h3>
 <h1>26 会话及其结构</h1>
 <p>会话是一种精巧而复杂的联合活动，而会话是有结构的。所有会话都是如此，无论它们是人与人之间的会话，还是人与语言模型之间的会话。理解人类会话的结构是一项重要的社会科学与语言学任务。我们在研究人类会话时引入的这些概念，也可以成为分析人类与 LLM 会话的有用工具。</p>
 <p>[本稿是某一章的初始雏形，该章将介绍不同种类的会话结构，以及如何用计算方式对它们进行标注。]</p>
 <h2>26.1 人类会话的特性</h2>
 <p>当人与人彼此交谈时，会发生哪些会话现象？人与机器之间的会话是否不同？请思考图 26.1 中摘录的一位人类旅行代理人与一位人类客户之间对话中所发生的事。</p>
+<div class="figbox">
 <blockquote><p>C1: ……我需要在五月出行。 A2: 那么，你想在五月哪一天出行？ C3: 好的，呃，我需要到那里参加一个从 12 号到 15 号的会议。</p></blockquote>
 <blockquote><p>A4: 你要飞往哪个城市？ C5: 西雅图。 A6: 你想什么时候离开匹兹堡？</p></blockquote>
 <blockquote><p>C7: 呃，嗯，我觉得直飞的选项不多。</p></blockquote>
@@ -60,6 +61,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>C13: 好的。 A14: 你刚说是 5 月 15 号返回？ C15: 呃，对，在当天结束时。 A16: 好的。有 #两个直飞……#C17: #实……其实 #，15 号是星期几？</p></blockquote>
 <blockquote><p>A18: 是星期五。 C19: 呃，嗯。我会考虑在那里多待一天，待到星期天。</p></blockquote>
 <blockquote><p>A20: 好的……好的。星期天我有……</p></blockquote>
+</div>
 <p class="caption">图 26.1 一位人类旅行代理人（A）与一位人类客户（C）之间一段电话对话的片段。A16 和 C17 中由 # 标出的片段表示话语重叠。</p>
 <h3>26.1.1 话轮</h3>
 <p>对话是话轮的序列（C1、A2、C3，依此类推），每个话轮都是一次单独的贡献</p>
@@ -138,9 +140,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 26.3 给出了一个餐馆推荐系统的标记集，图 26.4则展示了用这些标签标注 HIS 系统（Young et al.，2010）中一段示例对话的结果。这个例子还展示了每个对话行为的内容，即被传递的槽填充值。</p>
 <p>还有若干更为通用、与领域无关的对话行为标记集。</p>
 <p>在受其启发的 DAMSL（Dialogue Act Markup in Several Layers，多层对话行为标注）体系结构中，</p>
+<div class="figbox">
 <blockquote><p>标记 示例 THANK 谢谢 GREET 你好，Dan INTRODUCE 又是我 BYE 好的，再见 REQUEST-COMMENT 那看起来怎么样？SUGGEST 从 6 月 13 日到 17 日 REJECT 不行，周五我全天都排满了 ACCEPT 周六听起来可以 REQUEST-SUGGEST 一周中哪天对你合适？</p></blockquote>
 <blockquote><p>INIT 我想和你约个时间 GIVE REASON 因为我整个下午都有会 FEEDBACK 好的 DELIBERATE 让我先看一下日程 CONFIRM 好的，那太好了 CLARIFY 好的，你是指 23 号那个周二吗？DIGRESS [我们可以一起吃午饭]，再吃好多冰淇淋 MOTIVATE 我们应该去拜访我们在慕尼黑的分公司 GARBAGE 哎呀，我—</p></blockquote>
+</div>
 <p class="caption">图 26.2 会议安排任务中的 18 个高层对话行为，来自 Verbmobil-1 系统（耶卡特等，1995）。</p>
+<div class="figbox">
 <blockquote><p>标记 Sys User 说明 HELLO(a = x,b = y,...) ✓ ✓ 开启对话并给出信息 a = x,b = y,...</p></blockquote>
 <blockquote><p>INFORM(a = x,b = y,...) ✓ ✓ 给出信息 a = x,b = y,...</p></blockquote>
 <blockquote><p>REQUEST(a,b = x,...) ✓ ✓ 在给定 b = x,... 时请求 a 的取值</p></blockquote>
@@ -148,8 +153,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>CONFIRM(a = x,b = y,...) ✓ ✓ 明确确认 a = x,b = y,...</p></blockquote>
 <blockquote><p>CONFREQ(a = x,...,d) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 SELECT(a = x,a = y) ✓ χ 隐含确认 a = x,... 并请求 d 的取值 AFFIRM(a = x,b = y,...) ✓ ✓ 肯定并给出进一步信息 a = x,b = y,...</p></blockquote>
 <blockquote><p>NEGATE(a = x) χ ✓ 否定并给出更正后的取值 a = x DENY(a = x) χ ✓ 否认 a = x BYE() ✓ ✓ 关闭对话</p></blockquote>
+</div>
 <p class="caption">图 26.3 扬等（2010）的 HIS 餐馆推荐系统所使用的对话行为。Sys 和 User 两列分别表示哪些行为可作为系统输出和用户输入。</p>
 <p>克拉克（Clark）和谢弗（Schaefer）（1989）、Allwood 等（1992）以及（Allwood，1995）的工作中，每个话语都被标注两类功能：前向功能，如言语行为功能；后向功能，如共同基础建立和回答，这类功能会“回指”对话者此前的话语（艾伦和 Core，1997；Walker 等，1996；Carletta 等，1997；Core 等，1999）。</p>
+<div class="figbox">
 <blockquote><p>话语 对话行为</p></blockquote>
 <blockquote><p>U: 你好，我想找个地方吃饭。hello(task = find,type=restaurant) S: 你在找一家餐馆。什么 confreq(type = restaurant, food)</p></blockquote>
 <blockquote><p>类型的食物你喜欢？</p></blockquote>
@@ -160,6 +167,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>U: 价格合理吗？ confirm(pricerange = moderate) S: 是的，Roma 处于中等价位 affirm(name = &quot;Roma&quot;, pricerange =</p></blockquote>
 <blockquote><p>区间。 moderate)</p></blockquote>
 <blockquote><p>U: 电话号码是多少？ request(phone) S: Roma 的电话号码是 385456。 inform(name = &quot;Roma&quot;, phone = &quot;385456&quot;) U: 好的，谢谢，再见。 bye()</p></blockquote>
+</div>
 <p class="caption">图 26.4 来自扬等（2010）HIS 系统的一段示例对话，其中使用了图 26.3 的对话行为。</p>
 <table><tr><th>前向功能</th><th></th><th></th></tr><tr><td>STATEMENT</td><td></td><td>说话人做出的一项断言</td></tr><tr><td>INFO-REQUEST</td><td></td><td>说话人提出的一个问题</td></tr><tr><td></td><td>CHECK</td><td>用于确认信息的问题</td></tr><tr><td>INFLUENCE-ON-ADDRESSEE</td><td></td><td>（=巴赫的指令类）</td></tr><tr><td></td><td>OPEN-OPTION</td><td>较弱的建议或列出若干选项</td></tr><tr><td></td><td>ACTION-DIRECTIVE</td><td>实际的命令</td></tr><tr><td>INFLUENCE-ON-SPEAKER</td><td></td><td>（=奥斯汀的承诺类）</td></tr><tr><td></td><td>OFFER</td><td>说话人提出要做某事，</td></tr><tr><td></td><td></td><td>（须经确认）</td></tr><tr><td></td><td>COMMIT</td><td>说话人承诺做某事</td></tr><tr><td>CONVENTIONAL</td><td></td><td>其他</td></tr><tr><td></td><td>OPENING</td><td>问候</td></tr><tr><td></td><td>CLOSING</td><td>告别</td></tr><tr><td></td><td>THANKING</td><td>致谢与回应致谢</td></tr></table>
 <blockquote><p>INFLUENCE-ON-ADDRESSEE（=巴赫的指令类）</p></blockquote>

@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -68,7 +73,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>rules</code><span class="term-zh">规则</span><span class="term-explain">形如 A → β 的重写式，表示左侧的单个非终结符可以展开为右侧的符号序列。</span></aside>
 <p>表达了该语言的符号可以被组合和排序的方式，此外还包含一个由词与符号构成的词库。例如，下面的产生式</p>
 <aside class="term"><code>lexicon</code><span class="term-zh">词库</span><span class="term-explain">文法中与句法规则分开列出的词表，给出每个词所属的词性标记。</span></aside>
-<p>表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun上下文无关规则可以分层嵌套，因此我们可以把前面的规则与其他规则组合起来，例如下面这些表达词库事实的规则：</p>
+<p>表达了 NP（即名词短语）既可以由一个 ProperNoun（专有名词）构成，也可以由</p>
+<aside class="term"><code>NP</code><span class="term-zh">名词短语</span><span class="term-explain">NP 即 noun phrase（名词短语），是以名词为中心词构成的短语，既可充当句子主语、宾语等成分，也可以由专有名词或“限定词 + Nominal”构成。</span></aside>
+<p>一个限定词（Det）后接一个 Nominal 构成；而 Nominal 又可以由一个或多个 Noun 构成。1 NP →Det Nominal NP →ProperNoun Nominal →Noun | Nominal Noun上下文无关规则可以分层嵌套，因此我们可以把前面的规则与其他规则组合起来，例如下面这些表达词库事实的规则：</p>
 <p>Det →a Det →the Noun →flight CFG 中使用的符号分为两类。与语言中的词（「the」「nightclub」）相对应的符号称为终结符</p>
 <aside class="term"><code>terminal</code><span class="term-zh">终结符</span><span class="term-explain">直接对应词库中某个词、不再由规则进一步展开的符号，如 the、flight。</span></aside>
 <p>符号；词库就是引入这些终结符的规则集合。对这些终结符作抽象表达所用的符号称为非终结符。在</p>
@@ -83,9 +90,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>在图 19.1 所示的解析树中，我们可以说结点 NP 支配</p>
 <aside class="term"><code>dominates</code><span class="term-zh">支配</span><span class="term-explain">解析树中一个结点位于另一个结点之上、且两者之间由路径相连的层级关系。</span></aside>
 <p>树中的所有结点（Det、Nom、Noun、a、flight）。我们还可以说，它直接支配结点 Det 和 Nom。</p>
-<p>由 CFG 定义的形式语言，是那些可推导出的符号串的集合，它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始</p>
+<p>由 CFG 定义的形式语言，是那些可推导出的符号串的集合，它们由指定的起始符号推导而来。每个文法都必须有一个指定的起始符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。</p>
 <aside class="term"><code>start symbol</code><span class="term-zh">起始符号</span><span class="term-explain">文法中作为推导起点的那个非终结符，通常记为 S，语言即由它推导出的全部串构成。</span></aside>
-<p>符号，它通常被称为 S。由于上下文无关文法常用来定义句子，S 通常被解释为“句子”结点，而由 S 推导出的符号串集合，就是某种简化版英语中的句子集合。</p>
 <p>让我们再往规则清单中添加几条规则。下面这条规则表达了这样一个事实：句子可以由一个名词短语后接一个动词短语构成：</p>
 <aside class="term"><code>verb phrase</code><span class="term-zh">动词短语</span><span class="term-explain">以动词为中心、可后接名词短语或介词短语等成分的短语，如 prefer a morning flight。</span></aside>
 <p>S →NP VP I prefer a morning flight英语中的动词短语由一个动词后接各式其他成分构成；</p>
@@ -97,6 +103,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>PP →Preposition NP from Los Angeles介词短语内部的 NP 不一定表示地点；介词短语也常与时间和日期连用，也可以与其他名词连用；它们可以任意复杂。下面是 ATIS 语料库中的十个例子：</p>
 <table><tr><th>to Seattle</th><th>on these flights</th></tr><tr><td>in Minneapolis</td><td>about the ground transportation in Chicago</td></tr><tr><td>on Wednesday</td><td>of the round trip flight on United Airlines</td></tr><tr><td>in the evening</td><td>of the AP fifty seven flight</td></tr><tr><td>on the ninth of July</td><td>with a stopover in Nashville</td></tr></table>
 <p>图 19.2 给出了一个示例词库，图 19.3 汇总了文法规则即我们目前所见的这些规则，我们称之为 L0。注意，我们可以用或符号 | 来表示一个非终结符有多种可能的展开。</p>
+<div class="figbox">
 <blockquote><p>Noun →flights | flight | breeze | trip | morning Verb →is | prefer | like | need | want | fly | do</p></blockquote>
 <blockquote><p>Adjective →cheapest | non-stop | first | latest</p></blockquote>
 <blockquote><p>| other | direct</p></blockquote>
@@ -104,8 +111,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Proper-Noun →Alaska | Baltimore | Los Angeles</p></blockquote>
 <blockquote><p>| Chicago | United | American</p></blockquote>
 <blockquote><p>Determiner →the | a | an | this | these | that Preposition →from | to | on | near | in Conjunction →and | or | but</p></blockquote>
+</div>
 <p class="caption">图 19.2 L0 的词库。</p>
 <p>我们可以用这个文法生成这种“ATIS 语言”的句子。我们从 S 开始，把它展开为 NP VP，然后随机选择 NP 的一个展开（比如展开为</p>
+<div class="figbox">
 <blockquote><p>文法  规则  示例</p></blockquote>
 <blockquote><p>S →NP VP I + want a morning flight</p></blockquote>
 <blockquote><p>NP →Pronoun I</p></blockquote>
@@ -115,6 +124,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>VP →Verb do</p></blockquote>
 <blockquote><p>| Verb NP want + a flight| Verb NP PP leave + Boston + in the morning| Verb PP leaving + on Thursday</p></blockquote>
 <blockquote><p>PP →Preposition NP from + Los Angeles</p></blockquote>
+</div>
 <p class="caption">图 19.3 L0 的文法，每条规则都附有示例短语。</p>
 <img src="../md/images/19-cfg-and-parsing/fig_p5_0.png" alt="">
 <p class="caption">图 19.4 依据文法 L0 得到的 “I prefer a morning flight” 的解析树。</p>
@@ -138,8 +148,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>N 非终结符（或称变量）的集合 Σ 终结符的集合（与 N 不相交） R 规则或产生式的集合，每条形如 A →β ，</p>
 <table><tr><th>N</th><th>非终结符（或称变量）的集合</th></tr><tr><td>Σ</td><td>终结符的集合（与 N 不相交）</td></tr><tr><td>R</td><td>规则或产生式的集合，每条形如 A →β ，</td></tr><tr><td></td><td>其中 A 是非终结符，</td></tr><tr><td></td><td>β 是取自无限字符串集合 (Σ∪N)∗ 的一个符号串</td></tr><tr><td>S</td><td>指定的起始符号，且是 N 的一个成员</td></tr></table>
 <p>在本书余下的部分中，当我们讨论上下文无关文法的形式性质时（而不是在解释关于英语或其他语言的特定事实时），都遵循以下约定。</p>
+<div class="figbox">
 <blockquote><p>大写字母如 A、B、S 表示非终结符</p></blockquote>
 <blockquote><p>S 起始符号 小写希腊字母如 α、β、γ 取自 (Σ∪N)∗ 的串 小写罗马字母如 u、v、w 终结符组成的串</p></blockquote>
+</div>
 <p>语言是通过推导这一概念来定义的。若一个串能经由若干次规则应用被改写为另一个串，则称前者推导出后者。</p>
 <p>更形式化地说，依据 Hopcroft 和 Ullman（1979），若 A →β 是 R 的一条产生式，且 α 与 γ 是集合 (Σ∪N)∗ 中的任意串，则我们说 αAγ 直接推导出 αβγ，或记作 αAγ ⇒αβγ。</p>
 <aside class="term"><code>directly derives</code><span class="term-zh">直接推导出</span><span class="term-explain">单次应用一条产生式，把一个符号串改写为另一符号串的推导关系。</span></aside>
@@ -148,24 +160,31 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>derives</code><span class="term-zh">推导出</span><span class="term-explain">经一步或多步直接推导，由一个符号串得到另一个符号串的关系。</span></aside>
 <p>于是我们可以形式化地定义由文法 G 生成的语言 LG 为由终结符组成、且可由指定的起始符号 S 推导出的串的集合。</p>
 <p>LG = {w|w 属于 Σ∗ 且 S ∗⇒w}从词串映射到其解析树的问题称为句法分析，我们将在 19.6 节中看到。</p>
-<aside class="term"><code>syntactic</code><span class="term-zh">句法的</span><span class="term-explain">与句子结构相关，即词语如何组合成短语与句子的性质。</span></aside>
+<aside class="term"><code>syntactic</code><span class="term-zh">句法的</span><span class="term-explain">与句子成分结构有关的；此处指用来在多个分析中做出选择的句法信息。</span></aside>
 <aside class="term"><code>parsing</code><span class="term-zh">句法分析</span><span class="term-explain">为输入词串指派句法结构（如解析树）的过程。</span></aside>
 <h2>19.3 树库</h2>
 <p>其中每个句子都标注了解析树的语料库称为树库。</p>
+<aside class="term"><code>treebank</code><span class="term-zh">树库</span><span class="term-explain">用句法结构（解析树）标注过的语料库，其中的句子隐含地构成该语言的一部文法，为句法分析提供带结构标注的数据。</span></aside>
 <p>树库在句法分析中，以及在句法现象的语言学研究中，都起着重要作用。</p>
 <p>树库通常是这样制作的：先用分析器处理每个句子，然后由人类语言学家对得到的分析结果进行人工校正。图 19.5 展示了来自宾州树库项目的句子，该项目包含多种语言的树库，涉及</p>
 <aside class="term"><code>Penn Treebank</code><span class="term-zh">宾州树库（Penn Treebank）</span><span class="term-explain">涵盖英语、阿拉伯语、汉语等的句法标注语料库，为句法分析与评测提供带解析树的数据。</span></aside>
 <p>英语、阿拉伯语和汉语。宾州树库的词性标注集已在第 18 章定义，但我们会看到各树库之间存在细微的格式差异。用 LISP 风格的括号记法表示树极为常见，它类似于我们先前在（19.1）中见到的括号记法。对于不熟悉这种记法的读者，我们在图 19.6 中给出标准的节点—连线树表示。</p>
+<div class="figbox">
 <blockquote><p>((S</p></blockquote>
 <blockquote><p>(NP-SBJ (DT That) ((S(JJ cold) (, ,) (NP-SBJ The/DT flight/NN )(JJ empty) (NN sky) ) (VP should/MD(VP (VBD was) (VP arrive/VB(ADJP-PRD (JJ full) (PP-TMP at/IN(PP (IN of) (NP eleven/CD a.m/RB ))(NP (NN fire) (NP-TMP tomorrow/NN )))))(CC and)</p></blockquote>
 <blockquote><p>(NN light) ))))</p></blockquote>
+</div>
 <p>(. .) ))</p>
+<div class="figbox">
 <blockquote><p>(a) (b)</p></blockquote>
+</div>
 <p class="caption">图 19.5 LDC 树库 3 中（a）Brown 与（b）ATIS 句子的分析。</p>
 <img src="../md/images/19-cfg-and-parsing/fig_p7_0.png" alt="">
 <p class="caption">图 19.6 上一图中 Brown 语料库句子所对应的树。</p>
 <p>树库中的句子隐含地构成了该语言的一部文法。例如，例如，从图 19.5 中已分析的句子可以提取出图 19.7 所示的 CFG 规则（为简单起见去掉了规则后缀 (-SBJ)）。用于分析宾州树库的文法非常扁平，导致规则数量极多。例如，</p>
+<div class="figbox">
 <blockquote><p>文法 词库 S →NP VP . DT →the | that S →NP VP JJ →cold | empty | full NP →CD RB NN →sky | fire | light | flight | tomorrow NP →DT NN CC →and NP →NN CC NN IN →of | at NP →DT JJ , JJ NN CD →eleven NP →NN RB →a.m. VP →MD VP VB →arrive VP →VBD ADJP VBD →was | said VP →MD VP MD →should | would VP →VB PP NP ADJP →JJ PP PP →IN NP</p></blockquote>
+</div>
 <p class="caption">图 19.7 由图 19.5 中树库句子得到的 CFG 文法规则与词库。</p>
 <p>在约 4,500 条用于展开 VP 的不同规则中，有分别针对任意长度的 PP 序列以及动词论元各种可能排列方式的规则：</p>
 <blockquote><p>VP →VBD PP VP →VBD PP PP VP →VBD PP PP PP VP →VBD PP PP PP PP VP →VB ADVP PP VP →VB PP ADVP VP →ADVP VB PP</p></blockquote>
@@ -173,7 +192,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>形式语言被定义为词串的（可能是无限的）集合。这提示我们，可以通过考察两部文法是否生成相同的串集合来询问它们是否等价。事实上，可以存在两部不同的上下文无关文法</p>
 <aside class="term"><code>strongly</code><span class="term-zh">强等价</span><span class="term-explain">指两部文法不仅生成相同的语言，还为每句话指派相同的短语结构树。</span></aside>
 <p>生成相同的语言。我们说两部文法是强等价的，如果</p>
-<aside class="term"><code>equivalent</code><span class="term-zh">等价</span><span class="term-explain">指两个文法生成相同的字符串集合，并且为每个句子赋予相同的短语结构。</span></aside>
+<aside class="term"><code>equivalent</code><span class="term-zh">等价</span><span class="term-explain">文法之间的一种关系，分强等价与弱等价，区别在于是否指派相同的短语结构。</span></aside>
 <p>它们生成相同的字符串集合，并且为每个句子赋予相同的短语结构（仅允许对非终结符符号重新命名）。两个</p>
 <aside class="term"><code>weakly</code><span class="term-zh">弱</span><span class="term-explain">构成弱等价关系时的限定语，指两文法生成相同字符串集合但结构指派并不相同。</span></aside>
 <p>文法若生成相同的字符串集合，但并不</p>
@@ -189,8 +208,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>branching</code><span class="term-zh">分支</span><span class="term-explain">文法规则把父节点划分为子节点的数量特征，二叉分支即每次只分出两个。</span></aside>
 <p>直到词前节点）。我们在 19.6 节的 CKY 分析算法中利用了这一二叉分支性质。</p>
 <p>任何上下文无关文法都可以转换为一个弱等价的乔姆斯基范式文法。例如，形如A →B C D的规则可以转换为下面两条 CNF 规则（练习 19.1 要求读者</p>
+<div class="figbox">
 <blockquote><p>文法 词库</p></blockquote>
 <blockquote><p>S →NP VP Det →that | this | the | a S →Aux NP VP Noun →book | flight | meal | money S →VP Verb →book | include | prefer NP →Pronoun Pronoun →I | she | me NP →Proper-Noun Proper-Noun →Houston | United NP →Det Nominal Aux →does Nominal →Noun Preposition →from | to | on | near | through Nominal →Nominal Noun Nominal →Nominal PP VP →Verb VP →Verb NP VP →Verb NP PP VP →Verb PP VP →VP PP PP →Preposition NP</p></blockquote>
+</div>
 <p class="caption">图 19.8 L1 微型英语文法与词库。</p>
 <p>构造完整的算法）：</p>
 <p>A →B X X →C D有时使用二叉分支实际上能产生更小的文法。举例来说，那些可以刻画为下式的句子在宾州树库（Penn Treebank）中由下面这一系列规则表示：</p>
@@ -250,6 +271,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>fenceposts</code><span class="term-zh">栅栏桩</span><span class="term-explain">指句中相邻词之间（含首尾）的位置，用作图表分析中各成分起止位置的索引。</span></aside>
 <p>栅栏各段之间的桩子这一比喻。由此可知，表示整个输入的单元格位于矩阵中的位置 [0,n]。</p>
 <p>由于我们表中的每个非终结符条目在分析中都有两个女儿，因此对于由条目 [i, j] 表示的每个成分，输入中必定存在一个位置 k，使得它可以在该处被切分为两部分，且 i &lt; k &lt; j。给定这样</p>
+<div class="figbox">
 <blockquote><p>L1 文法　　L1 的 CNF 形式</p></blockquote>
 <blockquote><p>S →NP VP S →NP VP S →Aux NP VP S →X1 VP</p></blockquote>
 <blockquote><p>X1 →Aux NP</p></blockquote>
@@ -258,6 +280,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>NP →Pronoun NP →I | she | me NP →Proper-Noun NP →United | Houston NP →Det Nominal NP →Det Nominal Nominal →Noun Nominal →book | flight | meal | money Nominal →Nominal Noun Nominal →Nominal Noun Nominal →Nominal PP Nominal →Nominal PP VP →Verb VP →book | include | prefer VP →Verb NP VP →Verb NP VP →Verb NP PP VP →X2 PP</p></blockquote>
 <blockquote><p>X2 →Verb NP</p></blockquote>
 <blockquote><p>VP →Verb PP VP →Verb PP VP →VP PP VP →VP PP PP →Preposition NP PP →Preposition NP</p></blockquote>
+</div>
 <p class="caption">图 19.10 L1 文法及其到 CNF 的转换。注意，虽然这里没有显示，L1 中所有原始的词汇条目也同样原样保留。</p>
 <p>的某个位置 k，第一个成分 [i,k] 必定位于第 i 行中条目 [i, j] 左侧的某处，而第二个条目 [k, j] 必定位于它的下方、沿第 j 列。</p>
 <p>为使这一点更具体，考虑下面这个例子及其已填好的分析矩阵，如图 19.11 所示。</p>
@@ -342,9 +365,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>• 否则返回最后一个词</p></blockquote>
 <p>该规则集中的其他部分规则见图 19.17。例如，对于 VP形如 VP →Y1 ··· Yn 的规则，算法会从 Y1 ···Yn 的左侧开始，查找第一个类型为 TO 的 Yi；若没有找到 TO，则查找第一个类型为 VBD 的 Yi；若没有找到 VBD，则查找 VBN，依此类推。</p>
 <p>更多细节参见 Collins（1999）。</p>
+<div class="figbox">
 <blockquote><p>父节点 方向 优先级列表 ADJP 左 NNS QP NN $ ADVP JJ VBN VBG ADJP JJR NP JJS DT FW RBR RBS</p></blockquote>
 <blockquote><p>SBAR RB</p></blockquote>
 <blockquote><p>ADVP 右 RB RBR RBS FW ADVP TO CD JJR JJ IN NP JJS NN PRN 左 PRT 右 RP QP 左 $ IN NNS NN JJ RB DT CD NCD QP JJR JJS S 左 TO IN VP S SBAR ADJP UCP NP SBAR 左 WHNP WHPP WHADVP WHADJP IN DT S SQ SINV SBAR FRAG VP 左 TO VBD VBN MD VBZ VB VBG VBP VP ADJP NN NNS NP</p></blockquote>
+</div>
 <p class="caption">图 19.17 取自 Collins（1999）的部分中心词规则。中心词规则也称为中心词渗透表。</p>
 <h2>19.10 小结</h2>
 <p>本章介绍了成分句法分析。以下是主要内容的总结：</p>

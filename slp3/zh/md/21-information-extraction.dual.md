@@ -49,7 +49,7 @@
 
 > `extraction`（抽取）
 >
-> 释义：从文本中识别并抽出所需信息的过程，此处指抽出实体之间的语义关系。
+> 释义：指从文本中识别并抽出特定结构化信息的过程，信息抽取、关系抽取与事件抽取都以它为核心动作。
 
 关系，如 child-of（X 是 Y 的孩子）、部分-整体关系或地理空间关系。关系抽取与填充关系数据库有密切联系，而知识图谱——即结构化关系
 
@@ -65,7 +65,7 @@
 
 > `event`（事件）
 >
-> 释义：文本中由触发词所指示、由若干实体参与的活动或状态变化，并具有时间定位。
+> 释义：在本书中指可以用文本中的某个表达式表示、并可被指派到时间轴上某个时点或时段的事件或状态。
 
 接下来我们讨论事件抽取，即找出这些实体所参与的事件的任务，例如在示例文本中 United 和 American 的票价上涨，以及报道性事件 said 和 cite。事件还具有时间定位，发生在某个特定的日期或时间；事件之间也可以有先后或同时的时间关系。我们需要识别像 Friday、Thursday 或 two days from now 这样的时间表达式，以及像 3:30 P.M. 这样的时刻，并把它们归一化到具体的日历日期或时间上。我们需要把 Friday 链接到 United 发布公告的时间，把 Thursday 链接到前一天的票价上涨，还需要生成一条时间线，其中 United 的公告在票价上涨之后，而 American 的公告在这两个事件之后。
 
@@ -73,7 +73,7 @@
 
 > `extraction`（抽取）
 >
-> 释义：此处承接事件抽取，指从文本中识别并抽出事件及其参与者等信息。
+> 释义：指从文本中识别并抽出特定结构化信息的过程，信息抽取、关系抽取与事件抽取都以它为核心动作。
 
 相关的模板填充任务，是找出文档中反复出现的典型事件或
 
@@ -81,7 +81,7 @@
 
 > `template filling`（模板填充）
 >
-> 释义：在文档中找出反复出现的典型事件或情境并填写相应模板槽位的任务。
+> 释义：找出触发特定脚本的文档，并填入各槽位相应槽填充值的任务。
 
 情境，并填入模板的各个槽位。这些槽填充值可以是直接从文本中抽取的文本片段，也可以是通过额外处理推断出的概念，如时间、数量或本体实体。我们的航空
 
@@ -96,6 +96,7 @@
 
 > text presents such a stereotypical situation since airlines often raise fares and then wait to see if competitors follow along. Here we can identify United as a lead airline that initially raised its fares, $6 as the amount, Thursday as the increase date, and American as an airline that followed along, leading to a filled template like the following:
 
+<!--figbox-->
 >  
 >
 > * *
@@ -107,6 +108,7 @@
 > 金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES
 >
 > * AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES*
+<!--/figbox-->
 
 ## 21.1 关系抽取
 
@@ -131,9 +133,11 @@
 
 > These binary relations are instances of more generic relations such as part-of or employs that are fairly frequent in news-style texts. Figure 21.1 lists the 17 relations used in the ACE relation extraction evaluations and Fig. 21.2 shows some sample relations. We might also extract more domain-specific relations such as the notion of an airline route. For example from this text we can conclude that United has routes to Chicago, Dallas, Denver, and San Francisco.
 
+<!--figbox-->
 > 关系 类型 示例 Physical-Located PER-GPE 他当时在田纳西州 Part-Whole-Subsidiary ORG-ORG XYZ，ABC 的母公司 Person-Social-Family PER-PER Yoko 的丈夫 John Org-AFF-Founder PER-ORG Steve Jobs，Apple 的联合创始人……
 >
 > *Relations Types Examples Physical-Located PER-GPE He was in Tennessee Part-Whole-Subsidiary ORG-ORG XYZ, the parent company of ABC Person-Social-Family PER-PER Yoko’s husband John Org-AFF-Founder PER-ORG Steve Jobs, co-founder of Apple...*
+<!--/figbox-->
 
 *图 21.2 语义关系及其示例，以及它们所涉及的命名实体类型。*
 *Figure 21.2 Semantic relations with examples and the named entity types they involve.*
@@ -303,6 +307,7 @@ hyponym(Gelidium,red algae) （21.4）
 
 > hyponym(Gelidium,red algae) (21.4)
 
+<!--figbox-->
 > NP {, NP}* {,} (and|or) other NPH
 
 > 神庙、国库以及其他重要的市政建筑
@@ -332,6 +337,7 @@ hyponym(Gelidium,red algae) （21.4）
 > 尤其是 France、England 与 Spain 等欧洲国家
 >
 > *European countries, especially France, England, and Spain*
+<!--/figbox-->
 
 *图 21.4 用于寻找上位词的手工构建词汇-句法模式，其中用 {} 标记可选成分（Hearst 1992a，Hearst 1998）。*
 *Figure 21.4 Hand-built lexico-syntactic patterns for finding hypernyms, using {} to mark optionality (Hearst 1992a, Hearst 1998).*
@@ -711,9 +717,21 @@ NPH like NP Many hormones like leptin... NPH called NP ...using a markup languag
 
 > 21.2.5 Unsupervised Relation Extraction
 
-无监督关系抽取的目标是：在没有带标签的训练数据、甚至没有任何关系列表的情况下从网络中抽取关系。这项任务通常称为开放信息抽取（open information extraction）或 Open IE。在 Open IE 中，关系就是简单的词串（通常以动词开头）。
+无监督关系抽取的目标是：在没有带标签的训练数据、甚至没有任何关系列表的情况下从网络中抽取关系。这项任务
 
-> The goal of unsupervised relation extraction is to extract relations from the web when we have no labeled training data, and not even any list of relations. This task is often called open information extraction or Open IE. In Open IE, the relations are simply strings of words (usually beginning with a verb).
+> The goal of unsupervised relation extraction is to extract relations from the web when we have no labeled training data, and not even any list of relations. This task
+
+> `open`（开放）
+>
+> 释义：指不预设关系类型、直接从文本中抽取任意词串所表达关系的一类抽取方式，由此形成的任务称为开放信息抽取。
+
+通常称为开放信息抽取（open information extraction）或 Open IE。在 Open IE 中，关系就是简单的词串（通常以动词开头）。
+
+> is often called open information extraction or Open IE. In Open IE, the relations are simply strings of words (usually beginning with a verb).
+
+> `information extraction`（信息抽取）
+>
+> 释义：指从文本中抽取有限几类语义内容并转化为结构化数据的技术，例如用于填充关系数据库。
 
 例如，ReVerb 系统（Fader 等，2011）从
 
@@ -752,9 +770,11 @@ Fader 等人（2011）使用了一个包含 170 万个归一化关系的词典�
 
 > Finally, a confidence value is computed for each relation using a logistic regression classifier. The classifier is trained by taking 1000 random web sentences, running the extractor, and hand labeling each extracted relation as correct or incorrect. A confidence classifier is then trained on this hand-labeled data, using features of the relation and the surrounding words. Fig. 21.9 shows some sample features used in the classification.
 
+<!--figbox-->
 > (x,r,y) 覆盖 s 中的所有词；r 中最后一个介词是 for；r 中最后一个介词是 on；len(s) ≤10；在 s 中 r 的左侧有并列连词；r 与句法约束中的单个 V 匹配；在 s 中 x 的左侧有介词；在 s 中 y 的右侧有 NP
 >
 > *(x,r,y) covers all words in s the last preposition in r is for the last preposition in r is on len(s) ≤10 there is a coordinating conjunction to the left of r in s r matches a lone V in the syntactic constraints there is preposition to the left of x in s there is an NP to the right of y in s*
+<!--/figbox-->
 
 *图 21.9 为开放信息抽取系统 REVERB（Fader 等人，2011）所抽取的关系赋予置信度的分类器所用的特征。*
 *Figure 21.9 Features for the classifier that assigns confidence to relations extracted by the Open Information Extraction system REVERB (Fader et al., 2011).*
@@ -874,7 +894,7 @@ Continental Holdings 的总部。
 
 > `events`（事件）
 >
-> 释义：此处它出现在「感知事件」这一类别名中，指由 see、hear 等感知动词所表达的一类事件。
+> 释义：在体的分类中指涉及变化的一类情状，与不涉及变化的“状态”相对立。
 
 事件，等等。每个事件的体、时态和情态也需要抽取。因此，例如示例文本中各个 said 事件会被标注为 (class=REPORTING, tense=PAST, aspect=PERFECTIVE)。
 
@@ -887,9 +907,11 @@ Continental Holdings 的总部。
 
 > via IOB sequence models and assigning event classes and attributes with multi-class classifiers. The input can be neural models starting from encoders; or classic featurebased models using features like those in Fig. 21.10.
 
+<!--figbox-->
 > 特征 说明 字符词缀 目标词的字符级前缀和后缀 名词化后缀 名词化形式的字符级后缀（如 -tion） 词性 目标词的词性 轻动词 二值特征，指示目标词是否由轻动词支配 主语句法类别 句子主语的句法类别 形态词干 目标词的词干化形式 动词词根 作为名词化基础的动词的词根形式 WordNet 上位词 目标词的上位词集合
 >
 > *Feature Explanation Character affixes Character-level prefixes and suffixes of target word Nominalization suffix Character-level suffixes for nominalizations (e.g., -tion) Part of speech Part of speech of the target word Light verb Binary feature indicating that the target is governed by a light verb Subject syntactic category Syntactic category of the subject of the sentence Morphological stem Stemmed version of the target word Verb root Root form of the verb basis for a nominalization WordNet hypernyms Hypernym set for the target*
+<!--/figbox-->
 
 *图 21.10 事件检测中经典基于特征的方法常用的特征。*
 *Figure 21.10 Features commonly used in classic feature-based approaches to event detection.*
@@ -1111,6 +1133,10 @@ Continental Holdings 的总部。
 
 > In these examples, an event is seen as occurring over some period of time that ends when the intended state is accomplished (i.e., the state of me having a reservation, or me being in New York City).
 
+> `achievement expressions`（达成表达式）
+>
+> 释义：指把事件概念化为在某一瞬间完成、并导致某一状态出现的一类事件表达式，如 find、reach。
+
 最后一个体类别，即达成表达式，与
 
 > The final aspectual class, achievement expressions, is only subtly different than
@@ -1246,13 +1272,17 @@ TimeBank 语料库由标注了时间
 
 > Temporal expressions are phrases that refer to absolute points in time, relative times, durations, and sets of these. Absolute temporal expressions are those that can be
 
-> `absolute relative`（绝对时间与相对时间）
+> `absolute`（绝对的（absolute））
 >
-> 释义：指时间表达式按确定时间的方式划分的两类：绝对时间能直接对应日历日期或时刻，相对时间则要借助别的参照点才能定位。
+> 释义：指可直接映射到日历日期、一天中的时刻，或兼有二者的一类时间表达式，如 April 24, 1916。
 
 直接映射到日历日期、一天中的时刻，或二者兼有。相对时间表达式通过某个其他参照点映射到特定时间（例如从上周二算起的一周）。最后，持续时间表示不同粒度级别的时间跨度——
 
 > mapped directly to calendar dates, times of day, or both. Relative temporal expressions map to particular times through some other reference point (as in a week from last Tuesday). Finally, durations denote spans of time at varying levels of granular-
+
+> `relative`（相对的（relative））
+>
+> 释义：指需借助另一参照点才能映射到特定时间的一类时间表达式，如从上周二算起的一周。
 
 > `duration`（持续时间）
 >
@@ -1269,9 +1299,15 @@ TimeBank 语料库由标注了时间
 
 > lexical triggers as their heads, making them easy to find. Lexical triggers might
 
+> `lexical triggers`（词汇触发词）
+>
+> 释义：指充当时间表达式中心词、可用于触发识别的时间词汇，如名词 morning、专有名词 Monday、形容词 recent、副词 daily。
+
+<!--figbox-->
 > 绝对 相对 持续时间 1916 年 4 月 24 日（April 24, 1916） 昨天（yesterday） 四小时（four hours） 1977 年夏天（The summer of ’77） 下学期（next semester） 三周（three weeks） 上午 10:15（10:15 AM） 从昨天起两周后（two weeks from yesterday） 六天（six days） 2006 年第三季度（The 3rd quarter of 2006） 上一季度（last quarter） 最近三个季度（the last three quarters）
 >
 > *Absolute Relative Durations April 24, 1916 yesterday four hours The summer of ’77 next semester three weeks 10:15 AM two weeks from yesterday six days The 3rd quarter of 2006 last quarter the last three quarters*
+<!--/figbox-->
 
 *图 21.15 绝对、相对和持续时间表达式的示例。*
 *Figure 21.15 Examples of absolute, relational and durational temporal expressions.*
@@ -1280,9 +1316,11 @@ TimeBank 语料库由标注了时间
 
 > be nouns, proper nouns, adjectives, and adverbs; full temporal expressions consist of their phrasal projections: noun phrases, adjective phrases, and adverbial phrases(Figure 21.16).
 
+<!--figbox-->
 > 类别 示例 名词（Noun） 早晨（morning）、正午（noon）、夜晚（night）、冬季（winter）、黄昏（dusk）、黎明（dawn） 专有名词（Proper Noun） 一月（January）、星期一（Monday）、Ides、复活节（Easter）、犹太新年（Rosh Hashana）、斋月（Ramadan）、春节（Tet） 形容词（Adjective） 最近的（recent）、过去的（past）、一年一度的（annual）、前任的（former） 副词（Adverb） 每小时（hourly）、每天（daily）、每月（monthly）、每年（yearly）
 >
 > *Category Examples Noun morning, noon, night, winter, dusk, dawn Proper Noun January, Monday, Ides, Easter, Rosh Hashana, Ramadan, Tet Adjective recent, past, annual, former Adverb hourly, daily, monthly, yearly*
+<!--/figbox-->
 
 *图 21.16 时间词汇触发词的示例。*
 *Figure 21.16 Examples of temporal lexical triggers.*
@@ -1390,9 +1428,11 @@ O O O O B I O O O
 
 > Finally, the phrase two weeks also denotes a duration captured as P2W. Figure 21.18 give some more examples, but there is a lot more to the various temporal annotation standards; consult ISO8601 (2004), Ferro et al. (2005), and Pustejovsky et al. (2005) for more details.
 
+<!--figbox-->
 > 单位　模式　示例取值 完全指定的日期　YYYY-MM-DD　1991-09-28 周　YYYY-Wnn　2007-W27 周末　PnWE　P1WE 24 小时制时刻　HH:MM:SS　11:13:45 日期与时刻　YYYY-MM-DDTHH:MM:SS　1991-09-28T11:00:00 财政季度　Qn　1999-Q3
 >
 > *Unit Pattern Sample Value Fully specified dates YYYY-MM-DD 1991-09-28 Weeks YYYY-Wnn 2007-W27 Weekends PnWE P1WE 24-hour clock times HH:MM:SS 11:13:45 Dates and times YYYY-MM-DDTHH:MM:SS 1991-09-28T11:00:00 Financial quarters Qn 1999-Q3*
+<!--/figbox-->
 
 *图 21.18　用于表示各种时间与持续时间的 ISO 模式示例。*
 *Figure 21.18 Sample ISO patterns for representing various times and durations.*
@@ -1408,20 +1448,13 @@ pattern: /(\d+)[-\s]($TEUnits)(s)?([-\s]old)?/result: Duration($1, $2)
 这项任务之所以困难，是因为完全限定的时间表达式相当罕见，
 
 > The task is difficult because fully qualified temporal expressions are fairly rare
-在真实文本中，新闻文章里的大多数时间表达式都是不完整的，只被隐式地锚定，通常是相对于文章的日期行锚定，我们将其称为
+在真实文本中，新闻文章里的大多数时间表达式都是不完整的，只被隐式地锚定，通常是相对于文章的日期行锚定，我们将其称为文档的时间锚。时间表达式的取值，诸如 today、yesterday 或 tomorrow 这样的，都可以相对于这个时间锚计算出来。today 的语义过程就是直接赋予该锚点，而 tomorrow 和 yesterday 的挂接分别是在锚点上加一天和减一天。当然，鉴于我们对月、周、日以及一天中各时刻的表示具有循环性质，我们的时间算术过程必须使用与所用时间单位相适应的模运算。
 
-> in real texts. Most temporal expressions in news articles are incomplete and are only implicitly anchored, often with respect to the dateline of the article, which we refer
+> in real texts. Most temporal expressions in news articles are incomplete and are only implicitly anchored, often with respect to the dateline of the article, which we refer to as the document’s temporal anchor. The values of temporal expressions such as today, yesterday, or tomorrow can all be computed with respect to this temporal anchor. The semantic procedure for today simply assigns the anchor, and the attachments for tomorrow and yesterday add a day and subtract a day from the anchor, respectively. Of course, given the cyclic nature of our representations for months, weeks, days, and times of day, our temporal arithmetic procedures must use modulo arithmetic appropriate to the time unit being used.
 
 > `temporal anchor`（时间锚）
 >
 > 释义：文档中用作时间表达式解释基准的时间点，通常取报道的日期行，用于计算 yesterday 这类相对时间。
-
-文档的时间锚。时间表达式的取值，诸如
-
-> to as the document’s temporal anchor. The values of temporal expressions such
-today、yesterday 或 tomorrow 这样的，都可以相对于这个时间锚计算出来。today 的语义过程就是直接赋予该锚点，而 tomorrow 和 yesterday 的挂接分别是在锚点上加一天和减一天。当然，鉴于我们对月、周、日以及一天中各时刻的表示具有循环性质，我们的时间算术过程必须使用与所用时间单位相适应的模运算。
-
-> as today, yesterday, or tomorrow can all be computed with respect to this temporal anchor. The semantic procedure for today simply assigns the anchor, and the attachments for tomorrow and yesterday add a day and subtract a day from the anchor, respectively. Of course, given the cyclic nature of our representations for months, weeks, days, and times of day, our temporal arithmetic procedures must use modulo arithmetic appropriate to the time unit being used.
 
 遗憾的是，即使是 the weekend 或 Wednesday 这样的简单表达式，也会引入相当多的复杂性。在我们当前的例子中，the weekend 显然指的是紧接文档日期之前那一周的周末。但情况并非总是如此，下面的例子就说明了这一点。
 
@@ -1594,6 +1627,7 @@ MUC-5 的“合资企业”任务（消息理解会议（Message Understanding C
 
 > a series of U.S. government-organized information-extraction evaluations) was to produce hierarchically linked templates describing joint ventures. Figure 21.19 shows a structure produced by the FASTUS system (Hobbs et al., 1997). Note how the filler of the ACTIVITY slot of the TIE-UP template is itself a template with slots.
 
+<!--figbox-->
 > Tie-up-1 Activity-1：RELATIONSHIP tie-up COMPANY 普利司通运动台湾公司
 >
 > *Tie-up-1 Activity-1: RELATIONSHIP tie-up COMPANY Bridgestone Sports Taiwan Co.*
@@ -1609,6 +1643,7 @@ MUC-5 的“合资企业”任务（消息理解会议（Message Understanding C
 > JOINT VENTURE 普利司通运动台湾公司 ACTIVITY Activity-1 AMOUNT NT$20000000
 >
 > *JOINT VENTURE Bridgestone Sports Taiwan Co. ACTIVITY Activity-1 AMOUNT NT$20000000*
+<!--/figbox-->
 
 *图 21.19 FASTUS 针对第 495 页的输入文本所生成的模板。*
 *Figure 21.19 The templates produced by FASTUS given the input text on page 495.*
@@ -1627,9 +1662,11 @@ MUC-5 的“合资企业”任务（消息理解会议（Message Understanding C
 
 > do basic tokenization, chunking, and parsing. Stage 5 then recognizes entities and events with a recognizer based on finite-state transducers (FSTs), and inserts the recognized objects into the appropriate slots in templates. This FST recognizer is based
 
+<!--figbox-->
 > 序号 步骤 说明 1 Tokens 对输入的字符流进行词元化 2 Complex Words 多词短语、数字和专有名词。3 Basic phrases 把句子切分为名词组和动词组 4 Complex phrases 识别复杂名词组和动词组 5 Semantic Patterns 识别实体和事件，插入模板。6 Merging 合并对同一实体或事件的指称
 >
 > *No. Step Description 1 Tokens Tokenize input stream of characters 2 Complex Words Multiword phrases, numbers, and proper names. 3 Basic phrases Segment sentences into noun and verb groups 4 Complex phrases Identify complex noun groups and verb groups 5 Semantic Patterns Identify entities and events, insert into templates. 6 Merging Merge references to the same entity or event*
+<!--/figbox-->
 
 *图 21.20 FASTUS 中的处理层次（Hobbs 等，1997）。每一层抽取一种特定类型的信息，然后将其传递到上一层。*
 *Figure 21.20 Levels of processing in FASTUS (Hobbs et al., 1997). Each level extracts a specific type of information which is then passed on to the next higher level.*
@@ -1653,6 +1690,7 @@ MUC-5 的“合资企业”任务（消息理解会议（Message Understanding C
 
 > The merging algorithm, after performing coreference resolution, merges two activities that are likely to be describing the same events.
 
+<!--figbox-->
 > # 模板／槽填充值 1 关系：TIE-UP 实体：Bridgestone Co.、一家本地企业、一家日本贸易公司 2 活动：
 >
 > *# Template/Slot Value 1 RELATIONSHIP: TIE-UP ENTITIES: Bridgestone Co., a local concern, a Japanese trading house 2 ACTIVITY:*
@@ -1680,6 +1718,7 @@ MUC-5 的“合资企业”任务（消息理解会议（Message Understanding C
 > 产品：“iron and “metal wood” clubs”
 >
 > *PRODUCT: “iron and “metal wood” clubs”*
+<!--/figbox-->
 
 *图 21.21 FASTUS 第 5 阶段产生的五个部分模板。这些模板在第 6 阶段被合并，生成第 495 页图 21.19 所示的最终模板。*
 *Figure 21.21 The five partial templates produced by stage 5 of FASTUS. These templates are merged in stage 6 to produce the final template shown in Fig. 21.19 on page 495.*

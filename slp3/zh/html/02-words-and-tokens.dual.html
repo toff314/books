@@ -29,6 +29,11 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -73,7 +78,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The standard way to tokenize text is to use the input characters to guide us.</p></blockquote>
 <p>因此，在理解了词可能有哪些组成部分之后，我们将介绍标准的字节对编码（BPE）算法，它能把输入文本自动切分</p>
 <blockquote><p>So once we understand the possible subparts of words, we’ll introduce the standard Byte-Pair Encoding (BPE) algorithm that automatically breaks up input text</p></blockquote>
-<aside class="term"><code>BPE</code><span class="term-explain">依据字符序列的简单统计，反复合并最频繁的相邻符号，从而自动切分文本并归纳出子词词表的算法。</span></aside>
+<aside class="term"><code>BPE</code><span class="term-zh">字节对编码（BPE）</span><span class="term-explain">一种从字符出发、反复合并语料中最频繁相邻词元以生成子词词表的词元化算法。</span></aside>
 <p>为词元。该算法利用字母序列的简单统计，归纳出一个由子词词元构成的词表。所有词元化系统还都依赖于正则</p>
 <blockquote><p>into tokens. This algorithm uses simple statistics of letter sequences to induce a vocabulary of subword tokens. All tokenization systems also depend on regular</p></blockquote>
 <aside class="term"><code>regular</code><span class="term-zh">正则表达式</span><span class="term-explain">一种用于形式化描述和操作文本字符串的语言，是所有现代 NLP 系统中的重要工具。</span></aside>
@@ -90,7 +95,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>2.1 Words</p></blockquote>
 <p>下面这个句子中有多少个词？</p>
 <blockquote><p>How many words are in the following sentence?</p></blockquote>
-<p>他们在池边野餐，然后仰躺在草地上，看着星星。</p>
+<p>他们在水池边野餐，然后仰面躺在草地上，望着星星。</p>
 <blockquote><p>They picnicked by the pool, then lay back on the grass and looked at the stars.</p></blockquote>
 <p>如果不把标点算作词，这个句子有 16 个词；如果</p>
 <blockquote><p>This sentence has 16 words if we don’t count punctuation as words, 18 if we</p></blockquote>
@@ -140,7 +145,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>英语书写系统的词。但定义词还有许多其他可能的方式。</p>
 <blockquote><p>English writing system. But there are many other possible ways to define words.</p></blockquote>
 <blockquote><p>在较早的传统中，而且偶尔至今仍然如此，你可能会看到把词的实例称为词例，但</p><p><em>In earlier tradition, and occasionally still, you might see word instances referred to as word tokens, but</em></p></blockquote>
-<blockquote><p>语料库 类型数 = |V| 实例数 = N Shakespeare 2.9 万 88.4 万 Brown 语料库 3.8 万 100 万 Switchboard 电话对话 2 万 240 万 COCA 200 万 4.4 亿 Google n-grams 1300 万 1 万亿</p><p><em>Corpus Types = |V| Instances = N Shakespeare 29 thousand 884 thousand Brown corpus 38 thousand 1 million Switchboard telephone conversations 20 thousand 2.4 million COCA 2 million 440 million Google n-grams 13 million 1 trillion</em></p></blockquote>
+<p>语料库 类型数 = |V| 实例数 = N</p>
+<blockquote><p>Corpus Types = |V| Instances = N</p></blockquote>
+<table><tr><th></th><th>类型数 = \</th><th>V\</th><th><br>Types = \</th><th>V \</th><th></th><th>实例数 = N<br>Instances = N</th></tr><tr><td>Shakespeare</td><td>2.9 万<br>29 thousand</td><td>88.4 万<br>884 thousand</td></tr><tr><td>Brown 语料库<br>Brown corpus</td><td>3.8 万<br>38 thousand</td><td>100 万<br>1 million</td></tr><tr><td>Switchboard 电话对话<br>Switchboard telephone conversations</td><td>2 万<br>20 thousand</td><td>240 万<br>2.4 million</td></tr><tr><td>COCA</td><td>200 万<br>2 million</td><td>4.4 亿<br>440 million</td></tr><tr><td>Google n-grams</td><td>1300 万<br>13 million</td><td>1 万亿<br>1 trillion</td></tr></table>
 <p class="caption">图 2.1 一些英语语料库的词形类型数与实例数的大致数量。其中最大的 Google n-grams 语料库包含 1300 万个类型，但这一计数只包括出现 40 次及以上的类型，因此真实数量要大得多。</p>
 <p class="caption">Figure 2.1 Rough numbers of wordform types and instances for some English language corpora. The largest, the Google n-grams corpus, contains 13 million types, but this count only includes types appearing 40 or more times, so the true number would be much larger.</p>
 <p>例如，虽然从正字法上看 I’m 是一个词，但从语法上看它起两个词的作用：主语代词 I 和动词 ’m，即 am 的缩写。</p>
@@ -249,7 +256,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In the example above, the word care (a noun) can be combined with the derivational affix -ful to produce an adjective (careful), and another derivational affix -ly to result in an adverb (carefully).</p></blockquote>
 <p>还有另一类语素：附着词。附着词是一种语素，它在句法上</p>
 <blockquote><p>There is another class of morphemes: clitics. A clitic is a morpheme that acts</p></blockquote>
-<aside class="term"><code>clitic</code><span class="term-zh">附着词</span><span class="term-explain">句法作用像词，但形式缩减并（语音上、有时正字法上）依附于另一个词，如英语 I’ve 中的 ’ve。</span></aside>
+<aside class="term"><code>clitic</code><span class="term-zh">附着词</span><span class="term-explain">不能独立成词、必须依附于另一个词才能出现的语言成分，如英语中的 n’t、法语代词 j’ai 中的 j’。</span></aside>
 <p>像词一样起作用，但形式已缩减，并（在语音上，有时还在正字法上）依附于另一个词。例如，英语单词 I’ve 中的语素 ’ve 就是附着词；它具有单词 have 的语法意义，但形式上不能单独出现（句子中不能只出现一个“’ve”）。英语短语 the teacher’s book 中的所有格语素 ’s 也是附着词。法语单词 l’op´era 中的定冠词 l’ 是附着词，阿拉伯语中表示 by/with 的介词 b 和表示 and 的连词 w 也是如此。</p>
 <blockquote><p>syntactically like a word but is reduced in form and attached (phonologically and sometimes orthographically) to another word. For example the English morpheme ’ve in the word I’ve is a clitic; it has the grammatical meaning of the word have, but in form it cannot appear alone (you can’t just have “’ve” alone in a sentence). The English possessive morpheme ’s in the phrase the teacher’s book is a clitic. French definite article l’ in the word l’op´era is a clitic, as are prepositions in Arabic like b‘by/with’ and conjunctions like w ‘and’.</p></blockquote>
 <p>研究各语言的形态如何不同，即词如何</p>
@@ -439,6 +446,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>also eliminate the problem of unknown words. What are these? As we will see in the next chapter, NLP algorithms often learn some facts about language from one corpus (a training corpus) and then use these facts to make decisions about a separate test corpus and its language. Thus if our training corpus contains, say the words low, new, and newer, but not lower, then if the word lower appears in our test corpus, our system will not know what to do with it.</p></blockquote>
 <p>为了解决这个未登录词问题，现代词元化器会自动归纳出词元集合，其中包含比词更小的词元，称为子词。子词可以是任意的子串，也可以是像语素 -est 或 -er 这样承载意义的单位。在现代词元化方案中，许多词元是词，但另一些词元是频繁出现的语素或其他子词，如 -er。</p>
 <blockquote><p>To deal with this unknown word problem, modern tokenizers automatically induce sets of tokens that include tokens smaller than words, called subwords. Sub- words can be arbitrary substrings, or they can be meaning-bearing units like the morphemes -est or -er. In modern tokenization schemes, many tokens are words, but other tokens are frequently occurring morphemes or other subwords like -er.</p></blockquote>
+<aside class="term"><code>subwords</code><span class="term-zh">子词</span><span class="term-explain">比完整词更小的词片段（字符或字符组合），使词元化器能用已知子词序列表示从未见过的词。</span></aside>
 <p>这样，每个未出现过的词都可以用某个已知子词单位的序列来表示。例如，如果我们恰好从未见过 lower 这个词，那么当它出现时，我们可以把它成功切分为我们已经见过的 low 和 er。</p>
 <blockquote><p>Every unseen word can thus be represented by some sequence of known subword units. For example, if we had happened not to ever see the word lower, when it appears we could segment it successfully into low and er which we had already seen.</p></blockquote>
 <p>在最坏的情况下，一个非常罕见的词（也许像 GRPO 这样的缩写词）在必要时会被词元化为单个字母的序列。</p>
@@ -660,7 +668,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>but not an upper case S. To match both s and S we can use the character disjunction</p></blockquote>
 <p>运算符，即方括号 [ 和 ]。方括号内的字符串指定了要匹配的一批字符的析取。例如，图 2.8 表明模式 r&quot;[mM]&quot; 匹配含有 m 或 M 的模式。</p>
 <blockquote><p>operator, the square brackets [ and ]. The string of characters inside the brackets specifies a disjunction of characters to match. For example, Fig. 2.8 shows that the pattern r&quot;[mM]&quot; matches patterns containing either m or M.</p></blockquote>
+<div class="figbox">
 <blockquote><p>模式 匹配 字符串 r&quot;[mM]ary&quot; Mary 或 mary “Mary Ann stopped by Mona’s”r&quot;[abc]&quot; ‘a’、‘b’或‘c’ “In uomini, in soldati”r&quot;[1234567890]&quot; 任意一个数字 “plenty of 7 to 5”</p><p><em>Pattern Match String r&quot;[mM]ary&quot; Mary or mary “Mary Ann stopped by Mona’s”r&quot;[abc]&quot; ‘a’, ‘b’, or ‘c’ “In uomini, in soldati”r&quot;[1234567890]&quot; any one digit “plenty of 7 to 5”</em></p></blockquote>
+</div>
 <p class="caption">图 2.8 使用方括号 [] 指定字符的析取。</p>
 <p class="caption">Figure 2.8 The use of the brackets [] to specify a disjunction of characters.</p>
 <p>正则表达式 r&quot;[1234567890]&quot; 指定任意单个数字。这会</p>
@@ -670,14 +680,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>range</code><span class="term-zh">范围</span><span class="term-explain">正则表达式中用连字符表示的一组连续字符，如 [2-5] 匹配 2 到 5 中任意一个字符。</span></aside>
 <p>4 或 5 中的任意一个。模式 r&quot;[b-g]&quot; 指定字符 b、c、d、e、f 或 g 中的一个。图 2.9 给出了另外一些示例。</p>
 <blockquote><p>4, or 5. The pattern r&quot;[b-g]&quot; specifies one of the characters b, c, d, e, f, or g. Some other examples are shown in Fig. 2.9.</p></blockquote>
+<div class="figbox">
 <blockquote><p>正则表达式 匹配 示例 被匹配的模式 r&quot;[A-Z]&quot; 一个大写字母 “we should call it ‘Drenched Blossoms’ ”r&quot;[a-z]&quot; 一个小写字母 “my beans were impatient to be hoed!”r&quot;[0-9]&quot; 单个数字 “Chapter 1: Down the Rabbit Hole”</p><p><em>Regex Match Example Patterns Matched r&quot;[A-Z]&quot; an upper case letter “we should call it ‘Drenched Blossoms’ ”r&quot;[a-z]&quot; a lower case letter “my beans were impatient to be hoed!”r&quot;[0-9]&quot; a single digit “Chapter 1: Down the Rabbit Hole”</em></p></blockquote>
+</div>
 <p class="caption">图 2.9 使用方括号 [] 加上连字符 - 指定范围。</p>
 <p class="caption">Figure 2.9 The use of the brackets [] plus the dash - to specify a range.</p>
 <p>方括号还可以用来指定单个字符不能</p>
 <blockquote><p>The square brackets can also be used to specify what a single character cannot</p></blockquote>
 <p>是什么，方法是使用脱字符 ˆ。如果脱字符 ˆ 是左方括号 [ 之后的第一个符号，得到的模式就被否定。例如，模式 r&quot;[ˆa]&quot; 匹配除 a 以外的任意单个字符（包括特殊字符）。这一点仅当脱字符是左方括号后的第一个符号时才成立。如果它出现在其他任何位置，通常就表示一个脱字符；图 2.10 给出了一些示例。</p>
 <blockquote><p>be, by use of the caret ˆ. If the caret ˆ is the first symbol after the open square bracket[, the resulting pattern is negated. For example, the pattern r&quot;[ˆa]&quot; matches any single character (including special characters) except a. This is only true when the caret is the first symbol after the open square bracket. If it occurs anywhere else, it usually stands for a caret; Fig. 2.10 shows some examples.</p></blockquote>
+<div class="figbox">
 <blockquote><p>正则表达式 匹配（单个字符） 示例 被匹配的模式 r&quot;[ˆA-Z]&quot; 不是大写字母 “Oyfn pripetchik”r&quot;[ˆSs]&quot; 既不是 ‘S’ 也不是 ‘s’ “I have no exquisite reason for’t”r&quot;[ˆ.]&quot; 不是句点 “our resident Djinn”r&quot;[eˆ]&quot; ‘e’ 或 ‘ˆ’ “look up ˆ now”r&quot;aˆb&quot; 模式 ‘aˆb’ “look up aˆb now”</p><p><em>Regex Match (single characters) Example Patterns Matched r&quot;[ˆA-Z]&quot; not an upper case letter “Oyfn pripetchik”r&quot;[ˆSs]&quot; neither ‘S’ nor ‘s’ “I have no exquisite reason for’t”r&quot;[ˆ.]&quot; not a period “our resident Djinn”r&quot;[eˆ]&quot; either ‘e’ or ‘ˆ’ “look up ˆ now”r&quot;aˆb&quot; the pattern ‘aˆb’ “look up aˆb now”</em></p></blockquote>
+</div>
 <p class="caption">图 2.10 脱字符 ˆ 用于否定，或仅表示 ˆ。关于用反斜杠转义句点，见下文。</p>
 <p class="caption">Figure 2.10 The caret ˆ for negation or just to mean ˆ. See below re: the backslash for escaping the period.</p>
 <h3>2.6.2 计数、可选性与通配符</h3>
@@ -725,7 +739,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>anchors</code><span class="term-zh">锚点</span><span class="term-explain">用于把匹配限定在行首、行尾或词边界等特定位置的正则表达式符号，最常用的是 ˆ 和 $。</span></aside>
 <p>。最常见的锚点是脱字符 ˆ 和美元符号 $。脱字符 ˆ 匹配行的开头。模式 r&quot;ˆThe&quot; 只在行首匹配单词 The。因此，脱字符 ˆ 有三种用途：匹配行的开头、在方括号内表示否定，以及仅表示脱字符本身。（</p>
 <blockquote><p>in a string. The most common anchors are the caret ˆ and the dollar sign $. The caret ˆ matches the start of a line. The pattern r&quot;ˆThe&quot; matches the word The only at the start of a line. Thus, the caret ˆ has three uses: to match the start of a line, to indicate a negation inside of square brackets, and just to mean a caret. (What are</p></blockquote>
+<div class="figbox">
 <blockquote><p>Regex 匹配 <em> 前一个字符或表达式出现零次或多次 + 前一个字符或表达式出现一次或多次 ? 前一个字符或表达式出现零次或一次 {n} 前一个字符或表达式恰好出现 n 次 . 任意单个字符 .</em> 由零个或多个字符组成的任意字符串</p><p><em>Regex Match</em> zero or more occurrences of the previous char or expression+ one or more occurrences of the previous char or expression? zero or one occurrence of the previous char or expression{n} exactly n occurrences of the previous char or expression. any single char.<em> any string of zero or more chars</em></p></blockquote>
+</div>
 <p class="caption">图 2.11 计数与通配符。</p>
 <p class="caption">Figure 2.11 Counting and wildcards.</p>
 <p>那些让系统得以知道某个插入符应当具有哪种功能的上下文？）美元符号 $ 匹配行的末尾。因此模式 ␣$ 是匹配行末空格的有用模式，而 r&quot;ˆThe dog\.$&quot; 匹配只包含短语 The dog. 且以句点结尾的一行。</p>
@@ -734,7 +750,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Note that we have to use the backslash in the prior example since we want</p></blockquote>
 <p>这里的 . 表示“句点”而不是通配符。相比之下，正则表达式 r&quot;ˆThe dog.$&quot; 会匹配 The dog.，但也会匹配 The dog! 和 The dogo。正如下文将要讨论的，我们目前定义的所有特殊字符（* + ? . []）在按字面意义使用时都需要加反斜杠。</p>
 <blockquote><p>the . to mean “period” and not the wildcard. By contrast, the regular expression r&quot;ˆThe dog.$&quot; would match The dog. but also The dog! and The dogo. As we’ll discuss below, all the special characters we’ve defined so far (* + ? . []) need to be backslashed when we mean to use them literally.</p></blockquote>
+<div class="figbox">
 <blockquote><p>正则表达式 匹配ˆ 行的开头$ 行的末尾\b 词边界\B 非词边界</p><p><em>Regex Matchˆ start of line$ end of line\b word boundary\B non-word boundary</em></p></blockquote>
+</div>
 <p class="caption">图 2.12 正则表达式中的锚点。</p>
 <p class="caption">Figure 2.12 Anchors in regular expressions.</p>
 <p>还有其他锚点：\b 匹配词边界，而 \B 匹配非</p>
@@ -755,10 +773,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>匹配字符串 cat 或字符串 dog。</p>
 <blockquote><p>matches either the string cat or the string dog.</p></blockquote>
 <p>有时我们需要在更长的序列中间使用这个析取运算符。例如，假设我想搜索对宠物鱼的提及。我怎样才能同时指定 guppy 和 guppies？我们不能简单地说 r&quot;guppy|ies&quot;，因为那样只会匹配字符串 guppy 和 ies。这是因为像 guppy 这样的序列优先于析取运算符 |。为了让析取</p>
-<blockquote><p>Sometimes we need to use this disjunction operator in the midst of a larger sequence. For example, suppose I want to search for mentions of pet fish. How can I specify both guppy and guppies? We cannot simply say r&quot;guppy|ies&quot;, because that would match only the strings guppy and ies. This is because sequences like guppy take precedence over the disjunction operator |. To make the disjunction</p></blockquote>
+<blockquote><p>Sometimes we need to use this disjunction operator in the midst of a larger sequence. For example, suppose I want to search for mentions of pet fish. How can I specify both guppy and guppies? We cannot simply say r&quot;guppy|ies&quot;, because that would match only the strings guppy and ies. This is because sequences like guppy take precedence over the disjunction operator |. To make the disjunction operator apply only to a specific pattern, we need to use the parenthesis operators (and ). Enclosing a pattern in parentheses makes it act like a single character for the purposes of neighboring operators like the pipe | and the Kleene*. So the pattern r&quot;gupp(y|ies)&quot; would specify that we meant the disjunction only to apply to the suffixes y and ies.</p></blockquote>
 <aside class="term"><code>precedence</code><span class="term-zh">优先级</span><span class="term-explain">运算符结合的先后次序，序列连接先于析取 | 生效，故需用括号改变默认结合方式。</span></aside>
-<p>运算符只作用于某个特定模式，我们需要使用圆括号运算符 ( 和 )。把模式括在圆括号中，对于相邻的运算符（如竖线 | 和 Kleene*）而言，它就相当于单个字符。因此模式 r&quot;gupp(y|ies)&quot; 表示我们只让析取作用于后缀 y 和 ies。</p>
-<blockquote><p>operator apply only to a specific pattern, we need to use the parenthesis operators (and ). Enclosing a pattern in parentheses makes it act like a single character for the purposes of neighboring operators like the pipe | and the Kleene*. So the pattern r&quot;gupp(y|ies)&quot; would specify that we meant the disjunction only to apply to the suffixes y and ies.</p></blockquote>
 <p>当我们使用像</p>
 <blockquote><p>The parenthesis operator ( is also useful when we are using counters like the</p></blockquote>
 <p>Kleene<em> 这样的计数器时，圆括号运算符 ( 也很有用。与 | 运算符不同，Kleene</em> 运算符默认只作用于单个字符，而不是整个序列。假设我们想匹配某个字符串的重复出现。也许我们有一行，其中是 Column 1 Column 2 Column 3 形式的列标签。表达式 r&quot;Column␣[0-9]+␣<em>&quot; 并不会匹配我们想要的任意多个 Column；相反，它会匹配一个 Column 后面跟着任意多个空格！这里的星号只作用于它前面的空格 ␣，而不是整个序列。借助圆括号，我们可以写出表达式 r&quot;(Column␣[0-9]+␣+)</em>&quot;，以匹配单词 Column 后面跟一个数字和若干空格，整个模式重复零次或多次。</p>
@@ -813,7 +829,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>2.6.6 More Operators</p></blockquote>
 <p>图 2.13 给出了常用范围的一些实用别名：</p>
 <blockquote><p>Figure 2.13 shows some useful aliases for common ranges:</p></blockquote>
+<div class="figbox">
 <blockquote><p>Regex 展开 匹配 首个匹配示例\d [0-9] 任意数字 Party␣of␣5\D [ˆ0-9] 任意非数字 Blue␣moon\w [a-zA-Z0-9_] 任意字母数字或下划线 Daiyu\W [ˆ\w] 非字母数字字符 !!!!\s [␣\r\t\n\f] 空白（空格、制表符） in Concord\S [ˆ\s] 非空白字符 in␣Concord</p><p><em>Regex Expansion Match First Matches\d [0-9] any digit Party␣of␣5\D [ˆ0-9] any non-digit Blue␣moon\w [a-zA-Z0-9_] any alphanumeric/underscore Daiyu\W [ˆ\w] a non-alphanumeric !!!!\s [␣\r\t\n\f] whitespace (space, tab) in Concord\S [ˆ\s] Non-whitespace in␣Concord</em></p></blockquote>
+</div>
 <p class="caption">图 2.13 常用字符集的别名。</p>
 <p class="caption">Figure 2.13 Aliases for common sets of characters.</p>
 <p>最后，某些特殊字符要用基于</p>
@@ -827,13 +845,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>How do we refer to characters that are special themselves (like ., *, -, [, and</p></blockquote>
 <p>\)）的字面含义，而不是它们的特殊用法时，该怎么表示呢？也就是说，如果我们要匹配一个句点、一个星号，或者一个方括号、圆括号呢？要得到特殊字符的字面含义，需要在它们前面加上反斜杠，即 r&quot;\.&quot;、r&quot;\*&quot;、r&quot;\[&quot; 和 r&quot;\\&quot;。</p>
 <blockquote><p>\) when we mean them literally, not in their special usage? That is, if we are trying to match a period, or a star, or a bracket or paren? To get the literal meaning of a special character, we need to precede them with a backslash, (i.e., r&quot;\.&quot;, r&quot;\*&quot;, r&quot;\[&quot;, and r&quot;\\&quot;).</p></blockquote>
+<div class="figbox">
 <blockquote><p>Regex 匹配 首个匹配的模式\<em> 星号 “</em>” “K<em>A</em>P<em>L</em>A*N”\. 句点 “.” “Dr. Livingstone, I presume”\? 问号 “Why don’t they come and lend a hand?”\n 换行符\t 制表符</p><p><em>Regex Match First Patterns Matched\</em> an asterisk “<em>” “K</em>A<em>P</em>L<em>A</em>N”\. a period “.” “Dr. Livingstone, I presume”\? a question mark “Why don’t they come and lend a hand?”\n a newline\t a tab*</p></blockquote>
+</div>
 <p class="caption">图 2.14 一些需要（通过反斜杠）转义的字符。</p>
 <p class="caption">Figure 2.14 Some characters that need to be escaped (via backslash).</p>
 <h3>2.6.7 替换与捕获组</h3>
 <blockquote><p>2.6.7 Substitutions and Capture Groups</p></blockquote>
 <p>正则表达式的一个重要用途是替换，即用一个字符串替换另一个字符串。正则表达式可以帮助我们同时指定要被替换的字符串以及替换后的内容。在 Python 中我们使用函数 re.sub()（其他语言和环境中也有类似的函数）。</p>
 <blockquote><p>An important use of regular expressions is in substitutions, where we want to replace one string with another. Regular expression can help us specify the string to be replaced as well as the replacement. In Python we use the function re.sub()(similar functions exist in other languages and environments).</p></blockquote>
+<aside class="term"><code>substitution</code><span class="term-zh">替换</span><span class="term-explain">正则表达式的一种用途，即用一个字符串替换被模式匹配到的字符串，Python 中通过 re.sub() 实现。</span></aside>
 <p>re.sub(pattern, repl, string) 接受三个参数：一个要搜索的模式，一个</p>
 <blockquote><p>re.sub(pattern, repl, string) takes three arguments: a pattern to search for, a</p></blockquote>
 <p>用于替换它的替换内容，以及要在其中进行搜索和替换的字符串。</p>
@@ -879,8 +900,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>which is specified by putting the special commands ?: after the open parenthesis, in the form (?: pattern ). Non-capture groups are usually used when we are trying to capture only part of a long or complex pattern. Perhaps we are matching a sequence of dates (\d\d/\d\d/\d\d\d\d) separated by spaces and we want to extract only the 15th one. We need to use parentheses in order to use the counting operator on the first 14, but we don’t want to store all the useless information. The following pattern only stores the 15th date in group 1:</p></blockquote>
 <p>r&quot;(?:\d\d/\d\d/\d\d\d\d\s+){14}(\d\d/\d\d/\d\d\d\d)&quot; 替换和捕获组对于实现 ELIZA（Weizenbaum, 1966）这类具有历史意义的聊天机器人也很有用。回想一下，ELIZA 通过进行如下对话来模拟一位罗杰斯学派的心理学家：</p>
 <blockquote><p>r&quot;(?:\d\d/\d\d/\d\d\d\d\s+){14}(\d\d/\d\d/\d\d\d\d)&quot; Substitutions and capture groups are also useful for implementing historically important chatbots like ELIZA (Weizenbaum, 1966). Recall that ELIZA simulates a Rogerian psychologist by carrying on conversations like the following:</p></blockquote>
+<div class="figbox">
 <blockquote><p>用户2：他们总是为这样那样的事烦我们。</p><p><em>User2: They’re always bugging us about something or other.</em></p></blockquote>
 <blockquote><p>ELIZA2：你能想出一个具体的例子吗 用户3：嗯，是我男朋友让我来这儿的。 ELIZA3：你男朋友让你来这儿的 用户4：他说我大部分时间都很抑郁。 ELIZA4：听说你抑郁，我很遗憾</p><p><em>ELIZA2: CAN YOU THINK OF A SPECIFIC EXAMPLE User3: Well, my boyfriend made me come here. ELIZA3: YOUR BOYFRIEND MADE YOU COME HERE User4: He says I’m depressed much of the time. ELIZA4: I AM SORRY TO HEAR YOU ARE DEPRESSED</em></p></blockquote>
+</div>
 <p>ELIZA 的工作方式是使用一系列或一串级联的正则替换，其中每一个替换</p>
 <blockquote><p>ELIZA works by having a series or cascade of regex substitutions each of which</p></blockquote>
 <p>匹配并修改输入行的某一部分。输入被转换为大写之后，替换会把所有出现的 MY 改为 YOUR，把 I’M 改为 YOU ARE，等等。</p>
@@ -910,6 +933,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Here’s the regular expression used to do this pretokenization that is used for one</p></blockquote>
 <p>颇具影响力的语言模型——GPT-2 语言模型（Radford et al., 2019）所采用：</p>
 <blockquote><p>influential language model, the GPT-2 language model (Radford et al., 2019):</p></blockquote>
+<div class="figbox">
 <blockquote><p>&gt;&gt;&gt; import regex as re</p></blockquote>
 <blockquote><p>&gt;&gt;&gt; pat = re.compile(</p></blockquote>
 <blockquote><p>... # Contractions: ’t and ’m are tokens</p></blockquote>
@@ -923,11 +947,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>... r&quot; ?[ˆ\s\p{L}\p{N}]+|&quot;</p></blockquote>
 <blockquote><p>... # whitespace</p></blockquote>
 <blockquote><p>... r&quot;\s+(?!\S)|\s+&quot;</p></blockquote>
-<blockquote><p>... )</p></blockquote>
+</div>
+<p>... )</p>
+<div class="figbox">
 <blockquote><p>&gt;&gt;&gt; text = &quot;We’re 350 dogs! Um, lunch?&quot;</p></blockquote>
 <blockquote><p>&gt;&gt;&gt; print(pat.findall(text))</p></blockquote>
 <blockquote><p>[’We’, &quot;’re&quot;, ’ 350’, ’ dogs’, ’!’, ’ Um’, ’,’, ’ lunch’, ’?’]</p></blockquote>
-<blockquote><p>&gt;&gt;&gt;</p></blockquote>
+</div>
+<blockquote><p>&gt;&gt;</p></blockquote>
 <p class="caption">图 2.15 GPT-2 预词元化器的正则表达式，用于在运行 BPE 算法之前（大致）按空白切分。</p>
 <p class="caption">Figure 2.15 The GPT-2 pre-tokenizer regular expression, used to split (roughly) on whitespace before running the BPE algorithm.</p>
 <blockquote><p>r&quot;’s|’t|’re|’ve|’m|’ll|’d| ?\p{L}+| ?\p{N}+| ?[ˆ\s\p{L}\p{N}]+|\s+(?!\S)|\s+&quot;</p></blockquote>
@@ -1021,6 +1048,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In practice, since tokenization is run before any other language processing, it</p></blockquote>
 <p>必须非常快。对于基于规则的词语词元化，我们通常使用基于正则表达式的确定性算法，这些正则表达式会被编译成高效的有限状态自动机。例如，图 2.16 展示了一个基本正则表达式，它可以配合基于 Python 的自然语言工具包（NLTK）中的 nltk.regexp tokenize 函数对英语进行词元化（Bird et al. 2009; https://www.nltk.org）。</p>
 <blockquote><p>needs to be very fast. For rule-based word tokenization we generally use deterministic algorithms based on regular expressions compiled into efficient finite state automata. For example, Fig. 2.16 shows a basic regular expression that can be used to tokenize English with the nltk.regexp tokenize function of the Python-based Natural Language Toolkit (NLTK) (Bird et al. 2009; https://www.nltk.org).</p></blockquote>
+<div class="figbox">
 <blockquote><p>&gt;&gt;&gt; text = ’That U.S.A. poster-print costs $12.40...’</p></blockquote>
 <blockquote><p>&gt;&gt;&gt; pattern = r’’’(?x) # set flag to allow verbose regexps</p></blockquote>
 <blockquote><p>... (?:[A-Z]\.)+ # abbreviations, e.g. U.S.A.</p></blockquote>
@@ -1031,6 +1059,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>... ’’’</p></blockquote>
 <blockquote><p>&gt;&gt;&gt; nltk.regexp_tokenize(text, pattern)</p></blockquote>
 <blockquote><p>[’That’, ’U.S.A.’, ’poster-print’, ’costs’, ’$12.40’, ’...’]</p></blockquote>
+</div>
 <p class="caption">图 2.16 在 NLTK 这个基于 Python 的自然语言处理工具包（Bird et al., 2009）中，用正则表达式进行词元化的一次 Python 执行记录，为便于阅读加了注释；(?x) 详细模式标志告诉 Python 去掉注释和空白。图取自 Bird et al. (2009) 第 3 章。</p>
 <p class="caption">Figure 2.16 A Python trace of regular expression tokenization in the NLTK Python-based natural language processing toolkit (Bird et al., 2009), commented for readability; the (?x) verbose flag tells Python to strip comments and whitespace. Figure from Chapter 3 of Bird et al. (2009).</p>
 <p>精心设计的确定性算法能够处理</p>
@@ -1074,7 +1103,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 2.17 展示了两个字符串之间的这种对齐。给定两个序列，对齐就是这两个序列的子串之间的对应关系。因此我们说，I 与空字符串对齐，N 与 E 对齐，依此类推。在对齐后的字符串下方还有另一种表示：一串符号给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。</p>
 <blockquote><p>between the two strings, shown in Fig. 2.17. Given two sequences, an alignment is a correspondence between substrings of the two sequences. Thus, we say I aligns with the empty string, N with E, and so on. Beneath the aligned strings is another representation; a series of symbols expressing an operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.</p></blockquote>
 <img src="../md/images/02-words-and-tokens/fig_p28_0.png" alt="">
-<blockquote><p>最后一行给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。</p><p><em>The final row gives the operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.</em></p></blockquote>
+<p class="caption">图 2.17 把两个字符串之间的最小编辑距离表示为对齐。d s s i s 最后一行给出把上面的字符串转换为下面的字符串的操作列表：d 表示删除，s 表示替换，i 表示插入。</p>
+<p class="caption">Figure 2.17 Representing the minimum edit distance between two strings as an alignment. d s s i s The final row gives the operation list for converting the top string into the bottom string: d for deletion, s for substitution, i for insertion.</p>
 <p>我们还可以为这些操作分别指定特定的代价或权重。</p>
 <blockquote><p>We can also assign a particular cost or weight to each of these operations. The</p></blockquote>
 <p>两个序列之间的 Levenshtein 距离是最简单的加权方式，其中三种操作的代价均为 1（Levenshtein, 1966）——我们假定把字母替换为它自身（例如用 t 替换 t）的代价为零。intention 与 execution 之间的 Levenshtein 距离为 5。Levenshtein 还提出了他的度量的另一种版本：每次插入或删除的代价为 1，且不允许替换。（这等价于允许替换，但把每次替换的代价记为 2，因为任何替换都可以用一次插入和一次删除来表示。）使用这一版本时，intention 与 execution 之间的 Levenshtein 距离为 8。</p>
@@ -1086,15 +1116,22 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/02-words-and-tokens/fig_p29_1.png" alt="">
 <p class="caption">图 2.18 把寻找编辑距离视为搜索问题</p>
 <p class="caption">Figure 2.18 Finding the edit distance viewed as a search problem</p>
-<blockquote><p>所有可能编辑构成的空间极其庞大，因此我们无法朴素地搜索。不过，</p><p><em>The space of all possible edits is enormous, so we can’t search naively. However,</em></p></blockquote>
-<blockquote><p>许多不同的编辑路径最终会到达同一个状态（字符串），因此我们不必重新计算所有这些路径，只需每次都记住到达某个状态的最短路径即可</p><p><em>lots of distinct edit paths will end up in the same state (string), so rather than recomputing all those paths, we could just remember the shortest path to a state each time</em></p></blockquote>
+<p>所有可能编辑构成的空间极其庞大，因此我们无法朴素地搜索。不过，</p>
+<blockquote><p>The space of all possible edits is enormous, so we can’t search naively. However,</p></blockquote>
+<p>许多不同的编辑路径最终会到达同一个状态（字符串），因此我们不必重新计算所有这些路径，只需每次都记住到达某个状态的最短路径即可</p>
+<blockquote><p>lots of distinct edit paths will end up in the same state (string), so rather than recomputing all those paths, we could just remember the shortest path to a state each time</p></blockquote>
 <aside class="term"><code>dynamic</code><span class="term-zh">动态</span><span class="term-explain">与紧随其后的术语合为“动态规划”，指把大问题拆成子问题、以表格方式组合子问题解的算法类别。</span></aside>
-<blockquote><p>我们见过它。我们可以通过使用动态规划来做到这一点。动态规划</p><p><em>we saw it. We can do this by using dynamic programming. Dynamic programming</em></p></blockquote>
+<p>我们可以通过使用动态规划来做到这一点</p>
+<blockquote><p>we saw it. We can do this by using dynamic programming. Dynamic programming</p></blockquote>
 <aside class="term"><code>programming</code><span class="term-zh">规划</span><span class="term-explain">与前面的“动态”合为“动态规划”，指按表格自底向上组合各子问题解来求解大问题的一类算法。</span></aside>
-<blockquote><p>是一类算法的名称，由 Bellman (1957) 首次提出，这类算法采用表格驱动的方法，通过组合子问题的解来求解问题。</p><p><em>is the name for a class of algorithms, first introduced by Bellman (1957), that apply a table-driven method to solve problems by combining solutions to subproblems.</em></p></blockquote>
-<blockquote><p>自然语言处理中一些最常用的算法都使用了动态规划，例如 Viterbi 算法（第 18 章）和用于句法分析的 CKY 算法（第 19 章）。</p><p><em>Some of the most commonly used algorithms in natural language processing make use of dynamic programming, such as the Viterbi algorithm (Chapter 18) and the CKY algorithm for parsing (Chapter 19).</em></p></blockquote>
-<blockquote><p>动态规划问题的直觉是，一个大问题可以</p><p><em>The intuition of a dynamic programming problem is that a large problem can</em></p></blockquote>
-<blockquote><p>通过恰当地组合各个子问题的解来求解。考虑图 2.19 所示的、表示字符串 intention 与 execution 之间最小编辑距离的转换词最短路径。</p><p><em>be solved by properly combining the solutions to various subproblems. Consider the shortest path of transformed words that represents the minimum edit distance between the strings intention and execution shown in Fig. 2.19.</em></p></blockquote>
+<p>由 Bellman (1957) 首次提出，这类算法采用表格驱动的方法，通过组合子问题的解来求解问题</p>
+<blockquote><p>is the name for a class of algorithms, first introduced by Bellman (1957), that apply a table-driven method to solve problems by combining solutions to subproblems.</p></blockquote>
+<p>自然语言处理中一些最常用的算法都使用了动态规划，例如 Viterbi 算法（第 18 章）和用于句法分析的 CKY 算法（第 19 章）。</p>
+<blockquote><p>Some of the most commonly used algorithms in natural language processing make use of dynamic programming, such as the Viterbi algorithm (Chapter 18) and the CKY algorithm for parsing (Chapter 19).</p></blockquote>
+<p>动态规划问题的直觉是，一个大问题可以</p>
+<blockquote><p>The intuition of a dynamic programming problem is that a large problem can</p></blockquote>
+<p>通过恰当地组合各个子问题的解来求解。考虑图 2.19 所示的、表示字符串 intention 与 execution 之间最小编辑距离的转换词最短路径。</p>
+<blockquote><p>be solved by properly combining the solutions to various subproblems. Consider the shortest path of transformed words that represents the minimum edit distance between the strings intention and execution shown in Fig. 2.19.</p></blockquote>
 <img src="../md/images/02-words-and-tokens/fig_p29_0.png" alt="">
 <p class="caption">图 2.19 从 intention 到 execution 的路径。</p>
 <p class="caption">Figure 2.19 Path from intention to execution.</p>
@@ -1123,10 +1160,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>   D[i−1, j −1]+</p></blockquote>
 <p>0; if source[i] = target[j]该算法总结于图 2.21；图 2.20 展示了采用式 2.20 中的莱文斯坦距离版本，将该算法应用于 intention 与 execution 之间距离的结果。</p>
 <blockquote><p>The algorithm is summarized in Fig. 2.21; Fig. 2.20 shows the results of applying the algorithm to the distance between intention and execution with the version of Levenshtein in Eq. 2.20.</p></blockquote>
-<blockquote><p>源\目标 # e x e c u t i o n</p><p><em>Src\Tar # e x e c u t i o n</em></p></blockquote>
-<blockquote><p># 0 1 2 3 4 5 6 7 8 9 i 1 2 3 4 5 6 7 6 7 8 n 2 3 4 5 6 7 8 7 8 7 t 3 4 5 6 7 8 7 8 9 8 e 4 3 4 5 6 7 8 9 10 9 n 5 4 5 6 7 8 9 10 11 10 t 6 5 6 7 8 9 8 9 10 11 i 7 6 7 8 9 10 9 8 9 10 o 8 7 8 9 10 11 10 9 8 9 n 9 8 9 10 11 12 11 10 9 8</p></blockquote>
+<p>源\目标 # e x e c u t i o n</p>
+<blockquote><p>Src\Tar # e x e c u t i o n</p></blockquote>
+<table><tr><th></th><th>#</th><th>e</th><th>x</th><th>e</th><th>c</th><th>u</th><th>t</th><th>i</th><th>o</th><th>n</th></tr><tr><td>#</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr><tr><td>i</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>6</td><td>7</td><td>8</td></tr><tr><td>n</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>7</td><td>8</td><td>7</td></tr><tr><td>t</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>7</td><td>8</td><td>9</td><td>8</td></tr><tr><td>e</td><td>4</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>9</td></tr><tr><td>n</td><td>5</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>10</td></tr><tr><td>t</td><td>6</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>8</td><td>9</td><td>10</td><td>11</td></tr><tr><td>i</td><td>7</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>9</td><td>8</td><td>9</td><td>10</td></tr><tr><td>o</td><td>8</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>10</td><td>9</td><td>8</td><td>9</td></tr><tr><td>n</td><td>9</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td></tr></table>
 <p class="caption">图 2.20 使用图 2.21 的算法计算 intention 与 execution 之间的最小编辑距离，所用莱文斯坦距离的插入或删除代价为 1</p>
-<p class="caption">Figure 2.20 Computation of minimum edit distance between intention and execution with the algorithm of Fig. 2.21, using Levenshtein distance with cost of 1 for insertions or dele-</p>
+<p class="caption">Figure 2.20 Computation of minimum edit distance between intention and execution with the algorithm of Fig. 2.21, using Levenshtein distance with cost of 1 for insertions or deletions, 2 for substitutions.</p>
 <img src="../md/images/02-words-and-tokens/fig_p31_0.png" alt="">
 <p class="caption">图 2.21 最小编辑距离算法，动态规划算法类的一个示例。各种代价既可以是固定的（例如 ∀x，ins-cost(x) = 1），也可以针对具体字母而定（用以刻画某些字母比其他字母更可能被插入这一事实）。我们假设将一个字母替换为它自身没有代价（即 sub-cost(x,x) = 0）。</p>
 <p class="caption">Figure 2.21 The minimum edit distance algorithm, an example of the class of dynamic programming algorithms. The various costs can either be fixed (e.g., ∀x,ins-cost(x) = 1) or can be specific to the letter (to model the fact that some letters are more likely to be inserted than others). We assume that there is no cost for substituting a letter for itself (i.e., sub-cost(x,x) = 0).</p>
@@ -1145,8 +1183,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>backtrace</code><span class="term-zh">回溯</span><span class="term-explain">从动态规划矩阵末端的单元格出发，沿各单元格记录的回溯指针逐格返回初始单元格，从而还原出最小代价对齐路径的过程。</span></aside>
 <p>最后一个单元格（位于最后一行和最后一列）开始，沿着指针回溯穿过动态规划矩阵。最后单元格与初始单元格之间的每条完整路径都是一条最小距离对齐。习题 2.10 要求你修改最小编辑距离算法，使其存储指针并计算回溯，从而输出一个对齐。</p>
 <blockquote><p>from the last cell (at the final row and column), and follow the pointers back through the dynamic programming matrix. Each complete path between the final cell and the initial cell is a minimum distance alignment. Exercise 2.10 asks you to modify the minimum edit distance algorithm to store the pointers and compute the backtrace to output an alignment.</p></blockquote>
+<div class="figbox">
 <blockquote><p># e x e c u t i o n</p></blockquote>
 <blockquote><p># 0 ←1 ←2 ←3 ←4 ←5 ←6 ←7 ←8 ←9 i ↑1 ↖←↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖6 ←7 ←8 n ↑2 ↖←↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↑7 ↖←↑8 ↖7 t ↑3 ↖←↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖7 ←↑8 ↖←↑9 ↑8 e ↑4 ↖3 ←4 ↖←5 ←6 ←7 ←↑8 ↖←↑9 ↖←↑10 ↑9 n ↑5 ↑4 ↖←↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖↑10 t ↑6 ↑5 ↖←↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖8 ←9 ←10 ←↑11 i ↑7 ↑6 ↖←↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↑9 ↖8 ←9 ←10 o ↑8 ↑7 ↖←↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↑10 ↑9 ↖8 ←9 n ↑9 ↑8 ↖←↑9 ↖←↑10 ↖←↑11 ↖←↑12 ↑11 ↑10 ↑9 ↖8</p></blockquote>
+</div>
 <p class="caption">图 2.22 在填写每个单元格的值时，我们用最多三个箭头标出它是从三个相邻单元格中的哪一个过来的。表格填满后，我们从右下角的 8 出发，沿箭头回溯，从而计算出一个对齐（最小编辑路径）。加粗单元格组成的序列表示这两个字符串之间一种可能的最小代价对齐，同样使用 Levenshtein 距离，插入或删除的代价为 1，替换的代价为 2。图的设计参考 Gusfield (1997)。</p>
 <p class="caption">Figure 2.22 When entering a value in each cell, we mark which of the three neighboring cells we came from with up to three arrows. After the table is full we compute an alignment(minimum edit path) by using a backtrace, starting at the 8 in the lower-right corner and following the arrows back. The sequence of bold cells represents one possible minimum cost alignment between the two strings, again using Levenshtein distance with cost of 1 for insertions or deletions, 2 for substitutions. Diagram design after Gusfield (1997).</p>
 <p>虽然我们的例子用的是简单的 Levenshtein 距离，但该算法</p>

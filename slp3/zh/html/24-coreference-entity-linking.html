@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>第 24 章 共指消解与实体链接</title>
+<title>24-coreference-entity-linking</title>
 <style>
 :root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; --bg:#ffffff; }
 * { box-sizing: border-box; }
@@ -42,7 +42,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 </style>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/24-coreference-entity-linking.md">Markdown 源文件</a></div>
-<h1>第 24 章 共指消解与实体链接</h1>
+<h1>24-coreference-entity-linking</h1>
 <h3>章</h3>
 <h1>24 共指消解与实体链接</h1>
 <blockquote><p>甚至连那位爱国的坎特伯雷大主教 Stigand 也觉得它可取——”’</p></blockquote>
@@ -83,14 +83,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>是另一个提及 her pay 的一部分，而后者指称一个完全不同的话语实体。</p>
 <p>因此，共指消解包含两个任务（尽管它们通常联合完成）：（1）识别提及，（2）将它们聚类为共指链/话语实体。</p>
 <p>我们 _3 说过，如果两个提及与同一话语实体相关联，那么它们就是共指的。但我们常常希望更进一步，确定与这个话语实体相关联的是哪个现实世界实体。例如，提及 Washington 可能指美国的一个州，或首都，或人物 George Washington；对这些不同的所指，句子的解释自然大不相同。实体链接（Ji and Grishman, 2011）或实体消解的任务，就是把</p>
-<aside class="term"><code>entity linking</code><span class="term-zh">实体链接</span><span class="term-explain">把文本中的提及映射到知识库中某个现实世界实体（如某个 Wikipedia 页面）的任务。</span></aside>
+<aside class="term"><code>entity linking</code><span class="term-zh">实体链接</span><span class="term-explain">指把文本中出现的提及映射到知识库中某个具体实体的表示，从而确定其指向的现实对象。</span></aside>
 <p>a_2 话语实体映射到某个现实世界个体。3 我们通常把实体链接或消解，即映射到一个本体：世界上实体的列表，如地名词典（附录 H）。这项任务最常用的本体大概就是 Wikipedia；每个 Wikipedia 页面充当某个特定实体的唯一 id。因此，维基化（Mihalcea and Csomai, 2007）这一实体链接任务，就是确定某个提及所指的是与某个个体对应的哪个 Wikipedia 页面。不过，实体链接可以用任何本体来完成；例如，如果我们有一个基因本体，就可以把文本中基因的提及链接到该本体中消歧后的基因名称。</p>
 <blockquote><p>我们将遵循 NLP 中 anaphor 的常见用法，即指任何具有先行语的提及，而不是更狭义的用法——只指那些解释依赖于先行语的提及（如代词）（在狭义解释下，重复出现的名称不是回指语）。</p></blockquote>
 <blockquote><p>因此，计算语言学/NLP 在使用 reference 这一术语上与形式语义学领域不同，后者用 reference 和 coreference 这两个词来描述提及与现实世界实体之间的关系。相比之下，我们遵循功能语言学传统，其中提及指称话语实体（Webber, 1978），而话语实体与现实世界之间的关系</p></blockquote>
 <p>在接下来的几节中，我们将更详细地介绍共指消解任务，并综述各种消解架构。我们还会介绍两种用于实体链接任务的架构。</p>
 <p>不过，在转向算法之前，我们先提及一些重要任务，我们只会到本章末尾才简要涉及。首先是著名的 Winograd 模式问题（之所以这样称呼，是因为 Terry Winograd 在其学位论文中首次指出了它们）。这些实体共指消解问题被设计得极为困难，无法用本章所描述的消解方法解决，而它们所需的那类现实世界知识，使它们成为自然语言处理的一类挑战性任务。例如，考虑确定下例中代词 they 的正确先行语这一任务：</p>
 <p>（24.2）市议会拒绝给示威者发放许可，因为</p>
-<ul><li>他们害怕暴力。</li><li>他们主张暴力。</li></ul>
+<ul><li>他们害怕暴力。</li><li>他们鼓吹暴力。</li></ul>
 <p>确定代词 they 的正确先行语需要理解第二个分句意在作为第一个分句的解释，并且市议会也许比示威者更可能害怕暴力，而示威者也许更可能主张暴力。解决 Winograd 模式问题需要找到表示或发现所需现实世界知识的方法。</p>
 <p>本章不讨论的一个问题是相关的事件共指任务，即判断两个事件提及（例如下面两句话中的 buy 和 acquisition</p>
 <aside class="term"><code>event</code><span class="term-zh">事件</span><span class="term-explain">在本书中，指文本里表示某种发生或状态的事件提及，可以是动词性的，也可以是名词性的。</span></aside>
@@ -228,7 +228,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>因此，所有这类提及检测系统最终都需要滤除像上面的 It 那样的冗语/虚指代词、像 CFO of Megabucks Banking Inc 那样的同位语，或像 the company’s president 或 $2.3 million 那样的谓语性名词短语。</p>
 <p>其中一些过滤可以用规则完成。早期的基于规则的系统设计了正则表达式来处理冗语 it，例如 Lappin and Leass（1994）提出的下列规则，它们使用认知动词词典（如 believe、know、anticipate）来捕获 “It is thought that ketchup...” 中的冗语 it，或使用情态形容词（如 necessary、possible、certain、important），例如用于 “It is likely that I...”。这类规则有时被用作现代系统的一部分：</p>
 <p>It is Modaladjective that S　It is Modaladjective (for NP) to VP　It is Cogv-ed that S　It seems/appears/means/follows (that) S提及检测规则有时是专门针对特定评测活动设计的。例如对 OntoNotes 来说，提及不嵌套在更大的提及之中，而且虽然数值量被标注，它们却很少共指。因此对于 CoNLL 2012 这类 OntoNotes 任务（Pradhan et al., 2012a），一种常见的第一遍基于规则的提及检测算法（Lee et al., 2013）是：</p>
+<div class="figbox">
 <blockquote><p>取所有 NP、物主代词和命名实体。</p></blockquote>
+</div>
 <p>然而，基于规则的系统通常不足以处理提及检测，因此现代系统会引入某种学习得到的提及检测组件，例如指称性分类器、回指性分类器（检测某个 NP 是否为回指语），或新引入话语分类器（检测某个提及是否是新引入话语、是否是未来回指语的潜在先行语）。</p>
 <aside class="term"><code>anaphoricity detector</code><span class="term-zh">回指性检测器</span><span class="term-explain">判断给定 NP 是否为回指语的两类分类器之一，用于滤除不指称任何对象的提及。</span></aside>
 <p>例如，回指性检测器可以获取其正例训练样本可以来自 OntoNotes、ARRAU 或 AnCora 等人工标注数据集中任何被标注为回指性指称表达式的跨度。其他任何 NP 或命名实体都可以标记为负训练样本。回指性分类器使用候选提及的特征，例如其中心词、周围词、定指性、生命性、长度、在句子/话语中的位置；其中许多特征最早由 Ng 和 Cardie（2002a）的早期工作提出；关于特征的更多内容参见 24.5 节。</p>
@@ -246,7 +248,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>现代共指系统基于有监督的神经机器学习，其监督来自 OntoNotes 等人工标注数据集。本节我们概述现代系统的各种架构，沿用 Ng（2010）的分类，该分类根据算法做出每个共指决策的方式是以基于实体的方式——即在话语模型中表示每个实体——还是仅基于提及的方式——即独立地考虑每个提及——以及它们是否使用排序模型直接比较潜在的先行语，来区分不同算法。之后，我们将在 24.6 节更详细地介绍一种当前最优算法。</p>
 <h3>24.4.1 提及对架构</h3>
 <p>我们从提及对架构开始，它是最简单也最具影响力的</p>
-<aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">共指架构中最简单的一类：用一个分类器判断候选回指语与其候选先行语这两条提及是否共指。</span></aside>
+<aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">一种共指模型：把回指语与每个候选先行语配成对，逐对判定二者是否指向同一实体。</span></aside>
 <p>共指架构，它引入了许多更复杂算法的特征，尽管其他架构表现更好。提及对架构围绕一个分类器构建，顾名思义，该分类器接收一对提及——一个候选回指语和一个候选先行语——并做出二元分类决策：是否共指。</p>
 <aside class="term"><code>mention-pair</code><span class="term-zh">提及对</span><span class="term-explain">一种共指模型：把回指语与每个候选先行语配成对，逐对判定二者是否指向同一实体。</span></aside>
 <p>让我们考虑该分类器在我们的例子中针对代词 she 的任务，并假定图 24.2 中经过略微简化的潜在先行语集合。</p>
@@ -282,6 +284,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>基于特征的分类器在逻辑回归、SVM 或随机森林分类器中使用手工设计的特征来完成共指消解。这些分类器的表现不如神经分类器。尽管如此，在算力或数据稀缺时，它们有时仍可用于构建轻量级系统，而且即使在神经系统中，这些特征本身对错误分析也很有用。</p>
 <p>给定一个回指语提及和一个潜在的先行语提及，基于特征的分类器利用三类特征：(i) 回指语的特征，(ii) 候选先行语的特征，以及 (iii) 该对之间关系的特征。</p>
 <p>基于实体的模型还可以额外利用两个额外的类别：(iv) 来自先行语实体簇中所有提及的特征，以及 (v) 回指语与先行语实体簇中各提及之间关系的特征。</p>
+<div class="figbox">
 <blockquote><p>回指语或先行语提及的特征</p></blockquote>
 <blockquote><p>首（末）词 Victoria/she 先行语/回指语的首个或末个词（或其嵌入） 中心词 Victoria/she 先行语/回指语的中心词（或中心词嵌入） 属性 Sg-F-A-3-PER/ 先行语/回指语的数、性、生命度、人称、命名实体类型</p></blockquote>
 <blockquote><p>Sg-F-A-3-PER （先行语/回指语）的属性</p></blockquote>
@@ -300,6 +303,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>中心词匹配 F 若来自先行语簇的任一提及具有</p></blockquote>
 <blockquote><p>与回指语簇中任一提及相同的中心词则为真</p></blockquote>
 <blockquote><p>词语包含 F 回指语簇中的所有词语都包含在先行语簇中</p></blockquote>
+</div>
 <p class="caption">图 24.4 基于特征的共指：回指语“she”与潜在先行语“Victoria Chen”的示例特征值。</p>
 <p>图 24.4 展示了一组常用特征，并展示了在示例句中为潜在回指语“she”与潜在先行语“Victoria Chen”计算得到的取值，该例句在下面重复给出：</p>
 <p>(24.47) Victoria Chen，Megabucks Banking 的首席财务官，眼看着自己的薪酬跃升至 2.3百万美元，同时这位 38 岁的人士还成为了公司总裁。众所周知，她是从竞争对手 Lotsabucks 来到 Megabucks 的。</p>

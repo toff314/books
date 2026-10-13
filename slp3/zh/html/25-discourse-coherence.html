@@ -77,14 +77,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>最具影响力的基于实体的连贯理论，它追踪篇章模型中在任一时刻哪些实体是显著的（显著的实体更有可能被代词化，或出现在主语、宾语等突出的句法位置上）。</p>
 <p>在中心理论中，保持同一显著实体的句子之间的过渡，被认为比在多个实体之间反复切换的过渡更连贯。</p>
 <p>连贯的实体网格模型（Barzilay and Lapata, 2008）是一种常用</p>
-<aside class="term"><code>entity grid</code><span class="term-zh">实体网格</span><span class="term-explain">一种通过记录各实体的语法角色在连续句子中的出现模式来刻画篇章连贯程度的模型。</span></aside>
+<aside class="term"><code>entity grid</code><span class="term-zh">实体网格</span><span class="term-explain">一种二维表示，行是句子、列是篇章实体，单元格记录实体在该句中的语法角色，用其实体转移模式刻画篇章连贯。</span></aside>
 <p>的模型，它实现了中心理论框架中的部分直觉。</p>
 <p>基于实体的连贯将在 25.3 节介绍。</p>
 <aside class="term"><code>topically</code><span class="term-zh">在话题上</span><span class="term-explain">指句子之间在主题层面上的关联方式，即邻近的句子谈论的是同一个话题。</span></aside>
 <p>最后，篇章还可以通过在话题上连贯而做到局部连贯：邻近的</p>
 <aside class="term"><code>coherent</code><span class="term-zh">连贯的</span><span class="term-explain">形容篇章中相邻句子在语义和话题上彼此关联、读者容易把它们联系起来的性质。</span></aside>
 <p>句子通常谈论同一个话题，并使用相同或相近的词汇来讨论这些话题。由于在话题上连贯的篇章取自同一个语义场或话题，它们往往会表现出一种被称为词汇衔接（Halliday and Hasan, 1976）的表层属性：邻近句子中共用相同的或语义相关的词语。例如，house、chimney、garret、closet 和 window 这些词——它们都属于同一个语义场——出现在 (25.4) 的两个句子中，或者这两个句子共用同一个词 shingled，这一事实就是一个提示：这两个句子被作为一个篇章联系在一起：</p>
-<aside class="term"><code>lexical cohesion</code><span class="term-zh">词汇衔接</span><span class="term-explain">邻近句子因共用相同或语义相关的词语而彼此绑定的表层文本现象。</span></aside>
+<aside class="term"><code>lexical cohesion</code><span class="term-zh">词汇衔接</span><span class="term-explain">指邻近句子重复使用相同或语义相关的词语，从而在词层面把上下文连接起来。</span></aside>
 <p>(25.4) 入冬之前我砌了一个烟囱，并给房子的外墙铺上了木瓦……</p>
 <p>这样我就有了一栋严实的、铺着木瓦并抹了灰泥的房子……带有一个阁楼和一个壁橱，每一边都有一扇大窗……</p>
 <p>除了相邻或相近句子之间的局部连贯，篇章还表现出全局连贯。许多文本体裁都与特定的常规篇章结构相联系。学术论文可能有描述方法或结果的章节。故事可能遵循常规的情节线或母题。说服性文章有一个它试图为之论证的特定主张，而文章可能把这个主张与一组结构化的前提一起表达出来，这些前提支持该论证并驳倒潜在的反驳。我们将逐一介绍这几种全局连贯的形式。</p>
@@ -136,6 +136,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>与 RST 篇章树库不同，后者把这些成对的连贯关系整合为覆盖整个篇章的全局树结构，而 PDTB 不标注任何高于片段对层级的内容，对更高层级的篇章结构不作任何承诺。</p>
 <p>其他语言也有采用类似方法的树库；(25.15)给出了汉语篇章树库中的一个例子（Zhou and Xue, 2015）。</p>
 <p>由于汉语中显式篇章连接词的比例低于英语（所有篇章关系中只有 22% 由显式连接词标示，</p>
+<div class="figbox">
 <blockquote><p>类别 类型 示例</p></blockquote>
 <blockquote><p>SYNCHRONOUS St. Michael and All Angels 教堂的教区居民会停下来在</p></blockquote>
 <blockquote><p>TEMPORAL</p></blockquote>
@@ -147,7 +148,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>投资壁垒；日本则否认存在真正的壁垒。演员们不仅置身于自己所扮演的角色之外，并</p></blockquote>
 <blockquote><p>EXPANSION CONJUNCTION</p></blockquote>
 <blockquote><p>表明自己与角色格格不入，而且还往往真的倒立起来。</p></blockquote>
+</div>
 <p class="caption">图 25.2 PDTB 语义层级中的四个高层语义区分</p>
+<div class="figbox">
 <blockquote><p>Temporal Comparison</p></blockquote>
 <blockquote><p>• Asynchronous • Contrast (Juxtaposition, Opposition)</p></blockquote>
 <blockquote><p>• Synchronous (Precedence, Succession) •Pragmatic Contrast (Juxtaposition, Opposition)</p></blockquote>
@@ -159,12 +162,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>• Condition (Hypothetical, General, Unreal • Restatement (Specification, Equivalence, Generalization) Present/Past, Factual Present/Past)</p></blockquote>
 <blockquote><p>• Pragmatic Condition (Relevance, Implicit As- • Alternative (Conjunction, Disjunction, Chosen Alternasertion) tive)</p></blockquote>
 <blockquote><p>• List</p></blockquote>
+</div>
 <p class="caption">图 25.3 PDTB 语义层级。顶层有四个类别，其下有 16 种类型和 23 种子类型（并非所有类型都有子类型）。16 种类型中有 11 种常用于隐式论元分类；以斜体标出的 5 种类型在隐式标注中出现得过于稀少，因而未被使用。</p>
 <p>而在英语中为 47%），标注者通过将句子对直接映射到 11 个语义标签来标注该语料，而不是从词汇层面的篇章连接词出发。</p>
 <p>(25.15) [Conn 为] [Arg2 推动图们江地区开发] ，[Arg1 韩国捐款一百万美元设立了图们江发展基金]“[In order to] [Arg2 promote the development of the Tumen River region],[Arg1 South Korea donated one million dollars to establish the Tumen River Development Fund]。”</p>
 <p>这些篇章树库已被用于多语种篇章分析的共享任务（Xue et al., 2016）。</p>
 <h2>25.2 篇章结构分析</h2>
-<p>给定一个句子序列，我们如何自动确定它们之间的连贯关系？这一任务通常称为篇章分析（尽管对于 PDTB，我们只是为叶节点片段分配标签，而不像对 RST 那样构建完整的分析树）。</p>
+<p>给定一个句子序列，我们如何自动确定它们之间的连贯</p>
+<aside class="term"><code>discourse</code><span class="term-zh">篇章（discourse）</span><span class="term-explain">由若干句子构成、在意义上连贯的语言单位；篇章分析研究的对象。</span></aside>
+<p>关系？这一任务通常称为篇章分析（尽管</p>
+<aside class="term"><code>parsing</code><span class="term-zh">分析（parsing）</span><span class="term-explain">依据文法或模型，为输入赋予句法/篇章结构的过程。</span></aside>
+<p>对于 PDTB，我们只是为叶节点片段分配标签，而不像对 RST 那样构建完整的分析树）。</p>
 <h3>25.2.1 RST 分析的基本篇章单元（EDU）切分</h3>
 <p>RST 分析通常分两个阶段进行。第一个阶段是基本篇章单元（EDU）切分，抽取每个基本篇章单元（EDU）的起点和终点。该阶段的输出是如下所示的标注：</p>
 <p>(25.16) [Mr. Rambo 说]e1 [一处 3.2 英亩的房产]e2 [俯瞰圣Fernando Valley]e3 [标价 400 万美元]e4 [因为已故演员 Erroll Flynn 曾在那里住过。]e5由于基本篇章单元（EDU）大致对应于小句，早期的基本篇章单元（EDU）切分模型先运行一个句法分析器，然后对输出做后处理。现代系统通常使用神经序列模型，并以 RST 篇章树库等数据集中的金标基本篇章单元（EDU）切分作为监督信号。图 25.4 给出了一个示例架构，它简化自 Lukasik et al. (2020) 的算法，为每个词元预测它是否是一个断点。这里输入的句子先经过一个编码器，再经过一个线性层和一个 softmax，产生由 0 和 1 组成的序列，其中 1 表示一个基本篇章单元（EDU）的起点。</p>
@@ -231,14 +239,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>前向中心的集合 Cf (Un) 依据诸如下述因素排序：</p>
 <p>篇章显著性和语法角色（例如主语的排序高于宾语，宾语的排序又高于所有其他语法角色）。我们把排序最高的前向中心称为 Cp（即“preferred center”，首选中心）。Cp 是对接下来将谈论哪个实体的一种预测。有时下一话语确实谈论这个实体，但有时则是另一个实体成为显著实体。</p>
 <p>这里我们将采用 Brennan et al. (1987) 提出的中心化算法，它定义了一对语句 Un 与 Un+1 之间的四种句际关系，这些关系取决于 Cb(Un+1)、Cb(Un) 与 Cp(Un+1) 之间的关系；它们如图 25.7 所示。</p>
+<div class="figbox">
 <blockquote><p>Cb(Un+1) = Cb(Un) Cb(Un+1)̸ = Cb(Un) 或未定义 Cb(Un)</p></blockquote>
 <blockquote><p>Cb(Un+1) = Cp(Un+1) Continue Smooth-Shift Cb(Un+1)̸ = Cp(Un+1) Retain Rough-Shift</p></blockquote>
+</div>
 <p class="caption">图 25.7 来自 Brennan et al. (1987) 的规则 2 的中心转移。</p>
 <p>该算法使用以下规则：</p>
+<div class="figbox">
 <blockquote><p>规则 1：若 Cf (Un) 中的任一元素在话语中由代词实现，</p></blockquote>
 <blockquote><p>Un+1，则 Cb(Un+1) 也必须以代词形式实现。</p></blockquote>
 <blockquote><p>规则 2：转移状态是有序的。Continue 优先于 Retain 优先于</p></blockquote>
 <blockquote><p>Smooth-Shift 优先于 Rough-Shift。</p></blockquote>
+</div>
 <p>规则 1 体现的直觉是，代词化（包括零形回指）是标记篇章显著性的一种常见方式。若一个语句中有多个代词指向前一语句中的实体，则这些代词中必须有一个实现后向中心 Cb；若只有一个代词，它就必须是 Cb。</p>
 <p>规则 2 体现的直觉是，持续以同一实体为中心的篇章，比反复转移到其他中心的篇章更连贯。转移表基于两个因素：后向中心 Cb 从 Un 到 Un+1 是否保持不变，以及该篇章实体是否是新语句 Un+1 中的首选中心（Cp）。若这两者都成立，则为 CONTINUE 关系，说话人一直在谈论同一实体，并且将要继续谈论该实体。在 RETAIN 关系中，说话人打算在将来的语句中 SHIFT 到一个新实体，同时把当前实体放在较低的 Cf 层级。在 SHIFT 关系中，说话人正转移到一个新的显著实体。</p>
 <p>让我们再次走查 (25.28) 的开头部分，此处重复为 (25.30)，展示每个语句处理之后的表示。</p>
@@ -335,6 +347,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>科学论文具有非常特定的全局结构：在论文进程的某个位置，作者必须指明一个科学目标、提出用于求解的某种方法、为该解决方案提供证据，并与先前工作进行比较。为这些修辞目标建模的一种流行标注方案是 Teufel 等（1999）与 Teufel 等（2009）的论证分区模型，它基于这样一种</p>
 <aside class="term"><code>argumentative zoning</code><span class="term-zh">论证分区</span><span class="term-explain">一种按修辞功能（如研究目标、方法、结果、研究空白）为科学论文句子打标签的标注方案。</span></aside>
 <p>观点：每篇科学论文都试图就一项被加入该领域知识库的新知识提出知识主张（Myers，1992）。科学论文中的句子可被赋予 15 个标签之一；图 25.13 给出了已标注句子的 7 个（经过缩短的）示例。</p>
+<div class="figbox">
 <blockquote><p>类别 描述 示例 AIM 具体研究目标的陈述，或“本过程的目的是考察</p></blockquote>
 <blockquote><p>当前论文的假设 训练在标注过程中所起的作用”</p></blockquote>
 <blockquote><p>OWN METHOD 新知识主张，自己的工作：“为了使其对我们的目的有用，</p></blockquote>
@@ -350,6 +363,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>结论。”</p></blockquote>
 <blockquote><p>ANTISUPPORT 与他人的结果或理论相冲突；自己 “这一结果对……的主张提出了挑战”</p></blockquote>
 <blockquote><p>工作的优越性</p></blockquote>
+</div>
 <p class="caption">图 25.13 论证分区（AZ）标注集中 15 个标签里 7 个标签的示例（Teufel 等，2009）。</p>
 <p>Teufel 等（1999）和 Teufel 等（2009）构建了科学论文的已标注语料库，涵盖计算语言学与化学领域，可用作监督信号来训练标准的句子分类架构，以赋予这 15 个标签。</p>
 <h2>25.6 本章小结</h2>

@@ -28,6 +28,12 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
@@ -61,7 +67,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>词元作为输入，并逐个迭代地生成输出词元。解码器是用来构建 GPT、Claude、Llama 和 Mistral 等大型语言模型的架构。解码器中的信息流是从左到右的，这意味着模型只根据前面的词来预测下一个词。解码器是生成式模型，也就是说，给定输入词元，它们会生成新的输出词元。</p>
 <p>编码器以词元序列为输入，并为每个词元输出一个向量表示。编码器通常是掩码语言模型，也就是说，它们的训练方式是遮蔽掉一个词，并学习通过观察两侧周围的词来预测它。像 BERT、RoBERTa 以及 BERT 家族中的其他模型这样的掩码语言模型都属于编码器模型。编码器模型不是生成式模型；它们不用来生成文本。相反，编码器模型常常被用来</p>
 <aside class="term"><code>encoder</code><span class="term-zh">编码器</span><span class="term-explain">把词元序列映射为等长的上下文化向量表示的架构，通常用掩码语言建模预训练，多用于分类等理解型任务。</span></aside>
-<img src="../md/images/fig_p2_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p2_0.png" alt="">
+<p class="caption">图 9.1 语言模型的三种架构：解码器、编码器和编码器-解码器。箭头勾勒出这三种架构中的信息流。解码器以词元为输入并生成词元作为输出。编码器以词元为输入并产生一个编码（每个词元的向量表示）作为输出。编码器-解码器以词元为输入并生成一串词元作为输出。</p>
 <p>创建分类器，例如输入是文本、输出是标签（比如情感、主题或其他类别）的分类器。这是通过对它们进行微调（在有监督数据上训练它们）来实现的。我们将在本章介绍编码器模型。</p>
 <aside class="term"><code>encoder- decoder</code><span class="term-zh">编码器-解码器</span><span class="term-explain">先由编码器读入整个输入序列、再由解码器生成输出序列的架构，输入与输出词元集合可以不同，常用于机器翻译和语音识别。</span></aside>
 <p>编码器-解码器以词元序列为输入，并输出一串词元。它与仅解码器模型的不同之处在于，编码器-解码器的输入词元与输出词元之间的关系要松散得多，它们被用来在不同种类的词元之间进行映射。也就是说，在编码器-解码器中，输出词元可能来自一个非常不同的词元集合，或者是一个比输入词元序列长得多或短得多的序列。例如，编码器-解码器架构用于机器翻译，其中输入词元属于一种语言，而输出词元（数量可能或多或少）属于另一种语言。编码器-解码器架构也用于语音识别，其中输入是表示语音的词元，输出是表示文本的词元。我们将在第 13 章介绍用于机器翻译的编码器-解码器架构，在第 16 章介绍用于语音识别的编码器-解码器架构。</p>
@@ -76,10 +83,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们在这里讨论第一点，下一节讨论第二点。</p>
 <p>图 9.2a 在此复现自第 7 章，展示了……</p>
 <p>第 7 章从左到右方法的信息流。每个词元处的注意力计算都基于前面（以及当前）的输入词元，忽略了位于所考虑词元右侧的潜在有用信息。双向编码器克服了这一限制，允许注意力机制覆盖整个输入，如图 9.2b 所示。</p>
-<img src="../md/images/fig_p3_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p3_0.png" alt="">
+<p class="caption">图 9.2 (a) 第 7 章的因果 Transformer，突出显示了词元 3 处的注意力计算。每个词元处的注意力值仅使用上下文中较早出现的信息来计算。(b) 双向注意力模型中的信息流。在处理每个词元时，模型关注所有输入，既包括当前词元之前的，也包括其后的。因此词元 3 的注意力可以利用其后词元的信息。</p>
 <p>实现非常简单！我们只需去掉注意力掩码这一步是我们在式 7.35 中引入的。回想第 7 章，对于因果 Transformer，我们必须对 QK⊺ 矩阵进行掩码，使注意力无法看到未来的词元（此处针对单个注意力头重述式 7.35）：</p>
 <p> QK⊺  (9.1) head = softmax mask√dk V图 9.3 展示了 QK⊺ 的掩码版本和未掩码版本。对于双向注意力，我们使用图 9.3b 的未掩码版本。因此注意力</p>
-<img src="../md/images/fig_p4_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p4_0.png" alt="">
+<p class="caption">图 9.3 N ×N 的 QK⊺ 矩阵，展示了 qi ·kj 值。(a) 显示比较矩阵的上三角部分被置零（设为 −∞，softmax 会将其变为零），而 (b) 显示的是未掩码版本。</p>
 <p>双向注意力的计算与式 9.1 完全相同，只是去掉了掩码：</p>
 <p>QK⊺  (9.2) head = softmax√dk V除此之外，注意力计算与我们在第 7 章看到的完全相同，Transformer 块的架构（前馈层、层归一化等）也是如此。与第 7 章一样，输入同样是一系列子词词元，通常由 3 种流行的词元化算法之一计算得到（包括我们已在第 2 章见过的 BPE 算法，以及另外两种：WordPiece 算法和 SentencePiece Unigram LM 算法）。这意味着每个输入句子都必须先经过词元化，后续所有处理都在子词词元而非词上进行。正如下文教科书第三部分将看到的，这要求对于某些需要“词”这一概念的 NLP 任务（如句法分析），我们有时需要把子词映射回词。</p>
 <p>为了更具体地说明，最初的仅英语双向 Transformer编码器模型 BERT（Devlin 等，2019）由以下部分组成：</p>
@@ -104,7 +113,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <ul><li>80% 的情况下：该词元被替换为词表中名为 [MASK] 的特殊词元，例如 lunch was delicious → lunch was [MASK]。</li><li>10% 的情况下：该词元被替换为另一个词元，该词元依据词元的一元概率从词表中随机抽取。例如 lunch was delicious → lunch was gasp。</li><li>10% 的情况下：该词元保持不变。例如 lunch was delicious</li><li>lunch was delicious.</li></ul>
 <p>随后我们训练模型为被操纵的词元猜出正确词元。为什么要设置三种可能的操纵方式？引入 [MASK] 词元会造成预训练与下游微调或推理之间的不匹配，因为当我们使用 MLM 模型执行下游任务时，并不会使用任何 [MASK] 词元。如果我们只用 [MASK] 替换词元，模型可能只在看到 [MASK] 时才预测词元，但我们希望模型始终尝试预测输入词元。</p>
 <p>为训练模型做出预测，原始输入序列先使用子词模型进行词元化，并抽取要被操纵的词元。输入中所有词元的词嵌入都从 E 嵌入矩阵中取出，并与位置嵌入相结合，构成 Transformer 的输入，然后通过堆叠的双向 Transformer 块，最后经过语言建模头。MLM 训练目标是预测每个被掩码词元的原始输入，这些预测产生的交叉熵损失驱动模型中全部参数的训练过程。也就是说，所有输入词元都在自注意力过程中发挥作用，但只有被抽样的词元用于学习。</p>
-<img src="../md/images/fig_p6_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p6_0.png" alt="">
+<p class="caption">图 9.4 掩码语言模型训练。在此例中，输入词元中有三个被选中，其中两个被掩码，第三个被替换为一个不相关的词。模型为这三项分配的概率被用作训练损失。其余 5 个词元不参与训练损失。</p>
 <p>图 9.4 用一个简单的例子说明了这一做法。这里，long、thanks 和the 已从训练序列中抽样出来，其中前两个被掩码，最后一个被替换为随机抽样的词元 apricot。得到的嵌入通过堆叠的双向 Transformer 块。回想第 7 章 7.5 节，为了对每个被掩码词元生成词表上的概率分布，语言建模头取出最终 Transformer 层 L 中每个被掩码词元 i 的输出向量 hL i，将其与解嵌入层 ET 相乘得到 logits u，然后用 softmax 把 logits 转换为词表上的概率 y：</p>
 <p>ui = hL i ET (9.3) yi = softmax(ui) (9.4)有了每个被掩码项的预测概率分布，我们就可以用交叉熵计算每个被掩码项的损失——即分配给真实被掩码词的负对数概率，如图 9.4 所示。更形式化地说，对于句子或批次 x 中给定的输入词元向量，设被掩码的词元集合为 M，把该句子中某些词元替换为掩码后的版本为 xmask，输出向量序列为 h。对于给定的输入词元 xi，例如图 9.4 中的词 long，损失就是在给定 xmask（概括为单个输出向量 hL i）下正确词 long 的概率：</p>
 <p>LMLM(xi) = −logP(xi|hL i )构成权重更新基础的梯度，基于单个训练序列（或一批序列）中被抽样的学习项的平均损失。</p>
@@ -120,7 +130,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>为便于 NSP 训练，BERT 在输入表示中引入两个特殊词元（这些词元在微调时也将被证明有用）。用子词模型对输入进行词元化后，[CLS] 词元被加在输入句对的最前面，[SEP] 词元被放在两个句子之间以及第二句最后一个词元之后。实际上还有两个特殊词元：一个“第一段”词元和一个“第二段”词元。这些词元在输入阶段被加到词嵌入与位置嵌入上。也就是说，输入 X 的每个词元实际上由 3 个嵌入相加而成：词嵌入、位置嵌入以及第一/第二段嵌入。</p>
 <p>在训练过程中，来自最终层且与之相关联的输出向量 hL CLS 来自[CLS] 词元，它表示下一句预测。与 MLM 目标一样，我们添加一个专用头，在这里是 NSP 头，它由一组学得的分类权重 WNSP ∈Rd×2 组成，从原始的 [CLS] 向量 hL CLS 产生一个二分类预测：</p>
 <p>yi = softmax(hL CLSWNSP) 交叉熵用于计算呈现给模型的每个句对的 NSP 损失。图 9.5 展示了 NSP 训练的总体设置。在 BERT 中，NSP 损失与 MLM 训练目标结合使用，构成最终损失。</p>
-<img src="../md/images/fig_p8_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p8_0.png" alt="">
+<p class="caption">图 9.5 NSP 损失计算的一个示例。</p>
 <h3>9.3.3 训练方案</h3>
 <p>BERT 及其他早期基于 Transformer 的语言模型在约 33 亿词上训练（由英文维基百科和一个名为 BooksCorpus 的书籍文本语料库（Zhu 等，2015）组合而成，后者因知识产权原因已不再使用）。现代掩码语言模型现在在规模大得多的网页文本数据集上训练，经过一定过滤，并用维基百科等更高质量的数据加以补充，这与我们在第 7 章讨论的因果大型语言模型所用数据相同。</p>
 <p>多语言模型同样使用网页文本和多语言维基百科。例如，XLM-R 模型在约 3000 亿词元、覆盖 100 种语言的数据上训练，这些数据通过 Common Crawl（https://commoncrawl.org/）从网上获取。</p>
@@ -134,8 +145,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>在许多用途下，预训练的多语言模型比单语言模型更实用，因为它免去了构建许多（上百个！）各自独立的单语言模型的需要。而且多语言模型可以利用训练数据中恰好资源更丰富的相似语言所提供的语言信息，来改善低资源语言上的性能。不过，当语言数量变得非常庞大时，多语言模型就会表现出所谓的多语言诅咒（Conneau 等，2020）：与在较少语言上训练的模型相比，它在每种语言上的性能都会下降。多语言模型的另一个问题是它们「带有口音」：资源较丰富语言（通常是英语）的语法结构会渗透进低资源语言；训练中数量庞大的英语使模型对低资源语言的表示略微更像英语（Papadimitriou 等，2023）。</p>
 <h2>9.4 面向分类的微调</h2>
 <p>预训练语言模型的强大之处，在于它们能够从大量文本中提取出泛化规律——这些泛化规律对形形色色的下游应用都很有用。要实际利用这些泛化规律来解决下游任务，有两种方式。最常见的方式是用自然语言向模型发出提示，使它进入某种状态，从而按上下文生成我们想要的内容。</p>
-<p>本节我们探讨使用预训练语言模型的另一种方式，即用于下游应用的一种微调。在掩码语言模型所采用的这类微调中，我们在预训练模型之上加入针对具体应用的电路（通常称为专用头），并以预训练模型的输出作为它的输入。微调过程就是用该应用的相关标注数据来训练这些额外添加的、针对具体应用的参数。通常，这种训练要么冻结预训练语言模型的参数，要么只对其做极小的调整。</p>
-<p>以下各节将介绍针对几种常见类别的基于文本的应用的微调方法：序列分类、句子对分类和序列标注。</p>
+<p>本节我们探讨使用预训练语言模型的另一种方式，用于下游应用，也就是一种微调。在所使用的这类微调</p>
+<aside class="term"><code>fine-tuning</code><span class="term-zh">微调</span><span class="term-explain">在预训练模型之上接上任务专用的网络层，再用少量标注数据继续训练，使模型适配具体下游任务的做法。</span></aside>
+<p>我们在预训练模型之上加入针对具体应用的电路（通常称为专用头），并以预训练模型的输出作为它的输入。微调过程就是用该应用的相关标注数据来训练这些额外添加的、针对具体应用的参数。通常，这种训练要么冻结预训练语言模型的参数，要么只对其做极小的调整以下各节将介绍针对几种常见类别的基于文本的应用的微调方法：序列分类、句子对分类和序列标注。</p>
 <h3>9.4.1 序列分类</h3>
 <p>序列分类的任务是用单个标签对整段文本序列进行分类。这类任务通常称为文本分类，例如情感分析或垃圾邮件检测（附录 B），其中我们把一段文本分到两个或三个类别（如正面或负面）里；它也包括类别数量很多的分类任务，例如文档级主题分类。</p>
 <p>对于序列分类，我们用一个单个向量来表示待分类的整个输入。我们可以用多种方式表示一个序列。一种方式是对序列中每个词元的最后一层输出向量求和或求平均。</p>
@@ -149,7 +161,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>9.4.2 序列对分类</h3>
 <p>如 9.3.2 节所述，有一类重要的问题涉及对输入序列对进行分类。属于这一类的实际应用包括复述检测（这两个句子是否互为复述？）、逻辑蕴含（句子 A 是否在逻辑上蕴含句子 B？）以及语篇连贯性（句子 B 作为句子 A 的后续有多连贯？）。</p>
 <p>针对这类任务之一来微调某个应用的过程，与使用 NSP 目标进行预训练时完全一样。在微调过程中，成对的标注句子取自</p>
-<img src="../md/images/fig_p11_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p11_0.png" alt="">
+<p class="caption">图 9.6 使用双向 Transformer 编码器进行序列分类。[CLS] 词元的输出向量作为简单分类器的输入。</p>
 <p>将监督微调集的样本呈现给模型，让它们经过模型的所有层，为每个输入词元产生 h 输出。与序列分类一样，与前置的 [CLS] 词元相关联的输出向量代表模型对输入句对的看法。并且与 NSP 训练一样，两个输入由 [SEP] 词元分隔。为了进行分类，[CLS] 向量与一组已学习的分类权重相乘，并通过 softmax 生成标签预测，随后用这些预测来更新权重。</p>
 <p>作为例子，让我们考虑一个蕴含分类任务，使用 Multi-体裁自然语言推理（MultiNLI）数据集（Williams 等，2018）。在</p>
 <aside class="term"><code>natural language inference</code><span class="term-zh">自然语言推理</span><span class="term-explain">判断一对句子之间语义关系的任务，通常把第二个句子相对第一个句子判定为蕴含、矛盾或中立。</span></aside>
@@ -171,14 +184,20 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>名称来指称的事物：一个人、一个地点、一个组织。命名实体识别（NER）的任务是找出构成专有名称的文本片段，并标注该实体的类型。四种实体标签最为常见：PER（人）、LOC（地点）、ORG（组织）或 GPE（地缘政治实体）。然而，术语命名实体通常被扩展至包含本身并非实体的事物，包括诸如日期和时间之类的时间表达，甚至诸如价格之类的数值表达。下面是 NER 标注器输出的一个示例：</p>
 <p>以高油价为由，[ORG United Airlines] 表示 [TIME Friday] 它已将飞往一些同样由低成本航空公司服务的城市的航班往返票价提高了 [MONEY $6]。[ORG American Airlines]，即 [ORG AMR Corp.] 的一个下属单位，立即跟进这一举措，发言人 [PER Tim Wagner] 说。[ORG United]，即 [ORG UAL Corp.] 的一个下属单位，表示该涨价于 [TIME Thursday] 生效，并适用于它与折扣航空公司竞争的大部分航线，例如 [LOC Chicago] 到 [LOC Dallas] 以及 [LOC Denver] 到 [LOC San Francisco]。</p>
 <p>该文本包含 13 处命名实体提及，其中包括 5 个组织、4 个地点、2 个时间、1 个人，以及 1 处货币提及。图 9.7 展示了典型的通用命名实体类型。许多应用还需要使用特定的实体类型，如蛋白质、基因、商业产品或艺术作品。</p>
+<div class="figbox">
 <blockquote><p>类型 标签 样例类别 例句 人物 PER 人物、角色 图灵是计算机科学的巨人。</p></blockquote>
 <blockquote><p>组织 ORG 公司、运动队 IPCC 对那场气旋发出了警告。</p></blockquote>
 <blockquote><p>地点 LOC 地区、山脉、海洋 Sanitas 山位于 Sunshine Canyon。</p></blockquote>
 <blockquote><p>地缘政治实体 GPE 国家、州 帕洛阿尔托正在提高停车费。</p></blockquote>
+</div>
+<p class="caption">图 9.7 通用命名实体类型的列表，以及它们所指称的实体种类。</p>
 <p>命名实体识别是各种自然语言处理中的有用步骤，这些任务包括将文本链接到结构化知识源（如维基百科）中的信息、度量文本中对某一特定实体的情感或态度，甚至作为为保护隐私而对文本进行匿名化处理的一部分。NER 任务之所以困难，是因为切分 NER 片段存在歧义——要弄清哪些词元是实体、哪些不是，因为文本中的大多数词都不会是命名实体。另一个困难源于类型歧义。提及 Washington 可能指一个人、一支运动队、一座城市或美国政府，如图 9.8 所示。</p>
+<div class="figbox">
 <blockquote><p>[PER Washington] 出生在 James Burroughs 的农场，生而为奴。[ORG Washington] 在四场系列赛中以 2 比 1 领先。</p></blockquote>
 <blockquote><p>Blair 抵达 [LOC Washington]，进行很可能是他最后一次的国事访问。</p></blockquote>
 <blockquote><p>六月，[GPE Washington] 通过了一项主要安全带法。</p></blockquote>
+</div>
+<p class="caption">图 9.8 名称 Washington 使用中类型歧义的示例。</p>
 <h3>9.5.2 BIO 标注</h3>
 <p>对于像 NER 这样需要识别片段的问题，序列标注的一种标准方法是 BIO 标注（Ramshaw 和 Marcus，1995）。这种方法使我们</p>
 <aside class="term"><code>BIO tagging</code><span class="term-zh">BIO 标注</span><span class="term-explain">一种序列标注方案，用 B-XXX 标记实体片段的开始、I-XXX 标记其内部、O 标记非实体，从而把词元序列转换为实体片段。</span></aside>
@@ -188,12 +207,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>BIO</code><span class="term-zh">BIO 标注</span><span class="term-explain">一种命名实体序列标注方案：B 标记实体片段的起始，I 标记片段内部的词元，O 标记片段之外的词元，且每类实体各有自己的 B 和 I 标签。</span></aside>
 <p>称为 IO 标注和 BIOES 标注的变体。在 BIO 标注中，我们把任何开始一个感兴趣的片段的词元标记为 B，出现在片段内部的词元标记为 I，而位于任何感兴趣片段之外的词元都标记为 O。虽然 O 标签只有一个，但我们会为每个命名实体类别设置不同的 B 标签和 I 标签。</p>
 <p>因此标签的数量为 2n+1，其中 n 是实体类型的数量。BIO 标注能够表示与括号标记法完全相同的信息，但它的优势在于，我们可以像词性标注那样，用同样简单的序列建模方式来表示该任务：为每个输入词 xi 分配单个标签 yi：</p>
+<div class="figbox">
 <blockquote><p>词 IO 标签 BIO 标签 BIOES 标签 Jane I-PER B-PER B-PER Villanueva I-PER I-PER E-PER of O O O United I-ORG B-ORG B-ORG Airlines I-ORG I-ORG I-ORG Holding I-ORG I-ORG E-ORG discussed O O O the O O O Chicago I-LOC B-LOC S-LOC route O O O. O O O</p></blockquote>
+</div>
+<p class="caption">图 9.9 把 NER 作为序列模型，展示了 IO、BIO 和 BIOES 标注。</p>
 <p>我们还展示了两种变体的标注方案：IO 标注，它通过取消 B 标签而丢失了一些信息；以及 BIOES 标注，它为片段的结尾增加了一个结束标签 E，并为仅由一个词构成的片段增加了一个片段标签 S。</p>
 <h3>9.5.3 序列标注</h3>
 <p>在序列标注中，我们把与每个输入词元对应的最终输出向量送入一个分类器，由该分类器在可能的标签集合上产生 softmax 分布。对于单层前馈层分类器，需要学习的权重集合为 WK，其大小为 [d × k]，其中 k 是该任务可能的标签数量。可以采用贪心方法生成最终的输出标签序列，即把每个词元的 argmax 标签当作可能的答案。图 9.10 展示了这种方法的一个例子，其中 yi 是标签上的概率向量，k 用于索引标签。</p>
 <p>yi = softmax(hL (9.7) i WK) ti = argmaxk(yi) (9.8)另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。</p>
-<img src="../md/images/fig_p14_0.png" alt="">
+<img src="../md/images/09-masked-language-models/fig_p14_0.png" alt="">
+<p class="caption">图 9.10 使用双向 Transformer 编码器进行命名实体识别的序列标注。每个输入词元的输出向量被送入一个简单的 k 路分类器。</p>
 <p>词元化与 NER请注意，NER 的监督训练数据通常采用 BIO 标签的形式，这些标签与按词切分的文本相对应。例如下面这个包含两个命名实体的句子：</p>
 <p>[LOC Mt. Sanitas ] 位于 [LOC Sunshine Canyon] 。</p>
 <p>将具有下面这组逐词的 BIO 标签。</p>

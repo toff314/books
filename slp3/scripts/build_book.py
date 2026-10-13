@@ -80,14 +80,15 @@ def build(slug: str, title: str, dual: bool, out_pdf: bool) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="章节构建：translated.json → md / html / pdf")
+    ap = argparse.ArgumentParser(description="章节构建：translated.json → md / html（默认不渲染分章 PDF）")
     ap.add_argument("--slug", required=True, help="章节 slug，如 01-introduction")
     ap.add_argument("--title", default="", help="中文标题")
     ap.add_argument("--dual", action="store_true", help="同时产出中英对照版")
-    ap.add_argument("--no-pdf", action="store_true", help="只出 Markdown/HTML，不渲染 PDF")
+    ap.add_argument("--pdf", action="store_true",
+                    help="额外逐章渲染 PDF（默认不渲染；整本 PDF 用 scripts/build_pdf_book.py 产出）")
     args = ap.parse_args()
 
-    build(args.slug, args.title or args.slug, args.dual, not args.no_pdf)
+    build(args.slug, args.title or args.slug, args.dual, args.pdf)
     print("[OK] 构建完成")
     return 0
 
