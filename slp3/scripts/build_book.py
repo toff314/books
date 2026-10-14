@@ -49,6 +49,11 @@ def build(slug: str, title: str, dual: bool, out_pdf: bool) -> None:
     for d in (md_dir, html_dir, pdf_dir, dual_dir):
         d.mkdir(parents=True, exist_ok=True)
 
+    # 0. 公式 LaTeX 增强：给 translated.json 的公式块补 latex（不改块结构/ID）
+    en_pdf = BOOK / "build" / f"{slug}-en.pdf"
+    if en_pdf.is_file():
+        run([PY, SKILL / "scripts" / "augment_formulas.py", translated, "--pdf", en_pdf])
+
     # 1. Markdown（中文 + 可选对照）
     md_cmd = [PY, SKILL / "scripts" / "build_markdown.py", translated, "-o", md_dir,
               "--slug", slug, "--title", title, "--img-subdir", slug]
@@ -71,7 +76,8 @@ def build(slug: str, title: str, dual: bool, out_pdf: bool) -> None:
         return
 
     # 3. PDF（中文 / 对照）
-    run([PY, SKILL / "scripts" / "build_html.py", translated, "-o", work, "--mode", "both"])
+    run([PY, SKILL / "scripts" / "build_html.py", translated, "-o", work, "--mode", "both",
+         "--mathjax", (REPO / "vendor" / "mathjax" / "tex-svg.js").as_uri()])
     run([PY, SKILL / "scripts" / "render_pdf.py", work / "mono.html",
          "-o", pdf_dir / f"{slug}-zh.pdf"])
     if dual:

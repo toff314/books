@@ -28,12 +28,21 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/13-machine-translation.md">Markdown 源文件</a></div>
 <h1>第 13 章 机器翻译</h1>
@@ -121,6 +130,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>(Dorr, 1994) can help us build better MT models. We often distinguish the idiosyncratic and lexical differences that must be dealt with one by one (the word for “dog”differs wildly from language to language), from systematic differences that we can model in a general way (many languages put the verb before the grammatical object; others put the verb after the grammatical object). The study of these systematic cross-linguistic similarities and differences is called linguistic typology. This section sketches some typological facts that impact machine translation; the interested reader should also look into WALS, the World Atlas of Language Structures, which gives many typological facts about languages (Dryer and Haspelmath, 2013).</p></blockquote>
 <aside class="term"><code>typology</code><span class="term-zh">类型学</span><span class="term-explain">按语言的结构特征对语言进行归类和比较的研究，可刻画跨语言系统性的相似与差异。</span></aside>
 <img src="../md/images/13-machine-translation/fig_p3_0.png" alt="">
+<p class="caption">图 13.1 《巴别塔》，Pieter Bruegel，1563 年。Wikimedia Commons，藏于维也纳艺术史博物馆。</p>
+<p class="caption">Figure 13.1 The Tower of Babel, Pieter Bruegel 1563. Wikimedia Commons, from the Kunsthistorisches Museum, Vienna.</p>
 <h3>13.1.1 语序类型学</h3>
 <blockquote><p>13.1.1 Word Order Typology</p></blockquote>
 <p>正如我们在上文比较英语和日语的例子中所提示的，各种语言在简单陈述从句中动词、主语和宾语的基本语序上存在差异。例如，德语、法语、英语和汉语普通话都属于 SVO</p>
@@ -147,6 +158,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>（13.4）西班牙语 bruja verde 英语 green witch</p>
 <blockquote><p>(13.4) Spanish bruja verde English green witch</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p4_0.png" alt="">
+<p class="caption">图 13.2 其他语序差异的例子：（a）在德语中，英语里更自然地靠后出现的副词会出现在句首位置，而有时态的动词出现在第二位。（b）在汉语普通话中，表示目标的介词短语常常出现在动词之前，这与英语不同。</p>
+<p class="caption">Figure 13.2 Examples of other word order differences: (a) In German, adverbs occur in initial position that in English are more natural later, and tensed verbs occur in second position. (b) In Mandarin, preposition phrases expressing goals often occur pre-verbally, unlike in English.</p>
 <p>图 13.2 给出了其他语序差异的例子。所有这些语</p>
 <blockquote><p>Fig. 13.2 shows examples of other word order differences. All of these word</p></blockquote>
 <p>言之间的语序差异都会给翻译带来问题，要求系统在生成输出时进行大规模的结构重排。</p>
@@ -173,6 +186,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>解释性脚注，能够表达另一种语言中某个词的确切含义。例如，英语没有与汉语普通话的 xi`ao 或日语的 oyak¯ok¯o 完全对应的词（在英语中只能用一些别扭的说法来将就，如 filial piety 或 loving child，或者对两者都用 good son/daughter）。</p>
 <blockquote><p>of an explanatory footnote, can express the exact meaning of a word in the other language. For example, English does not have a word that corresponds neatly to Mandarin xi`ao or Japanese oyak¯ok¯o (in English one has to make do with awkward phrases like filial piety or loving child, or good son/daughter for both).</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p5_0.png" alt="">
+<p class="caption">图 13.3 如 Hutchins 和 Somers（1992）所讨论的，英语 leg、foot 等与各种法语译法之间复杂的重叠关系。</p>
+<p class="caption">Figure 13.3 The complex overlap between English leg, foot, etc., and various French translations as discussed by Hutchins and Somers (1992).</p>
 <p>最后，各语言在将一个事件的概念属性</p>
 <blockquote><p>Finally, languages differ systematically in how the conceptual properties of an</p></blockquote>
 <p>映射到具体词语上的方式上存在系统性差异。Talmy（1985，1991）指出，语言可以按其运动方向和运动方式是标示在动词上还是标示在“卫星成分”（satellites）上来刻画：卫星成分即小品词、介词短语或副词短语。例如，一个瓶子漂浮着离开洞穴，用英语描述时方向标示在小品词 out 上，而用西班牙语时方向则标示在动词上：</p>
@@ -229,7 +244,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>MT uses supervised machine learning: at training time the system is given a</p></blockquote>
 <p>大量平行句对（源语言中的每个句子都与目标语言中的一个句子相配），并学会把源语言句子映射为目标语言句子。在实践中，我们并不是像上面的例子那样以词为单位，而是把句子切分成子词词元序列（词元可以是词、子词或单个字符）。然后训练系统，使其在给定源语言词元序列 x1,...,xn 的条件下，最大化目标语言词元序列 y1,...,ym 的概率：</p>
 <blockquote><p>large set of parallel sentences (each sentence in a source language matched with a sentence in the target language), and learns to map source sentences into target sentences. In practice, rather than using words (as in the example above), we split the sentences into a sequence of subword tokens (tokens can be words, or subwords, or individual characters). The systems are then trained to maximize the probability of the sequence of tokens in the target language y1,...,ym given the sequence of tokens in the source language x1,...,xn:</p></blockquote>
-<p>P(y1,...,ym|x1,...,xn) (13.7)编码器-解码器架构并不直接使用输入词元，而是由两个组件构成：编码器和解码器。编码器接收输入词 x = [x1,...,xn]，产生一个中间上下文 h。在解码时，系统以 h 为输入，逐词生成输出 y：</p>
+<div class="formula">$$P(y_{1},...,y_{m}|x_{1},...,x_{n})$$</div>
+<p>编码器-解码器架构并不直接使用输入词元，而是由两个组件构成：编码器和解码器。编码器接收输入词 x = [x1,...,xn]，产生一个中间上下文 h。在解码时，系统以 h 为输入，逐词生成输出 y：</p>
 <blockquote><p>Rather than use the input tokens directly, the encoder-decoder architecture consists of two components, an encoder and a decoder. The encoder takes the input words x = [x1,...,xn] and produces an intermediate context h. At decoding time, the system takes h and, word by word, generates the output y:</p></blockquote>
 <p>h = encoder(x) yt+1 = decoder(h,y1,...,yt) ∀t ∈[1,...,m] 接下来的两节中，我们将讨论子词分词，然后讨论如何获得用于训练的平行语料库，之后我们将介绍编码器-解码器架构的细节。</p>
 <blockquote><p>h = encoder(x) yt+1 = decoder(h,y1,...,yt) ∀t ∈[1,...,m] In the next two sections we’ll talk about subword tokenization, then how to get parallel corpora for training, and then we’ll introduce the details of the encoderdecoder architecture.</p></blockquote>
@@ -307,9 +323,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>一个多语言嵌入空间，其中来自不同语言的句子处于同一个嵌入空间（Artetxe 和 Schwenk, 2019）。给定这样一个空间，这类嵌入的余弦相似度就提供了一种自然的打分函数（Schwenk, 2018）。Thompson 和 Koehn (2019) 给出如下两个</p>
 <blockquote><p>a multilingual embedding space, in which sentences from different languages are in the same embedding space (Artetxe and Schwenk, 2019). Given such a space, cosine similarity of such embeddings provides a natural scoring function (Schwenk, 2018). Thompson and Koehn (2019) give the following cost function between two</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p9_0.png" alt="">
+<p class="caption">图 13.4 英语与法语句子之间的一个对齐示例，句子抽取自 Antoine de Saint-Exupery 的 Le Petit Prince 以及一个假设的译文。句对齐接收句子 e1,...,en 和 f1,..., fm，找出互为译文的最小句子集合，包括像 (e1,f1)、(e4,f3)、(e5,f4)、(e6,f6) 这样的单句映射，以及 2-1 对齐 (e2/e3,f2)、(e7/e8,f7) 和空对齐 (f5)。</p>
+<p class="caption">Figure 13.4 A sample alignment between sentences in English and French, with sentences extracted from Antoine de Saint-Exupery’s Le Petit Prince and a hypothetical translation. Sentence alignment takes sentences e1,...,en, and f1,..., fm and finds minimal sets of sentences that are translations of each other, including single sentence mappings like (e1,f1), (e4,f3), (e5,f4), (e6,f6) as well as 2-1 alignments (e2/e3,f2), (e7/e8,f7), and null alignments (f5).</p>
 <p>分别来自源文档和目标文档的句子或片段 x、y：</p>
 <blockquote><p>sentences or spans x,y from the source and target documents respectively:</p></blockquote>
-<p>(1−cos(x,y))nSents(x) nSents(y) c(x,y) = (13.10) PS s=1 1−cos(x,ys)+PS s=1 1−cos(xs,y)其中 nSents() 给出句子的数量（这使该指标偏向于将大量单句相互对齐，而不是对齐非常大的片段）。分母有助于对相似度进行归一化，而 x1,...,xS,y1,...,yS 则是从各自文档中随机抽取的句子。</p>
+<div class="formula">$$(1-\text{cos}(x,y))\text{nSents}(_{S}x)\text{nSents}(y)$$</div>
+<p>c(x,y) = (13.10) PS s=1 1−cos(x,ys)+PS s=1 1−cos(xs,y)其中 nSents() 给出句子的数量（这使该指标偏向于将大量单句相互对齐，而不是对齐非常大的片段）。分母有助于对相似度进行归一化，而 x1,...,xS,y1,...,yS 则是从各自文档中随机抽取的句子。</p>
 <blockquote><p>where nSents() gives the number of sentences (this biases the metric toward many alignments of single sentences instead of aligning very large spans). The denominator helps to normalize the similarities, and so x1,...,xS,y1,...,yS, are randomly selected sentences sampled from the respective documents.</p></blockquote>
 <p>通常使用动态规划作为对齐算法（Gale 和</p>
 <blockquote><p>Usually dynamic programming is used as the alignment algorithm (Gale and</p></blockquote>
@@ -326,6 +345,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>解码器本质上是一个条件语言模型，它关注编码器的表示并逐个生成目标词，在每个时间步以源句子和先前生成的目标语言词为条件来生成一个词元。解码可以使用所讨论的任何解码方法</p>
 <blockquote><p>The decoder is essentially a conditional language model that attends to the encoder representation and generates the target words one by one, at each timestep conditioning on the source sentence and the previously generated target language words to generate a token. Decoding can use any of the decoding methods discussed</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p10_0.png" alt="">
+<p class="caption">图 13.5 用于机器翻译的编码器-解码器 transformer 架构。编码器使用我们在第 7 章看到的 transformer 块，而解码器使用一个更强大的块，该块带有一个额外的交叉注意力层，可以关注编码器的所有词。我们将在下一节更详细地看到这一点。</p>
+<p class="caption">Figure 13.5 The encoder-decoder transformer architecture for machine translation. The encoder uses the transformer blocks we saw in Chapter 7, while the decoder uses a more powerful block with an extra crossattention layer that can attend to all the encoder words. We’ll see this in more detail in the next section.</p>
 <p>第 7 章中的方法，如贪心、温度采样或核采样。但机器翻译中最常见的解码算法是我们将在 13.4 节介绍的束搜索算法。</p>
 <blockquote><p>in Chapter 7 like greedy, or temperature or nucleus sampling. But the most common decoding algorithm for MT is the beam search algorithm that we’ll introduce in Section 13.4.</p></blockquote>
 <p>但该架构的各组成部分与我们所见的 transformer</p>
@@ -341,23 +362,28 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>is X, in cross attention the input is the final output of the encoder Henc = h1,...,hn.</p></blockquote>
 <p>Henc 的形状为 [n × d]，每一行代表一个输入词元。为了将来自编码器的 key 和 value 与来自解码器上一层的 query 相连接，我们将编码器输出 Henc 乘以交叉注意力层的 key 权重 WK 和 value 权重 WV。query 来自上一层解码器层的输出 Hdec[ℓ−1]，它乘以交叉注意力层的 query 权重 WQ：</p>
 <blockquote><p>Henc is of shape [n × d], each row representing one input token. To link the keys and values from the encoder with the query from the prior layer of the decoder, we multiply the encoder output Henc by the cross-attention layer’s key weights WK and value weights WV. The query comes from the output from the prior decoder layer Hdec[ℓ−1], which is multiplied by the cross-attention layer’s query weights WQ:</p></blockquote>
-<p>Q = Hdec[ℓ−1]WQ; K = HencWK; V = HencWV (13.11) QK⊺  (13.12) CrossAttention(Q,K,V) = softmax√dk V因此，交叉注意力使解码器能够关注源语言的每个词，这些词被投影到编码器的整个最终输出表示中。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。不过，编码器中的多头注意力被允许向前查看整个源语言文本，因此它没有被掩码。</p>
+<div class="formula">$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$</div>
+<p>QK⊺  (13.12) CrossAttention(Q,K,V) = softmax√dk V因此，交叉注意力使解码器能够关注源语言的每个词，这些词被投影到编码器的整个最终输出表示中。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。不过，编码器中的多头注意力被允许向前查看整个源语言文本，因此它没有被掩码。</p>
 <blockquote><p>The cross attention thus allows the decoder to attend to each of the source language words as projected into the entire encoder final output representations. The other attention layer in each decoder block, the multi-head attention layer, is the same causal (left-to-right) attention that we saw in Chapter 7. The multi-head attention in the encoder, however, is allowed to look ahead at the entire source language text, so it is not masked.</p></blockquote>
 <p>要训练一个编码器-解码器模型，我们把源文本提供给网络，然后</p>
 <blockquote><p>To train an encoder-decoder model, we give the network the source text, and then</p></blockquote>
 <p>从分隔符词元开始，以自回归的方式训练它预测下一个词元，并使用交叉熵损失。回想一下，语言建模的交叉熵损失为</p>
 <blockquote><p>starting with the separator token train it autoregressively to predict the next token, using cross-entropy loss. Recall that cross-entropy loss for language modeling is</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p11_0.png" alt="">
+<p class="caption">图 13.6 编码器和解码器的 transformer 块，展示了残差流视角。编码器的最终输出 Henc = h1,...,hn 是解码器所使用的上下文。解码器是标准的 transformer，只是多了一个额外的层，即交叉注意力层，它接收编码器输出 Henc 并用它来形成其 K 和 V 输入。</p>
+<p class="caption">Figure 13.6 The transformer block for the encoder and the decoder, showing the residual stream view. The final output of the encoder Henc = h1,...,hn is the context used in the decoder. The decoder is a standard transformer except with one extra layer, the cross-attention layer, which takes that encoder output Henc and uses it to form its K and V inputs.</p>
 <p>由模型赋予正确的下一个词的概率决定。因此在时刻 t，CE 损失是模型赋予训练序列中下一个词的概率的负对数：</p>
 <blockquote><p>determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence:</p></blockquote>
-<p>LCE( ˆyt,yt) = −log ˆyt[wt+1] (13.13)与那种情况一样，我们在解码器中使用教师强制。回想一下，在教师强制中，解码的每个时间步我们都强制系统使用训练中的标准答案目标词元作为下一个输入 xt+1，而不是让它依赖（可能有误的）解码器输出 ˆyt。</p>
+<div class="formula">$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$</div>
+<p>与那种情况一样，我们在解码器中使用教师强制。回想一下，在教师强制中，解码的每个时间步我们都强制系统使用训练中的标准答案目标词元作为下一个输入 xt+1，而不是让它依赖（可能有误的）解码器输出 ˆyt。</p>
 <blockquote><p>As in that case, we use teacher forcing in the decoder. Recall that in teacher forcing, at each time step in decoding we force the system to use the gold target token from training as the next input xt+1, rather than allowing it to rely on the (possibly erroneous) decoder output ˆyt.</p></blockquote>
 <aside class="term"><code>teacher forcing</code><span class="term-zh">教师强制</span><span class="term-explain">训练解码器时，每个时间步都强制把训练数据中的正确目标词元作为下一输入，而非使用模型自己生成的输出。</span></aside>
 <h2>13.4 机器翻译中的解码：束搜索</h2>
 <blockquote><p>13.4 Decoding in MT: Beam Search</p></blockquote>
 <p>回想第 7 章中的贪心解码算法：在生成过程的每个时间步 t，输出 yt 的选定方式是计算词表中每个词的概率，然后选择概率最高的词（即 argmax）：</p>
 <blockquote><p>Recall the greedy decoding algorithm from Chapter 7: at each time step t in generation, the output yt is chosen by computing the probability for each word in the vocabulary and then choosing the highest probability word (the argmax):</p></blockquote>
-<p>ˆwt = argmaxw∈V P(w|w&lt;t) (13.14)贪心解码的一个问题是：在词 t 处看起来概率很高的选择，到了词 t +1 时可能被证明是错误的选择。束搜索算法会保留多个选择，直到稍后我们能够看出哪一个最好。</p>
+<div class="formula">$$wˆ_{t}=\text{argmax}_{w\inV}P(w|w_{&lt;t})$$</div>
+<p>贪心解码的一个问题是：在词 t 处看起来概率很高的选择，到了词 t +1 时可能被证明是错误的选择。束搜索算法会保留多个选择，直到稍后我们能够看出哪一个最好。</p>
 <blockquote><p>A problem with greedy decoding is that what looks high probability at word t might turn out to have been the wrong choice once we get to word t +1. The beam search algorithm maintains multiple choices until later when we can see which one is best.</p></blockquote>
 <p>在束搜索中，我们把解码建模为在可能的生成结果空间中搜索，该空间表示为一棵搜索树，其分支表示动作（生成一个词元），节点表示状态（已经生成了某个特定的前缀）。我们搜索最佳的动作序列，即概率最高的字符串。</p>
 <blockquote><p>In beam search we model decoding as searching the space of possible generations, represented as a search tree whose branches represent actions (generating a token), and nodes represent states (having generated a particular prefix). We search for the best action sequence, i.e., the string with the highest probability.</p></blockquote>
@@ -366,6 +392,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 13.7 展示了一个虚构的例子。概率最高的序列是 ok ok EOS（其概率为 .4× .7× 1.0）。但贪心搜索找不到它，而是错误地选择 yes 作为第一个词，因为它具有最高的局部概率（0.5）。</p>
 <blockquote><p>Fig. 13.7 shows a made-up example. The most probable sequence is ok ok EOS (its probability is .4× .7× 1.0). But greedy search doesn’t find it, incorrectly choosing yes as the first word since it has the highest local probability (0.5).</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p12_0.png" alt="">
+<p class="caption">图 13.7 从词表 V = {yes,ok,&lt;s&gt;} 生成目标字符串 T = t1,t2,... 的搜索树，展示了从该状态生成每个词元的概率。贪心搜索选择 yes 后跟 yes，而不是全局概率最高的序列 ok ok。</p>
+<p class="caption">Figure 13.7 A search tree for generating the target string T = t1,t2,... from vocabulary V = {yes,ok,&lt;s&gt;}, showing the probability of generating each token from that state. Greedy search chooses yes followed by yes, instead of the globally most probable sequence ok ok.</p>
 <p>对于某些问题，例如词性标注或句法分析，正如我们将要在</p>
 <blockquote><p>For some problems, like part-of-speech tagging or parsing as we will see in</p></blockquote>
 <p>在第 18 章或第 19 章中，我们可以使用动态规划搜索（Viterbi 算法）来解决这个问题。遗憾的是，动态规划并不适用于输出决策之间存在长距离依赖的生成问题。唯一能保证找到最优解的方法是穷举搜索：计算 V^T 个可能句子（对某个长度值 T）中每一个的概率，这显然太慢了。</p>
@@ -387,21 +415,29 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>即被传给不同的解码器，每个解码器都对整个词表生成一个 softmax，从而把该候选假设扩展到每一个可能的下一个词元。这 k×V 个候选假设中的每一个都由 P(yi|x,y&lt;i) 评分：即当前词选择的概率乘以通向它的路径的概率。然后我们把 k×V 个候选假设剪枝到最优的 k 个候选假设，因此搜索前沿中永远不超过 k 个候选假设，解码器也永远不超过 k 个。图 13.8 以 The green witch arrived. 的开头为例、取束宽为 2 说明了这一点。</p>
 <blockquote><p>by being passed to distinct decoders, which each generate a softmax over the entire vocabulary to extend the hypothesis to every possible next token. Each of these k×V hypotheses is scored by P(yi|x,y&lt;i): the product of the probability of the current word choice multiplied by the probability of the path that led to it. We then prune the k ×V hypotheses down to the k best hypotheses, so there are never more than k hypotheses at the frontier of the search, and never more than k decoders. Fig. 13.8 illustrates this with a beam width of 2 for the beginning of The green witch arrived.</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p13_0.png" alt="">
+<p class="caption">图 13.8 束宽为 k = 2 的束搜索解码。在每个时间步，我们选出 k 个最优候选假设，为每个候选假设构造 V 种可能的扩展，对这 k×V 个候选假设评分，并选出最优的 k = 2 个继续。在时间 1，搜索前沿包含来自初始解码器状态的最优 2 个选项：arrived 和 the。我们扩展每一个，计算迄今为止所有候选假设的概率（arrived the、arrived aardvark、the green、the witch），并再次选出最优的 2 个（the green 和 the witch）作为搜索前沿。弧线上的图像示意性地表示每一步为给下一个词评分而必须运行的解码器（为简便起见未画出交叉注意力）。</p>
+<p class="caption">Figure 13.8 Beam search decoding with a beam width of k = 2. At each time step, we choose the k best hypotheses, form the V possible extensions of each, score those k ×V hypotheses and choose the best k = 2 to continue. At time 1, the frontier has the best 2 options from the initial decoder state: arrived and the. We extend each, compute the probability of all the hypotheses so far (arrived the, arrived aardvark, the green, the witch) and again chose the best 2 (the green and the witch) to be the search frontier. The images on the arcs schematically represent the decoders that must be run at each step to score the next words (for simplicity not depicting cross-attention).</p>
 <p>这一过程持续进行，直到生成 EOS，表明已找到一个完整的候选输出。此时，已完成的候选假设会从搜索前沿中移除，束的大小减一。搜索继续进行，直到束的大小减为 0。结果将得到 k 个候选假设。</p>
 <blockquote><p>This process continues until an EOS is generated indicating that a complete candidate output has been found. At this point, the completed hypothesis is removed from the frontier and the size of the beam is reduced by one. The search continues until the beam has been reduced to 0. The result will be k hypotheses.</p></blockquote>
 <p>为了用对数概率给每个节点评分，我们使用概率的链式法则，把</p>
 <blockquote><p>To score each node by its log probability, we use the chain rule of probability to</p></blockquote>
 <p>p(y|x) 分解为每个词在给定其先前上下文的条件下概率的乘积，我们可以把它转化为对数之和（对于一个长度为 t 的输出字符串）：</p>
 <blockquote><p>break down p(y|x) into the product of the probability of each word given its prior context, which we can turn into a sum of logs (for an output string of length t):</p></blockquote>
-<p>score(y) = logP(y|x) = log(P(y1|x)P(y2|y1,x)P(y3|y1,y2,x)...P(yt|y1,...,yt−1,x)) tX logP(yi|y1,...,yi−1,x) = (13.15)因此，在每一步，为计算一个部分句子的概率，我们只需把迄今为止前缀句子的对数概率与生成下一个词元的对数概率相加。图 13.9 用一些简单虚构的概率展示了图 13.8 中示例句子的评分过程。对数概率为负数或 0，两个对数概率中较大者（更接近 0）即为最大值。</p>
+<p>score(y) = logP(y|x) = log(P(y1|x)P(y2|y1,x)P(y3|y1,y2,x)...P(yt|y1,...,yt−1,x)) tX</p>
+<div class="formula">$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$</div>
+<p>= (13.15)因此，在每一步，为计算一个部分句子的概率，我们只需把迄今为止前缀句子的对数概率与生成下一个词元的对数概率相加。图 13.9 用一些简单虚构的概率展示了图 13.8 中示例句子的评分过程。对数概率为负数或 0，两个对数概率中较大者（更接近 0）即为最大值。</p>
 <blockquote><p>Thus at each step, to compute the probability of a partial sentence, we simply add the log probability of the prefix sentence so far to the log probability of generating the next token. Fig. 13.9 shows the scoring for the example sentence shown in Fig. 13.8, using some simple made-up probabilities. Log probabilities are negative or 0, and the max of two log probabilities is the one that is greater (closer to 0).</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p14_0.png" alt="">
+<p class="caption">图 13.9 束宽为 k = 2 的束搜索解码的评分。我们通过增量累加生成每个下一个词元的对数概率，来维护束中每个候选假设的对数概率。只有最优的 k 条路径会被扩展到下一步。</p>
+<p class="caption">Figure 13.9 Scoring for beam search decoding with a beam width of k = 2. We maintain the log probability of each hypothesis in the beam by incrementally adding the logprob of generating each next token. Only the top k paths are extended to the next step.</p>
 <p>图 13.10 给出了该算法。这个版本的算法存在一个问题，</p>
 <blockquote><p>Fig. 13.10 gives the algorithm. One problem with this version of the algorithm is</p></blockquote>
 <p>即已完成的候选假设可能具有不同的长度。由于语言模型通常给较长的字符串分配较低的概率，一个朴素的算法会为 y 选择较短的字符串。（这在解码的较早步骤中不是问题；因为束搜索是广度优先的，所有被比较的候选假设长度都相同。）因此，我们常常采用长度归一化方法，例如将对数概率除以词数：</p>
 <blockquote><p>that the completed hypotheses may have different lengths. Because language models generally assign lower probabilities to longer strings, a naive algorithm would choose shorter strings for y. (This is not an issue during the earlier steps of decoding; since beam search is breadth-first, all the hypotheses being compared had the same length.) For this reason we often apply length normalization methods, like dividing the logprob by the number of words:</p></blockquote>
-<p>score(y) = 1 t logP(y|x) = 1 tX logP(yi|y1,...,yi−1,x) (13.16) t对于机器翻译，我们通常使用 5 到 10 之间的束宽 k，最终得到 k 个候选假设。我们可以把这 k 个候选假设连同它们各自的分数一起传给下游应用；如果只需要一个译文，就传概率最大的那个候选假设。</p>
+<p>score(y) = 1 t logP(y|x) = 1 tX</p>
+<div class="formula">$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$</div>
+<p>t对于机器翻译，我们通常使用 5 到 10 之间的束宽 k，最终得到 k 个候选假设。我们可以把这 k 个候选假设连同它们各自的分数一起传给下游应用；如果只需要一个译文，就传概率最大的那个候选假设。</p>
 <blockquote><p>For MT we generally use beam widths k between 5 and 10, giving us k hypotheses at the end. We can pass all k to the downstream application with their respective scores, or if we just need a single translation we can pass the most probable hypothesis.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <h3>13.4.1 最小贝叶斯风险解码</h3>
@@ -418,6 +454,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>例如，我们可能希望解码算法找到在某个评价指标上得分最高的译文。例如在第 13.6 节中，我们将介绍 chrF 或 BERTScore 等指标，它们衡量一个候选译文与一组人工参考译文之间的拟合优度。一个使该分数最大化的译文，特别是在假定存在大量完美的人工</p>
 <blockquote><p>For example, we might want our decoding algorithm to find the translation which has the highest score on some evaluation metric. For example in Section 13.6 we will introduce metrics like chrF or BERTScore that measure the goodness-of-fit between a candidate translation and a set of reference human translations. A translation that maximizes this score, especially with a hypothetically huge set of perfect human</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p15_0.png" alt="">
+<p class="caption">图 13.10 束搜索解码。</p>
+<p class="caption">Figure 13.10 Beam search decoding.</p>
 <p>译文的情况下，很可能是一个好的译文（具有最小风险），即使按我们特定的概率估计器它并不是概率最大的译文。</p>
 <blockquote><p>translations is likely to be a good one (have minimum risk) even if it is not the most probable translation by our particular probability estimator.</p></blockquote>
 <p>在实践中，我们并不知道给定句子的完美译文集合。因此</p>
@@ -426,7 +464,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the standard simplification used in MBR decoding algorithms is to instead choose the candidate translation which is most similar (by some measure of goodness-offit) with some set of candidate translations. We’re essentially approximating the enormous space of all possible translations U with a smaller set of possible candidate translations Y.</p></blockquote>
 <p>给定这个可能候选译文的集合 Y，以及某个相似度或对齐函数 util，我们选择最佳译文 ŷ 为与所有其他候选译文最相似的那个译文：</p>
 <blockquote><p>Given this set of possible candidate translations Y, and some similarity or alignment function util, we choose the best translation ˆy as the translation which is most similar to all the other candidate translations:</p></blockquote>
-<p>Xˆy = argmax util(y,c) (13.17)可以使用各种 util 函数，例如 chrF、BERTscore 或 BLEU。我们可以通过采样获得候选译文集合，使用第 7.6 节中的某种基础采样算法，例如温度采样；即使候选只有 32 或 64 个，也能获得不错的结果。</p>
+<div class="formula">$$\sum_{c\inY}$$</div>
+<p>ˆy = argmax util(y,c) (13.17)可以使用各种 util 函数，例如 chrF、BERTscore 或 BLEU。我们可以通过采样获得候选译文集合，使用第 7.6 节中的某种基础采样算法，例如温度采样；即使候选只有 32 或 64 个，也能获得不错的结果。</p>
 <blockquote><p>Various util functions can be used, like chrF or BERTscore or BLEU. We can get the set of candidate translations by sampling using one of the basic sampling algorithms of Section 7.6 like temperature sampling; good results can be obtained with as few as 32 or 64 candidates.</p></blockquote>
 <blockquote><p>y∈Y c∈Y</p></blockquote>
 <p>最小贝叶斯风险解码也可用于其他 NLP 任务；事实上</p>
@@ -470,7 +509,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>in many different pairs of languages. That means we need to tell the system which language to translate from and to! We tell the system which language is which by adding a special token ls to the encoder specifying the source language we’re translating from, and a special token lt to the decoder telling it the target language we’d like to translate into.</p></blockquote>
 <p>因此我们略微修改上面的式 13.9，以在式 13.19 中加入这些词元：</p>
 <blockquote><p>Thus we slightly update Eq. 13.9 above to add these tokens in Eq. 13.19:</p></blockquote>
-<p>h = encoder(x,ls) (13.18) yi+1 = decoder(h,lt,y1,...,yi) ∀i ∈[1,...,m] (13.19)多语言模型的一个优点是，它们可以通过利用训练数据中恰好资源更丰富的相似语言的信息，来改进</p>
+<div class="formula">$$h=\text{encoder}(x,l_{s})$$</div>
+<div class="formula">$$y_{i+1}=\text{decoder}(h,l_{t},y_{1},...,y_{i})∀i\in[1,...,m]$$</div>
+<p>多语言模型的一个优点是，它们可以通过利用训练数据中恰好资源更丰富的相似语言的信息，来改进</p>
 <blockquote><p>One advantage of a multilingual model is that they can improve the translation</p></blockquote>
 <p>低资源语言的翻译。也许我们不知道加利西亚语（Galician）中某个词的含义，但该词出现在与之相似且资源更丰富的语言西班牙语中。</p>
 <blockquote><p>of lower-resourced languages by drawing on information from a similar language in the training data that happens to have more resources. Perhaps we don’t know the meaning of a word in Galician, but the word appears in the similar and higherresourced language Spanish.</p></blockquote>
@@ -546,7 +587,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>occur in the hypothesis, averaged.</p></blockquote>
 <p>随后，该指标使用一个权重参数 β 把 chrP 和 chrR 组合起来，计算出一个 F 值。通常设 β = 2，从而使召回率的权重是精确率的两倍：</p>
 <blockquote><p>The metric then computes an F-score by combining chrP and chrR using a weighting parameter β. It is common to set β = 2, thus weighing recall twice as much as precision:</p></blockquote>
-<p>chrFβ = (1+β 2) chrP·chrR (13.20)β 2 ·chrP+chrR当 β = 2 时，该式即为：</p>
+<p>chrFβ = (1+β 2) chrP·chrR (13.20)</p>
+<div class="formula">$$β^{2}\cdot\text{chrP}+\text{chrR}$$</div>
+<p>当 β = 2 时，该式即为：</p>
 <blockquote><p>For β = 2, that would be:</p></blockquote>
 <p>chrF2 = 5·chrP·chrR 4·chrP+chrR例如，考虑我们想要对照参考译文 witness for the past 打分的两个候选假设。下面是这些候选假设以及使用参数 k = β = 2 计算得到的 chrF 值（在真实例子中，k 会是像 6 这样更大的数）：</p>
 <blockquote><p>For example, consider two hypotheses that we’d like to score against the reference translation witness for the past. Here are the hypotheses along with chrF values computed using parameters k = β = 2 (in real examples, k would be a higher number like 6):</p></blockquote>
@@ -618,6 +661,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>x</th><th></th><th>˜x</th></tr></table>
 <blockquote><p>xi∈x ˜x j∈˜x</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p22_0.png" alt="">
+<p class="caption">图 13.11 从参考译文 x 和候选译文 ˆx 计算 BERTSCORE 召回率，出自 Zhang et al. (2020) 的图 1。此版本展示了该度量的一个扩展版本，其中词元还按其 idf 值加权。</p>
+<p class="caption">Figure 13.11 The computation of BERTSCORE recall from reference x and candidate ˆx, from Figure 1 in Zhang et al. (2020). This version shows an extended version of the metric in which tokens are also weighted by their idf values.</p>
 <h2>13.7 偏见与伦理问题</h2>
 <blockquote><p>13.7 Bias and Ethical Issues</p></blockquote>
 <p>机器翻译带来了许多与我们在前面章节讨论过的相同的伦理问题。例如，考虑从匈牙利语（它有性别中性代词 ˝o）或西班牙语（常常省略代词）翻译成英语（英语中代词是必需的，并且有语法性别）的机器翻译系统。</p>
@@ -625,6 +670,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>当翻译对一个人的指代且未指明性别时，机器翻译系统常常默认为男性性别（Schiebinger 2014, Prates et al. 2019）。而且机器翻译系统常常按照我们在第 5.8 节看到的那类文化刻板印象来指派性别。图 13.12 展示了 Prates et al. (2019) 中的例子，其中匈牙利语性别中性的 ˝o is a nurse 被译为 she，而性别中性的 ˝o is a CEO 被译为 he。Prates et al. (2019) 发现，这些刻板印象不能完全用美国劳动统计中的性别偏见来解释，因为机器翻译系统放大了这些偏见，代词被映射为男性或女性性别的概率高于基于实际劳动就业统计进行映射时的概率。</p>
 <blockquote><p>When translating a reference to a person described without specified gender, MT systems often default to male gender (Schiebinger 2014, Prates et al. 2019). And MT systems often assign gender according to culture stereotypes of the sort we saw in Section 5.8. Fig. 13.12 shows examples from Prates et al. (2019), in which Hungarian gender-neutral ˝o is a nurse is translated with she, but gender-neutral ˝o is a CEO is translated with he. Prates et al. (2019) find that these stereotypes can’t completely be accounted for by gender bias in US labor statistics, because the biases are amplified by MT systems, with pronouns being mapped to male or female gender with a probability higher than if the mapping was based on actual labor employment statistics.</p></blockquote>
 <blockquote><p>匈牙利语（性别中性）源文 英语机器翻译输出˝o egy ´apol´o she is a nurse˝o egy tud´os he is a scientist˝o egy m´ern¨ok he is an engineer˝o egy p´ek he is a baker˝o egy tan´ar she is a teacher˝o egy esk¨uv˝oszervez˝o she is a wedding organizer˝o egy vez´erigazgat´o he is a CEO</p><p><em>Hungarian (gender neutral) source English MT output˝o egy ´apol´o she is a nurse˝o egy tud´os he is a scientist˝o egy m´ern¨ok he is an engineer˝o egy p´ek he is a baker˝o egy tan´ar she is a teacher˝o egy esk¨uv˝oszervez˝o she is a wedding organizer˝o egy vez´erigazgat´o he is a CEO</em></p></blockquote>
+<p class="caption">图 13.12 从匈牙利语等性别中立的语言翻译成英语时，当前的机器翻译系统会把传统上男性主导职业的人理解为男性，把传统上女性主导职业的人理解为女性（Prates et al., 2019）。</p>
+<p class="caption">Figure 13.12 When translating from gender-neutral languages like Hungarian into English, current MT systems interpret people from traditionally male-dominated occupations as male, and traditionally female-dominated occupations as female (Prates et al., 2019).</p>
 <p>类似地，最近的一个挑战集，即 WinoMT 数据集（Stanovsky et al., 2019）</p>
 <blockquote><p>Similarly, a recent challenge set, the WinoMT dataset (Stanovsky et al., 2019)</p></blockquote>
 <p>表明：当要求机器翻译系统翻译那些描述不符合刻板性别角色的人的句子时，它们的表现会更差，例如“The doctor asked the nurse to help her in the operation”（医生让护士在手术中帮助她）。</p>
@@ -657,6 +704,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>从直接方法经转换方法到中间语言方法，所需的分析深度（在分析和生成两端）不断增加。此外，它还展示出：随着我们沿三角向上移动，所需的转换知识量不断减少——从直接层面的海量转换（几乎全部知识都是每个词的转换知识），到转换层面（转换规则仅针对分析树或论旨角色），再到中间语言层面（没有特定的转换知识）。我们可以把编码器-解码器网络视为一种中间语言方法，其中注意力起到整合直接方法与转换方法的作用，使解码器能够直接访问词或其表示。</p>
 <blockquote><p>increasing depth of analysis required (on both the analysis and generation end) as we move from the direct approach through transfer approaches to interlingual approaches. In addition, it shows the decreasing amount of transfer knowledge needed as we move up the triangle, from huge amounts of transfer at the direct level (almost all knowledge is transfer knowledge for each word) through transfer (transfer rules only for parse trees or thematic roles) through interlingua (no specific transfer knowledge). We can view the encoder-decoder network as an interlingual approach, with attention acting as an integration of direct and transfer, allowing words or their representations to be directly accessed by the decoder.</p></blockquote>
 <img src="../md/images/13-machine-translation/fig_p24_0.png" alt="">
+<p class="caption">图 13.13 Vauquois（1968）三角。</p>
+<p class="caption">Figure 13.13 The Vauquois (1968) triangle.</p>
 <p>统计方法在 1990 年前后开始得到应用，最初得益于像加拿大议会辩论记录 Hansard 语料库这样的大型双语语料库的发展——该语料库同时以法语和英语保存——随后又得益于互联网的成长。早期，若干研究者表明，可以利用词语或句子长度之类的简单线索，从双语语料库中抽取对齐的句对（Kay and Röscheisen 1988, Gale and Church 1991, Gale and Church 1993, Kay and Röscheisen 1993）。</p>
 <blockquote><p>Statistical methods began to be applied around 1990, enabled first by the development of large bilingual corpora like the Hansard corpus of the proceedings of the Canadian Parliament, which are kept in both French and English, and then by the growth of the web. Early on, a number of researchers showed that it was possible to extract pairs of aligned sentences from bilingual corpora, using words or simple cues like sentence length (Kay and R¨oscheisen 1988, Gale and Church 1991, Gale and Church 1993, Kay and R¨oscheisen 1993).</p></blockquote>
 <p>与此同时，IBM 团队直接借鉴噪声信道模型</p>

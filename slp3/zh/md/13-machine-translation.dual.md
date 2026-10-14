@@ -420,7 +420,8 @@ Lleg´o la bruja verde
 
 > large set of parallel sentences (each sentence in a source language matched with a sentence in the target language), and learns to map source sentences into target sentences. In practice, rather than using words (as in the example above), we split the sentences into a sequence of subword tokens (tokens can be words, or subwords, or individual characters). The systems are then trained to maximize the probability of the sequence of tokens in the target language y1,...,ym given the sequence of tokens in the source language x1,...,xn:
 
-P(y1,...,ym|x1,...,xn) (13.7)
+$$P(y_{1},...,y_{m}|x_{1},...,x_{n})$$
+
 编码器-解码器架构并不直接使用输入词元，而是由两个组件构成：编码器和解码器。编码器接收输入词 x = [x1,...,xn]，产生一个中间上下文 h。在解码时，系统以 h 为输入，逐词生成输出 y：
 
 > Rather than use the input tokens directly, the encoder-decoder architecture consists of two components, an encoder and a decoder. The encoder takes the input words x = [x1,...,xn] and produces an intermediate context h. At decoding time, the system takes h and, word by word, generates the output y:
@@ -593,7 +594,8 @@ wordpiece 中则相反，我们指定词表总量，这是一个更直观的参�
 
 > sentences or spans x,y from the source and target documents respectively:
 
-(1−cos(x,y))nSents(x) nSents(y)
+$$(1-\text{cos}(x,y))\text{nSents}(_{S}x)\text{nSents}(y)$$
+
 c(x,y) = (13.10)
 PS s=1 1−cos(x,ys)+PS s=1 1−cos(xs,y)
 其中 nSents() 给出句子的数量（这使该指标偏向于将大量单句相互对齐，而不是对齐非常大的片段）。分母有助于对相似度进行归一化，而 x1,...,xS,y1,...,yS 则是从各自文档中随机抽取的句子。
@@ -662,8 +664,9 @@ Henc 的形状为 [n × d]，每一行代表一个输入词元。为了将来自
 
 > Henc is of shape [n × d], each row representing one input token. To link the keys and values from the encoder with the query from the prior layer of the decoder, we multiply the encoder output Henc by the cross-attention layer’s key weights WK and value weights WV. The query comes from the output from the prior decoder layer Hdec[ℓ−1], which is multiplied by the cross-attention layer’s query weights WQ:
 
-Q = Hdec[ℓ−1]WQ; K = HencWK; V = HencWV (13.11)
-QK⊺  (13.12)
+$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$
+
+QK⊺  (13.12)
 CrossAttention(Q,K,V) = softmax
 √dk V
 因此，交叉注意力使解码器能够关注源语言的每个词，这些词被投影到编码器的整个最终输出表示中。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。不过，编码器中的多头注意力被允许向前查看整个源语言文本，因此它没有被掩码。
@@ -686,7 +689,8 @@ CrossAttention(Q,K,V) = softmax
 
 > determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence:
 
-LCE( ˆyt,yt) = −log ˆyt[wt+1] (13.13)
+$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$
+
 与那种情况一样，我们在解码器中使用教师强制。回想一下，在教师强制中，解码的每个时间步我们都强制系统使用训练中的标准答案目标词元作为下一个输入 xt+1，而不是让它依赖（可能有误的）解码器输出 ˆyt。
 
 > As in that case, we use teacher forcing in the decoder. Recall that in teacher forcing, at each time step in decoding we force the system to use the gold target token from training as the next input xt+1, rather than allowing it to rely on the (possibly erroneous) decoder output ˆyt.
@@ -703,7 +707,8 @@ LCE( ˆyt,yt) = −log ˆyt[wt+1] (13.13)
 
 > Recall the greedy decoding algorithm from Chapter 7: at each time step t in generation, the output yt is chosen by computing the probability for each word in the vocabulary and then choosing the highest probability word (the argmax):
 
-ˆwt = argmaxw∈V P(w|w<t) (13.14)
+$$wˆ_{t}=\text{argmax}_{w\inV}P(w|w_{<t})$$
+
 贪心解码的一个问题是：在词 t 处看起来概率很高的选择，到了词 t +1 时可能被证明是错误的选择。束搜索算法会保留多个选择，直到稍后我们能够看出哪一个最好。
 
 > A problem with greedy decoding is that what looks high probability at word t might turn out to have been the wrong choice once we get to word t +1. The beam search algorithm maintains multiple choices until later when we can see which one is best.
@@ -783,7 +788,9 @@ p(y|x) 分解为每个词在给定其先前上下文的条件下概率的乘积�
 
 score(y) = logP(y|x)
 = log(P(y1|x)P(y2|y1,x)P(y3|y1,y2,x)...P(yt|y1,...,yt−1,x)) tX
-logP(yi|y1,...,yi−1,x)
+
+$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$
+
 = (13.15)
 因此，在每一步，为计算一个部分句子的概率，我们只需把迄今为止前缀句子的对数概率与生成下一个词元的对数概率相加。图 13.9 用一些简单虚构的概率展示了图 13.8 中示例句子的评分过程。对数概率为负数或 0，两个对数概率中较大者（更接近 0）即为最大值。
 
@@ -804,7 +811,9 @@ logP(yi|y1,...,yi−1,x)
 > that the completed hypotheses may have different lengths. Because language models generally assign lower probabilities to longer strings, a naive algorithm would choose shorter strings for y. (This is not an issue during the earlier steps of decoding; since beam search is breadth-first, all the hypotheses being compared had the same length.) For this reason we often apply length normalization methods, like dividing the logprob by the number of words:
 
 score(y) = 1 t logP(y|x) = 1 tX
-logP(yi|y1,...,yi−1,x) (13.16)
+
+$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$
+
 t
 对于机器翻译，我们通常使用 5 到 10 之间的束宽 k，最终得到 k 个候选假设。我们可以把这 k 个候选假设连同它们各自的分数一起传给下游应用；如果只需要一个译文，就传概率最大的那个候选假设。
 
@@ -858,7 +867,8 @@ MBR 解码算法中使用的标准简化做法是：转而选择与某组候选�
 
 > Given this set of possible candidate translations Y, and some similarity or alignment function util, we choose the best translation ˆy as the translation which is most similar to all the other candidate translations:
 
-X
+$$\sum_{c\inY}$$
+
 ˆy = argmax util(y,c) (13.17)
 可以使用各种 util 函数，例如 chrF、BERTscore 或 BLEU。我们可以通过采样获得候选译文集合，使用第 7.6 节中的某种基础采样算法，例如温度采样；即使候选只有 32 或 64 个，也能获得不错的结果。
 
@@ -945,8 +955,10 @@ X
 
 > Thus we slightly update Eq. 13.9 above to add these tokens in Eq. 13.19:
 
-h = encoder(x,ls) (13.18)
-yi+1 = decoder(h,lt,y1,...,yi) ∀i ∈[1,...,m] (13.19)
+$$h=\text{encoder}(x,l_{s})$$
+
+$$y_{i+1}=\text{decoder}(h,l_{t},y_{1},...,y_{i})∀i\in[1,...,m]$$
+
 多语言模型的一个优点是，它们可以通过利用训练数据中恰好资源更丰富的相似语言的信息，来改进
 
 > One advantage of a multilingual model is that they can improve the translation
@@ -1098,7 +1110,9 @@ chrR 参考译文中字符 1 元、2 元、……、k 元的百分比，这些 n
 > The metric then computes an F-score by combining chrP and chrR using a weighting parameter β. It is common to set β = 2, thus weighing recall twice as much as precision:
 
 chrFβ = (1+β 2) chrP·chrR (13.20)
-β 2 ·chrP+chrR
+
+$$β^{2}\cdot\text{chrP}+\text{chrR}$$
+
 当 β = 2 时，该式即为：
 
 > For β = 2, that would be:

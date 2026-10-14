@@ -359,7 +359,8 @@ CNN 使用一个卷积核，即一个小的权重向量 w1 ...wk，来提取特�
 
 > p
 
-X
+$$\sum_{i=-p}^{p}$$
+
 z j = xj+iwi+p (16.2)
 图 16.3 展示了卷积 x∗w 的计算，其中卷积核宽度为 3，并分别在 x 的首尾各填充 1 帧、取值为零。
 
@@ -411,8 +412,10 @@ z j = xj+iwi+p (16.2)
 
 > Ci
 
-X
-xc ∗w
+$$\sum_{c=1}^{Ci}$$
+
+$$x^{c}\astw$$
+
 z = (16.3)
 因此，第 j 帧的输出 zj 综合了来自所有输入通道的信息。
 
@@ -482,7 +485,7 @@ x1,x2,...,xt，每 10 ms 一帧对应一个向量。我们通常以前一节所�
 
 > x1,x2,...,xt, one vector per 10 ms frame. We often start from the log mel spectral features described in the previous section, although it’s also possible to start from a raw wavefile. The output sequence Y can be either letters or tokens (BPE or sentencepiece); we’ll assume letters just to simplify the explanation here. Thus the output sequence Y = (⟨SOS⟩,y1,...,ym⟨EOS⟩), assuming special start of sequence and end of sequence tokens ⟨sos⟩and ⟨eos⟩and each yi is a character; for English we might choose the set:
 
-yi ∈{a,b,c,...,z,0,...,9,⟨space⟩,⟨comma⟩,⟨period⟩,⟨apostrophe⟩,⟨unk⟩}
+$$y_{i}\in \{a,b,c,...,z,0,...,9,⟨\text{space}⟩,⟨\text{comma}⟩,⟨\text{period}⟩,⟨\text{apostrophe}⟩,⟨\text{unk}⟩\}$$
 
 ![](images/16-speech-recognition/fig_p8_0.png)
 
@@ -614,8 +617,9 @@ Henc 的形状为 [n×d]，每一行表示一个声学输入标记。为了把�
 
 > we multiply the encoder output Henc by the cross-attention layer’s key weights WK and value weights WV. The query comes from the output from the prior decoder layer Hdec[ℓ−1], which is multiplied by the cross-attention layer’s query weights WQ:
 
-Q = Hdec[ℓ−1]WQ; K = HencWK; V = HencWV (16.4)
-QK⊺  (16.5)
+$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$
+
+QK⊺  (16.5)
 CrossAttention(Q,K,V) = softmax
 √dk V
 因此，交叉注意力使解码器能够关注整个编码器最终输出表示中所投影的声学输入。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。但编码器中的多头注意力则允许前看整个源音频，因此它没有被掩蔽。
@@ -628,7 +632,8 @@ CrossAttention(Q,K,V) = softmax
 
 > n
 
-Y
+$$\prod_{i=1}^{n}$$
+
 p(y1,...,yn) = p(yi|y1,...,yi−1,X) (16.6)
 我们可以通过贪心解码产生输出的每个字母：
 
@@ -636,7 +641,8 @@ p(y1,...,yn) = p(yi|y1,...,yi−1,X) (16.6)
 
 > i=1
 
-ˆyi = argmaxchar∈AlphabetP(char|y1...yi−1,X) (16.7)
+$$yˆ_{i}=\text{argmax}_{\text{char}\in\text{Alphabet}}P(\text{char}|y_{1}...y_{i-1},X)$$
+
 另外，像 Whisper 或 OWSM 这样的编码器-解码器也使用下一节所述的束搜索。这在我们加入语言模型时尤为相关。
 
 > Alternatively encoder-decoders like Whisper or OWSM also use beam search as described in the next section. This is particularly relevant when we are adding a language model.
@@ -659,7 +665,8 @@ p(y1,...,yn) = p(yi|y1,...,yi−1,X) (16.6)
 
 1
 score(Y|X) = logP(Y|X)+λ logPLM(Y) (16.8)
-|Y|c
+
+$$|Y|_{c}$$
 
 ### 16.3.3 学习
 
@@ -669,14 +676,16 @@ score(Y|X) = logP(Y|X)+λ logPLM(Y) (16.8)
 
 > Encoder-decoders for speech are trained with the normal cross-entropy loss generally used for conditional language models. At timestep i of decoding, the loss is the log probability of the correct token (letter) yi:
 
-LCE = −log p(yi|y1,...,yi−1,X) (16.9)
+$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,y_{i-1},X)$$
+
 整个句子的损失是这些损失之和：
 
 > The loss for the entire sentence is the sum of these losses:
 
 > m
 
-X
+$$\sum_{i=1}^{m}$$
+
 LCE = − log p(yi|y1,...,yi−1,X) (16.10)
 然后该损失通过整个端到端模型反向传播，以训练整个编码器-解码器。
 
@@ -691,7 +700,8 @@ LCE = − log p(yi|y1,...,yi−1,X) (16.10)
 
 > decoder history is forced to be the correct gold yi rather than the predicted ˆyi. It’s also possible to use a mixture of the gold and decoder output, for example using the gold output 90% of the time, but with probability .1 taking the decoder output instead:
 
-LCE = −log p(yi|y1,..., ˆyi−1,X) (16.11)
+$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,ˆy_{i-1},X)$$
+
 现代数据规模相当大。例如，Whisper-v2 在一个语料库上训练，该语料库
 
 > Modern data sizes are quite large. For example Whisper-v2 is trained on a corpus
@@ -775,7 +785,8 @@ CNN 层之后，上下文窗口中有一段词元被选作掩码，对这些词�
 
 > The entire context window is passed through the transformer layers, and the transformer output hL t at each timestep t is multiplied by the projection layer matrix A to project it into the class embedding space. The resulting representation is then compared to the embedding for each of the classes in C (using cosine), and a softmax(with temperature parameter τ=0.1) is used to turn the similarity into a probability:
 
-exp(sim(Aht,ec)/τ)
+$$\text{exp}(\text{sim}(\text{Ah}_{t},e_{c})/τ)$$
+
 p(c|X,t) = (16.12)
 PC c′=1 exp(sim(Aht,ec′)/τ)
 如图 16.9 所示，与这一前向传播并行地，输入波形
@@ -785,7 +796,8 @@ PC c′=1 exp(sim(Aht,ec′)/τ)
 
 > passed through an MFCC to create a 39-dimensional vector which is then mapped to one of the 100 classes by choosing the most similar centroid in the codebook. The loss function is then the sum, over the set of masked tokens M, of the probability that the model assigns to these correct units:
 
-X
+$$\sum_{t\inM}$$
+
 L = log p(zt|X) (16.13)
 因此，正如掩码语言建模那样，模型被训练来预测与掩码帧相关联的单元。该损失随后通过模型反向传播
 
@@ -884,12 +896,13 @@ CNN 被冻结，模型其余部分使用将在第 16.5 节描述的 CTC 损失�
 
 > Assignment: For each vector v(i) in the dataset assign it to one of the k clusters by choosing the one with the nearest codeword µ. Most simply we can define‘nearest’ as the cluster whose codeword has the smallest squared Euclidean distance to v(i).
 
-cluster(i) = argmin ||v(i) −µj||2 (16.14)
+$$\text{cluster}^{(i)}=\text{argmin}_{1<j<k}||v^{(i)}-µ_{j}||^{2}$$
+
+> 1<j<k
+
 其中 ||v|| 是向量 Pd j=1 v2 的 L2 范数
 
 > where ||v|| is the L2 norm of the vector Pd j=1 v2
-
-> 1<j<k
 
 > j
 
@@ -997,17 +1010,19 @@ CTC 折叠函数是多对一的；许多不同的对齐都映射
 
 > Before we see how to compute PCTC(Y|X) let’s first see how CTC assigns a probability to one particular alignment ˆA = { ˆa1,..., ˆan}. CTC makes a strong conditional independence assumption: it assumes that, given the input X, the CTC model output at at time t is independent of the output labels at any other time ai. Thus:
 
-TY
+$$\prod_{t=1}^{T}$$
+
 PCTC(A|X) = p(at|X) 因此，为了找到最佳对齐 ˆA = { ˆa1,..., ˆaT}，我们可以在每个时间步 t 贪心地选择概率最大的字符：
 
 > PCTC(A|X) = p(at|X) Thus to find the best alignment ˆA = { ˆa1,..., ˆaT} we can greedily choose the character with the max probability at each time step t:
 
-ˆat = argmax pt(c|X) (16.17)
+$$aˆ_{t}=\text{argmax}_{c\inC}p_{t}(c|X)$$
+
+> c∈C
+
 随后，我们把得到的序列 A 传给 CTC 合并函数 B，从而得到输出序列 Y。
 
 > We then pass the resulting sequence A to the CTC collapsing function B to get the output sequence Y.
-
-> c∈C
 
 我们来讨论一下这个用于寻找最佳对齐 A 的简单推理算法将如何实现。由于我们在每个时间点都要做出决策，可以把 CTC 视为一个序列建模任务：在时间步 t 输出一个字母 ˆyt，对应于每个输入 token xt，从而无需完整的解码器。图 16.15 给出了该架构的示意：我们取一个编码器，在每个时间步产生一个隐状态 ht，并在每个时间步对字符词表做 softmax 来完成解码。
 
@@ -1032,15 +1047,18 @@ PCTC(A|X) = p(at|X) 因此，为了找到最佳对齐 ˆA = { ˆa1,..., ˆaT}，
 
 > the single best CTC alignment, but the highest sum over the probability of all its possible alignments:
 
-X
+$$\sum_{B-1(}$$
+
 PCTC(Y|X) = P(A|X)
-X TY
+
+> A∈B−1(Y)
+
+$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+
 = p(at|ht)
 ˆY = argmax PCTC(Y|X) 可惜的是，对所有对齐求和代价极高（对齐数量非常庞大），因此我们通过一种 Viterbi 束搜索的变体来近似这个求和：它巧妙地在束中保留那些映射到同一输出串的高概率对齐，并将它们求和作为 (式 16.18) 的近似。关于这种针对 CTC 的束搜索扩展的清晰解释，参见 Hannun (2017)。
 
 > ˆY = argmax PCTC(Y|X) Alas, summing over all alignments is very expensive (there are a lot of alignments), so we approximate this sum by using a version of Viterbi beam search that cleverly keeps in the beam the high-probability alignments that map to the same output string, and sums those as an approximation of (Eq. 16.18). See Hannun (2017) for a clear explanation of this extension of beam search for CTC.
-
-> A∈B−1(Y)
 
 > A∈B−1(Y) t=1
 
@@ -1051,7 +1069,7 @@ X TY
 
 > (that the output at time t is independent of the output at time t −1, given the input), CTC does not implicitly learn a language model over the data (unlike the attentionbased encoder-decoder architectures). It is therefore essential when using CTC to interpolate a language model (and some sort of length factor L(Y)) using interpolation weights that are trained on a devset:
 
-scoreCTC(Y|X) = logPCTC(Y|X)+λ1 logPLM(Y)λ2L(Y) (16.19)
+$$\text{score}_{\text{CTC}}(Y|X) =\text{log}P_{\text{CTC}}(Y|X)+\lambda_{1}\text{log}P_{LM}(Y)\lambda_{2}L(Y)$$
 
 ### 16.5.2 CTC 训练
 
@@ -1061,7 +1079,8 @@ scoreCTC(Y|X) = logPCTC(Y|X)+λ1 logPLM(Y)λ2L(Y) (16.19)
 
 > To train a CTC-based ASR system, we use negative log-likelihood loss with a special CTC loss function. Thus the loss for an entire dataset D is the sum of the negative log-likelihoods of the correct output Y for each input X:
 
-X
+$$\sum_{,Y)\in}$$
+
 LCTC = −logPCTC(Y|X) (16.20)
 要计算单个输入对 (X,Y) 的 CTC 损失函数，我们需要给定输入 X 时输出 Y 的概率。正如我们在式 16.18 中看到的，要计算给定输出 Y 的概率，我们需要对所有会合并为 Y 的可能对齐求和。换言之：
 
@@ -1069,7 +1088,8 @@ LCTC = −logPCTC(Y|X) (16.20)
 
 > (X,Y)∈D
 
-X TY
+$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+
 PCTC(Y|X) = p(at|ht) (16.21)
 朴素地对所有可能对齐求和并不可行（对齐数量太多）。不过，我们可以用动态规划来合并对齐，从而高效地计算这个求和，所用的是一种同样用于训练 HMM（附录 A）和 CRF 的前向-后向算法。训练与推理各自的原始动态规划算法见 (Graves et al., 2006)；关于两者的详细解释参见 (Hannun, 2017)。
 
@@ -1089,12 +1109,13 @@ PCTC(Y|X) = p(at|ht) (16.21)
 
 > Fig. 16.16 shows a sketch. For training, we can simply weight the two losses with aλ tuned on a devset:
 
-L = −λ logPencdec(Y|X)−(1−λ)logPctc(Y|X) (16.22)
+$$L=-\lambda\text{log}P_{e\text{ncdec}}(Y|X)-(1-\lambda)\text{log}P_{c\text{tc}}(Y|X)$$
+
 推理时，我们可以把两者与语言模型（或长度惩罚）结合，同样使用学习得到的权重：
 
 > For inference, we can combine the two with the language model (or the length penalty), again with learned weights:
 
-ˆY = argmax [λ logPencdec(Y|X)+(1−λ)logPCTC(Y|X)+γ logPLM(Y)] (16.23)
+$$Yˆ=\text{argmax}_{Y}[\lambda\text{log}P_{e\text{ncdec}}(Y|X)+(1-\lambda)\text{log}P_{C\text{TC}}(Y|X)+γ\text{log}P_{LM}(Y)](16.23)$$
 
 ![](images/16-speech-recognition/fig_p21_0.png)
 
@@ -1137,12 +1158,15 @@ L = −λ logPencdec(Y|X)−(1−λ)logPctc(Y|X) (16.22)
 
 > The two are passed through another network whose output is then passed through a softmax to predict the next character.
 
-X
+$$\sum_{B-1(}$$
+
 PRNN−T(Y|X) = P(A|X)
-X TY
-= p(at|ht,y<ut)
 
 > A∈B−1(Y)
+
+$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+
+= p(at|ht,y<ut)
 
 > A∈B−1(Y) t=1
 
@@ -1295,17 +1319,6 @@ i=1 Zi/n。Zi 的方差的估计值
 
 > is
 1 X (Zi −µz)2
-σ2 (16.24)
-z = n−1
-令
-
-> Let
-ˆµz
-W = (16.25)
-σz/√n
-当 n 足够大（> 50）时，W 近似服从单位方差的正态分布。原假设为 H0 : µz = 0，因此当 2 ∗P(Z ≥|w|) ≤0.05（双尾）或 P(Z ≥|w|) ≤0.05（单尾）时即可拒绝该原假设，其中 Z 服从标准正态分布，w 为 W 的实现值；这些概率可在正态分布的标准表中查得。
-
-> For a large enough n (> 50), W will approximately have a normal distribution with unit variance. The null hypothesis is H0 : µz = 0, and it can thus be rejected if 2 ∗P(Z ≥|w|) ≤0.05 (two-tailed) or P(Z ≥|w|) ≤0.05 (one-tailed), where Z is standard normal and w is the realized value W; these probabilities can be looked up in the standard tables of the normal distribution.
 
 > A
 
@@ -1313,7 +1326,22 @@ W = (16.25)
 
 > n
 
+$$σ_{z}^{2}$$
+
+z = n−1
+令
+
+> Let
+
 > i=1
+
+$$µˆ_{z}$$
+
+W = (16.25)
+σz/√n
+当 n 足够大（> 50）时，W 近似服从单位方差的正态分布。原假设为 H0 : µz = 0，因此当 2 ∗P(Z ≥|w|) ≤0.05（双尾）或 P(Z ≥|w|) ≤0.05（单尾）时即可拒绝该原假设，其中 Z 服从标准正态分布，w 为 W 的实现值；这些概率可在正态分布的标准表中查得。
+
+> For a large enough n (> 50), W will approximately have a normal distribution with unit variance. The null hypothesis is H0 : µz = 0, and it can thus be rejected if 2 ∗P(Z ≥|w|) ≤0.05 (two-tailed) or P(Z ≥|w|) ≤0.05 (one-tailed), where Z is standard normal and w is the realized value W; these probabilities can be looked up in the standard tables of the normal distribution.
 
 早期工作有时使用 McNemar 检验来判定显著性，但 McNemar
 

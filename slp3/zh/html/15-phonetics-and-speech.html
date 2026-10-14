@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/15-phonetics-and-speech.md">Markdown 源文件</a></div>
 <h1>第 15 章 语音学与语音特征提取</h1>
@@ -429,7 +432,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>出的加窗信号看上去与原始信号完全一样。然而，矩形窗会在其边界处突然截断信号，这在我们做傅里叶分析时会带来问题。出于这一原因，在构造声学特征时我们更常使用汉明窗，它把信号的值向</p>
 <aside class="term"><code>Hamming</code><span class="term-zh">汉明（Hamming）</span><span class="term-explain">以人名命名的一种平滑窗函数，两端逐渐衰减到零，可减轻加窗在边界处突然截断造成的后果。</span></aside>
 <p>零衰减，从而在窗的边界处避免出现不连续。图 15.27 同时展示了这两种窗；公式如下（假设窗的长度为 L 帧）：</p>
-<p> 1 0 ≤n ≤L−1 rectangular w[n] = (15.12) 0 otherwise0.54−0.46cos( 2πn L ) 0 ≤n ≤L−1 Hamming w[n] = (15.13) 0 otherwise</p>
+<p>1 0 ≤n ≤L−1 rectangular w[n] = (15.12) 0 otherwise0.54−0.46cos( 2πn L ) 0 ≤n ≤L−1 Hamming w[n] = (15.13) 0 otherwise</p>
 <img src="../md/images/15-phonetics-and-speech/fig_p23_0.png" alt="">
 <p class="caption">图 15.27 用矩形窗或汉明窗对一个正弦波加窗。</p>
 <h3>15.5.3 离散傅里叶变换</h3>
@@ -444,7 +447,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 15.28 （a）取自元音 [iy] 的信号中一段 25 ms 的汉明窗加窗片段；（b）由 DFT 计算得到的其频谱。</p>
 <p>这里不介绍 DFT 的数学细节，只指出傅里叶分析依赖欧拉公式，其中 j 为虚数单位：</p>
 <aside class="term"><code>Euler’s formula</code><span class="term-zh">欧拉公式</span><span class="term-explain">把复指数与三角函数联系起来的等式，傅里叶分析正是借助它把信号表示为一组复指数。</span></aside>
-<p>e jθ = cosθ + jsinθ (15.14)为已经学过信号处理的学生作一点简要回顾：DFT 的定义如下：</p>
+<div class="formula">$$e^{jθ}=\text{cos}θ+j\text{sin}θ$$</div>
+<p>为已经学过信号处理的学生作一点简要回顾：DFT 的定义如下：</p>
 <blockquote><p>N−1</p></blockquote>
 <p>X x[n]e−j 2πX[k] = (15.15)</p>
 <blockquote><p>N kn</p></blockquote>
@@ -488,8 +492,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>N kn N kn</p></blockquote>
 <blockquote><p>n=0 n=0</p></blockquote>
 <aside class="term"><code>energy</code><span class="term-zh">能量</span><span class="term-explain">一帧语音内各样本功率随时间的累加和，是判断音子身份的有效线索，元音与咝音通常高于塞音。</span></aside>
-<p>该帧中各样本功率随时间的累加和；因此，对于从时间样本 t1 到时间样本 t2 的窗口内的信号 x，其能量为X Energy = x2[t] (15.18)差分特征 我们还加入与倒谱特征随时间变化有关的特征。语音信号的变化，例如共振峰在过渡处的斜率，或从塞音闭塞到塞音除阻爆发的变化，同样能为音子身份提供有用的线索。对 13 个特征（12 个倒谱特征加能量）中的每一个，都再配上一个差分</p>
+<p>该帧中各样本功率随时间的累加和；因此，对于从时间样本 t1 到时间样本 t2 的窗口内的信号 x，其能量为</p>
 <blockquote><p>t2</p></blockquote>
+<div class="formula">$$\sum_{t=t1}^{t2}$$</div>
+<p>Energy = x2[t] (15.18)差分特征 我们还加入与倒谱特征随时间变化有关的特征。语音信号的变化，例如共振峰在过渡处的斜率，或从塞音闭塞到塞音除阻爆发的变化，同样能为音子身份提供有用的线索。对 13 个特征（12 个倒谱特征加能量）中的每一个，都再配上一个差分</p>
 <blockquote><p>t=t1</p></blockquote>
 <aside class="term"><code>delta feature double delta</code><span class="term-zh">差分特征；双差分</span><span class="term-explain">差分特征刻画相邻帧间对应特征取值的改变，即速度；双差分再对差分特征求一次帧间变化，即加速度。</span></aside>
 <p>（或速度）特征以及一个双差分（或加速度）特征。这 13 个差分特征各表示相应的倒谱/能量特征在帧间的变化，而 13 个双差分特征各表示相应的差分特征在帧间的变化。这些差分可以简单地用当前帧的值减去前一帧的值来计算，但在实践中通常的做法是拟合一个多项式，并取其一次和二次导数。</p>

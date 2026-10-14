@@ -97,9 +97,7 @@
 > text presents such a stereotypical situation since airlines often raise fares and then wait to see if competitors follow along. Here we can identify United as a lead airline that initially raised its fares, $6 as the amount, Thursday as the increase date, and American as an airline that followed along, leading to a filled template like the following:
 
 <!--figbox-->
->  
->
-> * *
+> 
 
 > 涨价尝试：领头航空公司：UNITED AIRLINES
 >
@@ -107,7 +105,7 @@
 
 > 金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES
 >
-> * AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES*
+> *AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES*
 <!--/figbox-->
 
 ## 21.1 关系抽取
@@ -297,9 +295,9 @@ NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）
 蕴含以下语义
 
 > implies the following semantics
-∀NPi，i ≥1，hyponym(NPi,NP0) （21.3）
 
-> ∀NPi,i ≥1,hyponym(NPi,NP0) (21.3)
+$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$
+
 从而使我们能够推断出
 
 > allowing us to infer
@@ -594,7 +592,8 @@ Conf RlogF(p) = |hits(p)|（21.10）
 
 > that a given tuple is supported by a subset of the patterns in P, each with its own confidence assessed as above. In the noisy-or model, we make two basic assumptions. First, that for a proposed tuple to be false, all of its supporting patterns must have been in error, and second, that the sources of their individual failures are all independent. If we loosely treat our confidence measures as probabilities, then the probability of any individual pattern p failing is 1 −Conf(p); the probability of all of the supporting patterns for a tuple being wrong is the product of their individual failure probabilities, leaving us with the following equation for our confidence in a new tuple.
 
-Y
+$$\prod_{p\inP′}$$
+
 Conf(t) = 1− (1−Conf(p))（21.11）
 
 > Conf(t) = 1− (1−Conf(p)) (21.11)
@@ -1544,13 +1543,12 @@ pattern: /(\d+)[-\s]($TEUnits)(s)?([-\s]old)?/result: Duration($1, $2)
 
 > A filled template from our original airline story might look like the following.
 
- 
 FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES
 
 > FARE-RAISE ATTEMPT: LEAD AIRLINE: UNITED AIRLINES
 AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES
 
->  AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES
+> AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES
 该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司
 
 > This template has four slots (LEAD AIRLINE, AMOUNT, EFFECTIVE DATE, FOL-

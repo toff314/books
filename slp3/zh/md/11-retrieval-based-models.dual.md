@@ -380,7 +380,9 @@ tf-idf（这里的“-”是连字符，而不是减号）是两个量的乘积�
 (1+log10 count(t,d) 若 count(t,d) > 0
 
 > (1+log10 count(t,d) if count(t,d) > 0
-tft,d = (11.4)
+
+$$\text{tf}_{t,d}=$$
+
 0 其他情况
 
 > 0 otherwise
@@ -393,7 +395,9 @@ tft,d = (11.4)
 > The document frequency dft of a term t is the number of documents it occurs in. Terms that occur in only a few documents are useful for discriminating those documents from the rest of the collection; terms that occur across the entire collection aren’t as helpful. The inverse document frequency or idf term weight(Sparck Jones, 1972) is defined as:
 
 N
-idft = log10 (11.5)
+
+$$\text{idf}_{t}=\text{log}_{10}$$
+
 dft
 其中 N 是文档集合中文档的总数，dft 是包含词项 t 的文档数量。一个词项出现的文档越少，该权重就越高；在每篇文档中都出现的词项则被赋予最低的权重 0。
 
@@ -421,11 +425,10 @@ dft
 于是，词 t 在文档 d 中的 tf-idf 值就是词频
 
 > The tf-idf value for word t in document d is then the product of term frequency
-tft,d 与 IDF 的乘积：
 
-> tft,d and IDF:
+$$\text{tf}_{t,d}\text{and IDF:}$$
 
-tf-idf(t,d) = tft,d ·idft (11.6)
+$$\text{tf-idf}(t,d) =\text{tf}_{t,d}\cdot\text{idf}_{t}$$
 
 3
 
@@ -578,9 +581,9 @@ tf-idf 家族中一个稍复杂的变体是 BM25 加权
 >
 > *IDF weighted tf*
 
-z  N }|  { z }| { (11.12)
+z  N }|  { z }| { (11.12)
 X tft,d
-log   
+log
 dft
 k 1−b+b +tft,d
 其中 |davg| 是平均文档的长度。当 k 为 0 时，BM25 退化为完全不使用词频，而只对查询中的词项做二值选择（再加上 idf）。
@@ -762,7 +765,8 @@ Recallk = |前 k 个中的相关文档数|
 >
 > 释义：在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。
 
-IntPrecision(r) = max i>=r Precision(i) (11.15)
+$$\text{IntPrecision}(r) =\text{max}_{i>=r}\text{Precision}(i)$$
+
 这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。
 
 > This interpolation scheme not only lets us average performance over a set of queries, but also helps smooth over the irregular precision values in the original data. It is designed to give systems the benefit of the doubt by assigning the maximum precision value achieved at higher levels of recall from the one being measured. Fig. 11.9 and Fig. 11.10 show the resulting interpolated data points from our example.
@@ -794,12 +798,14 @@ IntPrecision(r) = max i>=r Precision(i) (11.15)
 > which provides a single metric that can be used to compare competing systems or approaches. In this approach, we again descend through the ranked list of items, but now we note the precision only at those points where a relevant item has been encountered (for example at ranks 1, 3, 5, 6 but not 2 or 4 in Fig. 11.7). For a single query, we average these individual precision measurements over the return set (up to some fixed cutoff). More formally, if we assume that Rr is the set of relevant documents at or above r, then the average precision (AP) for a single query is
 1 X
 AP = Precisionr(d) (11.16)
-|Rr|
+
+$$|R_{r}|$$
+
+> d∈Rr
+
 其中 Precisionr(d) 是在文档 d 被找到的那个排名处测得的精确率。对于一组查询 Q，我们再对这些平均值取平均，从而得到最终的 MAP 度量：
 
 > where Precisionr(d) is the precision measured at the rank at which document d was found. For an ensemble of queries Q, we then average over these averages, to get our final MAP measure:
-
-> d∈Rr
 
 MAP = 1 X
 AP(q) (11.17)
@@ -889,14 +895,15 @@ zq = BERTQ(q)[CLS] zd = BERTD(d)[CLS] score(q,d) = zq ·zd (11.19)
 
 > N
 
-X
+$$\sum_{i=1}^{N}$$
+
+> m
+
 score(q,d) = max (11.20)
 j=1 Eqi ·Edj
 虽然交互机制本身没有可调参数，但 ColBERT 架构仍然需要端到端训练，以便微调 BERT 编码器，并从零开始训练线性层（以及特殊的 [Q] 和 [D] 嵌入）。它使用由查询 q、正文档 d+ 和负文档 d− 组成的三元组 ⟨q,d+,d−⟩ 进行训练，利用式 11.20 为每篇文档产生分数，并用交叉熵损失优化模型参数。
 
 > While the interaction mechanism has no tunable parameters, the ColBERT architecture still needs to be trained end-to-end to fine-tune the BERT encoders and train the linear layers (and the special [Q] and [D] embeddings) from scratch. It is trained on triples ⟨q,d+,d−⟩of query q, positive document d+ and negative document d−to produce a score for each document using Eq. 11.20, optimizing model parameters using a cross-entropy loss.
-
-> m
 
 > i=1
 
@@ -1020,7 +1027,8 @@ RAG 提示的示意图
 
 > n
 
-Y
+$$\prod_{i=1}^{n}$$
+
 p(x1,...,xn) = p(xi|R(q) ; 回答下面这个问题... ; q ;x<i)
 
 > p(x1,...,xn) = p(xi|R(q) ; Answer the following question... ; q ;x<i)

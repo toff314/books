@@ -959,12 +959,13 @@ FrameNet（22.27）使用许多特定于框架的框架元素作为角色，而 
 
 > As with all the taggers, the goal is to compute the highest probability tag sequence ˆy, given the input sequence of words w:
 
-ˆy = argmax P(y|w)
+$$yˆ=\text{argmax}_{y\inT}P(y|w)$$
+
+> y∈T
+
 图 22.6 展示了 He et al. (2017) 中一个标准算法的示意图。这里每个输入词被映射为预训练嵌入，然后每个词元与谓词嵌入拼接，再通过一个带 softmax 的前馈网络，输出每个 SRL 标签上的分布。解码时，可以用 CRF 层代替 biLSTM 输出之上的 MLP 层来做全局推断，但在实践中这似乎并没有带来多少好处。
 
 > Fig. 22.6 shows a sketch of a standard algorithm from He et al. (2017). Here each input word is mapped to pretrained embeddings, and then each token is concatenated with the predicate embedding and then passed through a feedforward network with a softmax which outputs a distribution over each SRL label. For decoding, a CRF layer can be used instead of the MLP layer on top of the biLSTM output to do global inference, but in practice this doesn’t seem to provide much benefit.
-
-> y∈T
 
 ### 22.6.3 语义角色标注的评估
 
@@ -1174,7 +1175,8 @@ Q(x)
 
 > x
 
-SR(v) = D(P(c|v)||P(c))
+$$S_{R}(v)=D(P(c|v)||P(c))$$
+
 X P(c|v)log P(c|v)
 = P(c) (22.39)
 
@@ -1192,7 +1194,9 @@ X P(c|v)log P(c|v)
 > relative contribution of that class to the general selectional preference of the verb:
 
 SR(v)P(c|v)log P(c|v) 1
-AR(v,c) = (22.40)
+
+$$A_{R}(v,c)=$$
+
 P(c)
 因此，选择关联是对谓词与支配该谓词论元的某个类别之间关联强度的一种概率度量。
 

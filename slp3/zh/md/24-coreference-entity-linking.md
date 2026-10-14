@@ -1,4 +1,4 @@
-# 24-coreference-entity-linking
+# 第 24 章 共指消解与实体链接
 
 ### 章
 
@@ -694,9 +694,12 @@ D 中全部 T(T+1)/2 个文本跨度（一元、二元、三元、四元等；�
 
 对于每一对跨度 i 和 j，系统为跨度 i 与跨度 j 之间的共指链接赋予一个得分 s(i, j)。随后系统学习跨度 i 的先行语上的一个分布 P(yi)：
 
-exp(s(i,yi)) (24.48)
+$$\text{exp}(s(i,y_{i}))$$
+
 P(yi) = P
-y′∈Y(i) exp(s(i,y′))
+
+$$_{y′\inY(i)}\text{exp}(s(i,y^{′}))$$
+
 该得分 s(i, j) 包含三个我们将在下面定义的因子：m(i)，即跨度 i 是否为提及；m(j)，即跨度 j 是否为提及；以及 c(i, j)，即 j 是否为 i 的先行语：
 
 s(i, j) = m(i)+m(j)+c(i, j) (24.49)
@@ -706,27 +709,34 @@ s(i, j) = m(i)+m(j)+c(i, j) (24.49)
 
 为了计算为跨度 i 或跨度对 (i, j) 打分的两个函数 m(i) 与 c(i, j)，我们需要一种表示跨度的方法。e2e-coref 系列算法通过设法捕捉 3 个词/词元来表示每个跨度：第一个词、最后一个词和最重要的词。我们首先将每个段落或子文档送入编码器（如 BERT），为每个词元 i 生成嵌入 hi。跨度 i 随后由一个向量 gi 表示，该向量是跨度第一个（起始）词元的编码器输出嵌入、跨度最后一个（结束）词元的编码器输出，以及第三个基于注意力的表示的拼接：
 
-gi = [hSTART(i),hEND(i),hATT(i)] (24.50)
+$$g_{i}= [h_{\text{START}(i)},h_{\text{END}(i)},h_{\text{ATT}(i)}]$$
+
 注意力向量的目标是表示哪个词/词元是该跨度可能的
 句法中心词；我们在前一节中看到，中心词是一种有用的特征；中心词匹配是共指的一个良好指示。注意力表示按通常方式计算；系统学习一个权重向量 wα，并计算它与经 FFN 变换后的隐藏状态 ht 的点积：
 
-αt = wα · FFNα(ht) (24.51)
+$$α_{t}=w_{α}\cdot^{\text{FFN}}_{α}(h_{t})$$
+
 注意力得分通过 softmax 归一化为一个分布：
 
-exp(αt)
-ai,t = (24.52)
+$$\text{exp}(α_{t})$$
+
+$$a_{i,t}=$$
+
 PEND(i) k=START(i) exp(αk)
 然后用这一注意力分布构造向量 hATT(i)，它是对跨度 i 中每个词的嵌入 et 所做的注意力加权求和：
 
 > END(i)
 
-X
-ai,t ·et
-hATT(i) = (24.53)
-图 24.5 展示了跨度表示的计算以及提及
-得分的计算。
+$$\sum_{\text{START}}^{\text{END}(}$$
+
+$$a_{i,t}\cdote_{t}$$
+
+$$h_{\text{ATT}(i)}=$$
 
 > t=START(i)
+
+图 24.5 展示了跨度表示的计算以及提及
+得分的计算。
 
 ![](images/24-coreference-entity-linking/fig_p18_0.png)
 
@@ -737,7 +747,9 @@ hATT(i) = (24.53)
 既然已经知道如何计算表示跨度 i 的向量 gi，我们就可以来看两个打分函数 m(i) 和 c(i, j) 的细节了。二者都由前馈网络计算：
 
 m(i) = wm ·FFNm(gi) (24.54)
-c(i, j) = wc ·FFNc([gi,g j,gi ◦gj,]) (24.55)
+
+$$c(i,j)=w_{c}\cdot\text{FFN}_{c}([g_{i},g^{j},g_{i}◦g_{j},])$$
+
 在推断阶段，该提及得分 m 被用作过滤器，只保留得分最高的少数几个提及。
 
 随后我们为得分高的提及计算先行语得分。先行语
@@ -762,7 +774,8 @@ c(i, j) = wc ·FFNc([gi,g j,gi ◦gj,]) (24.55)
 
 训练时，每个提及并没有唯一的黄金先行语；共指标注只给出由共指提及构成的整个簇；因此一个提及只有潜在的先行语。所以我们使用的损失函数要让任一合法先行语的共指概率之和最大化。对于给定提及 i，其可能的先行语为 Y(i)，令 GOLD(i) 表示包含 i 的黄金簇中的提及集合。由于出现在 i 之前的提及集合是 Y(i)，该黄金簇中同样出现在 i 之前的提及集合就是 Y(i)∩GOLD(i)。因此我们希望最大化：
 
-X
+$$\sum_{∩}$$
+
 P(ˆy) (24.56)
 若提及 i 不在黄金簇中，则 GOLD(i) = ϵ。
 
@@ -859,7 +872,8 @@ a →X 的总相关度得分，是 q 中检测到的所有其他锚点投票之�
 
 > Y∈E(b)
 
-X
+$$\sum_{\inXq\\}$$
+
 relatedness(a →X) = vote(b,X) (24.61)
 为给 a →X 打分，我们结合相关度与先验概率，做法是选择实体 X
 该实体具有最高的 relatedness(a →X)；再找出与该值相差不超过一个小量 ϵ 的其他实体，并从这个集合中选择先验 P(X|a) 最高的实体。这一步的结果是为 q 中的每个跨度各指派一个实体。
@@ -884,10 +898,11 @@ score(a →X) = coherence(a →X)+linkprob(a) (24.62)
 
 实体提及检测 为了得到每个问题词元的 h 维嵌入，算法以常规方式将问题输入 BERT：
 
-[q1 ···qn] = BERT([CLS]q1 ···qn[SEP]) (24.63)
+$$[q_{1}\cdot \cdot \cdotq_{n}] =\text{BERT}([\texttt{CLS}]q_{1}\cdot \cdot \cdotq_{n}[\texttt{SEP}])$$
+
 随后，它以类似于上文阅读理解器中基于跨度的算法的方式，计算 q 中每个跨度 [i, j] 是实体提及的似然。首先计算 i/j 作为提及起点/终点的得分：
 
-sstart(i) = wstart ·qi, send(j) = wend ·qj,
+$$s_{\text{start}}(i) =w_{\text{start}}\cdotq_{i},s_{\text{end}}(j) =w_{\text{end}}\cdotq_{j},$$
 
 ![](images/24-coreference-entity-linking/fig_p23_0.png)
 
@@ -895,48 +910,57 @@ sstart(i) = wstart ·qi, send(j) = wend ·qj,
 
 其中 wstart 与 wend 是训练中学到的向量。接下来，用另一个可训练的嵌入 wmention 计算每个词元属于某个提及的得分：
 
-smention(t) = wmention ·qt (24.65)
+$$s_{\text{mention}}(t) =w_{\text{mention}}\cdotq_{t}$$
+
 然后通过组合这三个得分来计算提及概率：
 
 !
 
 > j
 
-X
+$$\sum_{t=i}^{j}$$
+
 p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)
 实体链接 为了把提及链接到实体，我们接下来为全部 Wikipedia 实体构成的集合 E = e1,··· ,ei,··· ,ew 中的每个实体计算嵌入。对于每个实体 ei，我们取其 Wikipedia 页面的文本，即标题 t(ei) 以及该 Wikipedia 页面的前 128 个词元（我们称之为描述 d(ei)）。这些内容同样输入 BERT，并取 CLS 词元的输出 BERT[CLS] 作为实体表示：
 
 > t=i
 
-xei = BERT[CLS]([CLS]t(ei)[ENT]d(ei)[SEP]) (24.67)
+$$x_{ei}=\text{BERT}_{\text{[CLS]}}([\texttt{CLS}]t(e_{i})[\texttt{ENT}]d(e_{i})[\texttt{SEP}])$$
+
 通过为每个实体 e 与跨度 [i, j] 计算跨度编码（各词元嵌入的平均）与实体编码之间的点积相似度，即可把提及跨度链接到实体。
 
 > j
 
 1 X
 yi,j = (j −i+1) qt
-s(e,[i, j]) = x· (24.68)
-eyi,j
-最后，我们取 softmax，得到每个跨度上关于实体的分布：
 
 > t=i
 
+$$s(e,[i,j]) =x^{\cdot}_{e}$$
+
+$$^{\cdot}_{e}y_{i,j}$$
+
+最后，我们取 softmax，得到每个跨度上关于实体的分布：
+
 exp(s(e,[i, j])) (24.69)
 p(e|[i, j]) = P
-e′∈E exp(s(e′,[i, j]))
+
+$$_{e′\inE}\text{exp}(s(e^{′},[i,j]))$$
+
 训练 ELQ 的提及检测与实体链接算法是全监督的。这意味着，与 24.7.1 节中的锚词典算法不同，它要求数据集中的实体边界已被标注并链接。两个这样的标注数据集是 WebQuestionsSP（Yih et al., 2016）和 GraphQuestions（Su et al., 2016），前者是源自 Google 搜索问题的 WebQuestions（Berant et al., 2013）数据集的扩展。二者的问句中实体跨度都已被标注并链接（Sorokin and Gurevych 2018, Li et al. 2020），从而产生了实体标注版本 WebQSPEL 和 GraphQEL（Li et al., 2020）。
 
 给定一个训练集，ELQ 的提及检测阶段与实体链接阶段被
 联合训练，优化二者损失之和。提及检测损失是二元交叉熵损失，其中 L 为段落长度，N 为候选数量：
 
-LMD = −1 X   
+LMD = −1 X
 y[i,j] log p([i, j])+(1−y[i,j])log(1−p([i, j])) (24.70)
 N
 其中若 [i, j] 是标准提及跨度则 y[i,j] = 1，否则为 0。实体链接损失为：
 
 > 1≤i≤j≤min(i+L−1,n)
 
-LED = −logp(eg|[i, j]) (24.71)
+$$L_{\text{ED}}=-\text{logp}(e_{g}|[i,j])$$
+
 其中 eg 是提及 [i, j] 对应的标准实体。
 
 ## 24.8 共指消解的评价

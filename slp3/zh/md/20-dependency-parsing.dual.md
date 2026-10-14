@@ -889,8 +889,10 @@ Book the flight through Houston
 
 > tagging. Feature templates allow us to automatically generate large numbers of specific features from a training set. For example, consider the following feature templates that are based on single positions in a configuration.
 
-⟨s1.w,op⟩,⟨s2.w,op⟩⟨s1.t,op⟩,⟨s2.t,op⟩
-⟨b1.w,op⟩,⟨b1.t,op⟩⟨s1.wt,op⟩ (20.10)
+$$⟨s_{1}.w,\text{op}⟩,⟨s_{2}.w,\text{op}⟩⟨s_{1}.t,\text{op}⟩,⟨s_{2}.t,\text{op}⟩$$
+
+$$⟨b_{1}.w,\text{op}⟩,⟨b_{1}.t,\text{op}⟩⟨s_{1}.\text{wt},\text{op}⟩$$
+
 这里特征记作 location.property，其中 s = 栈，b = 词
 
 > Here features are denoted as location.property, where s = stack, b = the word
@@ -905,10 +907,14 @@ Book the flight through Houston
 
 > (flights →morning)(flights →the) The correct transition here is SHIFT (you should convince yourself of this before proceeding). The application of our set of feature templates to this configuration would result in the following set of instantiated features.
 
-⟨s1.w = flights,op = shift⟩ (20.11)
-⟨s2.w = canceled,op = shift⟩
+$$⟨s_{1}.w=\text{flights},\text{op}=\text{shift}⟩$$
+
+$$⟨s_{2}.w=\text{canceled},\text{op}=\text{shift}⟩$$
+
 ⟨s1.t = NNS,op = shift⟩⟨s2.t = VBD,op = shift⟩⟨b1.w = to,op = shift⟩⟨b1.t = TO,op = shift⟩
-⟨s1.wt = flightsNNS,op = shift⟩
+
+$$⟨s_{1}.\text{wt}=\text{flightsNNS},\text{op}=\text{shift}⟩$$
+
 鉴于左弧和右弧转移都作用于栈顶的两个元素，结合这两个位置属性的特征就更为有用。
 
 > Given that the left and right arc transitions operate on the top two elements of the stack, features that combine properties from these positions are even more useful.
@@ -917,7 +923,8 @@ Book the flight through Houston
 
 > For example, a feature like s1.t ◦s2.t concatenates the part of speech tag of the word at the top of the stack with the tag of the word beneath it.
 
-⟨s1.t ◦s2.t = NNSVBD,op = shift⟩ (20.12)
+$$⟨s_{1}.t◦s_{2}.t=\text{NNSVBD},\text{op}=\text{shift}⟩$$
+
 给定训练数据和特征，可以使用任何分类器，例如多项逻辑回归或支持向量机。
 
 > Given the training data and features, any classifier, like multinomial logistic regression or support vector machines, can be used.
@@ -1100,7 +1107,8 @@ ConfigScore(c0) = 0.0 ConfigScore(ci) = ConfigScore(ci−1)+Score(ti,ci−1)
 >
 > 释义：指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。
 
-X
+$$\sum_{e\int}$$
+
 Score(t,S) = Score(e)
 基于图的算法必须解决两个问题：（1）为
 
@@ -1244,7 +1252,8 @@ G 上的最大生成树。图 G 上的生成树是 G 的一个子集，
 
 > Recall that given a sentence, S, and a candidate tree, T, edge-factored parsing models make the simplification that the score for the tree is the sum of the scores of the edges that comprise the tree:
 
-X
+$$\sum_{e\inT}$$
+
 score(S,T) = score(S,e)
 在基于特征的算法中，我们把边的分数计算为从该边提取出的特征的加权和：
 
@@ -1254,7 +1263,8 @@ score(S,T) = score(S,e)
 
 > N
 
-X
+$$\sum_{i=1}^{N}$$
+
 score(S,e) = wi fi(S,e)
 或者写得更简洁一些。
 
@@ -1325,8 +1335,14 @@ score(S,e) = w· f
 
 > et al. (2017) shown in Fig. 20.14, drawing on the work of Gr¨unewald et al. (2021) who tested many versions of the algorithm via their STEPS system. The algorithm first runs the sentence X = x1,...,xn through an encoder to produce a contextual embedding representation for each token R = r1,...,rn. The embedding for each token is now passed through two separate feedforward networks, one to produce a representation of this token as a head, and one to produce a representation of this token as a dependent:
 
-hhead = FFNhead(ri) (20.13)
-hdep = FFNdep(ri) (20.14)
+$$h^{\text{head}}_{i}=\text{FFN}^{\text{head}}(r_{i})$$
+
+> i
+
+$$h^{\text{dep}}_{i}=\text{FFN}^{\text{dep}}(r_{i})$$
+
+> i
+
 现在，为了给有向边 i →j 赋分（其中 wi 是中心词，w j 是依存词），我们将 i 的中心词表示 hhead 以及依存词的表示
 
 > Now to assign a score to the directed edge i →j, (wi is the head and w j is the dependent), we feed the head representation of i, hhead , and the dependent representation
@@ -1336,13 +1352,10 @@ hdep = FFNdep(ri) (20.14)
 
 > i
 
-> i
-
-> i
-
 > j
 
-Score(i →j) = Biaff(hhead ,hdep
+$$\text{Score}(i\toj)=\text{Biaff}_{⊺}(h_{i}^{\text{head}},h^{\text{dep}}_{j}$$
+
 )
 Biaff(x,y) = x⊺Uy +W(x⊕y)+b，其中 U、W 和 b 是模型学习到的权重。使用双仿射函数的目的，是让系统能够学习向量 x 与 y 之间的乘性交互。
 

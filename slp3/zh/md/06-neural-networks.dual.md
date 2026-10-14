@@ -80,7 +80,8 @@
 
 > a set of corresponding weights w1...wn and a bias b, so the weighted sum z can be represented as:
 
-X
+$$\sum_{i}$$
+
 z = b+ wixi (6.1)
 用向量记号来表达这个加权和往往更方便；回想线性代数可知，一个向量本质上只是一个数字的列表或数组。因此
 
@@ -127,7 +128,9 @@ y = a = f(z)
 
 1
 y = σ(z) = (6.3)
-1+e−z
+
+$$1+e^{-z}$$
+
 sigmoid 函数（如图 6.1 所示）有许多优点；它把输出
 
 > The sigmoid (shown in Fig. 6.1) has a number of advantages; it maps the output
@@ -273,7 +276,7 @@ x1 x2 y x1 x2 y x1 x2 y
 
 > unit that has a binary output and has a very simple step function as its non-linear activation function. The output y of a perceptron is 0 or 1, and is computed as follows (using the same weight w, input x, and bias b as in Eq. 6.2):
 
- 0, if w ·x+b ≤0
+0, if w ·x+b ≤0
 y = 1, if w ·x+b > 0 (6.7)
 构建一个能够计算其二进制输入的逻辑 AND 和 OR 函数的感知机是很容易的，
 
@@ -491,9 +494,9 @@ h = σ(Wx+b) (6.8)
 
 > and matrices. We’ll refer to the input layer as layer 0 of the network, and have n0 represent the number of inputs, so x is a vector of real numbers of dimension n0, or more formally x ∈Rn0, a column vector of dimensionality [n0 × 1]. Let’s call the hidden layer layer 1 and the output layer layer 2. The hidden layer has dimensionality n1, so h ∈Rn1 and also b ∈Rn1 (since each hidden unit can take a different bias value). And the weight matrix W has dimensionality W ∈Rn1×n0, i.e.[n1 ×n0].
 
-请花点时间确认，式 6.8 中的矩阵乘法会  Pn0 
+请花点时间确认，式 6.8 中的矩阵乘法会 Pn0
 
-> Take a moment to convince yourself that the matrix multiplication in Eq. 6.8 will  Pn0 
+> Take a moment to convince yourself that the matrix multiplication in Eq. 6.8 will Pn0
 计算出每个 h j 的值为 σ i=1 Wjixi +b j 。
 
 > compute the value of each h j as σ i=1 Wjixi +b j .
@@ -541,7 +544,8 @@ z = Uh
 
 > of Chapter 4. More generally for any vector z of dimensionality d, the softmax is defined as:
 
-exp(zi)
+$$\text{exp}(z_{i})$$
+
 softmax(zi) = 1 ≤i ≤d (6.9)
 Pd j=1 exp(z j)
 因此，举例来说，给定一个向量
@@ -621,9 +625,12 @@ z[1] = W[1]x+b[1] z[2] = W[2]z[1] +b[2]
 
 > We can rewrite the function that the network is computing as:
 
-z[2] = W[2]z[1] +b[2]
+$$z^{[2]}=W^{[2]}z^{[1]}+b^{[2]}$$
+
 = W[2](W[1]x+b[1])+b[2]= W[2]W[1]x+W[2]b[1] +b[2]
-= W′x+b′ (6.14)
+
+$$=W^{′}x+b^{′}$$
+
 这一点可推广到任意层数。因此，如果没有非线性激活函数，多层网络就只是一个权重集合不同的单层网络在记号上的变体，我们也就失去了多层网络的全部表示能力。
 
 > This generalizes to any number of layers. So without non-linear activation functions, a multilayer network is just a notational variant of a single layer network with a different set of weights, and we lose all the representational power of multilayer networks.
@@ -874,7 +881,9 @@ H = σ(XW⊺+b) Z = HU⊺ˆY = softmax(Z) (6.20)
 > N
 
 xmean = 1 X
-e(wi) (6.21)
+
+$$e(w_{i})$$
+
 N
 下面是这个分类器在采用平均池化时的方程：
 
@@ -882,7 +891,8 @@ N
 
 > i=1
 
-x = mean(e(w1),e(w2),...,e(wn))
+$$x=\text{mean}(e(w_{1}),e(w_{2}),...,e(w_{n}))$$
+
 h = σ(xW +b)
 z = hU
 ˆy = softmax(z) (6.22)
@@ -929,7 +939,8 @@ z = hU
 
 > input at time t a representation of some number of previous words (wt−1,wt−2, etc.) and outputs a probability distribution over possible next words. Thus—like the ngram LM—the feedforward neural LM approximates the probability of a word given the entire prior context P(wt|w1:t−1) by approximating based on the N −1 previous words:
 
-P(wt|w1,...,wt−1) ≈P(wt|wt−N+1,...,wt−1) (6.23)
+$$P(w_{t}|w_{1},...,w_{t-1})\approxP(w_{t}|w_{t-N+1},...,w_{t-1})$$
+
 在下面的例子中我们使用一个 4-gram 的示例，因此我们将展示一个用于估计概率 P(wt = i|wt−3,wt−2,wt−1) 的神经网络。
 
 > In the following examples we’ll use a 4-gram example, so we’ll show a neural net to estimate the probability P(wt = i|wt−3,wt−2,wt−1).
@@ -1039,7 +1050,8 @@ z = Uh
 
 > logistic regression. If the neural network is being used as a binary classifier, with the sigmoid at the final layer, the loss function is the same logistic regression loss we saw in Eq. 4.19:
 
-LCE(ˆy,y) = −log p(y|x) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.25)
+$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+
 如果我们用该网络划分 3 个或更多类别，那么损失函数
 
 > If we are using the network to classify into 3 or more classes, the loss function is
@@ -1064,7 +1076,8 @@ LCE(ˆy,y) = −log p(y|x) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.25)
 
 > K
 
-X
+$$\sum_{k=1}^{K}$$
+
 LCE(ˆy,y) = − yk log ˆyk (6.26)
 我们可以进一步简化这个等式；先用函数 1{} 重写该式，当括号中的条件成立时它取值为 1，否则取值为 0。这样就更容易看出，式 6.26 中求和各项除真实类别所对应的那一项（其 yk = 1）之外都为 0：
 
@@ -1074,7 +1087,8 @@ LCE(ˆy,y) = − yk log ˆyk (6.26)
 
 > K
 
-X
+$$\sum_{k=1}^{K}$$
+
 LCE(ˆy,y) = − 1{yk = 1}log ˆyk
 换言之，交叉熵损失就是正确类别所对应的输出概率的负对数，因此我们也把它称为负
 
@@ -1097,7 +1111,8 @@ LCE(ˆy,y) = −log ˆyc （其中 c 为正确类别） (6.27)
 
 > Plugging in the softmax formula from Eq. 6.9, and with K the number of classes:
 
-exp(zc)
+$$\text{exp}(z_{c})$$
+
 LCE(ˆy,y) = −log （其中 c 为正确类别） (6.28)
 
 > LCE(ˆy,y) = −log (where c is the correct class) (6.28)
@@ -1125,22 +1140,33 @@ PK j=1 exp(z j)
 
 > For a network with one weight layer and sigmoid output (which is what logistic regression is), we could simply use the derivative of the loss that we used for logistic regression in Eq. 6.29 (and derived in Section 4.15):
 
-∂LCE(ˆy,y)
-= (ˆy−y)xj
-∂wj
-= (σ(w ·x+b)−y)xj (6.29)
+$$\partialL_{\text{CE}}(yˆ,y)$$
+
+$$=(yˆ-y)x_{j}$$
+
+$$\partialw_{j}$$
+
+$$=(σ(w\cdotx+b)-y)x_{j}$$
+
 或者，对于只有一个权重层、输出为 softmax 的网络（即多项式逻辑回归），我们可以使用式 4.41 中 softmax 损失的导数，这里针对某个特定权重 wk 和输入 xi 给出
 
 > Or for a network with one weight layer and softmax output (=multinomial logistic regression), we could use the derivative of the softmax loss from Eq. 4.41, shown for a particular weight wk and input xi
-∂LCE(ˆy,y)
-= −(yk −ˆyk)xi
-∂wk,i
-= −(yk −p(yk = 1|x))xi
+
+$$\partialL_{\text{CE}}(yˆ,y)$$
+
+$$=-(y_{k}-yˆ_{k})x_{i}$$
+
+$$\partialw_{k,i}$$
+
+$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$
+
 !
 
 exp(wk ·x+bk) (6.30)
 = − yk − PK xi
-j=1 exp(w j ·x+bj)
+
+$$^{K}_{j=1}\text{exp}(w^{j}\cdotx+b_{j})$$
+
 但这些导数只能为某一个权重层给出正确的更新：最后一层！
 
 > But these derivatives only give correct updates for one weight layer: the last one!
@@ -1289,7 +1315,9 @@ z[1] = W[1]x+b[1] a[1] = ReLU(z[1]) z[2] = W[2]a[1] +b[2] a[2] = σ(z[2])ˆy = a
 对于二分类 sigmoid 输出，由式 6.25 给出，其形式为
 
 > for binary sigmoid output from Eq. 6.25 is
-LCE(ˆy,y) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.36)
+
+$$L_{\text{CE}}(yˆ,y)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+
 我们的输出是 ˆy = a[2]，因此可以把它改写为
 
 > Our output ˆy = a[2], so we can rephrase this as
@@ -1319,7 +1347,7 @@ dz
 ReLU（修正线性单元）的导数为2
 
 > The derivative of the ReLU is2
- 0 for z < 0 (6.40)
+0 for z < 0 (6.40)
 d ReLU(z)
 dz = 1 for z ≥0
 我们将给出计算的开头部分，即计算损失函数 L 关于 z 的导数 ∂L ∂z （其余计算留给读者作为练习）。根据链式法则：
@@ -1327,22 +1355,26 @@ dz = 1 for z ≥0
 > We’ll give the start of the computation, computing the derivative of the loss function L with respect to z, or ∂L ∂z (and leaving the rest of the computation as an exercise for the reader). By the chain rule:
 
 ∂L ∂z = ∂L ∂a[2] (6.41)
-∂a[2] ∂z
+
+$$\partiala^{[2]}\partialz$$
+
+> ∂L
+
 因此我们先计算 ∂a[2] ，对式 6.37 求导，该式重写如下：
 
 > So let’s first compute ∂a[2] , taking the derivative of Eq. 6.37, repeated here:
-
-> ∂L
 
 h i
 LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2])
 ! !
 
 ∂L y∂log(a[2]) +(1−y)∂log(1−a[2])∂a[2] = − ∂a[2] ∂a[2]
- y 1  1 
+y 1  1
 = − +(1−y) 1−a[2] (−1)
-a[2]
- y a[2] + y−1 (6.42)
+
+$$a^{[2]}$$
+
+y a[2] + y−1 (6.42)
 = − 1−a[2]
 接下来，根据 sigmoid 函数的导数：
 
@@ -1354,7 +1386,7 @@ a[2]
 > Finally, we can use the chain rule:
 
 ∂L ∂L ∂a[2]∂z = ∂a[2] ∂z
- y a[2] + y−1 a[2](1−a[2])
+y a[2] + y−1 a[2](1−a[2])
 = − 1−a[2]= a[2] −y (6.43)
 继续反向计算梯度（接下来让梯度经过 b[2] 1 和两个乘积节点，依此类推，一直回到所有蓝绿色的节点），这一步留给读者作为练习。
 

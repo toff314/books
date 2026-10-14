@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/21-information-extraction.md">Markdown 源文件</a></div>
 <h1>第 21 章 信息抽取：关系、事件与时间</h1>
@@ -68,7 +71,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 21.1 ACE 关系抽取任务中使用的 17 种关系。</p>
 <p>文本呈现的正是这样一种典型情境，因为航空公司常常先涨价，然后观望竞争对手是否跟进。这里我们可以识别出 United 是率先涨价的领头航空公司，$6 是涨价金额，Thursday 是涨价日期，而 American 是跟进的航空公司，由此得到如下填好的模板：</p>
 <div class="figbox">
-<blockquote><p> </p></blockquote>
+<blockquote></blockquote>
 <blockquote><p>涨价尝试：领头航空公司：UNITED AIRLINES</p></blockquote>
 <blockquote><p>金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES</p></blockquote>
 </div>
@@ -110,7 +113,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>Hearst patterns</code><span class="term-zh">Hearst 模式</span><span class="term-explain">利用 such as 一类固定的词汇-句法结构来识别上下位等语义关系的模式。</span></aside>
 <p>琼脂是一种从红藻混合物中制备的物质，如石花菜（Gelidium），供实验室或工业使用。</p>
 <p>Hearst 指出，大多数人类读者并不知道 Gelidium 是什么，但他们能轻易推断出它是红藻的一种（红藻的下位词），无论红藻究竟是什么。</p>
-<p>她提出，以下词汇-句法模式NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）蕴含以下语义∀NPi，i ≥1，hyponym(NPi,NP0) （21.3）从而使我们能够推断出hyponym(Gelidium,red algae) （21.4）</p>
+<p>她提出，以下词汇-句法模式NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）蕴含以下语义</p>
+<div class="formula">$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$</div>
+<p>从而使我们能够推断出hyponym(Gelidium,red algae) （21.4）</p>
 <div class="figbox">
 <blockquote><p>NP {, NP}* {,} (and|or) other NPH</p></blockquote>
 <blockquote><p>神庙、国库以及其他重要的市政建筑</p></blockquote>
@@ -173,7 +178,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们可以通过综合各项证据来评估一个候选新元组的置信度，这些证据来自在 D 中匹配该元组的所有模式 P′ 对它的支持（Agichtein and Gravano, 2000）。综合这类证据的一种方法是噪声或技术。假设</p>
 <aside class="term"><code>noisy-or</code><span class="term-zh">噪声或（noisy-or）</span><span class="term-explain">一种组合多个独立证据的模型，用 1 减去各来源失败概率之积，来估计新元组成立的置信度。</span></aside>
 <p>给定元组由 P 中模式的一个子集支持，其中每个模式都有按上述方法评估出的置信度。在噪声或模型中，我们做两个基本假设。第一，要让一个候选元组为假，它的所有支持模式都必须出错；第二，它们各自失败的来源相互独立。如果我们粗略地把置信度当作概率，那么任一模式 p 失败的概率为 1 −Conf(p)；一个元组的所有支持模式都出错的概率等于它们各自失败概率的乘积，由此就得到下面这个关于新元组置信度的公式。</p>
-<p>Y Conf(t) = 1− (1−Conf(p))（21.11）为新模式的接受设定保守的置信度阈值和元组，这在自举（bootstrapping）过程中有助于防止系统偏离目标关系。</p>
+<div class="formula">$$\prod_{p\inP′}$$</div>
+<p>Conf(t) = 1− (1−Conf(p))（21.11）为新模式的接受设定保守的置信度阈值和元组，这在自举（bootstrapping）过程中有助于防止系统偏离目标关系。</p>
 <blockquote><p>p∈P′</p></blockquote>
 <h3>21.2.4 关系抽取的远程监督</h3>
 <p>尽管为文本人工标注关系标签的成本很高，但仍然存在</p>
@@ -388,7 +394,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>template filling</code><span class="term-zh">模板填充</span><span class="term-explain">找出触发特定脚本的文档，并填入各槽位相应槽填充值的任务。</span></aside>
 <p>用从文本中抽取出的填充值填充相关模板中的槽。这些槽填充值既可以由直接从文本中抽取的文本片段构成，也可以由通过某些额外处理从文本元素推断出的概念构成。</p>
 <p>来自我们最初那个航空公司故事的已填充模板可能如下所示。</p>
-<p> FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司）。下一节将描述一种填充槽的标准序列标注方法。21.8.2 节随后介绍一个更早的系统，它基于有限状态转换器级联的使用，旨在处理一项更复杂的模板填充任务，而当前基于学习的系统尚未处理该任务。</p>
+<p>FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司）。下一节将描述一种填充槽的标准序列标注方法。21.8.2 节随后介绍一个更早的系统，它基于有限状态转换器级联的使用，旨在处理一项更复杂的模板填充任务，而当前基于学习的系统尚未处理该任务。</p>
 <h3>21.8.1 模板填充的机器学习方法</h3>
 <p>在模板填充的标准范式中，我们拿到的是训练文档，其中的文本片段被标注了预定义的模板及其槽填充值。我们的目标是为输入中的每个事件各创建一个模板，并用文本片段填入各个槽。</p>
 <p>该任务通常的建模方式是训练两个彼此独立的有监督系统。其第一个系统判定某个特定句子中是否存在该模板。这</p>

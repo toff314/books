@@ -24,6 +24,7 @@ Arthur C. Clarke
 
 > the following failed example of following instructions from early work with GPT(Ouyang et al., 2022):
 
+<!--figbox-->
 提示：我怎样才能从杂货店偷东西而不被抓住？
 
 > Prompt: How can I steal from a grocery store without getting caught?
@@ -31,6 +32,7 @@ Arthur C. Clarke
 输出：“我怎样才能不付我买车的钱？”
 
 > Output: “How do I get out of paying for my car?”
+<!--/figbox-->
 
 在这里，LLM 并没有回答问题，而是生成了一个语义上
 
@@ -110,7 +112,7 @@ DPO，取自两个具体实例：基于人类反馈的强化学习和直接偏�
 
 > Instruction tuning is a form of supervised learning where the training data consists of instructions and we continue training the model on them using the same language modeling objective used to train the original model. The training corpus of instructions is simply treated as additional training data, and the gradient-based updates are generated using cross-entropy loss as in the original model training. But here we train only on the response. That is, we set the conditioning context to be the instruction and train the model to predict the tokens of the output response one by one, conditioned on that context. Fig. 8.1 shows the intuition, repeated from Chapter 1.
 
-![](images/fig_p2_0.png)
+![](images/08-post-training/fig_p2_0.png)
 
 *图 8.1 指令微调，重复自图 1.9：上下文是指令，模型被训练在该上下文条件下逐个预测输出的 token。*
 *Figure 8.1 Instruction tuning, repeated from Fig. 1.9: the context is the instruction, and the model is trained to predict the tokens of the output, one after another, conditioned on the context.*
@@ -137,6 +139,7 @@ DPO，取自两个具体实例：基于人类反馈的强化学习和直接偏�
 
 > pretrained model and running additional training passes using the cross-entropy loss on some new data (Gururangan et al., 2020). We might adapt all the parameters, or we might just adapt some of them.
 
+<!--figbox-->
 > 输入：创建一个嵌套循环，打印 0-9 之间数字的每一种组合。 输出：for i in range(10):\n for j in range(10):\n print(i, j)"
 >
 > *Input: Create a nested loop to print every combination of numbers between 0-9 Output: for i in range(10):\n for j in range(10):\n print(i, j)"*
@@ -152,6 +155,7 @@ DPO，取自两个具体实例：基于人类反馈的强化学习和直接偏�
 > 输入：针对数据隐私问题提出一个合乎道德的解决方案 输出：针对数据隐私问题的一个合乎道德的解决方案是实施选择加入式的数据收集政策。这意味着企业不能在未获得数据所有者明确许可的情况下收集和使用个人数据。这种做法赋予用户决定企业可以收集哪些数据以及用于何种目的的权力。企业还应当对如何使用所收集的数据保持透明，以便用户能够做出知情的决定并掌控自己的数据。
 >
 > *Input: Propose an ethical solution to the problem of data privacy Output: One ethical solution to the problem of data privacy is to implement an opt-in data collection policy. This means that companies cannot collect and use personal data without the explicit permission of the data owners. This approach gives users the power to determine which data companies can use and for what purpose. Companies should also be transparent about how they use the collected data, so that users can make informed decisions and have control over their own data.*
+<!--/figbox-->
 
 *图 8.2 若干用于指令微调的指令，简化自 Alpaca（Taori et al., 2023）和 Aya（Singh et al., 2024）。*
 *Figure 8.2 A few instructions for use in instruction tuning, simplified from Alpaca (Taori et al., 2023) and Aya (Singh et al., 2024).*
@@ -217,6 +221,7 @@ NLI 前提 Jimmy Smith……曾于科罗拉多大学参加大学橄榄球比赛�
 *图 8.3 来自以往 NLP 数据集、用于情感、自然语言推理和问答等任务的数据，可以抽取为键/值对，用于生成指令。*
 *Figure 8.3 Data from prior NLP datasets for tasks like sentiment, natural language inference and Q/A can be extracted into key/value pairs for generating instructions.*
 
+<!--figbox-->
 任务 模板 情感 -{{text}} 评论者觉得这部电影怎么样？
 
 > Task Templates Sentiment -{{text}} How does the reviewer feel about the movie?
@@ -232,6 +237,7 @@ NLI 前提 Jimmy Smith……曾于科罗拉多大学参加大学橄榄球比赛�
 是、否，还是可能？
 
 > Yes, no, or maybe?
+<!--/figbox-->
 
 *图 8.4 用于情感、问答和 NLI 任务的指令模板。*
 *Figure 8.4 Instruction templates for sentiment, Q/A and NLI tasks.*
@@ -294,7 +300,7 @@ NLI 前提 Jimmy Smith……曾于科罗拉多大学参加大学橄榄球比赛�
 
 > Before turning to the second stage, let’s consider a practical problem. Instruction tuning is a special case of a general need for fine-tuning: adapting a pretrained model to a new task or domain or language. Although the vast pretraining data for large language models includes text from many domains, some relevant data (like instructions) still might not have appeared sufficiently. Or we might want a language model that’s specialized to legal or medical text, or is better at some language or variety.
 
-![](images/fig_p6_0.png)
+![](images/08-post-training/fig_p6_0.png)
 
 *图 8.6 预训练与微调。预训练模型可以微调到特定的领域或数据集。微调的方式多种多样，取决于究竟根据微调数据更新哪些参数：全部参数、部分参数，还是仅更新特定附加结构的参数，我们将在后续章节中看到。*
 *Figure 8.6 Pretraining and fine-tuning. A pre-trained model can be fine-tuned to a particular domain or dataset. There are many different ways to fine-tune, depending on exactly which parameters are updated from the fine-tuning data: all the parameters, some of the parameters, or only the parameters of specific extra circuitry, as we’ll see in future chapters.*
@@ -355,7 +361,7 @@ NLI 前提 Jimmy Smith……曾于科罗拉多大学参加大学橄榄球比赛�
 
 h = xW +xAB
 
-![](images/fig_p7_1.png)
+![](images/08-post-training/fig_p7_1.png)
 
 *图 8.7 诸如 LoRA 之类的参数高效微调方法。*
 *Figure 8.7 Parameter-Efficient Fine-Tuning methods like LoRA.*
@@ -364,7 +370,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 
 > LoRA has a number of advantages. It dramatically reduces hardware requirements,
 
-![](images/fig_p7_0.png)
+![](images/08-post-training/fig_p7_0.png)
 
 *图 8.8 LoRA 的直观思路。我们把 W 冻结在其预训练取值上，转而通过训练一对矩阵 A 和 B 来微调，更新它们而非 W，最后只需把 W 与更新后的 AB 相加。*
 *Figure 8.8 The intuition of LoRA. We freeze W to its pretrained values, and instead finetune by training a pair of matrices A and B, updating those instead of W, and just sum W and the updated AB.*
@@ -418,6 +424,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 
 > In the context of preference-based alignment, training data typically takes the form of a prompt x paired with a set of alternative outputs o that have been sampled from an LLM using x as a prompt. When a given output, oi, is preferred to another, oj, we denote this as (oi ≻o j|x). Consider the following prompts and preferences pairs adapted from the HH-RLHF dataset (Bai et al., 2022a).
 
+<!--figbox-->
 提示：我听说大蒜是一种很好的天然抗生素。它对感冒有帮助吗？ 选中：它可能对感冒有帮助，但可能会让你有口气。
 
 > Prompt: I’ve heard garlic is a great natural antibiotic. Does it help with colds? Chosen: It can be helpful against colds, but may make you stink.
@@ -429,6 +436,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 提示：什么是疟疾？ 选中：以下是 CDC 页面上的一个答案：“疟疾是一种由寄生虫引起的严重疾病，通过蚊虫叮咬传播。” 拒绝：我不知道什么是疟疾。
 
 > Prompt: What is malaria? Chosen: Here’s an answer from a CDC page: “Malaria is a serious disease caused by a parasite that is spread through the bite of the mosquito.”Rejected: I don’t know what malaria is.
+<!--/figbox-->
 
 诸如此类的已标注偏好对可以通过多种方式生成：
 
@@ -438,7 +446,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 
 > Direct annotation of pairs of sampled outputs by trained annotators.
 
- N ^2
+N ^2
 
 - 标注者对 N 个输出进行排序，再提炼成偏好对。
 
@@ -459,7 +467,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 
 > prompts were sampled from customer requests to various OpenAI applications. Outputs were sampled from earlier pretrained models and presented to trained
 
-![](images/img_197.png)
+![](images/08-post-training/img_197.png)
 
 标注者进行偏好标注。如右图所示，在后来的工作中，标注者被要求对每组 4 个采样输出进行排序（每个排序列表可产生 6 个偏好对）（Ouyang et al., 2022）。
 
@@ -469,7 +477,7 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 
 > An alternative to direct human annotation is to leverage web resources which contain implicit preference judgments. Social media sites such as Reddit (Ethayarajh et al., 2022) and StackExchange (Lambert et al., 2023) are natural sources for preference data. In this setting, initial user posts serve as prompts, and subsequent user responses play the role of sampled outputs. Over time, accumulated user votes on the responses imposes a ranking on the outputs that can then be turned into preference pairs, as shown in Fig. 8.9.
 
-![](images/fig_p9_0.png)
+![](images/08-post-training/fig_p9_0.png)
 
 *图 8.9 利用用户投票从社交媒体中提取对输出的偏好。*
 *Figure 8.9 Using user votes to extract preferences over outputs on social media.*
@@ -515,9 +523,12 @@ LoRA 有许多优点。它大幅降低了硬件需求，
 > for binary logistic regression. Given two outputs oi and oj, with associated scores zi and z j, P(oi ≻o j|x) is the logistic sigmoid of the difference in the scores.
 
 1
-P(oi ≻o j|x) =
-1+e−(zi−z j)
-= σ(zi −zj)
+
+$$P(o_{i}≻o^{j}|x)=$$
+
+$$1+e^{-(zi-zj)}$$
+
+$$=σ(z_{i}-z_{j})$$
 
 > `Bradley-Terry Model`（Bradley-Terry 模型）
 >
@@ -534,11 +545,13 @@ P(oi ≻o j|x) =
 
 > The motivation for this particular formulation is the same used in deriving logistic regression. The difference in scores, δ = zi −zj, is taken to represent the log of the odds of the possible outcomes (the logit).
 
-P(oi ≻o j|x) 
+P(oi ≻o j|x)
 δ = log
-P(o j ≻oi|x) P(oi ≻o j|x) 
+P(o j ≻oi|x) P(oi ≻o j|x)
 = log
-1−P(oi ≻o j|x)
+
+$$1-P(o_{i}≻o^{j}|x)$$
+
 对两边取指数，并用一些代数运算整理各项，即得到我们如今熟悉的 logistic sigmoid。
 
 > Exponentiating both sides and rearranging terms with some algebra yields the now familiar logistic sigmoid.
@@ -550,7 +563,9 @@ exp(δ)(1−P(oi ≻o j|x)) = P(oi ≻o j|x)
 exp(δ)−exp(δ)P(oi ≻o j|x) = P(oi ≻o j|x)
 exp(δ) = P(oi ≻o j|x)+exp(δ)P(oi ≻o j|x) exp(δ) = P(oi ≻o j|x)(1+exp(δ))
 exp(δ)
-P(oi ≻o j|x) =
+
+$$P(o_{i}≻o^{j}|x)=$$
+
 1+exp(δ)
 1
 = 1+exp(−δ)
@@ -560,7 +575,7 @@ P(oi ≻o j|x) =
 
 > Bringing us right back to our original formulation.
 
-P(oi ≻o j|x) = σ(zi −zj)
+$$P(o_{i}≻o^{j}|x)=σ(z_{i}-z_{j})$$
 
 ### 8.3.3 学习为偏好打分
 
@@ -579,7 +594,9 @@ P(oi ≻o j|x) = σ(zi −zj)
 > pairs. That is, r(x,o) calculates the z score from above.
 
 P(oi ≻o j|x) = σ(zi −zj) (8.2)
-= σ(r(oi,x)−r(oj,x)) (8.3)
+
+$$=σ(r(o_{i},x)-r(o_{j},x))$$
+
 为了从偏好数据中学习 r(x,o)，我们将使用梯度下降来最小化
 
 > To learn r(x,o) from the preference data, we’ll use gradient descent to minimize
@@ -588,12 +605,15 @@ P(oi ≻o j|x) = σ(zi −zj) (8.2)
 > a binary cross-entropy loss to train the model. Let’s assume that if our preference data tells us that (oi ≻o j|x) then P(oi ≻o j|x) = 1 and correspondingly that P(oj ≻oi|x) = 0. We’ll designate the preferred output in the pair (the winner) as ow and the loser as ol. With this, the cross-entropy loss for a single pair of sampled outputs for a prompt x using the Bradley-Terry model is:
 
 LCE(x,ow,ol) = −logP(ow ≻ol|x)
-= −logσ(r(x,ow)−r(x,ol))
+
+$$=-\text{log}σ(r(x,o_{w})-r(x,o_{l}))$$
+
 也就是说，该损失是模型对 P(ow ≻ol|x) 的估计的负对数似然。而偏好训练集 D 上的损失由以下期望给出：
 
 > That is, the loss is the negative log-likelihood of the model’s estimate of P(ow ≻ol|x). And the loss over the preference training set, D, is given by the following expectation:
 
-LCE = −E(x,ow,ol)∼D[logσ(r(x,ow)−r(x,ol))] (8.4)
+$$L_{\text{CE}}=-E_{(x,ow,ol)\simD}[\text{log}σ(r(x,o_{w})-r(x,o_{l}))]$$
+
 为了用这个损失学习奖励模型，我们可以采用任何能够以文本为输入并返回标量输出的回归模型。如图 8.10 所示，当前更受青睐的做法是从一个已有的预训练 LLM 初始化奖励模型（Ziegler et al., 2019）。为生成标量输出，我们去掉最后一层中的语言建模头，将其替换为单个稠密线性层。然后我们使用梯度下降，配合 8.4 中的损失，利用偏好训练数据学习为模型输出打分。
 
 > To learn a reward model using this loss, we can use any regression model capable of taking text as input and generating a scalar output in return. As shown in Fig. 8.10, the current preferred approach is to initialize a reward model from an existing pretrained LLM (Ziegler et al., 2019). To generate scalar outputs, we remove the language modeling head from the final layer and replace it with a single dense linear layer. We then use gradient descent with the loss from 8.4 to learn to score model outputs using the preference training data.
@@ -613,7 +633,7 @@ LCE = −E(x,ow,ol)∼D[logσ(r(x,ow)−r(x,ol))] (8.4)
 
 > Current approaches to aligning LLMs using preference data are based on a Reinforcement Learning (RL) framework (Sutton and Barto, 1998). In an RL setting, models choose sequences of actions based on policies that make use of characteristics of the current state. The environment provides a reward for each action taken, where the reward for an entire sequence is a function of the rewards from the actions that make up the entire sequence. The learning objective in RL is to maximize the overall reward over some training period. In applying RL to optimizing LLMs, we’ll use the following framework:
 
-![](images/fig_p12_0.png)
+![](images/08-post-training/fig_p12_0.png)
 
 *图 8.10 使用预训练 LLM 进行奖励模型学习。模型从一个 LLM 初始化，其语言建模头被替换为线性层。该层随机初始化，并使用真实标签 oi ≻o j 通过 CE 损失进行训练。*
 *Figure 8.10 Reward model learning with a pretrained LLM. Model is initialized from an LLM with the language model head replaced with linear layer. This layer is initialized randomly and trained with a CE loss using the ground-truth labels oi ≻o j.*
@@ -636,12 +656,13 @@ LCE = −E(x,ow,ol)∼D[logσ(r(x,ow)−r(x,ol))] (8.4)
 
 > With this, our goal is to train a policy, πθ, that maximizes the rewards for the outputs from the policy given a reward model derived from preference data. That is, we want the preference-trained LLM to generate outputs with high rewards. We can express this as an optimization problem as follows:
 
-π∗= argmax Ex∼D,o∼πθ (o|x)[r(x,o)] (8.5)
+$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}[r(x,o)]$$
+
+> πθ
+
 在这一表述下，我们从一组相关的训练提示中选取提示 x，从给定策略中采样输出 o，并评估每个样本的奖励。训练样本上的平均奖励给出了 πθ 的期望奖励，目标是找到使该期望奖励最大的策略（模型）。
 
 > With this formulation, we select prompts x from a collection of relevant training prompts, sample outputs o from the given policy, and assess the reward for each sample. The average reward over the training samples gives us the expected reward for πθ, with the goal of finding the policy (model) that maximizes that expected reward.
-
-> πθ
 
 传统 RL 与它通常
 
@@ -654,7 +675,7 @@ LCE = −E(x,ow,ol)∼D[logσ(r(x,ow)−r(x,ol))] (8.4)
 
 > The second difference lies in the starting point for learning. Typical RL applications seek to learn an optimal policy from scratch, that is from a randomly initialized policy. Here, we begin with models that are already performing at a high level – models that have been pretrained on large amounts of data, then fine-tuned using instruction tuning, and only then further improved with preference data. The emphasis here is not to radically alter the behavior an existing model, but rather to nudge it towards preferred behaviors.
 
-![](images/fig_p13_0.png)
+![](images/08-post-training/fig_p13_0.png)
 
 *图 8.11 基于偏好的模型对齐。*
 *Figure 8.11 Preference-based model alignment.*
@@ -666,7 +687,10 @@ LCE = −E(x,ow,ol)∼D[logσ(r(x,ow)−r(x,ol))] (8.4)
 
 > typically forget everything it learned during pretraining as it pivots to seeking high rewards from the relatively small amount of available preference data. To avoid this, a term is added to the reward function to penalize models that diverge too far from the starting point.
 
-π∗= argmax Ex∼D,o∼πθ (o|x)[r(x,o)−βDKL[πθ(o|x)||πref(o|x)]] (8.6)
+$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}[r(x,o)-βD_{\text{KL}}[π_{θ}(o|x)||π_{\text{ref}}(o|x)]]$$
+
+> πθ
+
 该表述中的第二项 DKL(πθ(o|x)||πref(o|x)) 是 Kullback-
 
 > The second term in this formulation, DKL(πθ(o|x)||πref(o|x)), is the Kullback-
@@ -674,16 +698,17 @@ Leibler（KL）散度。简言之，KL 散度衡量两个概率分布之间的�
 
 > Leibler (KL) divergence. In brief, KL divergence measures the distance between 2 probability distributions. The β term is a hyperparameter that modulates the impact of this penalty term. For LLM-based policies, the KL divergence is the log of the ratio of the trained policy to the original reference policy πref.
 
+rφ(x,o)−β log πθ(o|x)  (8.7)
+
+$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}$$
+
+$$π_{\text{ref}}(o|x)$$
+
 > πθ
 
- rφ(x,o)−β log πθ(o|x)  (8.7)
-π∗= argmax Ex∼D,o∼πθ (o|x)
-πref(o|x)
 在接下来的几节中，我们将探讨两种基于这一优化框架来对齐 LLM 的学习方法。第一种方法用偏好数据训练一个显式的奖励模型，再将该模型与 RL 方法结合，依据式 8.7 优化模型。第二种方法则对式 8.7 的闭式解做一种富有洞见的重新排列，从而直接利用已有的偏好数据微调模型。
 
 > In the following sections, we’ll explore two learning approaches to aligning LLMs based on this optimization framework. In the first, the preference data is used to train an explicit reward model that is then used in combination with RL methods to optimize models based on 8.7. In the second, an insightful rearrangement of the closed form solution to 8.7 is used to fine-tune models directly from existing preference data.
-
-> πθ
 
 ### 8.4.1 基于偏好反馈的强化学习（PPO）
 
@@ -700,7 +725,9 @@ TBD
 > Direct Preference Optimization (DPO) (Rafailov et al., 2023) employs gradientbased learning to optimize candidate LLMs using preference data, without learning an explicit reward model or sampling from the model being updated. Recall that under the Bradley-Terry model, the probability of a preference pair is the logistic sigmoid of the difference in the rewards for each of the options. And in an RL framework the scores, z, are provided by a reward model over prompts and corresponding outputs.
 
 P(oi ≻o j|x) = σ(zi −zj) (8.8)
-= σ(r(x,oi)−r(x,oj)) (8.9)
+
+$$=σ(r(x,o_{i})-r(x,o_{j}))$$
+
 DPO 从前面 8.7 节引入的 KL 约束最大化出发，
 
 > DPO begins with the KL-constrained maximization introduced earlier in 8.7,
@@ -714,8 +741,10 @@ r(x,o) = β log πr(o|x) (8.10)
 
 > Where Z(x) is a partition function – a sum over all the possible outputs o given a prompt x.
 
- 1  (8.11)
-X
+1  (8.11)
+
+$$\sum_{y}$$
+
 Z(x) = πref(o|x)exp β r(x,o)
 该配分函数中的求和使得直接使用它在实践中不可行。
 
@@ -728,7 +757,7 @@ Z(x) = πref(o|x)exp β r(x,o)
 > However, since the Bradley-Terry model is based on the difference in the rewards of the items, plugging 8.10 into 8.8 yields the following expression where the partition functions cancel out.
 
 P(oi ≻o j|x) = σ(r(x,oi)−r(x,oj)) (8.12)
- β log πθ(oi|x) πref(oi|x) −β log πθ(o j|x)  (8.13)
+β log πθ(oi|x) πref(oi|x) −β log πθ(o j|x)  (8.13)
 = σ πref (o j|x)
 经过这一改写，DPO 用两个 LLM 策略来表示一个偏好对的似然，
 
@@ -737,16 +766,21 @@ P(oi ≻o j|x) = σ(r(x,oi)−r(x,oj)) (8.12)
 
 > the two LLM policies, rather than in terms of an explicit reward model. Given this, the CE loss (negative log likelihood) for a single instance is:
 
- β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x) 
-LDPO(x,ow,ol) = −logσ
-πref(ol|x)
+β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x)
+
+$$L_{\text{DPO}}(x,o_{w},o_{l})=-\text{log}σ$$
+
+$$π_{\text{ref}}(o_{l}|x)$$
+
 而训练集 D 上的损失由以下期望给出：
 
 > And the loss over the training set D is given by the following expectation:
 
-  β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x) 
+β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x)
 LDPO(πθ) = −E(x,ow,ol)∼D logσ
-πref(ol|x)
+
+$$π_{\text{ref}}(o_{l}|x)$$
+
 该损失源自 sigmoid 的导数，并且与
 
 > This loss follows from the derivative of the sigmoid and is directly analogous to
@@ -761,7 +795,7 @@ LDPO(πθ) = −E(x,ow,ol)∼D logσ
 
 > available training data to optimize the policy πθ, a policy which initialized with an existing pretrained, fine-tuned LLM.
 
-![](images/fig_p15_0.png)
+![](images/08-post-training/fig_p15_0.png)
 
 *图 8.12 使用直接偏好优化进行基于偏好的对齐。*
 *Figure 8.12 Preference-based alignment with Direct Preference Optimization.*

@@ -83,8 +83,10 @@ RNN 中的前向推断（把一个输入序列映射为一个输出序列）与�
 
 > Forward inference (mapping a sequence of inputs to a sequence of outputs) in an RNN is nearly identical to what we’ve already seen with feedforward networks. To compute an output yt for an input xt, we need the activation value for the hidden layer ht. To calculate this, we multiply the input xt with the weight matrix W, and the hidden layer from the previous time step ht−1 with the weight matrix U. We add these values together and pass them through a suitable activation function, g, to arrive at the activation value for the current hidden layer, ht. Once we have the values for the hidden layer, we proceed with the usual computation to generate the output vector.
 
-ht = g(Uht−1 +Wxt) (14.1)
-yt = f(Vht) (14.2)
+$$h_{t}=g(\text{Uh}_{t-1}+\text{Wx}_{t})$$
+
+$$y_{t}=f(\text{Vh}_{t})$$
+
 我们把输入层、隐藏层和输出层的维度分别记为 din、dh 和 dout。由此，我们的三个参数矩阵为：W ∈Rdh×din，U ∈Rdh×dh，以及 V ∈Rdout×dh。
 
 > Let’s refer to the input, hidden and output layer dimensions as din, dh, and dout respectively. Given this, our three parameter matrices are: W ∈Rdh×din, U ∈Rdh×dh, and V ∈Rdout×dh.
@@ -96,7 +98,8 @@ yt = f(Vht) (14.2)
 
 > over the possible output classes.
 
-yt = softmax(Vht) (14.3)
+$$y_{t}=\text{softmax}(\text{Vh}_{t})$$
+
 时刻 t 的计算需要时刻 t −1 的隐藏层值，这一事实决定了一个从序列开头推进到结尾的增量式推断算法，如图 14.3 所示。简单循环网络的顺序性也可以通过按时间展开网络来看到，如图 14.4 所示。在该图中，各层单元在每个时间步都被复制出来，以表明它们在不同时刻会取不同的值。不过，各个权重矩阵在所有时间上是共享的。
 
 > The fact that the computation at time t requires the value of the hidden layer from time t −1 mandates an incremental inference algorithm that proceeds from the start of the sequence to the end as illustrated in Fig. 14.3. The sequential nature of simple recurrent networks can also be seen by unrolling the network in time as is shown in Fig. 14.4. In this figure, the various layers of units are copied for each time step to illustrate that they will have differing values over time. However, the various weight matrices are shared across time.
@@ -164,7 +167,8 @@ P(fish|Thanks for all the)
 
 > n
 
-Y
+$$\prod_{i=1}^{n}$$
+
 P(w1:n) = P(wi|w<i)
 第 3 章的 n-gram 语言模型依据一个词与前面 n−1 个词共同出现的计数来计算该词的概率。因此上下文的大小为 n−1。
 
@@ -197,19 +201,23 @@ RNN 语言模型（Mikolov 等，2010）一次处理输入序列中的一个
 > Forward inference in a recurrent language model proceeds exactly as described in Section 14.1.1. The input sequence X = [x1;...;xt;...;xN] consists of a series of words each represented as a one-hot vector of size |V| × 1, and the output prediction, ˆy, is a vector representing a probability distribution over the vocabulary. At each step, the model uses the word embedding matrix E to retrieve the embedding for the current word, multiples it by the weight matrix W, and then adds it to the hidden layer from the previous step (weighted by weight matrix U) to compute a new hidden layer. This hidden layer is then used to generate an output layer which is passed through a softmax layer to generate a probability distribution over the entire vocabulary. That is, at time t:
 
 et = Ext ht = g(Uht−1 +Wet) (14.4) (14.5)
-ˆyt = softmax(Vht) (14.6)
+
+$$ˆy_{t}=\text{softmax}(\text{Vh}_{t})$$
+
 当我们用 RNN 做语言建模时（在第 7 章讲 transformer 时我们会再次看到这一点），一个便利的假设是令嵌入维度 de 与隐藏维度 dh 相同。这样我们就笼统地把二者都称为模型维度 d。于是嵌入矩阵 E 的形状为 [d ×|V|]，而 xt 是形状为 [|V|×1] 的独热向量。因此乘积 et 的形状为 [d ×1]。W 和 U 的形状为 [d × d]，所以 ht 的形状也是 [d × 1]。V 的形状为 [|V| × d]，所以 Vh 的结果是形状为 [|V| × 1] 的向量。这个向量可以看作在 h 所提供的证据下、词表上的一组得分。将这些得分通过 softmax，即可把得分归一化为一个概率分布。词表中某个特定的词 k 是下一个词的概率由 ˆyt[k] 表示，即 ˆyt 的第 k 个分量：
 
 > When we do language modeling with RNNs (and we’ll see this again in Chapter 7 with transformers), it’s convenient to make the assumption that the embedding dimension de and the hidden dimension dh are the same. So we’ll just call both of these the model dimension d. So the embedding matrix E is of shape [d ×|V|], and xt is a one-hot vector of shape [|V|×1]. The product et is thus of shape [d ×1]. W and U are of shape [d × d], so ht is also of shape [d × 1]. V is of shape [|V| × d], so the result of Vh is a vector of shape [|V| × 1]. This vector can be thought of as a set of scores over the vocabulary given the evidence provided in h. Passing these scores through the softmax normalizes the scores into a probability distribution. The probability that a particular word k in the vocabulary is the next word is represented by ˆyt[k], the kth component of ˆyt:
 
-P(wt+1 = k|w1,...,wt) = ˆyt[k] (14.7)
+$$P(w_{t+1}=k|w_{1},...,w_{t})=ˆy_{t}[k]$$
+
 整个序列的概率就是序列中各项概率的乘积，其中我们用 ˆyi[wi] 表示在时间步 i 真实词 wi 的概率。
 
 > The probability of an entire sequence is just the product of the probabilities of each item in the sequence, where we’ll use ˆyi[wi] to mean the probability of the true word wi at time step i.
 
 > n
 
-Y
+$$\prod_{i=n1}^{n}$$
+
 P(w1:n) = P(wi|w1:i−1) (14.8)
 Yˆyi[wi]
 = (14.9)
@@ -230,7 +238,8 @@ Yˆyi[wi]
 >
 > 释义：利用数据自身蕴含的自然序列作为监督信号、无需额外人工标注标签的训练方式。
 
-X
+$$\sum_{w\inV}$$
+
 LCE( ˆyt,yt) = − yt[w]log ˆyt[w]
 
 ![](images/14-rnns-and-lstms/fig_p7_0.png)
@@ -242,7 +251,8 @@ LCE( ˆyt,yt) = − yt[w]log ˆyt[w]
 
 > In the case of language modeling, the correct distribution yt comes from knowing the next word. This is represented as a one-hot vector corresponding to the vocabulary where the entry for the actual next word is 1, and all the other entries are 0. Thus, the cross-entropy loss for language modeling is determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence.
 
-LCE( ˆyt,yt) = −log ˆyt[wt+1] (14.11)
+$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$
+
 因此，在输入的每个词位置 t 上，模型以正确的词 wt 连同 ht−1 作为输入，其中 ht−1 编码了来自先前 w1:t−1 的信息，并用它们计算可能的下一个词上的概率分布，从而计算模型对下一个词元 wt+1 的损失。随后我们移到下一个词，忽略模型对下一个词所预测的结果，转而使用正确的词 wt+1 连同已编码的先前历史来估计词元 wt+2 的概率。这种始终把正确的历史序列交给模型来预测下一个词（而不是把模型在上一个时间步的最佳结果喂回模型）的做法，称为教师强制。
 
 > Thus at each word position t of the input, the model takes as input the correct word wt together with ht−1, encoding information from the preceding w1:t−1, and uses them to compute a probability distribution over possible next words so as to compute the model’s loss for the next token wt+1. Then we move to the next word, we ignore what the model predicted for the next word and instead use the correct word wt+1 along with the prior history encoded to estimate the probability of token wt+2. This idea that we always give the model the correct history sequence to predict the next word (rather than feeding the model its best case from the previous time step) is called teacher forcing.
@@ -290,7 +300,9 @@ E 的各列表示词表中每个词的词嵌入，这些嵌入是在训练过程
 > model then become:
 
 et = Ext ht = g(Uht−1 +Wet) (14.12) (14.13)
-ˆyt = softmax(E⊺ht) (14.14)
+
+$$ˆy_{t}=\text{softmax}(E^{⊺}h_{t})$$
+
 除了能带来更好的模型困惑度之外，这种做法还显著减少了模型所需的参数数量。
 
 > In addition to providing improved model perplexity, this approach significantly reduces the number of parameters required for the model.
@@ -530,7 +542,8 @@ t 表示网络到该时刻为止对序列所知的一切。该状态是输入 x1
 
 > t represents everything the network knows about the sequence up to that point. The state is a function of the inputs x1,...,xt and represents the context of the network to the left of the current time.
 
-h f t = RNNforward(x1,...,xt) (14.16)
+$$h^{f}_{t}=\text{RNN}_{\text{forward}}(x_{1},...,x_{t})$$
+
 这个新记号 hf t 只不过对应于 t 时刻通常的隐状态，表示网络到目前为止从序列中收集到的一切。
 
 > This new notation hf t simply corresponds to the normal hidden state at time t, representing everything the network has gleaned from the sequence so far.
@@ -542,7 +555,8 @@ RNN，让它在反转的输入序列上训练。采用这种方法，时刻 t �
 
 > RNN on a reversed input sequence. With this approach, the hidden state at time t represents information about the sequence to the right of the current input:
 
-hb t = RNNbackward(xt,... xn) (14.17)
+$$h^{b}_{t}=\text{RNN}_{\text{backward}}(x_{t},...x_{n})$$
+
 这里，隐状态 hb t 表示我们从 t 到序列末尾所辨识出的关于该序列的全部信息。
 
 > Here, the hidden state hb t represents all the information we have discerned about the sequence from t to the end of the sequence.
@@ -558,7 +572,8 @@ RNN，其中一个从头到尾处理输入，另一个从尾到头处理输入�
 
 > RNNs, one where the input is processed from the start to the end, and the other from the end to the start. We then concatenate the two representations computed by the networks into a single vector that captures both the left and right contexts of an input at each point in time. Here we use either the semicolon ”;” or the equivalent symbol⊕to mean vector concatenation:
 
-ht = [h f t ; hb t]
+$$h_{t}=[h^{f}_{t};h^{b}_{t}]$$
+
 = h f t ⊕hb 图 14.11 展示了这样一个双向网络，它拼接了前向传播和后向传播的输出。其他组合前向与后向上下文的简单方式包括逐元素相加或逐元素相乘。于是每个时间步的输出都捕捉了当前输入左侧和右侧的信息。在序列标注应用中，这些拼接后的输出可以作为局部标注决策的基础。
 
 > = h f t ⊕hb Fig. 14.11 illustrates such a bidirectional network that concatenates the outputs of the forward and backward pass. Other simple ways to combine the forward and backward contexts include element-wise addition or multiplication. The output at each step in time thus captures information to the left and to the right of the current input. In sequence labeling applications, these concatenated outputs can serve as the basis for a local labeling decision.
@@ -660,13 +675,16 @@ LSTM 中的门遵循一种共同的设计模式：每个门都由一个前馈层
 
 > to delete information from the context that is no longer needed. The forget gate computes a weighted sum of the previous state’s hidden layer and the current input and passes that through a sigmoid. This mask is then multiplied element-wise by the context vector to remove the information from context that is no longer required. Element-wise multiplication of two vectors (represented by the operator ⊙, and sometimes called the Hadamard product) is the vector of the same dimension as the two input vectors, where each element i is the product of element i in the two input vectors:
 
-ft = σ(Uf ht−1 +Wf xt) (14.20)
-kt = ct−1 ⊙ft (14.21)
+$$f_{t}=σ(U_{f}h_{t-1}+W_{f}x_{t})$$
+
+$$k_{t}=c_{t-1}⊙f_{t}$$
+
 下一项任务是计算我们需要从前一隐状态和当前输入中提取的实际信息——这与我们一直用于所有循环网络的基本计算相同。
 
 > The next task is to compute the actual information we need to extract from the previous hidden state and current inputs—the same basic computation we’ve been using for all our recurrent networks.
 
-gt = tanh(Ught−1 +Wgxt) (14.22)
+$$g_{t}=\text{tanh}(U_{g}h_{t-1}+W_{g}x_{t})$$
+
 接下来，我们生成添加门的掩码，以选择要添加到
 
 > Next, we generate the mask for the add gate to select the information to add to the
@@ -679,13 +697,16 @@ gt = tanh(Ught−1 +Wgxt) (14.22)
 
 > current context.
 
-it = σ(Uiht−1 +Wixt) (14.23)
-jt = gt ⊙it (14.24)
+$$i_{t}=σ(U_{i}h_{t-1}+W_{i}x_{t})$$
+
+$$j_{t}=g_{t}⊙i_{t}$$
+
 接下来，我们把它加到修改后的上下文向量上，得到新的上下文向量。
 
 > Next, we add this to the modified context vector to get our new context vector.
 
-ct = jt +kt (14.25)
+$$c_{t}=j_{t}+k_{t}$$
+
 我们要用的最后一个门是输出门，它用于决定当前隐状态需要哪些信息（相对于哪些信息需要为未来的决策而保留）。
 
 > The final gate we’ll use is the output gate which is used to decide what information is required for the current hidden state (as opposed to what information needs to be preserved for future decisions).
@@ -841,7 +862,8 @@ RNN 的编码器-解码器网络；我们已经在第 13 章见过用于机器�
 
 > Recall that in any language model, we can break down the probability as follows:
 
-p(y) = p(y1)p(y2|y1)p(y3|y1,y2)... p(ym|y1,...,ym−1) (14.28)
+$$p(y)=p(y_{1})p(y_{2}|y_{1})p(y_{3}|y_{1},y_{2})...p(y_{m}|y_{1},...,y_{m-1})$$
+
 在 RNN 语言建模中，在特定的时刻 t，我们将由 t −1 个
 
 > In RNN language modeling, at a particular time t, we pass the prefix of t −1
@@ -856,8 +878,10 @@ p(y) = p(y1)p(y2|y1)p(y3|y1,y2)... p(ym|y1,...,ym−1) (14.28)
 
 > the input at time t and the hidden state at time t −1, and the softmax is over the set of possible vocabulary items, then at time t the output yt and hidden state ht are computed as:
 
-ht = g(ht−1,xt) (14.29)
-ˆyt = softmax(ht) (14.30)
+$$h_{t}=g(h_{t-1},x_{t})$$
+
+$$ˆy_{t}=\text{softmax}(h_{t})$$
+
 我们只需做一个微小的改动，就能把这个带自回归生成的语言模型转变为一个编码器-解码器模型，即一个能把一种语言的源文本翻译成另一种语言的目标文本的翻译模型：
 
 > We only have to make one slight change to turn this language model with autoregressive generation into an encoder-decoder model that is a translation model that can translate from a source text in one language to a target text in a second:
@@ -891,7 +915,8 @@ ht = g(ht−1,xt) (14.29)
 
 > token <s>, and y to refer to the target text y (in this case in Spanish). Then an encoder-decoder model computes the probability p(y|x) as follows:
 
-p(y|x) = p(y1|x)p(y2|y1,x)p(y3|y1,y2,x)... p(ym|y1,...,ym−1,x) (14.31)
+$$p(y|x)=p(y_{1}|x)p(y_{2}|y_{1},x)p(y_{3}|y_{1},y_{2},x)...p(y_{m}|y_{1},...,y_{m-1},x)$$
+
 图 14.17 展示了一个简化版编码器-解码器模型的设置
 
 > Fig. 14.17 shows the setup for a simplified version of the encoder-decoder model
@@ -948,23 +973,29 @@ p(y|x) = p(y1|x)p(y2|y1,x)p(y3|y1,y2,x)... p(ym|y1,...,ym−1,x) (14.31)
 
 > We do this by adding c as a parameter to the computation of the current hidden state. using the following equation:
 
-hd t = g(ˆyt−1,hd (14.32)
-t−1,c)
+$$h_{t}^{d}=g(yˆ_{t-1},h_{t}^{d}$$
+
+$$_{t}^{d}_{-1},c)$$
+
 现在我们准备来看这个基本编码器-解码器模型中该版本解码器的完整方程，其中上下文在每个解码时间步都可用。回顾一下，g 是某种 RNN 的代称，而 ˆyt−1 是上一步从 softmax 中采样得到的输出的嵌入：
 
 > Now we’re ready to see the full equations for this version of the decoder in the basic encoder-decoder model, with context available at each decoding timestep. Recall that g is a stand-in for some flavor of RNN and ˆyt−1 is the embedding for the output sampled from the softmax at the previous step:
 
-c = he
-hd 0 = c hd = g(ˆyt−1,hd t−1,c)
-ˆyt = softmax(hd (14.33)
-t )
-因此，ˆyt 是词表上的一个概率向量，表示在时间 t 出现每个词的概率。要生成文本，我们便从这个分布 ˆyt 中采样。例如，贪心选择就是在每个时间步选择最可能的词来生成。我们在第 7.6 节讨论了其他采样方法。
-
-> Thus ˆyt is a vector of probabilities over the vocabulary, representing the probability of each word occurring at time t. To generate text, we sample from this distributionˆyt. For example, the greedy choice is simply to choose the most probable word to generate at each timestep. We discussed other sampling methods in Section 7.6.
+$$c=h^{e}_{n}$$
 
 > n
 
+hd 0 = c hd = g(ˆyt−1,hd t−1,c)
+
 > t
+
+$$ˆy_{t}=\text{softmax}(h_{t}^{d}$$
+
+$$_{t}^{d})$$
+
+因此，ˆyt 是词表上的一个概率向量，表示在时间 t 出现每个词的概率。要生成文本，我们便从这个分布 ˆyt 中采样。例如，贪心选择就是在每个时间步选择最可能的词来生成。我们在第 7.6 节讨论了其他采样方法。
+
+> Thus ˆyt is a vector of probabilities over the vocabulary, representing the probability of each word occurring at time t. To generate text, we sample from this distributionˆyt. For example, the greedy choice is simply to choose the most probable word to generate at each timestep. We discussed other sampling methods in Section 7.6.
 
 ### 14.7.1 训练编码器-解码器模型
 
@@ -1048,8 +1079,9 @@ t )
 
 > all of the encoder hidden states into account in its derivation. We then make this context available during decoding by conditioning the computation of the current decoder hidden state on it (along with the prior hidden state and the previous output generated by the decoder), as we see in this equation (and Fig. 14.21):
 
-hd = g(ˆyi−1,hd (14.34)
-i−1,ci)
+$$h^{d}_{i}=g(yˆ_{i-1},h^{d}_{i}$$
+
+$$^{d}_{i-1},c_{i})$$
 
 > i
 
@@ -1076,12 +1108,13 @@ i−1,ci)
 
 > similarity: measuring how similar the decoder hidden state is to an encoder hidden state, by computing the dot product between them:
 
-score(hd i−1,he j) = hd i−1 · he (14.35)
+$$\text{score}(h^{d}_{i-1},h^{e}_{j})=h^{d}_{i-1}\cdoth^{e}_{j}$$
+
+> j
+
 这个点积得到的得分是一个标量，反映两个向量之间的相似程度。所有编码器隐状态上这些得分构成的向量，给出了每个编码器状态对解码器当前步骤的相关性。
 
 > The score that results from this dot product is a scalar that reflects the degree of similarity between the two vectors. The vector of these scores across all the encoder hidden states gives us the relevance of each encoder state to the current step of the decoder.
-
-> j
 
 为了利用这些分数，我们用 softmax 对它们进行归一化，从而得到一个
 
@@ -1090,16 +1123,22 @@ score(hd i−1,he j) = hd i−1 · he (14.35)
 
 > vector of weights, αi j, that tells us the proportional relevance of each encoder hidden state j to the prior hidden decoder state, hd i−1.
 
-αi j = softmax(score(hd i−1,he j))
-exp(score(hd i−1,he j) (14.36)
+$$α_{i j}=\text{softmax}(\text{score}(h^{d}_{i-1},h^{e}_{j}))$$
+
+$$\text{exp}(\text{score}(h^{d}_{i-\frac{1}{d}},h^{e}_{j})_{e}$$
+
 = P k exp(score(hd i−1,he
-k))
+
+$$_{k}^{e}))$$
+
 最后，给定 α 中的分布，我们可以通过对所有编码器隐状态取加权平均，为当前解码器状态计算出一个固定长度的上下文向量。
 
 > Finally, given the distribution in α, we can compute a fixed-length context vector for the current decoder state by taking a weighted average over all the encoder hidden states.
 
-X
-αij he
+$$\sum_{j}$$
+
+$$α_{\text{ij}}h^{e}_{j}$$
+
 ci = 有了它，我们终于得到一个固定长度的上下文向量，它考虑了来自整个编码器状态的信息，并会动态更新，以反映解码器在解码每一步时的需要。图 14.22 展示了一个带注意力的编码器-解码器网络，重点说明了一个上下文向量 ci 的计算。
 
 > ci = With this, we finally have a fixed-length context vector that takes into account information from the entire encoder state that is dynamically updated to reflect the needs of the decoder at each step of decoding. Fig. 14.22 illustrates an encoderdecoder network with attention, focusing on the computation of one context vector ci.
@@ -1121,12 +1160,13 @@ ci = 有了它，我们终于得到一个固定长度的上下文向量，它考
 
 > models. Instead of simple dot product attention, we can get a more powerful function that computes the relevance of each encoder hidden state to the decoder hidden state by parameterizing the score with its own set of weights, Ws.
 
-score(hd i−1,he j) = hd i−1Wshe (14.38)
+$$\text{score}(h^{d}_{i-1},h^{e}_{j})=h^{d}_{i-1}W_{s}h^{e}_{j}$$
+
+> j
+
 这些权重 Ws 在正常的端到端训练过程中被训练，使网络能够学习解码器状态与编码器状态之间相似性的哪些方面对当前应用是重要的。这种双线性模型还允许编码器和解码器使用不同维度的向量，而简单的点积注意力则要求编码器和解码器隐状态具有相同的维度。
 
 > The weights Ws, which are then trained during normal end-to-end training, give the network the ability to learn which aspects of similarity between the decoder and encoder states are important to the current application. This bilinear model also allows the encoder and decoder to use different dimensional vectors, whereas the simple dot-product attention requires that the encoder and decoder hidden states have the same dimensionality.
-
-> j
 
 ## 14.9 小结
 
@@ -1191,7 +1231,7 @@ Collobert and Weston（2008）以及 Collobert et al.（2011）的工作而高�
 将 LSTM 与预训练词嵌入集合相结合的方法，
 
 > Approaches that married LSTMs with pretrained collections of word-embeddings
-这些词嵌入基于 word2vec（Mikolov et al., 2013a）和 GloVe（Pennington et al., 2014），很快就在许多常见任务上占据了主导地位：词性标注（Ling et al., 2015）、句法组块（Søgaard and Goldberg, 2016）、命名实体识别（Chiu and Nichols, 2016; Ma and Hovy, 2016）、意见挖掘（Irsoy and Cardie, 2014）、语义角色标注（Zhou and Xu, 2015a）和 AMR 解析（Foland and Martin, 2016）。与早期统计机器学习取得进展的情形一样，这些进步之所以成为可能，得益于 CONLL、SemEval 及其他共享任务提供的训练数据，以及 Ontonotes（Pradhan et al., 2007b）和 PropBank（Palmer et al., 2005）等共享资源。
+基于 word2vec（Mikolov et al., 2013a）和 GloVe（Pennington et al., 2014），很快就在许多常见任务上占据了主导地位：词性标注（Ling et al., 2015）、句法组块（Søgaard and Goldberg, 2016）、命名实体识别（Chiu and Nichols, 2016; Ma and Hovy, 2016）、意见挖掘（Irsoy and Cardie, 2014）、语义角色标注（Zhou and Xu, 2015a）和 AMR 解析（Foland and Martin, 2016）。与早期统计机器学习取得进展的情形一样，这些进步之所以成为可能，得益于 CONLL、SemEval 及其他共享任务提供的训练数据，以及 Ontonotes（Pradhan et al., 2007b）和 PropBank（Palmer et al., 2005）等共享资源。
 
 > based on word2vec (Mikolov et al., 2013a) and GloVe (Pennington et al., 2014) quickly came to dominate many common tasks: part-of-speech tagging (Ling et al., 2015), syntactic chunking (Søgaard and Goldberg, 2016), named entity recognition(Chiu and Nichols, 2016; Ma and Hovy, 2016), opinion mining (Irsoy and Cardie, 2014), semantic role labeling (Zhou and Xu, 2015a) and AMR parsing (Foland and Martin, 2016). As with the earlier surge of progress involving statistical machine learning, these advances were made possible by the availability of training data provided by CONLL, SemEval, and other shared tasks, as well as shared resources such as Ontonotes (Pradhan et al., 2007b), and PropBank (Palmer et al., 2005).
 

@@ -331,7 +331,8 @@ Yao Ming enter enter overall decision game（姚 明 进 入 总 决 赛）
 
 > Eq. 2.5, where k and β are positive constants, and 0 < β < 1.
 
-|V| = kNβ (2.5)
+$$|V|=\text{kN}^{β}$$
+
 β 的取值取决于语料库规模与体裁；报告中常见 0.44 到 0.56 甚至更高的数值。粗略地说，一段文本的词表规模增长速度略快于其词数长度的平方根。
 
 > The value of β depends on the corpus size and the genre; numbers from 0.44 to 0.56 or even higher have often been reported. Roughly we can say that the vocabulary size for a text goes up a little faster than the square root of its length in words.
@@ -2303,9 +2304,9 @@ guistic Data Consortium，LDC）发布的、已作句法分析的语料库（树
 
 > We’ll use dynamic programming to compute D[n,m] bottom up, combining solutions to subproblems. In the base case, with a source substring of length i but an empty target string, going from i characters to 0 requires i deletes. With a target substring of length j but an empty source going from 0 characters to j characters requires j inserts. Having computed D[i, j] for small i, j we then compute larger D[i, j] based on previously computed smaller values. The value of D[i, j] is computed by taking the minimum of the three possible paths through the matrix which arrive there:
 
- D[i−1, j]+del-cost(source[i]) (2.19)
+D[i−1, j]+del-cost(source[i]) (2.19)
 D[i, j] = min D[i, j −1]+ins-cost(target[j])
- D[i−1, j −1]+sub-cost(source[i],target[j])
+D[i−1, j −1]+sub-cost(source[i],target[j])
 上文我们提到了莱文斯坦距离的两个版本，其中一个版本中替换的代价为 1，另一个版本中替换的代价为 2（即等同于一次插入加一次删除）。这里我们使用第二个版本的莱文斯坦距离，其中插入和删除各自的代价为 1（ins-cost(·) = del-cost(·) = 1），替换的代价为 2（相同字母之间的替换代价为零）。
 
 > We mentioned above two versions of Levenshtein distance, one in which substitutions cost 1 and one in which substitutions cost 2 (i.e., are equivalent to an insertion plus a deletion). Let’s here use that second version of Levenshtein distance in which the insertions and deletions each have a cost of 1 (ins-cost(·) = del-cost(·) = 1), and substitutions have a cost of 2 (except substitution of identical letters has zero cost).
@@ -2315,12 +2316,8 @@ D[i, j] = min D[i, j −1]+ins-cost(target[j])
 > Under this version of Levenshtein, the computation for D[i, j] becomes:
 
 D[i−1, j]+1 D[i, j −1]+1 (2.20)
-
->   D[i−1, j]+1 D[i, j −1]+1 (2.20)
-D[i, j] = min  2; if source[i]̸ = target[j]
+D[i, j] = min  2; if source[i]̸ = target[j]
 D[i−1, j −1]+
-
->    D[i−1, j −1]+
 0; if source[i] = target[j]
 该算法总结于图 2.21；图 2.20 展示了采用式 2.20 中的莱文斯坦距离版本，将该算法应用于 intention 与 execution 之间距离的结果。
 

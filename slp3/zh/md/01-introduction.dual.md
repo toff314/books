@@ -1,4 +1,4 @@
-# 第 1 章 绪论
+# 第 1 章 引言
 
 ### 章
 
@@ -295,7 +295,7 @@ LLM 在信息获取与教育获取方面也有明确的应用。LLM
 
 > (2022) showed that for a fixed compute cost C the number of parameters N, and the number of training data tokens D, should go up roughly equally as a power law of C:
 
-Nopt ∝C^(1/2) Dopt ∝C^(1/2) (1.1)
+$$N_{\text{opt}}\proptoC^{\frac{1}{2}}D_{\text{opt}}\proptoC$$
 
 缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。
 

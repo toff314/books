@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/11-retrieval-based-models.md">Markdown 源文件</a></div>
 <h1>第 11 章 基于检索的模型</h1>
@@ -228,13 +231,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We usually use the log10 of the word frequency, rather than the raw count. The intuition is that a word appearing 100 times in a document doesn’t make that word 100 times more likely to be relevant to the meaning of the document. We also need to do something special with counts of 0, since we can’t take the log of 0.3 So if we define count(t,d) as the raw count of term t in document d, then tft,d, the tf of term t in document d is</p></blockquote>
 <p>(1+log10 count(t,d) 若 count(t,d) &gt; 0</p>
 <blockquote><p>(1+log10 count(t,d) if count(t,d) &gt; 0</p></blockquote>
-<p>tft,d = (11.4) 0 其他情况</p>
+<div class="formula">$$\text{tf}_{t,d}=$$</div>
+<p>0 其他情况</p>
 <blockquote><p>0 otherwise</p></blockquote>
 <p>如果采用对数加权，出现 0 次的词项其 tf = 0，在一篇文档中出现 1 次时 tf = 1 + log10(1) = 1 + 0 = 1，出现 10 次时 tf = 1+log10(10) = 2，出现 100 次时 tf = 1+log10(100) = 3，出现 1000 次时 tf = 4，依此类推。</p>
 <blockquote><p>If we use log weighting, terms which occur 0 times in a document would have tf = 0, 1 times in a document tf = 1 + log10(1) = 1 + 0 = 1, 10 times in a document tf =1+log10(10) = 2, 100 times tf = 1+log10(100) = 3, 1000 times tf = 4, and so on.</p></blockquote>
 <p>词项 t 的文档频率 dft 是包含该词项的文档数量。只在少数文档中出现的词项，有助于把这些文档与文档集合中的其余文档区分开来；而在整个文档集合中都出现的词项则没有那么有用。逆文档频率（inverse document frequency），即 idf 词项权重（Sparck Jones, 1972），定义为：</p>
 <blockquote><p>The document frequency dft of a term t is the number of documents it occurs in. Terms that occur in only a few documents are useful for discriminating those documents from the rest of the collection; terms that occur across the entire collection aren’t as helpful. The inverse document frequency or idf term weight(Sparck Jones, 1972) is defined as:</p></blockquote>
-<p>N idft = log10 (11.5) dft其中 N 是文档集合中文档的总数，dft 是包含词项 t 的文档数量。一个词项出现的文档越少，该权重就越高；在每篇文档中都出现的词项则被赋予最低的权重 0。</p>
+<p>N</p>
+<div class="formula">$$\text{idf}_{t}=\text{log}_{10}$$</div>
+<p>dft其中 N 是文档集合中文档的总数，dft 是包含词项 t 的文档数量。一个词项出现的文档越少，该权重就越高；在每篇文档中都出现的词项则被赋予最低的权重 0。</p>
 <blockquote><p>where N is the total number of documents in the collection, and dft is the number of documents in which term t occurs. The fewer documents in which a term occurs, the higher this weight; the lowest weight of 0 is assigned to terms that occur in every document.</p></blockquote>
 <p>以下是莎士比亚戏剧语料库中一些词的 idf 值，</p>
 <blockquote><p>Here are some idf values for some words in the corpus of Shakespeare plays,</p></blockquote>
@@ -243,9 +249,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>词<br>Word</th><th>df</th><th>idf</th></tr><tr><td>Romeo</td><td>1</td><td>1.57</td></tr><tr><td>salad</td><td>2</td><td>1.27</td></tr><tr><td>Falstaff</td><td>4</td><td>0.967</td></tr><tr><td>forest</td><td>12</td><td>0.489</td></tr><tr><td>battle</td><td>21</td><td>0.246</td></tr><tr><td>wit</td><td>34</td><td>0.037</td></tr><tr><td>fool</td><td>36</td><td>0.012</td></tr><tr><td>good</td><td>37</td><td>0</td></tr><tr><td>sweet</td><td>37</td><td>0</td></tr></table>
 <p>于是，词 t 在文档 d 中的 tf-idf 值就是词频</p>
 <blockquote><p>The tf-idf value for word t in document d is then the product of term frequency</p></blockquote>
-<p>tft,d 与 IDF 的乘积：</p>
-<blockquote><p>tft,d and IDF:</p></blockquote>
-<p>tf-idf(t,d) = tft,d ·idft (11.6)</p>
+<div class="formula">$$\text{tf}_{t,d}\text{and IDF:}$$</div>
+<div class="formula">$$\text{tf-idf}(t,d) =\text{tf}_{t,d}\cdot\text{idf}_{t}$$</div>
 <p>3</p>
 <blockquote><p>我们也可以使用下面这种替代写法，即我们在早先版本中使用的形式：tft,d =log10(count(t,d)+1)</p><p><em>We can also use this alternative formulation, which we have used in earlier editions: tft,d =log10(count(t,d)+1)</em></p></blockquote>
 <h3>11.1.3 文档评分</h3>
@@ -311,7 +316,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>方案（有时称为 Okapi BM25，得名于最早引入它的 Okapi 信息检索系统（Robertson 等，1995））。BM25 增加了两个参数：k，用于调节词频与 IDF 之间平衡的参数；b，用于控制文档长度归一化的重要程度。给定查询 q 时，文档 d 的 BM25 得分为：</p>
 <blockquote><p>scheme (sometimes called Okapi BM25 after the Okapi IR system in which it was introduced (Robertson et al., 1995)). BM25 adds two parameters: k, a knob that adjusts the balance between term frequency and IDF, and b, which controls the importance of document length normalization. The BM25 score of a document d given a query q is:</p></blockquote>
 <blockquote><p>IDF 加权的 tf</p><p><em>IDF weighted tf</em></p></blockquote>
-<p>z  N }|  { z }| { (11.12) X tft,d log    dft k 1−b+b +tft,d其中 |davg| 是平均文档的长度。当 k 为 0 时，BM25 退化为完全不使用词频，而只对查询中的词项做二值选择（再加上 idf）。</p>
+<p>z  N }|  { z }| { (11.12) X tft,d log dft k 1−b+b +tft,d其中 |davg| 是平均文档的长度。当 k 为 0 时，BM25 退化为完全不使用词频，而只对查询中的词项做二值选择（再加上 idf）。</p>
 <blockquote><p>where |davg| is the length of the average document. When k is 0, BM25 reverts to no use of term frequency, just a binary selection of terms in the query (plus idf).</p></blockquote>
 <blockquote><p>|d|</p></blockquote>
 <blockquote><p>t∈q |davg|</p></blockquote>
@@ -401,7 +406,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，</p>
 <blockquote><p>Fig. 11.8 shows the values for a single query. But we’ll need to combine values for all the queries, and in a way that lets us compare one system to another. One way of doing this is to plot averaged precision values at 11 fixed levels of recall (0 to 100, in steps of 10). Since we’re not likely to have datapoints at these exact levels, we use interpolated precision values for the 11 recall values from the data points we do have. We can accomplish this by choosing the maximum precision value achieved at any level of recall at or above the one we’re calculating. In other words,</p></blockquote>
 <aside class="term"><code>interpolated precision</code><span class="term-zh">插值精确率</span><span class="term-explain">在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。</span></aside>
-<p>IntPrecision(r) = max i&gt;=r Precision(i) (11.15)这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。</p>
+<div class="formula">$$\text{IntPrecision}(r) =\text{max}_{i&gt;=r}\text{Precision}(i)$$</div>
+<p>这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。</p>
 <blockquote><p>This interpolation scheme not only lets us average performance over a set of queries, but also helps smooth over the irregular precision values in the original data. It is designed to give systems the benefit of the doubt by assigning the maximum precision value achieved at higher levels of recall from the one being measured. Fig. 11.9 and Fig. 11.10 show the resulting interpolated data points from our example.</p></blockquote>
 <div class="figbox">
 <blockquote><p>插值精确率 召回率</p><p><em>Interpolated Precision Recall</em></p></blockquote>
@@ -417,10 +423,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>它提供了一个可用于比较相互竞争的系统或方法的单一指标。在这种做法中，我们同样沿着排序后的条目列表自上而下遍历，但这次只关注那些遇到相关条目的位置上的精确率（例如图 11.7 中的排名 1、3、5、6，而不包括 2 或 4）。对于单个查询，我们把这些单个精确率测量值在返回集合上（截至某个固定截断值）取平均。更形式化地说，如果假设 Rr 是位于 r 处及 r 之上的相关文档集合，那么单个查询的平均精确率（AP）为</p>
 <blockquote><p>which provides a single metric that can be used to compare competing systems or approaches. In this approach, we again descend through the ranked list of items, but now we note the precision only at those points where a relevant item has been encountered (for example at ranks 1, 3, 5, 6 but not 2 or 4 in Fig. 11.7). For a single query, we average these individual precision measurements over the return set (up to some fixed cutoff). More formally, if we assume that Rr is the set of relevant documents at or above r, then the average precision (AP) for a single query is</p></blockquote>
 <p>1 X AP = Precisionr(d) (11.16)</p>
-<table><tr><th>Rr</th></tr></table>
+<div class="formula">$$|R_{r}|$$</div>
+<blockquote><p>d∈Rr</p></blockquote>
 <p>其中 Precisionr(d) 是在文档 d 被找到的那个排名处测得的精确率。对于一组查询 Q，我们再对这些平均值取平均，从而得到最终的 MAP 度量：</p>
 <blockquote><p>where Precisionr(d) is the precision measured at the rank at which document d was found. For an ensemble of queries Q, we then average over these averages, to get our final MAP measure:</p></blockquote>
-<blockquote><p>d∈Rr</p></blockquote>
 <p>MAP = 1 X AP(q) (11.17)</p>
 <table><tr><th>Q</th></tr></table>
 <p>图 11.7 中单个查询的 MAP（因而等于 AP）为 0.6。</p>
@@ -466,9 +472,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>以及一个特殊的 [Q] 词元，截断到 N=32 个词元（若长度不足则用 [MASK] 词元填充），然后送入 BERT，得到输出向量 q = [q1,...,qN]。词元为 [d1,...,dm] 的段落 d 也以类似方式处理，其中包括一个 [CLS] 和特殊的 [D] 词元。在 d 和 q 之上施加一个线性层以控制输出维度，从而保持向量较小、便于存储，并把向量重新缩放到单位长度，得到最终的向量序列 Eq（长度为 N）和 Ed（长度为 m）。ColBERT 的打分机制为：</p>
 <blockquote><p>and a special [Q] token, truncated to N=32 tokens (or padded with [MASK] tokens if it is shorter), and passed through BERT to get output vectors q = [q1,...,qN]. The passage d with tokens [d1,...,dm], is processed similarly, including a [CLS] and special [D] token. A linear layer is applied on top of d and q to control the output dimension, so as to keep the vectors small for storage efficiency, and vectors are rescaled to unit length, producing the final vector sequences Eq (length N) and Ed(length m). The ColBERT scoring mechanism is:</p></blockquote>
 <blockquote><p>N</p></blockquote>
-<p>X score(q,d) = max (11.20) j=1 Eqi ·Edj虽然交互机制本身没有可调参数，但 ColBERT 架构仍然需要端到端训练，以便微调 BERT 编码器，并从零开始训练线性层（以及特殊的 [Q] 和 [D] 嵌入）。它使用由查询 q、正文档 d+ 和负文档 d− 组成的三元组 ⟨q,d+,d−⟩ 进行训练，利用式 11.20 为每篇文档产生分数，并用交叉熵损失优化模型参数。</p>
-<blockquote><p>While the interaction mechanism has no tunable parameters, the ColBERT architecture still needs to be trained end-to-end to fine-tune the BERT encoders and train the linear layers (and the special [Q] and [D] embeddings) from scratch. It is trained on triples ⟨q,d+,d−⟩of query q, positive document d+ and negative document d−to produce a score for each document using Eq. 11.20, optimizing model parameters using a cross-entropy loss.</p></blockquote>
+<div class="formula">$$\sum_{i=1}^{N}$$</div>
 <blockquote><p>m</p></blockquote>
+<p>score(q,d) = max (11.20) j=1 Eqi ·Edj虽然交互机制本身没有可调参数，但 ColBERT 架构仍然需要端到端训练，以便微调 BERT 编码器，并从零开始训练线性层（以及特殊的 [Q] 和 [D] 嵌入）。它使用由查询 q、正文档 d+ 和负文档 d− 组成的三元组 ⟨q,d+,d−⟩ 进行训练，利用式 11.20 为每篇文档产生分数，并用交叉熵损失优化模型参数。</p>
+<blockquote><p>While the interaction mechanism has no tunable parameters, the ColBERT architecture still needs to be trained end-to-end to fine-tune the BERT encoders and train the linear layers (and the special [Q] and [D] embeddings) from scratch. It is trained on triples ⟨q,d+,d−⟩of query q, positive document d+ and negative document d−to produce a score for each document using Eq. 11.20, optimizing model parameters using a cross-entropy loss.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <p>所有监督算法（如 ColBERT，或者</p>
 <blockquote><p>All the supervised algorithms (like ColBERT or the full-interaction version of</p></blockquote>
@@ -528,7 +535,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>于是，语言模型的任务是按如下概率模型生成文本：</p>
 <blockquote><p>The task for the language model is then to generate text according to this probability model:</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<p>Y p(x1,...,xn) = p(xi|R(q) ; 回答下面这个问题... ; q ;x&lt;i)</p>
+<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<p>p(x1,...,xn) = p(xi|R(q) ; 回答下面这个问题... ; q ;x&lt;i)</p>
 <blockquote><p>p(x1,...,xn) = p(xi|R(q) ; Answer the following question... ; q ;x&lt;i)</p></blockquote>
 <p>这一基本 RAG 范式有许多扩展，其中一项增补是</p>
 <blockquote><p>There are many augmentations of this basic RAG paradigm. One addition is</p></blockquote>

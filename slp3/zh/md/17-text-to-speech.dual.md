@@ -411,14 +411,13 @@ RVQ。在残差矢量量化中，我们使用多个码本，按某种
 
 > in the prior section. Then for an input embedding zt we take the codeword vector that is produced, let’s call it zq1t for the zt as quantified by codebook 1, and take the difference between the two:
 
-residual = zt −z(1) t。（17.1）
+$$\text{residual}=z_{t}-z_{q}^{(1)}_{t}.(17.1)$$
 
-> residual = zt −z(1) t. (17.1)
+> q
+
 该残差是 VQ 中的误差，即原矢量中 VQ
 
 > This residual is the error in the VQ; the part of the original vector that the VQ
-
-> q
 
 > `residual`（残差）
 >
@@ -481,7 +480,8 @@ ENCODEC 模型与大多数音频分词器一样，使用若干
 
 > T
 
-X
+$$\sum_{t=1}^{T}$$
+
 Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)
 此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。
 
@@ -521,7 +521,8 @@ Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)
 
 > T Nc
 
-X X
+$$\sum_{t=1c=1}^{TNc}\sum$$
+
 LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)
 于是，总损失函数可以简单地为这些损失的加权和：
 
@@ -529,7 +530,7 @@ LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)
 
 > t=1 c=1
 
-L(x, ˆx) = λ1Lreconstruction(x, ˆx)+λ2LGAN(x, ˆx)+λ3LVQ(x, ˆx) (17.4)
+$$L(x,ˆx) =\lambda_{1}L_{\text{reconstruction}}(x,ˆx)+\lambda_{2}L_{\text{GAN}}(x,ˆx)+\lambda_{3}L_{\text{VQ}}(x,ˆx)(17.4)$$
 
 ## 17.3 VALL-E：用两阶段语言模型生成音频
 
@@ -554,7 +555,9 @@ VALL-E 没有用单个自回归语言模型来完成这种条件生成，而是�
 一个音频样本 y 及其分词后的文本转写 x = [x0,x1,...,xL]。我们使用预训练的 ENCODEC 将 y 转换为编码矩阵 C。设 T 为 ENCODEC 输出的下采样向量个数，每个向量有 8 个编码。于是，我们可以将编码器输出表示为
 
 > an audio sample y and its tokenized text transcription x = [x0,x1,...,xL]. We use a pretrained ENCODEC to convert y into a code matrix C. Let T be the number of downsampled vectors output by ENCODEC, with 8 codes per vector. Then we can represent the encoder output as
-CT×8 = ENCODEC(y) (17.5)
+
+$$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$
+
 这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。
 
 > Here C is a two-dimensional acoustic code matrix that has T ×8 entries, where the columns represent time and the rows represent different quantizers. That is, the row vector ct,: of the matrix contains the 8 codes for the t-th frame, and the column vector c:,j contains the code sequence from the j-th vector quantizer where j ∈[1,...,8].
@@ -566,8 +569,10 @@ CT×8 = ENCODEC(y) (17.5)
 
 > model to maximize the likelihood of C conditioned on x:
 
-L = −log p(C|x)
-TY
+$$L=-\text{log}p_{T}(C|x)$$
+
+$$\prod_{t=0}^{T}$$
+
 = −log p(c<t,:,x) (17.6)
 
 > t=0
@@ -592,8 +597,12 @@ TY
 
 > Then we generate CT = C>T ′,: = [cT ′+1,:,...cT,:] conditioned on the text sequence x and the prompt CP:
 
-CT = argmax p(CT|CP,x)
-TY
+$$C^{T}=\text{argmax}_{CT}p(C^{T}|C^{P},x)$$
+
+> CT
+
+$$\prod_{=T′+}^{T}$$
+
 = argmax p(ct,:|c<t,:,x) (17.7)
 随后，生成的词元 CT 可由 ENCODEC 解码器转换为
 
@@ -601,8 +610,6 @@ TY
 一段波形。Fig. 17.9 展示了其直观思路。
 
 > a waveform. Fig. 17.9 shows the intuition.
-
-> CT
 
 > CT t=T ′+1
 

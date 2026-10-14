@@ -35,7 +35,7 @@
 
 > in the middle of the city is another patch of asphalt, the La Brea tar pits, and this asphalt preserves millions of fossil bones from the last of the Ice Ages of the Pleistocene Epoch. One of these fossils is the Smilodon, or saber-toothed tiger, instantly recognizable by its long canines. Five million years ago or so, a completely different saber-tooth tiger called Thylacosmilus lived in Argentina and other parts of South America. Thylacosmilus was a marsupial whereas Smilodon was a placental mammal, but Thylacosmilus had the same long upper canines and, like Smilodon, had a protective bone flange on the lower jaw. The similarity of these two mammals is one of many examples of parallel or convergent evolution, in which particular contexts or environments lead to the evolution of very similar structures in different species (Gould, 1980).
 
-![](images/img_84.jpeg)
+![](images/05-embeddings/img_84.jpeg)
 
 在一种生物学意味较弱的相似性中，语境的作用同样重要
 
@@ -406,7 +406,7 @@ ongchoi 会与米饭、大蒜、美味这类词一同出现，
 
 > salty, as do words like spinach, chard, and collard greens might suggest that ongchoi is a leafy green similar to these other leafy greens.1 We can implement the same intuition computationally by just counting words in the context of ongchoi.
 
-![](images/fig_p5_0.png)
+![](images/05-embeddings/fig_p5_0.png)
 
 *图 5.1 对与 sweet 一词相近的若干词的 200 维 word2vec 嵌入所做的二维（t-SNE）可视化，表明意义相似的词在空间中彼此邻近。可视化使用 TensorBoard Embedding Projector 制作，https://projector.tensorflow.org/。*
 *Figure 5.1 A two-dimensional (t-SNE) visualization of 200-dimensional word2vec embeddings for some words close to the word sweet, showing that words with similar meanings are nearby in space. Visualization created using the TensorBoard Embedding Projector https://projector.tensorflow.org/.*
@@ -597,7 +597,7 @@ ongchoi 会与米饭、大蒜、美味这类词一同出现，
 
 > the words in Fig. 5.3 are points in 6-dimensional space. Fig. 5.4 shows a spatial visualization in 2 dimensions.
 
-![](images/fig_p8_0.png)
+![](images/05-embeddings/fig_p8_0.png)
 
 *图 5.4 digital 和 information 的词向量空间可视化，仅展示其中两个维度，分别对应于 data 和 computer 这两个词。*
 *Figure 5.4 A spatial visualization of word vectors for digital and information, showing just two of the dimensions, corresponding to the words data and computer.*
@@ -638,7 +638,8 @@ ongchoi 会与米饭、大蒜、美味这类词一同出现，
 
 > N
 
-X
+$$\sum_{i=1}^{N}$$
+
 dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)
 点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。
 
@@ -693,7 +694,8 @@ a·b = |a||b|cosθ|a||b| = cosθ a·b (5.9)
 
 > N
 
-X
+$$\sum_{i=1}^{N}$$
+
 viwi
 cosine(v,w) = v ·w (5.10)
 |v||w| = v u v u
@@ -752,7 +754,7 @@ cos(digital,information) = √ 52 +16832 +16702√ 52 +39822 +33252 = .996
 
 > result that seems sensible. Fig. 5.5 shows a visualization.
 
-![](images/fig_p10_0.png)
+![](images/05-embeddings/fig_p10_0.png)
 
 *图 5.5 余弦相似度的一个（粗略）图形演示，展示了三个词（樱桃、数字化和信息）的向量，它们位于由近旁词计算机与馅饼的计数所定义的二维空间中。该图并未画出余弦，而是突出了角度；注意，数字化与信息之间的夹角小于樱桃与信息之间的夹角。两个向量越相似，余弦越大而夹角越小；当两个向量之间的夹角最小时（0◦），余弦取最大值（1）；其他所有夹角的余弦都小于 1。*
 *Figure 5.5 A (rough) graphical demonstration of cosine similarity, showing vectors for three words (cherry, digital, and information) in the two dimensional space defined by counts of the words computer and pie nearby. The figure doesn’t show the cosine, but it highlights the angles; note that the angle between digital and information is smaller than the angle between cherry and information. When two vectors are more similar, the cosine is larger but the angle is smaller; the cosine has its maximum (1) when the angle between two vectors is smallest(0◦); the cosine of all other angles is less than 1.*
@@ -923,10 +925,18 @@ P(−|w,c) = 1−P(+|w,c)
 
 > L
 
-Y
-P(+|w,c1:L) = (5.17)
-σ(ci ·w)
-X
+$$\prod_{i=L1}^{L}$$
+
+$$P(+|w,c_{1:L})=$$
+
+$$σ(c_{i}\cdotw)$$
+
+> i=1
+
+> L
+
+$$\sum_{i=1}^{L}$$
+
 logP(+|w,c1:L) = logσ(ci ·w) (5.18)
 总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将
 
@@ -934,11 +944,7 @@ logP(+|w,c1:L) = logσ(ci ·w) (5.18)
 
 > i=1
 
-> L
-
-> i=1
-
-![](images/fig_p13_0.png)
+![](images/05-embeddings/fig_p13_0.png)
 
 *图 5.6 skip-gram 模型学到的嵌入。该算法为每个词存储两个嵌入，即目标词嵌入（有时称为输入嵌入）和上下文词嵌入（有时称为输出嵌入）。因此，算法学习的参数 θ 是一个由 2|V| 个向量组成的矩阵，每个向量的维度为 d，它由两个矩阵拼接而成：目标词嵌入 W 和上下文+噪声嵌入 C。*
 *Figure 5.6 The embeddings learned by the skipgram model. The algorithm stores two embeddings for each word, the target embedding (sometimes called the input embedding) and the context embedding (sometimes called the output embedding). The parameter θ that the algorithm learns is thus a matrix of 2|V| vectors, each of dimension d, formed by concatenating two matrices, the target embeddings W and the context+noise embeddings C.*
@@ -993,16 +999,22 @@ pα(w)，其中 α 是一个权重。如果我们按照未加权的一元概率 
 
 > pα(w), where α is a weight. If we were sampling according to unweighted probability P(w), it would mean that with unigram probability P(“the”) we would choose the word the as a noise word, with unigram probability P(“aardvark”) we would choose aardvark, and so on. But in practice it is common to set α = 0.75, i.e. use the weighting P3 4 (w):
 
-count(w)α (5.19)
+$$\text{count}(w)^{α}$$
+
 Pα(w) = P
-w′ count(w′)α
+
+$$_{w′}\text{count}(w^{′})^{α}$$
+
 把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) > P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：
 
 > Setting α = .75 gives better performance because it gives rare noise words slightly higher probability: for rare words, Pα(w) > P(w). To illustrate this intuition, it might help to work out the probabilities for an example with α = .75 and two events, P(a) = 0.99 and P(b) = 0.01:
 
-.99.75
+$$.99^{.75}$$
+
 Pα(a) = .99.75 +.01.75 = 0.97
-.01.75
+
+$$.01^{.75}$$
+
 Pα(b) = .99.75 +.01.75 = 0.03 (5.20)
 因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。
 
@@ -1031,27 +1043,31 @@ Pα(b) = .99.75 +.01.75 = 0.03 (5.20)
 " kY #
 L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi)
 " #
-X
+
+> i=1
+
+> k
+
+$$\sum_{i=k1}^{k}$$
+
 = − logP(+|w,cpos)+ logP(−|w,cnegi)
 " #
-X   
+X
 = − logP(+|w,cpos)+ log 1−P(+|w,cnegi)
 " #
-X
+
+> i=1
+
+> k
+
+> i=1
+
+$$\sum_{i=1}^{k}$$
+
 logσ(cpos ·w)+ logσ(−cnegi ·w)
 = − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。
 
 > = − That is, we want to maximize the dot product of the word with the actual context words, and minimize the dot products of the word with the k negative sampled nonneighbor words.
-
-> i=1
-
-> k
-
-> i=1
-
-> k
-
-> i=1
 
 我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了
 
@@ -1060,7 +1076,7 @@ logσ(cpos ·w)+ logσ(−cnegi ·w)
 
 > the intuition of one step of learning.
 
-![](images/fig_p15_0.png)
+![](images/05-embeddings/fig_p15_0.png)
 
 *图 5.7 一步梯度下降的直观示意。skip-gram 模型试图移动嵌入，使目标嵌入（此处为 apricot）更靠近（与之具有更高的点积）邻近词的上下文嵌入（此处为 jam），并更远离（与之具有更低的点积）不在附近出现的噪声词的上下文嵌入（此处为 Tolstoy 和 matrix）。*
 *Figure 5.7 Intuition of one step of gradient descent. The skip-gram model tries to shift embeddings so the target embeddings (here for apricot) are closer to (have a higher dot product with) context embeddings for nearby words (here jam) and further from (lower dot product with) context embeddings for noise words that don’t occur nearby (here Tolstoy and matrix).*
@@ -1073,7 +1089,9 @@ logσ(cpos ·w)+ logσ(−cnegi ·w)
 > the different embeddings. It turns out the derivatives are the following (we leave the proof as an exercise at the end of the chapter):
 
 ∂L
-= [σ(cpos ·w)−1]w (5.22)
+
+$$=[σ(c_{\text{pos}}\cdotw)-1]w$$
+
 ∂cpos∂L
 ∂cnegi = [σ(cnegi ·w)]w (5.23)
 ∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24)
@@ -1086,23 +1104,27 @@ logσ(cpos ·w)+ logσ(−cnegi ·w)
 
 > i=1
 
-ct+1 = ct pos −η[σ(ct pos ·wt)−1]wt (5.25)
-ct+1 negi = ct negi −η[σ(ct negi ·wt)]wt (5.26)
-" #
-wt+1 = wt −η X
-[σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct
-pos + (5.27)
-于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。
-
-> Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to minimize the loss in Eq. 5.21 by making the updates in (Eq. 5.25)-(Eq. 5.27).
+$$c_{t}^{t}_{\frac{\text{pos}}{+}}^{+}_{1}^{1}=c^{t}_{\frac{\text{pos}}{t}}-η[σ(c^{t}_{\frac{\text{pos}}{t}}\cdotw^{t})_{t}-1_{t}]w^{t}$$
 
 > pos
 
+$$c^{t}_{\text{neg}}^{+1}_{i}=c^{t}_{\text{neg}i}-η[σ(c^{t}_{\text{neg}i}\cdotw^{t})]w^{t}$$
+
+" #
+wt+1 = wt −η X
+[σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct
+
 > k
+
+$$^{t}_{\text{pos}}+$$
 
 > negi
 
 > i=1
+
+于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。
+
+> Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to minimize the loss in Eq. 5.21 by making the updates in (Eq. 5.25)-(Eq. 5.27).
 
 回想一下，skip-gram 模型为每个词 i 学习两个独立的嵌入：
 
@@ -1303,7 +1325,7 @@ Maaten 和 Hinton，2008）。
 
 > for solving simple analogy problems of the form a is to b as a* is to what?. In such problems, a system is given a problem like apple:tree::grape:?, i.e., apple is to tree as grape is to , and must fill in the word vine. In the parallelogram model, il- lustrated in Fig. 5.8, the vector from the word apple to the word tree (= # » tree−# » apple) is added to the vector for grape (# » grape); the nearest word to that point is returned.
 
-![](images/fig_p18_1.png)
+![](images/05-embeddings/fig_p18_1.png)
 
 *图 5.8 用于类比问题的平行四边形模型（Rumelhart 和 Abrahamson，1973）：# » vine 的位置可以通过从 # » tree 中减去 # » apple 再加上 # » grape 得到。*
 *Figure 5.8 The parallelogram model for analogy problems (Rumelhart and Abrahamson, 1973): the location of # » vine can be found by subtracting # » apple from # » tree and adding # » grape.*
@@ -1312,7 +1334,7 @@ Maaten 和 Hinton，2008）。
 
 > In early work with sparse embeddings, scholars showed that sparse vector models of meaning could solve such analogy problems (Turney and Littman, 2005), but the parallelogram method received more modern attention because of its success with word2vec or GloVe vectors (Mikolov et al. 2013c, Levy and Goldberg 2014b, Pennington et al. 2014). For example, the result of the expression # » king −man + # » # » woman is a vector close to # » queen. Similarly, # » Paris −# » France + # » Italy results in a vector that is close to # » Rome. The embedding model thus seems to be extracting representations of relations like MALE-FEMALE, or CAPITAL-CITY-OF, or even COMPARATIVE/SUPERLATIVE, as shown in Fig. 5.9 from GloVe.
 
-![](images/fig_p18_0.png)
+![](images/05-embeddings/fig_p18_0.png)
 
 *图 5.9 GloVe 向量空间的关系性质，通过把向量投影到二维上来展示。（a）# » king−# » man+ # » woman 与 # » queen 接近。（b）偏移量似乎捕捉到了比较级和最高级的形态变化（Pennington 等，2014）。*
 *Figure 5.9 Relational properties of the GloVe vector space, shown by projecting vectors onto two dimensions.(a) # » king−# » man+ # » woman is close to # » queen. (b) offsets seem to capture comparative and superlative morphology(Pennington et al., 2014).*
@@ -1343,7 +1365,7 @@ a∗，并且必须找出 b∗，平行四边形方法如下：
 
 > Embeddings can also be a useful tool for studying how meaning changes over time, by computing multiple embedding spaces, each from texts written in a particular time period. For example Fig. 5.10 shows a visualization of changes in meaning in English words over the last two centuries, computed by building separate embedding spaces for each decade from historical corpora like Google n-grams (Lin et al., 2012b) and the Corpus of Historical American English (Davies, 2012).
 
-![](images/fig_p19_0.png)
+![](images/05-embeddings/fig_p19_0.png)
 
 *图 5.10 使用 word2vec 向量对英语中 3 个词的语义演变进行 t-SNE 可视化。每个词的现代义项以及灰色的上下文词，都是根据最近（现代）时间点的嵌入空间计算得到的。更早的点则根据更早的历史嵌入空间计算得到。这些可视化展示了：gay 一词从与「cheerful」或「frolicsome」相关的含义转变为指代同性恋；broadcast 从其播种的本义发展出现代的「传输」义；以及 awful 一词的贬义化，即它从表示「full of awe」转变为表示「terrible or appalling」（Hamilton 等，2016b）。*
 *Figure 5.10 A t-SNE visualization of the semantic change of 3 words in English using word2vec vectors. The modern sense of each word, and the grey context words, are computed from the most recent (modern) time-point embedding space. Earlier points are computed from earlier historical embedding spaces. The visualizations show the changes in the word gay from meanings related to “cheerful” or “frolicsome” to referring to homosexuality, the development of the modern “transmission” sense of broadcast from its original sense of sowing seeds, and the pejoration of the word awful as it shifted from meaning “full of awe”to meaning “terrible or appalling” (Hamilton et al., 2016b).*

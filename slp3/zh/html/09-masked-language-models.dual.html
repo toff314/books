@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/09-masked-language-models.md">Markdown 源文件</a></div>
 <h1>第 9 章 掩码语言模型</h1>
@@ -131,14 +134,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The implementation is very simple! We simply remove the attention masking</p></blockquote>
 <p>这一步是我们在式 7.35 中引入的。回想第 7 章，对于因果 Transformer，我们必须对 QK⊺ 矩阵进行掩码，使注意力无法看到未来的词元（此处针对单个注意力头重述式 7.35）：</p>
 <blockquote><p>step that we introduced in Eq. 7.35. Recall from Chapter 7 that we had to mask the QK⊺matrix for causal transformers so that attention couldn’t look at future tokens(repeated from Eq. 7.35 for a single attention head):</p></blockquote>
-<p> QK⊺  (9.1) head = softmax mask√dk V图 9.3 展示了 QK⊺ 的掩码版本和未掩码版本。对于双向注意力，我们使用图 9.3b 的未掩码版本。因此注意力</p>
+<p>QK⊺  (9.1) head = softmax mask√dk V图 9.3 展示了 QK⊺ 的掩码版本和未掩码版本。对于双向注意力，我们使用图 9.3b 的未掩码版本。因此注意力</p>
 <blockquote><p>Fig. 9.3 shows the masked version of QK⊺and the unmasked version. For bidirectional attention, we use the unmasked version of Fig. 9.3b. Thus the attention</p></blockquote>
 <img src="../md/images/09-masked-language-models/fig_p4_0.png" alt="">
 <p class="caption">图 9.3 N ×N 的 QK⊺ 矩阵，展示了 qi ·kj 值。(a) 显示比较矩阵的上三角部分被置零（设为 −∞，softmax 会将其变为零），而 (b) 显示的是未掩码版本。</p>
 <p class="caption">Figure 9.3 The N ×N QK⊺matrix showing the qi ·kj values. (a) shows the upper-triangle portion of the comparisons matrix zeroed out (set to −∞, which the softmax will turn to zero), while (b) shows the unmasked version.</p>
 <p>双向注意力的计算与式 9.1 完全相同，只是去掉了掩码：</p>
 <blockquote><p>computation for bidirectional attention is exactly the same as Eq. 9.1 but with the mask removed:</p></blockquote>
-<p>QK⊺  (9.2) head = softmax√dk V除此之外，注意力计算与我们在第 7 章看到的完全相同，Transformer 块的架构（前馈层、层归一化等）也是如此。与第 7 章一样，输入同样是一系列子词词元，通常由 3 种流行的词元化算法之一计算得到（包括我们已在第 2 章见过的 BPE 算法，以及另外两种：WordPiece 算法和 SentencePiece Unigram LM 算法）。这意味着每个输入句子都必须先经过词元化，后续所有处理都在子词词元而非词上进行。正如下文教科书第三部分将看到的，这要求对于某些需要“词”这一概念的 NLP 任务（如句法分析），我们有时需要把子词映射回词。</p>
+<p>QK⊺  (9.2) head = softmax√dk V除此之外，注意力计算与我们在第 7 章看到的完全相同，Transformer 块的架构（前馈层、层归一化等）也是如此。与第 7 章一样，输入同样是一系列子词词元，通常由 3 种流行的词元化算法之一计算得到（包括我们已在第 2 章见过的 BPE 算法，以及另外两种：WordPiece 算法和 SentencePiece Unigram LM 算法）。这意味着每个输入句子都必须先经过词元化，后续所有处理都在子词词元而非词上进行。正如下文教科书第三部分将看到的，这要求对于某些需要“词”这一概念的 NLP 任务（如句法分析），我们有时需要把子词映射回词。</p>
 <blockquote><p>Otherwise, the attention computation is identical to what we saw in Chapter 7, as is the transformer block architecture (the feedforward layer, layer norm, and so on). As in Chapter 7, the input is also a series of subword tokens, usually computed by one of the 3 popular tokenization algorithms (including the BPE algorithm that we already saw in Chapter 2 and two others, the WordPiece algorithm and the SentencePiece Unigram LM algorithm). That means every input sentence first has to be tokenized, and all further processing takes place on subword tokens rather than words. This will require, as we’ll see in the third part of the textbook, that for some NLP tasks that require notions of words (like parsing) we will occasionally need to map subwords back to words.</p></blockquote>
 <p>为了更具体地说明，最初的仅英语双向 Transformer</p>
 <blockquote><p>To make this more concrete, the original English-only bidirectional transformer</p></blockquote>
@@ -196,11 +199,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Fig. 9.4 illustrates this approach with a simple example. Here, long, thanks and</p></blockquote>
 <p>the 已从训练序列中抽样出来，其中前两个被掩码，最后一个被替换为随机抽样的词元 apricot。得到的嵌入通过堆叠的双向 Transformer 块。回想第 7 章 7.5 节，为了对每个被掩码词元生成词表上的概率分布，语言建模头取出最终 Transformer 层 L 中每个被掩码词元 i 的输出向量 hL i，将其与解嵌入层 ET 相乘得到 logits u，然后用 softmax 把 logits 转换为词表上的概率 y：</p>
 <blockquote><p>the have been sampled from the training sequence, with the first two masked and the replaced with the randomly sampled token apricot. The resulting embeddings are passed through a stack of bidirectional transformer blocks. Recall from Section 7.5 in Chapter 7 that to produce a probability distribution over the vocabulary for each of the masked tokens, the language modeling head takes the output vector hL i from the final transformer layer L for each masked token i, multiplies it by the unembedding layer ET to produce the logits u, and then uses softmax to turn the logits into probabilities y over the vocabulary:</p></blockquote>
-<p>ui = hL i ET (9.3) yi = softmax(ui) (9.4)有了每个被掩码项的预测概率分布，我们就可以用交叉熵计算每个被掩码项的损失——即分配给真实被掩码词的负对数概率，如图 9.4 所示。更形式化地说，对于句子或批次 x 中给定的输入词元向量，设被掩码的词元集合为 M，把该句子中某些词元替换为掩码后的版本为 xmask，输出向量序列为 h。对于给定的输入词元 xi，例如图 9.4 中的词 long，损失就是在给定 xmask（概括为单个输出向量 hL i）下正确词 long 的概率：</p>
+<div class="formula">$$u_{i}=h^{L}_{i}E^{T}$$</div>
+<div class="formula">$$y_{i}=\text{softmax}(u_{i})$$</div>
+<p>有了每个被掩码项的预测概率分布，我们就可以用交叉熵计算每个被掩码项的损失——即分配给真实被掩码词的负对数概率，如图 9.4 所示。更形式化地说，对于句子或批次 x 中给定的输入词元向量，设被掩码的词元集合为 M，把该句子中某些词元替换为掩码后的版本为 xmask，输出向量序列为 h。对于给定的输入词元 xi，例如图 9.4 中的词 long，损失就是在给定 xmask（概括为单个输出向量 hL i）下正确词 long 的概率：</p>
 <blockquote><p>With a predicted probability distribution for each masked item, we can use crossentropy to compute the loss for each masked item—the negative log probability assigned to the actual masked word, as shown in Fig. 9.4. More formally, for a given vector of input tokens in a sentence or batch x, let the set of tokens that are masked be M, the version of that sentence with some tokens replaced by masks be xmask, and the sequence of output vectors be h. For a given input token xi, such as the word long in Fig. 9.4, the loss is the probability of the correct word long, given xmask (as summarized in the single output vector hL i ):</p></blockquote>
-<p>LMLM(xi) = −logP(xi|hL i )构成权重更新基础的梯度，基于单个训练序列（或一批序列）中被抽样的学习项的平均损失。</p>
+<div class="formula">$$L_{\text{MLM}}(x_{i}) =-\text{log}P(x_{i}|h_{i}^{L})$$</div>
+<p>构成权重更新基础的梯度，基于单个训练序列（或一批序列）中被抽样的学习项的平均损失。</p>
 <blockquote><p>The gradients that form the basis for the weight updates are based on the average loss over the sampled learning items from a single training sequence (or batch of sequences).</p></blockquote>
-<p>LMLM = −1 X logP(xi|hL i )</p>
+<p>LMLM = −1 X</p>
+<div class="formula">$$\text{log}P(x_{i}|h_{i}^{L})$$</div>
 <table><tr><th>M</th></tr></table>
 <p>注意只有 M 中的词元在学习中起作用；其他词在损失函数中不起作用，因此在这个意义上 BERT 及其后继者效率不高；训练数据中只有 15% 的输入样本真正用于训练权重。1</p>
 <blockquote><p>Note that only the tokens in M play a role in learning; the other words play no role in the loss function, so in that sense BERT and its descendents are inefficient; only 15% of the input samples in the training data are actually used for training weights.1</p></blockquote>
@@ -289,7 +296,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>As an example, let’s return to the problem of sentiment classification. Finetuning</p></blockquote>
 <p>该应用中的分类器，需要学习一组权重 WC，把 [CLS] 词元的输出向量——hL CLS——映射为在各个可能的情感类别上的一组得分。假设是一个三分类的情感任务（正面、负面、中立），并以维度 d 作为模型维度，那么 WC 的大小为 [d ×3]。要对一篇文档分类，我们把输入文本送入预训练语言模型以生成 hL CLS，将其与 WC 相乘，再把得到的向量送入 softmax。</p>
 <blockquote><p>a classifier for this application involves learning a set of weights, WC, to map the output vector for the [CLS] token—hL CLS—to a set of scores over the possible sentiment classes. Assuming a three-way sentiment classification task (positive, negative, neutral) and dimensionality d as the model dimension, WC will be of size [d ×3]. To classify a document, we pass the input text through the pretrained language model to generate hL CLS, multiply it by WC, and pass the resulting vector through a softmax.</p></blockquote>
-<p>y = softmax(hL (9.6) CLSWC)微调 WC 中的值需要监督训练数据，这些数据由输入</p>
+<div class="formula">$$y=\text{softmax}(h^{L}$$</div>
+<div class="formula">$$^{L}_{\text{CLS}}W_{C})$$</div>
+<p>微调 WC 中的值需要监督训练数据，这些数据由输入</p>
 <blockquote><p>Finetuning the values in WC requires supervised training data consisting of input</p></blockquote>
 <p>序列构成，并带有相应情感类别的标签。训练按通常的方式进行；用 softmax 输出与正确答案之间的交叉熵损失来驱动产生 WC 的学习过程。</p>
 <blockquote><p>sequences labeled with the appropriate sentiment class. Training proceeds in the usual way; cross-entropy loss between the softmax output and the correct answer is used to drive the learning that produces WC.</p></blockquote>
@@ -404,7 +413,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>9.5.3 Sequence Labeling</p></blockquote>
 <p>在序列标注中，我们把与每个输入词元对应的最终输出向量送入一个分类器，由该分类器在可能的标签集合上产生 softmax 分布。对于单层前馈层分类器，需要学习的权重集合为 WK，其大小为 [d × k]，其中 k 是该任务可能的标签数量。可以采用贪心方法生成最终的输出标签序列，即把每个词元的 argmax 标签当作可能的答案。图 9.10 展示了这种方法的一个例子，其中 yi 是标签上的概率向量，k 用于索引标签。</p>
 <blockquote><p>In sequence labeling, we pass the final output vector corresponding to each input token to a classifier that produces a softmax distribution over the possible set of tags. For a single feedforward layer classifier, the set of weights to be learned is WK of size [d × k], where k is the number of possible tags for the task. A greedy approach, where the argmax tag for each token is taken as a likely answer, can be used to generate the final output tag sequence. Fig. 9.10 illustrates an example of this approach, where yi is a vector of probabilities over tags, and k indexes the tags.</p></blockquote>
-<p>yi = softmax(hL (9.7) i WK) ti = argmaxk(yi) (9.8)另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。</p>
+<div class="formula">$$y_{i}=\text{softmax}(h^{L}_{i}$$</div>
+<div class="formula">$$^{L}_{i}W_{K})$$</div>
+<div class="formula">$$t_{i}=\text{argmax}_{k}(y_{i})$$</div>
+<p>另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。</p>
 <blockquote><p>Alternatively, the distribution over labels provided by the softmax for each input token can be passed to a conditional random field (CRF) layer which can take global tag-level transitions into account (see Chapter 18 on CRFs).</p></blockquote>
 <img src="../md/images/09-masked-language-models/fig_p14_0.png" alt="">
 <p class="caption">图 9.10 使用双向 Transformer 编码器进行命名实体识别的序列标注。每个输入词元的输出向量被送入一个简单的 k 路分类器。</p>

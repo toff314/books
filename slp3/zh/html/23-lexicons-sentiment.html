@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/23-lexicons-sentiment.md">Markdown 源文件</a></div>
 <h1>第 23 章 情感、态度与内涵词表</h1>
@@ -149,20 +152,29 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>第二步，我们为每个极点词计算嵌入。这些嵌入可以是现成的 word2vec 嵌入，也可以直接在一个特定语料上计算（例如，如果目标是一部金融词表，就使用金融语料），或者我们可以把现成的嵌入微调到某个语料上。如果我们面对的是一种非常特定的文本体裁，却又没有足够的数据训练出好的嵌入，那么微调就尤为重要。在微调时，我们从 word2vec 之类的现成嵌入出发，在小型目标语料上继续训练它们。</p>
 <p>一旦我们有了每个极点词的嵌入，我们就构造一个嵌入，它通过取各个种子词嵌入的质心来表示每个极点；回忆一下，质心是均值在多维情形下的推广。给定正向种子词的一组嵌入 S+ = {E(w+ 1 ),E(w+ 2 ),...,E(w+ n )}，以及负向种子词的嵌入 S−= {E(w− 1 ),E(w− 2 ),...,E(w− m)}，两个极点的质心为：</p>
 <blockquote><p>n</p></blockquote>
-<p>V+ = 1 X E(w+ i ) n</p>
+<p>V+ = 1 X</p>
+<div class="formula">$$E(w_{i}^{+})$$</div>
+<p>n</p>
 <blockquote><p>1 m</p></blockquote>
 <p>V−= 1 X_1</p>
-<p>E(w− (23.1) m i )由这两个极点定义的语义轴，只需把这两个向量相减即可算出：</p>
-<p>Vaxis = V+ −V− (23.2) Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。</p>
-<p>   score(w) = cos E(w),Vaxis E(w)·Vaxis (23.3) = ∥E(w)∥∥Vaxis∥如果一部带有情感得分的词表词典就够了，那我们就大功告成了！或者，如果我们需要把词划分到一个正向词表和一个负向词表中，我们可以使用一个阈值或其他方法来得到离散的词表。</p>
+<div class="formula">$$E(w_{i}^{-}$$</div>
+<p>m i )由这两个极点定义的语义轴，只需把这两个向量相减即可算出：</p>
+<div class="formula">$$V_{\text{axis}}=V^{+}-V^{-}$$</div>
+<p>Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。</p>
+<p>score(w) = cos E(w),Vaxis E(w)·Vaxis (23.3) = ∥E(w)∥∥Vaxis∥如果一部带有情感得分的词表词典就够了，那我们就大功告成了！或者，如果我们需要把词划分到一个正向词表和一个负向词表中，我们可以使用一个阈值或其他方法来得到离散的词表。</p>
 <h3>23.4.2 标签传播</h3>
 <p>另一类方法通过在图上传播情感标签来定义词表，这一思想由 Hatzivassiloglou 与 McKeown（1997）的早期工作提出。我们将介绍 Hamilton 等人（2016a）提出的简单 SentProp（情感传播，Sentiment Propagation）算法，它包含四个步骤：</p>
 <ul><li>定义图：给定词嵌入，通过把每个词与其 k 个最近邻（依据余弦相似度）相连，构建一张带权的词汇图。词 wi 与 wj 之间边的权重设定为：</li></ul>
-<p> wi⊤wj  (23.4) Ei,j = arccos− .∥wi∥∥wj∥</p>
+<p>wi⊤wj  (23.4)</p>
+<div class="formula">$$E_{i,j}=\text{arccos}$$</div>
+<p>− .∥wi∥∥wj∥</p>
 <ul><li>定义种子集：选取正向种子词和负向种子词。</li><li>从种子集传播极性：现在我们在该图上从种子集出发进行随机游走。在随机游走中，我们从一个节点出发，</li></ul>
 <p>然后按照与边概率成正比的概率选择要转移到的节点。一个词相对于某个种子集的极性得分，与从该种子集出发的随机游走落在该词上的概率成正比（图 23.7）。</p>
 <ul><li>生成词得分：我们分别从正向和负向种子集出发进行游走，得到正向（rawscore+(wi)）和负向（rawscore−(wi)）的原始标签得分。然后我们将这些值合并为一个正向极性得分：</li></ul>
-<p>rawscore+(wi) score+(wi) = (23.5) rawscore+(wi)+rawscore−(wi)通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。</p>
+<div class="formula">$$\text{rawscore}^{+}(w_{i})$$</div>
+<div class="formula">$$\text{score}^{+}(w_{i}) =$$</div>
+<div class="formula">$$\text{rawscore}^{+}(w_{i})+\text{rawscore}^{-}(w_{i})$$</div>
+<p>通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。</p>
 <ul><li>为每个得分赋予置信度：由于情感得分受种子集影响，我们想知道如果换用不同的种子集，一个词的得分会变化多少。我们可以使用自举（bootstrapping）抽样来得到置信区域，方法是在正向和负向种子集的随机子集上计算传播 B 次（例如取 B = 50，每次从 10 个种子词中选择 7 个）。自举抽样的极性得分的标准差给出了一个置信度量。</li></ul>
 <img src="../md/images/23-lexicons-sentiment/fig_p9_0.png" alt="">
 <p class="caption">图 23.7 SENTPROP 算法的直观示意。(a) 从种子词出发进行随机游走。(b) 依据随机游走访问的频率赋予极性得分（此处以绿色或红色表示）。</p>
@@ -212,7 +224,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们可以把这种评论评分用作监督信号：正面词更可能出现在 5 星评论中；负面词则更可能出现在 1 星评论中。而且，这种监督不只是给出二值极性，它还使我们能够为词赋予一种更复杂的极性表示：它在各星级（或其他评分）上的分布。</p>
 <p>因此在十分制中，我们可以把每个词的情感表示为一个 10 元组，其中每个数字都是一个得分，表示该词与对应极性水平的关联程度。对从 1 到 10 的每个类别 c，这种关联可以是原始计数，也可以是似然 P(w|c)，或者是计数的其他某种函数。</p>
 <p>例如，我们可以这样计算 disappoint(ed/ing) 这类词出现在 1 星评论中的 IMDb 似然：用该词在 IMDb 数据集的 1 星评论中出现的次数（8,557）除以 1 星评论中出现的词总数（25,395,214），于是 P(disappointing|1) 的 IMDb 估计值为 .0003。</p>
-<p>对这种加权方式稍作修改，即归一化似然，可用于作为一种富有启发性的可视化（Potts, 2011）1 count(w,c) P(w|c) = P w∈C count(w,c) P(w|c) PottsScore(w) = P c P(w|c) (23.6)将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。</p>
+<p>对这种加权方式稍作修改，即归一化似然，可用于作为一种富有启发性的可视化（Potts, 2011）1 count(w,c) P(w|c) = P w∈C count(w,c) P(w|c) PottsScore(w) = P</p>
+<div class="formula">$$_{c}P(w|c)$$</div>
+<p>将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。</p>
 <aside class="term"><code>Potts diagram</code><span class="term-zh">Potts 图</span><span class="term-explain">把单词的先验情感表示为各评分类别上的概率分布曲线，并依据曲线形状刻画其情感类型的一种可视化图。</span></aside>
 <p>图 23.10 给出了 3 个正面和 3 个负面程度形容词的 Potts 图。请注意，强正面程度词的曲线呈字母 J 形，而强负面程度词看起来像倒 J 形。相比之下，弱正面和弱负面程度词呈驼峰形，其峰值要么低于均值（如 disappointing 这类弱负面词），要么高于均值（如 good 这类弱正面词）。这些形状提供了一种富有启发性的情感含义类型学。</p>
 <img src="../md/images/23-lexicons-sentiment/fig_p12_0.png" alt="">
@@ -241,16 +255,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们先从目标说起：假设我们想知道单词 horrible</p>
 <aside class="term"><code>log likelihood ratio</code><span class="term-zh">对数似然比</span><span class="term-explain">用对数形式的比值比较某个词在两个语料库中出现的相对频率差异，但会对极罕见词和极高频词过度敏感。</span></aside>
 <p>在语料库 i 中还是在语料库 j 中出现得更多。我们可以计算对数似然比，其中用 f i(w) 表示词 w 在语料库 i 中的频率，用 ni 表示语料库 i 中的总词数：</p>
-<p>llr(horrible) = log Pi(horrible) Pj(horrible) = logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible) ni nj (23.7)取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：</p>
+<p>llr(horrible) = log Pi(horrible)</p>
+<div class="formula">$$P^{j}(\text{horrible})$$</div>
+<p>= logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible) ni nj (23.7)取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：</p>
 <aside class="term"><code>log odds ratio</code><span class="term-zh">对数几率比</span><span class="term-explain">指两个词几率之比的对数，用于比较某个词在两个语料库或类别中的相对关联强度。</span></aside>
-<p> Pi(horrible)   Pj(horrible)  lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible) fi(horrible)   f j(horrible) = log  ni  −log  n j  1−fi(horrible)  1−fj(horrible) ni nj  fi(horrible)   f j(horrible)  (23.8) = log −log ni −fi(horrible) nj −fj(horrible)狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。</p>
+<p>Pi(horrible)   Pj(horrible) lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible) fi(horrible)   f j(horrible) = log  ni  −log  n j 1−fi(horrible)  1−fj(horrible) ni nj fi(horrible)   f j(horrible)  (23.8) = log −log ni −fi(horrible) nj −fj(horrible)狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。</p>
 <p>该方法估计的是词 w 在两个语料库 i 与 j 中频率的差异，所用的是 w 的经先验修正的对数几率比 δ (i−j) ，其估计式为如下：</p>
 <blockquote><p>w</p></blockquote>
-<p>  f j ! (23.9)δ (i−j) f i w +αw w +αw = log −log ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)（其中 ni 是语料库 i 的规模，n j 是语料库 j 的规模，f i w 是词 w 在语料库 i 中的计数，f j w 是词 w 在语料库 j 中的计数，α0 是背景语料库的缩放规模，αw 是词 w 在背景语料库中的缩放计数。）此外，Monroe 等人（2008）还利用了对方差的一个估计，该方差属于对数几率比：</p>
+<p>f j ! (23.9)δ (i−j) f i w +αw w +αw = log −log ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)（其中 ni 是语料库 i 的规模，n j 是语料库 j 的规模，f i w 是词 w 在语料库 i 中的计数，f j w 是词 w 在语料库 j 中的计数，α0 是背景语料库的缩放规模，αw 是词 w 在背景语料库中的缩放计数。）此外，Monroe 等人（2008）还利用了对方差的一个估计，该方差属于对数几率比：</p>
 <blockquote><p>w</p></blockquote>
-<p>σ2   1 1ˆδ (i−j) (23.10)≈ + f iw +αw f j w +αw一个词最终的统计量就是其对数几率比的 z 分数：</p>
+<p>σ2   1 1ˆδ (i−j) (23.10)≈ + f iw +αw f j w +αw一个词最终的统计量就是其对数几率比的 z 分数：</p>
 <blockquote><p>w</p></blockquote>
-<p>ˆδ (i−j) (23.11) r  σ2 ˆδ (i−j)因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。</p>
+<p>ˆδ (i−j) (23.11) r  σ2 ˆδ (i−j)因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。</p>
 <blockquote><p>w</p></blockquote>
 <blockquote><p>w</p></blockquote>
 <p>图 23.12 展示了把该方法应用于一个餐厅评论数据集的结果，这些评论来自Yelp，把一星评论中使用的词与五星评论中使用的词加以比较（Jurafsky 等，2014）。差异最大的是那些显而易见的情感词：一星评论使用 worse、bad、awful 这类负面情感词，五星评论则使用 great、best、amazing 这类正面情感词。但还有一些同样很有启发的差异。一星评论使用逻辑否定（no、not），而五星评论使用强调词并强调普遍性（very、highly、every、always）。一星评论使用第一人称复数（we、us、our），而五星评论使用第二人称。一星评论谈论人（manager、waiter、customer），而五星评论谈论甜点以及昂贵餐厅的属性，如菜品和氛围。更多细节参见 Jurafsky 等（2014）。</p>
@@ -269,8 +285,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>在附录 B 中，我们介绍了用于情感分析的朴素贝叶斯算法。本章至此一直关注的这些词表可以有多种用法，用来改进情感识别。</p>
 <p>最简单的情形是：当我们没有足够的训练数据来构建一个有监督的情感分析器时，可以使用词表；为了训练有监督分类器而让人为每个文档标注情感，往往代价高昂。</p>
 <p>在这类情况下，词表可以用于基于规则的分类算法。最简单的版本就是使用正面词与负面词的比例：如果一篇文档中的正面词多于负面词（用词表来判定文档中每个词的极性），就把它分类为正面。通常会使用一个阈值 λ，只有当该比例大于 λ 时，才把文档分类为正面。如果情感词表为每个词都给出了正面权重和负面权重 θ + w 与 θ − w ，这些权重也可以使用。下面是一个这样的简单情感算法：</p>
-<p>f + = Xθ + w count(w) X f −= θ − w count(w) if f + + f −&gt; λsentiment = if f − (23.12)− f + &gt; λ 0 otherwise.</p>
+<p>f + = X</p>
+<div class="formula">$$θ_{w}^{+}\text{count}(w)$$</div>
 <blockquote><p>w 满足 w∈positivelexicon</p></blockquote>
+<p>X f −= θ − w count(w) if f + + f −&gt; λsentiment = if f − (23.12)− f + &gt; λ 0 otherwise.</p>
 <blockquote><p>w 满足 w∈negativelexicon</p></blockquote>
 <p>如果有有监督训练数据，那么从情感词表计算出的这些计数（有时会以各种方式加权或归一化），也可以与其他词汇特征或非词汇特征一起用作分类器中的特征。我们将在第 23.7 节回到这类算法。</p>
 <h2>23.7 使用词表进行态度识别</h2>
@@ -280,12 +298,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <ul><li>只有至少被 1% 的被试使用的词和短语才被纳入特征，并且 2-gram 和 3-gram 只有在 PMI 足够高时才保留（PMI 大于 2∗length，其中 length 是词数）：</li></ul>
 <p>p(phrase) pmi(phrase) = log Y (23.13) p(w)这些特征可以使用各种权重，包括训练集中的原始计数，或某种归一化概率或对数概率。例如，Schwartz 等人（2013）用每个被试的总用词量对特征计数做归一化，从而把它们转换为短语似然度。</p>
 <blockquote><p>w∈phrase</p></blockquote>
-<p>freq(phrase,subject) p(phrase|subject) = X (23.14) freq(phrase′,subject) phrase′∈vocab(subject)如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。</p>
+<p>freq(phrase,subject) p(phrase|subject) = X (23.14)</p>
+<div class="formula">$$\text{freq}(\text{phrase}^{′},\text{subject})$$</div>
+<div class="formula">$$\text{phrase}^{′}_{\in}\text{vocab}_{(}\text{subject}_{)}$$</div>
+<p>如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。</p>
 <p>词表特征可以采用许多可能的值。最简单的就是一个指示函数，其中如果某个特定文本含有来自相关词表 L 的任意一个词，特征 fL 的取值就是 1。这里使用附录 B 的记法，即特征值针对特定的输出类别 c 和文档 x 来定义。</p>
-<p>1 if ∃w : w ∈L &amp; w ∈x &amp; class = c fL(c,x) = 0 otherwise另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：</p>
-<p>X fL = count(w)对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：</p>
+<p>1 if ∃w : w ∈L &amp; w ∈x &amp; class = c fL(c,x) = 0 otherwise另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：</p>
+<div class="formula">$$\sum_{w\inL}$$</div>
+<p>fL = count(w)对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：</p>
 <blockquote><p>w∈L</p></blockquote>
-<p>X fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。</p>
+<div class="formula">$$\sum_{w\inL}$$</div>
+<p>fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。</p>
 <p>无论怎样定义，这些词表特征随后都会被用于一个有监督分类器，来预测文本或文档所需的情感类别。分类器训练完成后，我们就可以考察哪些词表特征与哪些类别相关联。对于逻辑回归这类分类器，特征权重可以指示该特征与类别的关联程度。</p>
 <h2>23.8 面向以实体为中心的态度词表方法</h2>
 <p>如果我们想要的不是整篇文档的态度得分，而是文本中某个特定实体的态度得分，该怎么办？Field 与 Tsvetkov（2019）的以实体为中心的方法把态度词表与上下文嵌入结合起来，为文本中的实体赋予态度得分。在针对人的态度这一语境下，他们把效价/唤醒度/支配度这一维度重新命名为情感/能动性/权力。该算法首先训练分类器，把嵌入映射为得分：</p>

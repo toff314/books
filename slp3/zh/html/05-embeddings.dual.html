@@ -28,12 +28,21 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/05-embeddings.md">Markdown 源文件</a></div>
 <h1>第 5 章 嵌入</h1>
@@ -54,7 +63,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The asphalt that Los Angeles is famous for occurs mainly on its freeways. But</p></blockquote>
 <p>在城市中央还有另一片沥青，即拉布雷亚沥青坑，这片沥青保存了来自更新世冰期最后阶段数以百万计的化石骨骼。其中一件化石是 Smilodon，也就是剑齿虎，凭其长长的犬齿一眼即可辨认。大约五百万年前，一种完全不同的剑齿虎——名为 Thylacosmilus——生活在阿根廷和南美洲的其他地区。Thylacosmilus 是有袋类动物，而 Smilodon 是胎盘哺乳动物，但 Thylacosmilus 同样有长长的上犬齿，并且和 Smilodon 一样，在下颌上有一块起保护作用的骨突。这两种哺乳动物的相似性是平行演化或趋同演化的众多例子之一，在趋同演化中，特定的语境或环境导致不同物种演化出非常相似的结构（Gould, 1980）。</p>
 <blockquote><p>in the middle of the city is another patch of asphalt, the La Brea tar pits, and this asphalt preserves millions of fossil bones from the last of the Ice Ages of the Pleistocene Epoch. One of these fossils is the Smilodon, or saber-toothed tiger, instantly recognizable by its long canines. Five million years ago or so, a completely different saber-tooth tiger called Thylacosmilus lived in Argentina and other parts of South America. Thylacosmilus was a marsupial whereas Smilodon was a placental mammal, but Thylacosmilus had the same long upper canines and, like Smilodon, had a protective bone flange on the lower jaw. The similarity of these two mammals is one of many examples of parallel or convergent evolution, in which particular contexts or environments lead to the evolution of very similar structures in different species (Gould, 1980).</p></blockquote>
-<img src="../md/images/img_84.jpeg" alt="">
+<img src="../md/images/05-embeddings/img_84.jpeg" alt="">
 <p>在一种生物学意味较弱的相似性中，语境的作用同样重要</p>
 <blockquote><p>The role of context is also important in the similarity of a less biological kind</p></blockquote>
 <p>这类有机体身上：即词。出现在相似语境中的词往往具有相似的含义。词在分布方式上的相似性与</p>
@@ -222,7 +231,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The fact that ongchoi occurs with words like rice and garlic and delicious and</p></blockquote>
 <p>咸味也是如此，就像菠菜、莙荙菜和羽衣芥蓝这些词一样，这或许表明 ongchoi 是一种与这些绿叶蔬菜相似的绿叶蔬菜。1 我们可以通过在 ongchoi 的上下文中简单地统计词语，以计算的方式实现同样的直观想法。</p>
 <blockquote><p>salty, as do words like spinach, chard, and collard greens might suggest that ongchoi is a leafy green similar to these other leafy greens.1 We can implement the same intuition computationally by just counting words in the context of ongchoi.</p></blockquote>
-<img src="../md/images/fig_p5_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p5_0.png" alt="">
+<p class="caption">图 5.1 对与 sweet 一词相近的若干词的 200 维 word2vec 嵌入所做的二维（t-SNE）可视化，表明意义相似的词在空间中彼此邻近。可视化使用 TensorBoard Embedding Projector 制作，https://projector.tensorflow.org/。</p>
+<p class="caption">Figure 5.1 A two-dimensional (t-SNE) visualization of 200-dimensional word2vec embeddings for some words close to the word sweet, showing that words with similar meanings are nearby in space. Visualization created using the TensorBoard Embedding Projector https://projector.tensorflow.org/.</p>
 <p>向量语义的思想是把一个词表示为多维语义空间中的一个点，该空间（以我们将看到的不同方式）由词的邻接词分布导出。用于表示词的向量称为嵌入。</p>
 <blockquote><p>The idea of vector semantics is to represent a word as a point in a multidimensional semantic space that is derived (in different ways we’ll see) from the distributions of word neighbors. Vectors for representing words are called embeddings.</p></blockquote>
 <aside class="term"><code>embeddings</code><span class="term-zh">嵌入</span><span class="term-explain">在本书中指由语料库中词的邻接分布学习得到、用来表示词的稠密数值向量。</span></aside>
@@ -276,6 +287,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>对于 cherry、strawberry、digital 和 information 这四个词的计数。</p>
 <blockquote><p>words for the four words cherry, strawberry, digital, and information.</p></blockquote>
 <table><tr><th></th><th>a</th><th>computer</th><th>pie</th></tr><tr><td>cherry</td><td>1</td><td>0</td><td>1</td></tr><tr><td>strawberry</td><td>0</td><td>0</td><td>2</td></tr><tr><td>digital</td><td>0</td><td>1</td><td>0</td></tr><tr><td>information</td><td>1</td><td>1</td><td>0</td></tr></table>
+<p class="caption">图 5.2 四个词的共现向量，计数来自上述 4 个窗口，仅展示潜在上下文词维度中的 3 个。cherry 的向量用红色标出。注意，真实的向量会有多得多的维度，因而更加稀疏。</p>
+<p class="caption">Figure 5.2 Co-occurrence vectors for four words with counts from the 4 windows above, showing just 3 of the potential context word dimensions. The vector for cherry is outlined in red. Note that a real vector would have vastly more dimensions and thus be even sparser.</p>
 <p>希望你的计数与图 5.2 所示一致，即每个单元格表示某个特定词（由行确定）在某个特定上下文（由词列确定）中出现的次数。</p>
 <blockquote><p>Hopefully your count matches what is shown in Fig. 5.2, so that each cell represents the number of times a particular word (defined by the row) occurs in a particular context (defined by the word column).</p></blockquote>
 <p>于是，每一行都是一个表示某个词的向量。为复习一些基本的线性</p>
@@ -306,13 +319,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Note in Fig. 5.3 that the two words cherry and strawberry are more similar to</p></blockquote>
 <blockquote><p>aardvark ... computer data result pie sugar ...</p></blockquote>
 <blockquote><p>cherry 0 ... 2 8 9 442 25 ... strawberry 0 ... 0 0 1 60 19 ... digital 0 ... 1670 1683 85 5 4 ... information 0 ... 3325 3982 378 5 13 ...</p></blockquote>
+<p class="caption">图 5.3 Wikipedia 语料库中四个词的共现向量，展示其中 6 个维度（为教学目的手工挑选）。digital 的向量用红色标出。注意，真实的向量会有多得多的维度，因而稀疏得多，即在大多数维度上取值为零。</p>
+<p class="caption">Figure 5.3 Co-occurrence vectors for four words in the Wikipedia corpus, showing six of the dimensions (hand-picked for pedagogical purposes). The vector for digital is outlined in red. Note that a real vector would have vastly more dimensions and thus be much sparser, i.e. would have zero values in most dimensions.</p>
 <p>彼此（pie 和 sugar 都倾向于出现在它们的窗口中），而与其他词如 digital 的相似度较低；反过来，digital 和 information 彼此之间的相似度要高于它们与 strawberry 之类的词的相似度。</p>
 <blockquote><p>each other (both pie and sugar tend to occur in their window) than they are to other words like digital; conversely, digital and information are more similar to each other than, say, to strawberry.</p></blockquote>
 <p>我们可以把某个词的向量看作 |V| 维空间中的一个点；因此</p>
 <blockquote><p>We can think of the vector for a word as a point in |V|-dimensional space; thus</p></blockquote>
 <p>图 5.3 中的词是 6 维空间中的点。图 5.4 展示了 2 维的空间可视化。</p>
 <blockquote><p>the words in Fig. 5.3 are points in 6-dimensional space. Fig. 5.4 shows a spatial visualization in 2 dimensions.</p></blockquote>
-<img src="../md/images/fig_p8_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p8_0.png" alt="">
+<p class="caption">图 5.4 digital 和 information 的词向量空间可视化，仅展示其中两个维度，分别对应于 data 和 computer 这两个词。</p>
+<p class="caption">Figure 5.4 A spatial visualization of word vectors for digital and information, showing just two of the dimensions, corresponding to the words data and computer.</p>
 <p>注意，|V| 即向量的维度，通常等于词汇表的大小，往往在 10,000 到 50,000 个词之间（使用训练语料库中最频繁的词；保留排在最频繁的 50,000 个词之后的词通常没有帮助）。由于这些数值大多是零，所以它们是稀疏向量表示；存在高效的算法来存储和运算稀疏矩阵。</p>
 <blockquote><p>Note that |V|, the dimensionality of the vector, is generally the size of the vocabulary, often between 10,000 and 50,000 words (using the most frequent words in the training corpus; keeping words after about the most frequent 50,000 or so is generally not helpful). Since most of these numbers are zero these are sparse vector representations; there are efficient algorithms for storing and computing with sparse matrices.</p></blockquote>
 <p>也可以对计数应用各种类型的加权函数</p>
@@ -331,7 +348,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the dot product operator from linear algebra, also called the inner product:</p></blockquote>
 <aside class="term"><code>dot product inner product</code><span class="term-zh">点积、内积</span><span class="term-explain">把两个同维向量对应分量相乘后求和所得的数，是本书中向量相似度度量的基础。</span></aside>
 <blockquote><p>N</p></blockquote>
-<p>X dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。</p>
+<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<p>dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。</p>
 <blockquote><p>The dot product acts as a similarity metric because it will tend to be high just when the two vectors have large values in the same dimensions. Alternatively, vectors that have zeros in different dimensions—orthogonal vectors—will have a dot product of 0, representing their strong dissimilarity.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <p>然而，作为相似度度量，这个原始点积存在一个问题：它偏爱</p>
@@ -356,7 +374,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The cosine similarity metric between two vectors v and w thus can be computed as:</p></blockquote>
 <aside class="term"><code>cosine</code><span class="term-zh">余弦</span><span class="term-explain">两个向量夹角的余弦值，等于长度归一化后的点积，是本书标准的向量相似度度量。</span></aside>
 <blockquote><p>N</p></blockquote>
-<p>X viwi cosine(v,w) = v ·w (5.10)</p>
+<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<p>viwi cosine(v,w) = v ·w (5.10)</p>
 <table><tr><th>v</th><th></th><th>w</th><th>= v u v u</th></tr></table>
 <p>u t X u t X v2 w2对于某些应用，我们会预先对每个向量做归一化，即用它除以自身的长度，从而得到一个长度为 1 的单位向量。因此，我们可以由 a 计算出单位向量，方法是</p>
 <blockquote><p>For some applications we pre-normalize each vector, by dividing it by its length, creating a unit vector of length 1. Thus we could compute a unit vector from a by</p></blockquote>
@@ -381,7 +400,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The model decides that information is way closer to digital than it is to cherry, a</p></blockquote>
 <p>结果看起来是合理的。图 5.5 给出了一个可视化。</p>
 <blockquote><p>result that seems sensible. Fig. 5.5 shows a visualization.</p></blockquote>
-<img src="../md/images/fig_p10_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p10_0.png" alt="">
+<p class="caption">图 5.5 余弦相似度的一个（粗略）图形演示，展示了三个词（樱桃、数字化和信息）的向量，它们位于由近旁词计算机与馅饼的计数所定义的二维空间中。该图并未画出余弦，而是突出了角度；注意，数字化与信息之间的夹角小于樱桃与信息之间的夹角。两个向量越相似，余弦越大而夹角越小；当两个向量之间的夹角最小时（0◦），余弦取最大值（1）；其他所有夹角的余弦都小于 1。</p>
+<p class="caption">Figure 5.5 A (rough) graphical demonstration of cosine similarity, showing vectors for three words (cherry, digital, and information) in the two dimensional space defined by counts of the words computer and pie nearby. The figure doesn’t show the cosine, but it highlights the angles; note that the angle between digital and information is smaller than the angle between cherry and information. When two vectors are more similar, the cosine is larger but the angle is smaller; the cosine has its maximum (1) when the angle between two vectors is smallest(0◦); the cosine of all other angles is less than 1.</p>
 <p>余弦相似度可用于估计词语相似度，服务于诸如查找</p>
 <blockquote><p>Cosine similarity can be used to estimate word similarity, for tasks like finding</p></blockquote>
 <p>词语释义、追踪词义变化，或自动发现不同语料库中词语的含义等任务。例如，我们可以通过计算 w 与其余 |V|−1 个词中每一个之间的余弦，排序后取前 10，来找出与任意目标词 w 最相似的 10 个词。</p>
@@ -452,12 +473,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>P(−|w,c) = 1−P(+|w,c) 1 (5.16) = σ(−c·w) = 1+exp(c·w)式 5.15 给出了针对一个词的概率，但窗口中存在许多上下文词。skip-gram 作了如下简化假设：所有上下文词都是相互独立的，这使我们只需将它们的概率相乘即可：</p>
 <blockquote><p>Equation 5.15 gives us the probability for one word, but there are many context words in the window. Skip-gram makes the simplifying assumption that all context words are independent, allowing us to just multiply their probabilities:</p></blockquote>
 <blockquote><p>L</p></blockquote>
-<p>Y P(+|w,c1:L) = (5.17)σ(ci ·w) X logP(+|w,c1:L) = logσ(ci ·w) (5.18)总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将</p>
-<blockquote><p>In summary, skip-gram trains a probabilistic classifier that, given a test target word w and its context window of L words c1:L, assigns a probability based on how similar this context window is to the target word. The probability is based on applying the</p></blockquote>
+<div class="formula">$$\prod_{i=L1}^{L}$$</div>
+<div class="formula">$$P(+|w,c_{1:L})=$$</div>
+<div class="formula">$$σ(c_{i}\cdotw)$$</div>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>L</p></blockquote>
+<div class="formula">$$\sum_{i=1}^{L}$$</div>
+<p>logP(+|w,c1:L) = logσ(ci ·w) (5.18)总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将</p>
+<blockquote><p>In summary, skip-gram trains a probabilistic classifier that, given a test target word w and its context window of L words c1:L, assigns a probability based on how similar this context window is to the target word. The probability is based on applying the</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<img src="../md/images/fig_p13_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p13_0.png" alt="">
+<p class="caption">图 5.6 skip-gram 模型学到的嵌入。该算法为每个词存储两个嵌入，即目标词嵌入（有时称为输入嵌入）和上下文词嵌入（有时称为输出嵌入）。因此，算法学习的参数 θ 是一个由 2|V| 个向量组成的矩阵，每个向量的维度为 d，它由两个矩阵拼接而成：目标词嵌入 W 和上下文+噪声嵌入 C。</p>
+<p class="caption">Figure 5.6 The embeddings learned by the skipgram model. The algorithm stores two embeddings for each word, the target embedding (sometimes called the input embedding) and the context embedding (sometimes called the output embedding). The parameter θ that the algorithm learns is thus a matrix of 2|V| vectors, each of dimension d, formed by concatenating two matrices, the target embeddings W and the context+noise embeddings C.</p>
 <p>逻辑（Sigmoid）函数应用于目标词嵌入与每个上下文词嵌入的点积。要计算这个概率，我们只需要词汇表中每个目标词和上下文词的嵌入。</p>
 <blockquote><p>logistic (sigmoid) function to the dot product of the embeddings of the target word with each context word. To compute this probability, we just need embeddings for each target word and context word in the vocabulary.</p></blockquote>
 <p>图 5.6 展示了我们所需参数的直观含义。skip-gram 实际上</p>
@@ -483,9 +510,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The noise words are chosen according to their weighted unigram probability</p></blockquote>
 <p>pα(w)，其中 α 是一个权重。如果我们按照未加权的一元概率 P(w) 来采样，那就意味着：以一元概率 P(“the”) 把词 the 选作噪声词，以一元概率 P(“aardvark”) 把 aardvark 选作噪声词，依此类推。但实践中通常把 α 设为 0.75，即使用加权 P3 4 (w)：</p>
 <blockquote><p>pα(w), where α is a weight. If we were sampling according to unweighted probability P(w), it would mean that with unigram probability P(“the”) we would choose the word the as a noise word, with unigram probability P(“aardvark”) we would choose aardvark, and so on. But in practice it is common to set α = 0.75, i.e. use the weighting P3 4 (w):</p></blockquote>
-<p>count(w)α (5.19) Pα(w) = P w′ count(w′)α把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) &gt; P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：</p>
+<div class="formula">$$\text{count}(w)^{α}$$</div>
+<p>Pα(w) = P</p>
+<div class="formula">$$_{w′}\text{count}(w^{′})^{α}$$</div>
+<p>把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) &gt; P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：</p>
 <blockquote><p>Setting α = .75 gives better performance because it gives rare noise words slightly higher probability: for rare words, Pα(w) &gt; P(w). To illustrate this intuition, it might help to work out the probabilities for an example with α = .75 and two events, P(a) = 0.99 and P(b) = 0.01:</p></blockquote>
-<p>.99.75 Pα(a) = .99.75 +.01.75 = 0.97 .01.75 Pα(b) = .99.75 +.01.75 = 0.03 (5.20)因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。</p>
+<div class="formula">$$.99^{.75}$$</div>
+<p>Pα(a) = .99.75 +.01.75 = 0.97</p>
+<div class="formula">$$.01^{.75}$$</div>
+<p>Pα(b) = .99.75 +.01.75 = 0.03 (5.20)因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。</p>
 <blockquote><p>Thus using α = .75 increases the probability of the rare event b from 0.01 to 0.03.</p></blockquote>
 <p>给定正、负训练实例的集合，以及一组初始</p>
 <blockquote><p>Given the set of positive and negative training instances, and an initial set of</p></blockquote>
@@ -497,32 +530,44 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>If we consider one word/context pair (w,cpos) with its k noise words cneg1...cnegk,</p></blockquote>
 <p>我们就可以把这两个目标表示为如下待最小化的损失函数 L（因此带负号 −）；这里第一项表示我们希望分类器给真实的上下文词 cpos 赋予较高的“是邻居”的概率，第二项表示我们希望给每个噪声词 cnegi 赋予较高的“不是邻居”的概率，二者相乘是因为我们假定它们彼此独立：</p>
 <blockquote><p>we can express these two goals as the following loss function L to be minimized(hence the −); here the first term expresses that we want the classifier to assign the real context word cpos a high probability of being a neighbor, and the second term expresses that we want to assign each of the noise words cnegi a high probability of being a non-neighbor, all multiplied because we assume independence:</p></blockquote>
-<p>&quot; kY # L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi) &quot; # X = − logP(+|w,cpos)+ logP(−|w,cnegi) &quot; # X    = − logP(+|w,cpos)+ log 1−P(+|w,cnegi) &quot; # X logσ(cpos ·w)+ logσ(−cnegi ·w) = − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。</p>
+<p>&quot; kY # L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi) &quot; #</p>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>k</p></blockquote>
+<div class="formula">$$\sum_{i=k1}^{k}$$</div>
+<p>= − logP(+|w,cpos)+ logP(−|w,cnegi) &quot; # X = − logP(+|w,cpos)+ log 1−P(+|w,cnegi) &quot; #</p>
+<blockquote><p>i=1</p></blockquote>
+<blockquote><p>k</p></blockquote>
+<blockquote><p>i=1</p></blockquote>
+<div class="formula">$$\sum_{i=1}^{k}$$</div>
+<p>logσ(cpos ·w)+ logσ(−cnegi ·w) = − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。</p>
 <blockquote><p>= − That is, we want to maximize the dot product of the word with the actual context words, and minimize the dot products of the word with the k negative sampled nonneighbor words.</p></blockquote>
-<blockquote><p>i=1</p></blockquote>
-<blockquote><p>k</p></blockquote>
-<blockquote><p>i=1</p></blockquote>
-<blockquote><p>k</p></blockquote>
-<blockquote><p>i=1</p></blockquote>
 <p>我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了</p>
 <blockquote><p>We minimize this loss function using stochastic gradient descent. Fig. 5.7 shows</p></blockquote>
 <p>一步学习的直观过程。</p>
 <blockquote><p>the intuition of one step of learning.</p></blockquote>
-<img src="../md/images/fig_p15_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p15_0.png" alt="">
+<p class="caption">图 5.7 一步梯度下降的直观示意。skip-gram 模型试图移动嵌入，使目标嵌入（此处为 apricot）更靠近（与之具有更高的点积）邻近词的上下文嵌入（此处为 jam），并更远离（与之具有更低的点积）不在附近出现的噪声词的上下文嵌入（此处为 Tolstoy 和 matrix）。</p>
+<p class="caption">Figure 5.7 Intuition of one step of gradient descent. The skip-gram model tries to shift embeddings so the target embeddings (here for apricot) are closer to (have a higher dot product with) context embeddings for nearby words (here jam) and further from (lower dot product with) context embeddings for noise words that don’t occur nearby (here Tolstoy and matrix).</p>
 <p>为了得到梯度，我们需要对式 5.21 求关于</p>
 <blockquote><p>To get the gradient, we need to take the derivative of Eq. 5.21 with respect to</p></blockquote>
 <p>各个不同嵌入的导数。结果表明，导数如下（我们将证明留作本章末尾的练习）：</p>
 <blockquote><p>the different embeddings. It turns out the derivatives are the following (we leave the proof as an exercise at the end of the chapter):</p></blockquote>
-<p>∂L = [σ(cpos ·w)−1]w (5.22)∂cpos∂L∂cnegi = [σ(cnegi ·w)]w (5.23)∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24) [σ(cnegi ·w)]cnegi因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程如下：</p>
+<p>∂L</p>
+<div class="formula">$$=[σ(c_{\text{pos}}\cdotw)-1]w$$</div>
+<p>∂cpos∂L∂cnegi = [σ(cnegi ·w)]w (5.23)∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24) [σ(cnegi ·w)]cnegi因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程如下：</p>
 <blockquote><p>The update equations going from time step t to t + 1 in stochastic gradient descent are thus:</p></blockquote>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<p>ct+1 = ct pos −η[σ(ct pos ·wt)−1]wt (5.25) ct+1 negi = ct negi −η[σ(ct negi ·wt)]wt (5.26) &quot; # wt+1 = wt −η X [σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct pos + (5.27)于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。</p>
-<blockquote><p>Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to minimize the loss in Eq. 5.21 by making the updates in (Eq. 5.25)-(Eq. 5.27).</p></blockquote>
+<div class="formula">$$c_{t}^{t}_{\frac{\text{pos}}{+}}^{+}_{1}^{1}=c^{t}_{\frac{\text{pos}}{t}}-η[σ(c^{t}_{\frac{\text{pos}}{t}}\cdotw^{t})_{t}-1_{t}]w^{t}$$</div>
 <blockquote><p>pos</p></blockquote>
+<div class="formula">$$c^{t}_{\text{neg}}^{+1}_{i}=c^{t}_{\text{neg}i}-η[σ(c^{t}_{\text{neg}i}\cdotw^{t})]w^{t}$$</div>
+<p>&quot; # wt+1 = wt −η X [σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct</p>
 <blockquote><p>k</p></blockquote>
+<div class="formula">$$^{t}_{\text{pos}}+$$</div>
 <blockquote><p>negi</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
+<p>于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。</p>
+<blockquote><p>Just as in logistic regression, then, the learning algorithm starts with randomly initialized W and C matrices, and then walks through the training corpus using gradient descent to move W and C so as to minimize the loss in Eq. 5.21 by making the updates in (Eq. 5.25)-(Eq. 5.27).</p></blockquote>
 <p>回想一下，skip-gram 模型为每个词 i 学习两个独立的嵌入：</p>
 <blockquote><p>Recall that the skip-gram model learns two separate embeddings for each word i:</p></blockquote>
 <aside class="term"><code>target</code><span class="term-zh">目标词嵌入</span><span class="term-explain">skip-gram 为每个词学得的两个嵌入之一，存于目标矩阵 W，表示该词作为预测中心词时的向量。</span></aside>
@@ -544,7 +589,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>fasttext</code><span class="term-explain">word2vec 的扩展模型，用子词 n-gram 表示词，从而能处理未登录词以及形态丰富语言中的词稀疏问题。</span></aside>
 <p>（Bojanowski et al., 2017）解决了我们迄今所介绍的 word2vec 存在的一个问题：它没有很好的办法处理未登录词——即在测试语料库中出现、但在训练语料库中未出现过的词。一个相关的问题是词稀疏，例如在形态丰富的语言中，每个名词和动词的众多形式里有些可能很少出现。Fasttext 通过使用子词模型来处理这些问题，它将每个词表示为该词本身再加上一袋组成它的 n-gram，并为每个词添加特殊边界符号 &lt; 和 &gt;。例如，当 n = 3 时，词 where 将被表示为序列 &lt;where&gt; 再加上字符 n-gram：</p>
 <blockquote><p>(Bojanowski et al., 2017), addresses a problem with word2vec as we have presented it so far: it has no good way to deal with unknown words—words that appear in a test corpus but were unseen in the training corpus. A related problem is word sparsity, such as in languages with rich morphology, where some of the many forms for each noun and verb may only occur rarely. Fasttext deals with these problems by using subword models, representing each word as itself plus a bag of constituent n-grams, with special boundary symbols &lt; and &gt; added to each word. For example, with n = 3 the word where would be represented by the sequence &lt;where&gt; plus the character n-grams:</p></blockquote>
-<p>&lt;wh, whe, her, ere, re&gt;随后为每个组成 n-gram 学习一个 skipgram 嵌入，而单词 where 则由其所有组成 n-gram 的嵌入之和来表示。</p>
+<p>随后为每个组成 n-gram 学习一个 skipgram 嵌入，而单词 where 则由其所有组成 n-gram 的嵌入之和来表示。</p>
 <blockquote><p>Then a skipgram embedding is learned for each constituent n-gram, and the word where is represented by the sum of all of the embeddings of its constituent n-grams.</p></blockquote>
 <p>未知词此后就只能由组成它的各个 n-gram 之和来表示。</p>
 <blockquote><p>Unknown words can then be represented only by the sum of the constituent n-grams.</p></blockquote>
@@ -619,10 +664,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>cognition, Rumelhart and Abrahamson (1973) proposed the parallelogram model</p></blockquote>
 <p>用于求解形如「a 之于 b 如同 a* 之于什么？」的简单类比问题。在这类问题中，系统会得到一个诸如 apple:tree::grape:? 的问题，即 apple 之于 tree 如同 grape 之于 ____，并且必须填入单词 vine。在如图 5.8 所示的平行四边形模型中，从单词 apple 指向单词 tree 的向量（= # » tree−# » apple）被加到 grape 的向量（# » grape）上；然后返回距离该点最近的单词。</p>
 <blockquote><p>for solving simple analogy problems of the form a is to b as a* is to what?. In such problems, a system is given a problem like apple:tree::grape:?, i.e., apple is to tree as grape is to , and must fill in the word vine. In the parallelogram model, il- lustrated in Fig. 5.8, the vector from the word apple to the word tree (= # » tree−# » apple) is added to the vector for grape (# » grape); the nearest word to that point is returned.</p></blockquote>
-<img src="../md/images/fig_p18_1.png" alt="">
+<img src="../md/images/05-embeddings/fig_p18_1.png" alt="">
+<p class="caption">图 5.8 用于类比问题的平行四边形模型（Rumelhart 和 Abrahamson，1973）：# » vine 的位置可以通过从 # » tree 中减去 # » apple 再加上 # » grape 得到。</p>
+<p class="caption">Figure 5.8 The parallelogram model for analogy problems (Rumelhart and Abrahamson, 1973): the location of # » vine can be found by subtracting # » apple from # » tree and adding # » grape.</p>
 <p>在早期使用稀疏嵌入的研究中，学者们表明，稀疏的语义向量模型能够求解这类类比问题（Turney 和 Littman，2005），但平行四边形方法之所以受到更多现代关注，是因为它在 word2vec 或 GloVe 向量上取得了成功（Mikolov 等 2013c；Levy 和 Goldberg 2014b；Pennington 等 2014）。例如，表达式 # » king −man + # » # » woman 的结果是一个接近 # » queen 的向量。类似地，# » Paris −# » France + # » Italy 得到的向量与 # » Rome 很接近。因此，嵌入模型似乎提取出了诸如 MALE-FEMALE、CAPITAL-CITY-OF，甚至 COMPARATIVE/SUPERLATIVE 这类关系的表示，如图 5.9 中来自 GloVe 的结果所示。</p>
 <blockquote><p>In early work with sparse embeddings, scholars showed that sparse vector models of meaning could solve such analogy problems (Turney and Littman, 2005), but the parallelogram method received more modern attention because of its success with word2vec or GloVe vectors (Mikolov et al. 2013c, Levy and Goldberg 2014b, Pennington et al. 2014). For example, the result of the expression # » king −man + # » # » woman is a vector close to # » queen. Similarly, # » Paris −# » France + # » Italy results in a vector that is close to # » Rome. The embedding model thus seems to be extracting representations of relations like MALE-FEMALE, or CAPITAL-CITY-OF, or even COMPARATIVE/SUPERLATIVE, as shown in Fig. 5.9 from GloVe.</p></blockquote>
-<img src="../md/images/fig_p18_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p18_0.png" alt="">
+<p class="caption">图 5.9 GloVe 向量空间的关系性质，通过把向量投影到二维上来展示。（a）# » king−# » man+ # » woman 与 # » queen 接近。（b）偏移量似乎捕捉到了比较级和最高级的形态变化（Pennington 等，2014）。</p>
+<p class="caption">Figure 5.9 Relational properties of the GloVe vector space, shown by projecting vectors onto two dimensions.(a) # » king−# » man+ # » woman is close to # » queen. (b) offsets seem to capture comparative and superlative morphology(Pennington et al., 2014).</p>
 <p>对于一个 a : b :: a∗: b∗ 问题，即算法被给定向量 a、b 和</p>
 <blockquote><p>For an a : b :: a∗: b∗problem, meaning the algorithm is given vectors a, b, and</p></blockquote>
 <p>a∗，并且必须找出 b∗，平行四边形方法如下：</p>
@@ -636,7 +685,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>5.7.1 Embeddings and Historical Semantics</p></blockquote>
 <p>嵌入也可以成为研究意义如何随时间变化的有用工具，方法是计算多个嵌入空间，每个嵌入空间分别来自写于特定时间段的文本。例如，图 5.10 展示了过去两个世纪中英语单词意义变化的可视化结果，它是通过从 Google n-grams（Lin 等，2012b）和 the Corpus of Historical American English（Davies，2012）等历史语料库中为每个十年构建单独的嵌入空间计算得到的。</p>
 <blockquote><p>Embeddings can also be a useful tool for studying how meaning changes over time, by computing multiple embedding spaces, each from texts written in a particular time period. For example Fig. 5.10 shows a visualization of changes in meaning in English words over the last two centuries, computed by building separate embedding spaces for each decade from historical corpora like Google n-grams (Lin et al., 2012b) and the Corpus of Historical American English (Davies, 2012).</p></blockquote>
-<img src="../md/images/fig_p19_0.png" alt="">
+<img src="../md/images/05-embeddings/fig_p19_0.png" alt="">
+<p class="caption">图 5.10 使用 word2vec 向量对英语中 3 个词的语义演变进行 t-SNE 可视化。每个词的现代义项以及灰色的上下文词，都是根据最近（现代）时间点的嵌入空间计算得到的。更早的点则根据更早的历史嵌入空间计算得到。这些可视化展示了：gay 一词从与「cheerful」或「frolicsome」相关的含义转变为指代同性恋；broadcast 从其播种的本义发展出现代的「传输」义；以及 awful 一词的贬义化，即它从表示「full of awe」转变为表示「terrible or appalling」（Hamilton 等，2016b）。</p>
+<p class="caption">Figure 5.10 A t-SNE visualization of the semantic change of 3 words in English using word2vec vectors. The modern sense of each word, and the grey context words, are computed from the most recent (modern) time-point embedding space. Earlier points are computed from earlier historical embedding spaces. The visualizations show the changes in the word gay from meanings related to “cheerful” or “frolicsome” to referring to homosexuality, the development of the modern “transmission” sense of broadcast from its original sense of sowing seeds, and the pejoration of the word awful as it shifted from meaning “full of awe”to meaning “terrible or appalling” (Hamilton et al., 2016b).</p>
 <h2>5.8 偏见与嵌入</h2>
 <blockquote><p>5.8 Bias and Embeddings</p></blockquote>
 <p>除了能够从文本中学习词义之外，嵌入遗憾的是也会再现文本中潜在隐含的偏见和刻板印象。正如上一节刚刚展示的那样，嵌入可以粗略地建模关系相似度：‘queen’ 作为与 ‘king’ - ‘man’ + ‘woman’ 最接近的词，蕴含着类比 man:woman::king:queen。但同样的这些嵌入类比也表现出性别刻板印象。例如，Bolukbasi 等（2016）发现，在基于新闻文本训练的 word2vec 嵌入中，与 ‘computer programmer’ - ‘man’ + ‘woman’ 最接近的职业是 ‘homemaker’，并且嵌入同样暗示了「‘father’ 之于 ‘doctor’ 如同 ‘mother’ 之于 ‘nurse’」这一类比。这可能导致 Crawford（2017）和 Blodgett 等（2020）所称的分配伤害（allocational harm），即系统不公平地把资源（工作或信贷）分配给不同群体。例如，把嵌入用作搜寻有潜力程序员或医生的招聘算法的一部分，就可能因此错误地降低包含女性名字的文档的权重。</p>

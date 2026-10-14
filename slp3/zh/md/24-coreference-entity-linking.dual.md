@@ -1,4 +1,4 @@
-# 24-coreference-entity-linking
+# 第 24 章 共指消解与实体链接
 
 ### 章
 
@@ -1316,9 +1316,12 @@ D 中全部 T(T+1)/2 个文本跨度（一元、二元、三元、四元等；�
 
 > For each pair of spans i and j, the system assigns a score s(i, j) for the coreference link between span i and span j. The system then learns a distribution P(yi) over the antecedents for span i:
 
-exp(s(i,yi)) (24.48)
+$$\text{exp}(s(i,y_{i}))$$
+
 P(yi) = P
-y′∈Y(i) exp(s(i,y′))
+
+$$_{y′\inY(i)}\text{exp}(s(i,y^{′}))$$
+
 该得分 s(i, j) 包含三个我们将在下面定义的因子：m(i)，即跨度 i 是否为提及；m(j)，即跨度 j 是否为提及；以及 c(i, j)，即 j 是否为 i 的先行语：
 
 > This score s(i, j) includes three factors that we’ll define below: m(i); whether span i is a mention; m(j); whether span j is a mention; and c(i, j); whether j is the antecedent of i:
@@ -1336,7 +1339,8 @@ s(i, j) = m(i)+m(j)+c(i, j) (24.49)
 
 > To compute the two functions m(i) and c(i, j) which score a span i or a pair of spans(i, j), we’ll need a way to represent a span. The e2e-coref family of algorithms represents each span by trying to capture 3 words/tokens: the first word, the last word, and the most important word. We first run each paragraph or subdocument through an encoder (like BERT) to generate embeddings hi for each token i. The span i is then represented by a vector gi that is a concatenation of the encoder output embedding for the first (start) token of the span, the encoder output for the last (end) token of the span, and a third vector which is an attention-based representation:
 
-gi = [hSTART(i),hEND(i),hATT(i)] (24.50)
+$$g_{i}= [h_{\text{START}(i)},h_{\text{END}(i)},h_{\text{ATT}(i)}]$$
+
 注意力向量的目标是表示哪个词/词元是该跨度可能的
 
 > The goal of the attention vector is to represent which word/token is the likely
@@ -1344,13 +1348,16 @@ gi = [hSTART(i),hEND(i),hATT(i)] (24.50)
 
 > syntactic head-word of the span; we saw in the prior section that head-words are a useful feature; a matching head-word is a good indicator of coreference. The attention representation is computed as usual; the system learns a weight vector wα, and computes its dot product with the hidden state ht transformed by a FFN:
 
-αt = wα · FFNα(ht) (24.51)
+$$α_{t}=w_{α}\cdot^{\text{FFN}}_{α}(h_{t})$$
+
 注意力得分通过 softmax 归一化为一个分布：
 
 > The attention score is normalized into a distribution via a softmax:
 
-exp(αt)
-ai,t = (24.52)
+$$\text{exp}(α_{t})$$
+
+$$a_{i,t}=$$
+
 PEND(i) k=START(i) exp(αk)
 然后用这一注意力分布构造向量 hATT(i)，它是对跨度 i 中每个词的嵌入 et 所做的注意力加权求和：
 
@@ -1358,17 +1365,20 @@ PEND(i) k=START(i) exp(αk)
 
 > END(i)
 
-X
-ai,t ·et
-hATT(i) = (24.53)
+$$\sum_{\text{START}}^{\text{END}(}$$
+
+$$a_{i,t}\cdote_{t}$$
+
+$$h_{\text{ATT}(i)}=$$
+
+> t=START(i)
+
 图 24.5 展示了跨度表示的计算以及提及
 
 > Fig. 24.5 shows the computation of the span representation and the mention
 得分的计算。
 
 > score.
-
-> t=START(i)
 
 ![](images/24-coreference-entity-linking/fig_p18_0.png)
 
@@ -1384,7 +1394,9 @@ hATT(i) = (24.53)
 > Now that we know how to compute the vector gi for representing span i, we can see the details of the two scoring functions m(i) and c(i, j). Both are computed by feedforward networks:
 
 m(i) = wm ·FFNm(gi) (24.54)
-c(i, j) = wc ·FFNc([gi,g j,gi ◦gj,]) (24.55)
+
+$$c(i,j)=w_{c}\cdot\text{FFN}_{c}([g_{i},g^{j},g_{i}◦g_{j},])$$
+
 在推断阶段，该提及得分 m 被用作过滤器，只保留得分最高的少数几个提及。
 
 > At inference time, this mention score m is used as a filter to keep only the best few mentions.
@@ -1429,7 +1441,8 @@ c(i, j) = wc ·FFNc([gi,g j,gi ◦gj,]) (24.55)
 
 > For training, we don’t have a single gold antecedent for each mention; instead the coreference labeling only gives us each entire cluster of coreferent mentions; so a mention only has a latent antecedent. We therefore use a loss function that maximizes the sum of the coreference probability of any of the legal antecedents. For a given mention i with possible antecedents Y(i), let GOLD(i) be the set of mentions in the gold cluster containing i. Since the set of mentions occurring before i is Y(i), the set of mentions in that gold cluster that also occur before i is Y(i)∩GOLD(i). We therefore want to maximize:
 
-X
+$$\sum_{∩}$$
+
 P(ˆy) (24.56)
 若提及 i 不在黄金簇中，则 GOLD(i) = ϵ。
 
@@ -1600,7 +1613,8 @@ a →X 的总相关度得分，是 q 中检测到的所有其他锚点投票之�
 
 > Y∈E(b)
 
-X
+$$\sum_{\inXq\\}$$
+
 relatedness(a →X) = vote(b,X) (24.61)
 为给 a →X 打分，我们结合相关度与先验概率，做法是选择实体 X
 
@@ -1641,12 +1655,13 @@ score(a →X) = coherence(a →X)+linkprob(a) (24.62)
 
 > Entity Mention Detection To get an h-dimensional embedding for each question token, the algorithm runs the question through BERT in the normal way:
 
-[q1 ···qn] = BERT([CLS]q1 ···qn[SEP]) (24.63)
+$$[q_{1}\cdot \cdot \cdotq_{n}] =\text{BERT}([\texttt{CLS}]q_{1}\cdot \cdot \cdotq_{n}[\texttt{SEP}])$$
+
 随后，它以类似于上文阅读理解器中基于跨度的算法的方式，计算 q 中每个跨度 [i, j] 是实体提及的似然。首先计算 i/j 作为提及起点/终点的得分：
 
 > It then computes the likelihood of each span [i, j] in q being an entity mention, in a way similar to the span-based algorithm we saw for the reader above. First we compute the score for i/j being the start/end of a mention:
 
-sstart(i) = wstart ·qi, send(j) = wend ·qj,
+$$s_{\text{start}}(i) =w_{\text{start}}\cdotq_{i},s_{\text{end}}(j) =w_{\text{end}}\cdotq_{j},$$
 
 ![](images/24-coreference-entity-linking/fig_p23_0.png)
 
@@ -1657,7 +1672,8 @@ sstart(i) = wstart ·qi, send(j) = wend ·qj,
 
 > where wstart and wend are vectors learned during training. Next, another trainable embedding, wmention is used to compute a score for each token being part of a mention:
 
-smention(t) = wmention ·qt (24.65)
+$$s_{\text{mention}}(t) =w_{\text{mention}}\cdotq_{t}$$
+
 然后通过组合这三个得分来计算提及概率：
 
 > Mention probabilities are then computed by combining these three scores:
@@ -1666,7 +1682,8 @@ smention(t) = wmention ·qt (24.65)
 
 > j
 
-X
+$$\sum_{t=i}^{j}$$
+
 p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)
 实体链接 为了把提及链接到实体，我们接下来为全部 Wikipedia 实体构成的集合 E = e1,··· ,ei,··· ,ew 中的每个实体计算嵌入。对于每个实体 ei，我们取其 Wikipedia 页面的文本，即标题 t(ei) 以及该 Wikipedia 页面的前 128 个词元（我们称之为描述 d(ei)）。这些内容同样输入 BERT，并取 CLS 词元的输出 BERT[CLS] 作为实体表示：
 
@@ -1674,7 +1691,8 @@ p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)
 
 > t=i
 
-xei = BERT[CLS]([CLS]t(ei)[ENT]d(ei)[SEP]) (24.67)
+$$x_{ei}=\text{BERT}_{\text{[CLS]}}([\texttt{CLS}]t(e_{i})[\texttt{ENT}]d(e_{i})[\texttt{SEP}])$$
+
 通过为每个实体 e 与跨度 [i, j] 计算跨度编码（各词元嵌入的平均）与实体编码之间的点积相似度，即可把提及跨度链接到实体。
 
 > Mention spans can be linked to entities by computing, for each entity e and span[i, j], the dot product similarity between the span encoding (the average of the token embeddings) and the entity encoding.
@@ -1683,17 +1701,22 @@ xei = BERT[CLS]([CLS]t(ei)[ENT]d(ei)[SEP]) (24.67)
 
 1 X
 yi,j = (j −i+1) qt
-s(e,[i, j]) = x· (24.68)
-eyi,j
+
+> t=i
+
+$$s(e,[i,j]) =x^{\cdot}_{e}$$
+
+$$^{\cdot}_{e}y_{i,j}$$
+
 最后，我们取 softmax，得到每个跨度上关于实体的分布：
 
 > Finally, we take a softmax to get a distribution over entities for each span:
 
-> t=i
-
 exp(s(e,[i, j])) (24.69)
 p(e|[i, j]) = P
-e′∈E exp(s(e′,[i, j]))
+
+$$_{e′\inE}\text{exp}(s(e^{′},[i,j]))$$
+
 训练 ELQ 的提及检测与实体链接算法是全监督的。这意味着，与 24.7.1 节中的锚词典算法不同，它要求数据集中的实体边界已被标注并链接。两个这样的标注数据集是 WebQuestionsSP（Yih et al., 2016）和 GraphQuestions（Su et al., 2016），前者是源自 Google 搜索问题的 WebQuestions（Berant et al., 2013）数据集的扩展。二者的问句中实体跨度都已被标注并链接（Sorokin and Gurevych 2018, Li et al. 2020），从而产生了实体标注版本 WebQSPEL 和 GraphQEL（Li et al., 2020）。
 
 > Training The ELQ mention detection and entity linking algorithm is fully supervised. This means, unlike the anchor dictionary algorithms from Section 24.7.1, it requires datasets with entity boundaries marked and linked. Two such labeled datasets are WebQuestionsSP (Yih et al., 2016), an extension of the WebQuestions(Berant et al., 2013) dataset derived from Google search questions, and GraphQuestions (Su et al., 2016). Both have had entity spans in the questions marked and linked (Sorokin and Gurevych 2018, Li et al. 2020) resulting in entity-labeled versions WebQSPEL and GraphQEL (Li et al., 2020).
@@ -1705,7 +1728,7 @@ e′∈E exp(s(e′,[i, j]))
 
 > trained jointly, optimizing the sum of their losses. The mention detection loss is a binary cross-entropy loss, with L the length of the passage and N the number of candidates:
 
-LMD = −1 X   
+LMD = −1 X
 y[i,j] log p([i, j])+(1−y[i,j])log(1−p([i, j])) (24.70)
 N
 其中若 [i, j] 是标准提及跨度则 y[i,j] = 1，否则为 0。实体链接损失为：
@@ -1714,7 +1737,8 @@ N
 
 > 1≤i≤j≤min(i+L−1,n)
 
-LED = −logp(eg|[i, j]) (24.71)
+$$L_{\text{ED}}=-\text{logp}(e_{g}|[i,j])$$
+
 其中 eg 是提及 [i, j] 对应的标准实体。
 
 > where eg is the gold entity for mention [i, j].

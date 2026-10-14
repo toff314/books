@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/23-lexicons-sentiment.md">Markdown 源文件</a></div>
 <h1>第 23 章 情感、态度与内涵词表</h1>
@@ -252,14 +255,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>通过取各个种子词嵌入的质心来表示每个极点；回忆一下，质心是均值在多维情形下的推广。给定正向种子词的一组嵌入 S+ = {E(w+ 1 ),E(w+ 2 ),...,E(w+ n )}，以及负向种子词的嵌入 S−= {E(w− 1 ),E(w− 2 ),...,E(w− m)}，两个极点的质心为：</p>
 <blockquote><p>represents each pole by taking the centroid of the embeddings of each of the seed words; recall that the centroid is the multidimensional version of the mean. Given a set of embeddings for the positive seed words S+ = {E(w+ 1 ),E(w+ 2 ),...,E(w+ n )}, and embeddings for the negative seed words S−= {E(w− 1 ),E(w− 2 ),...,E(w− m)}, the pole centroids are:</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<p>V+ = 1 X E(w+ i ) n</p>
+<p>V+ = 1 X</p>
+<div class="formula">$$E(w_{i}^{+})$$</div>
+<p>n</p>
 <blockquote><p>1 m</p></blockquote>
 <p>V−= 1 X_1</p>
-<p>E(w− (23.1) m i )由这两个极点定义的语义轴，只需把这两个向量相减即可算出：</p>
+<div class="formula">$$E(w_{i}^{-}$$</div>
+<p>m i )由这两个极点定义的语义轴，只需把这两个向量相减即可算出：</p>
 <blockquote><p>The semantic axis defined by the poles is computed just by subtracting the two vectors:</p></blockquote>
-<p>Vaxis = V+ −V− (23.2) Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。</p>
+<div class="formula">$$V_{\text{axis}}=V^{+}-V^{-}$$</div>
+<p>Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。</p>
 <blockquote><p>Vaxis, the semantic axis, is a vector in the direction of positive sentiment. Finally, we compute (via cosine similarity) the angle between the vector in the direction of positive sentiment and the direction of w’s embedding. A higher cosine means that w is more aligned with S+ than S−.</p></blockquote>
-<p>   score(w) = cos E(w),Vaxis E(w)·Vaxis (23.3) = ∥E(w)∥∥Vaxis∥如果一部带有情感得分的词表词典就够了，那我们就大功告成了！或者，如果我们</p>
+<p>score(w) = cos E(w),Vaxis E(w)·Vaxis (23.3) = ∥E(w)∥∥Vaxis∥如果一部带有情感得分的词表词典就够了，那我们就大功告成了！或者，如果我们</p>
 <blockquote><p>If a dictionary of words with sentiment scores is sufficient, we’re done! Or if we</p></blockquote>
 <p>需要把词划分到一个正向词表和一个负向词表中，我们可以使用一个阈值或其他方法来得到离散的词表。</p>
 <blockquote><p>need to group words into a positive and a negative lexicon, we can use a threshold or other method to give us discrete lexicons.</p></blockquote>
@@ -269,14 +276,19 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>An alternative family of methods defines lexicons by propagating sentiment labels on graphs, an idea suggested in early work by Hatzivassiloglou and McKeown(1997). We’ll describe the simple SentProp (Sentiment Propagation) algorithm of Hamilton et al. (2016a), which has four steps:</p></blockquote>
 <ul><li>定义图：给定词嵌入，通过把每个词与其 k 个最近邻（依据余弦相似度）相连，构建一张带权的词汇图。词 wi 与 wj 之间边的权重设定为：</li></ul>
 <blockquote><p>Define a graph: Given word embeddings, build a weighted lexical graph by connecting each word with its k nearest neighbors (according to cosine similarity). The weights of the edge between words wi and wj are set as:</p></blockquote>
-<p> wi⊤wj  (23.4) Ei,j = arccos− .∥wi∥∥wj∥</p>
+<p>wi⊤wj  (23.4)</p>
+<div class="formula">$$E_{i,j}=\text{arccos}$$</div>
+<p>− .∥wi∥∥wj∥</p>
 <ul><li>定义种子集：选取正向种子词和负向种子词。</li><li>从种子集传播极性：现在我们在该图上从种子集出发进行随机游走。在随机游走中，我们从一个节点出发，</li></ul>
 <blockquote><p>Define a seed set: Choose positive and negative seed words.</p><p>Propagate polarities from the seed set: Now we perform a random walk on this graph, starting at the seed set. In a random walk, we start at a node and</p></blockquote>
 <p>然后按照与边概率成正比的概率选择要转移到的节点。一个词相对于某个种子集的极性得分，与从该种子集出发的随机游走落在该词上的概率成正比（图 23.7）。</p>
 <blockquote><p>then choose a node to move to with probability proportional to the edge probability. A word’s polarity score for a seed set is proportional to the probability of a random walk from the seed set landing on that word (Fig. 23.7).</p></blockquote>
 <ul><li>生成词得分：我们分别从正向和负向种子集出发进行游走，得到正向（rawscore+(wi)）和负向（rawscore−(wi)）的原始标签得分。然后我们将这些值合并为一个正向极性得分：</li></ul>
 <blockquote><p>Create word scores: We walk from both positive and negative seed sets, resulting in positive (rawscore+(wi)) and negative (rawscore−(wi)) raw label scores. We then combine these values into a positive-polarity score as:</p></blockquote>
-<p>rawscore+(wi) score+(wi) = (23.5) rawscore+(wi)+rawscore−(wi)通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。</p>
+<div class="formula">$$\text{rawscore}^{+}(w_{i})$$</div>
+<div class="formula">$$\text{score}^{+}(w_{i}) =$$</div>
+<div class="formula">$$\text{rawscore}^{+}(w_{i})+\text{rawscore}^{-}(w_{i})$$</div>
+<p>通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。</p>
 <blockquote><p>It’s often helpful to standardize the scores to have zero mean and unit variance within a corpus.</p></blockquote>
 <ul><li>为每个得分赋予置信度：由于情感得分受种子集影响，我们想知道如果换用不同的种子集，一个词的得分会变化多少。我们可以使用自举（bootstrapping）抽样来得到置信区域，方法是在正向和负向种子集的随机子集上计算传播 B 次（例如取 B = 50，每次从 10 个种子词中选择 7 个）。自举抽样的极性得分的标准差给出了一个置信度量。</li></ul>
 <blockquote><p>Assign confidence to each score: Because sentiment scores are influenced by the seed set, we’d like to know how much the score of a word would change if a different seed set is used. We can use bootstrap sampling to get confidence regions, by computing the propagation B times over random subsets of the positive and negative seed sets (for example using B = 50 and choosing 7 of the 10 seed words each time). The standard deviation of the bootstrap sampled polarity scores gives a confidence measure.</p></blockquote>
@@ -381,7 +393,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>A slight modification of this weighting, the normalized likelihood, can be used</p></blockquote>
 <p>作为一种富有启发性的可视化（Potts, 2011）1</p>
 <blockquote><p>as an illuminating visualization (Potts, 2011)1</p></blockquote>
-<p>count(w,c) P(w|c) = P w∈C count(w,c) P(w|c) PottsScore(w) = P c P(w|c) (23.6)将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。</p>
+<p>count(w,c) P(w|c) = P w∈C count(w,c) P(w|c) PottsScore(w) = P</p>
+<div class="formula">$$_{c}P(w|c)$$</div>
+<p>将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。</p>
 <blockquote><p>Dividing the IMDb estimate P(disappointing|1) of .0003 by the sum of the likelihood P(w|c) over all categories gives a Potts score of 0.10. The word disappointing thus is associated with the vector [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05]. The Potts diagram (Potts, 2011) is a visualization of these word scores, representing the prior sentiment of a word as a distribution over the rating categories.</p></blockquote>
 <aside class="term"><code>Potts diagram</code><span class="term-zh">Potts 图</span><span class="term-explain">把单词的先验情感表示为各评分类别上的概率分布曲线，并依据曲线形状刻画其情感类型的一种可视化图。</span></aside>
 <p>图 23.10 给出了 3 个正面和 3 个负面程度形容词的 Potts 图。请注意，强正面程度词的曲线呈字母 J 形，而强负面程度词看起来像倒 J 形。相比之下，弱正面和弱负面程度词呈驼峰形，其峰值要么低于均值（如 disappointing 这类弱负面词），要么高于均值（如 good 这类弱正面词）。这些形状提供了一种富有启发性的情感含义类型学。</p>
@@ -430,16 +444,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>occurs more in corpus i or corpus j. We could compute the log likelihood ratio,</p></blockquote>
 <p>其中用 f i(w) 表示词 w 在语料库 i 中的频率，用 ni 表示语料库 i 中的总词数：</p>
 <blockquote><p>using f i(w) to mean the frequency of word w in corpus i, and ni to mean the total number of words in corpus i:</p></blockquote>
-<p>llr(horrible) = log Pi(horrible) Pj(horrible) = logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible) ni nj (23.7)取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：</p>
+<p>llr(horrible) = log Pi(horrible)</p>
+<div class="formula">$$P^{j}(\text{horrible})$$</div>
+<p>= logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible) ni nj (23.7)取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：</p>
 <blockquote><p>Instead, let’s compute the log odds ratio: does horrible have higher odds in i or in j:</p></blockquote>
 <aside class="term"><code>log odds ratio</code><span class="term-zh">对数几率比</span><span class="term-explain">指两个词几率之比的对数，用于比较某个词在两个语料库或类别中的相对关联强度。</span></aside>
-<p> Pi(horrible)   Pj(horrible)  lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible) fi(horrible)   f j(horrible) </p>
-<blockquote><p> fi(horrible)   f j(horrible) </p></blockquote>
-<p>= log  ni  −log  n j </p>
-<blockquote><p>= log  ni  −log  n j </p></blockquote>
-<p> 1−fi(horrible)  1−fj(horrible) </p>
-<blockquote><p> 1−fi(horrible)  1−fj(horrible) </p></blockquote>
-<p>ni nj  fi(horrible)   f j(horrible)  (23.8) = log −log ni −fi(horrible) nj −fj(horrible)狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。</p>
+<p>Pi(horrible)   Pj(horrible) lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible) fi(horrible)   f j(horrible) = log  ni  −log  n j 1−fi(horrible)  1−fj(horrible) ni nj fi(horrible)   f j(horrible)  (23.8) = log −log ni −fi(horrible) nj −fj(horrible)狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。</p>
 <blockquote><p>The Dirichlet intuition is to use a large background corpus to get a prior estimate of what we expect the frequency of each word w to be. We’ll do this very simply by adding the counts from that corpus to the numerator and denominator, so that we’re essentially shrinking the counts toward that prior. It’s like asking how large are the differences between i and j given what we would expect given their frequencies in a well-estimated large background corpus.</p></blockquote>
 <p>该方法估计的是词 w 在两个</p>
 <blockquote><p>The method estimates the difference between the frequency of word w in two</p></blockquote>
@@ -448,17 +458,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>如下：</p>
 <blockquote><p>as:</p></blockquote>
 <blockquote><p>w</p></blockquote>
-<p>  f j ! (23.9)δ (i−j) f i w +αw w +αw = log −log ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)（其中 ni 是语料库 i 的规模，n j 是语料库 j 的规模，f i w 是词 w 在语料库 i 中的计数，f j w 是词 w 在语料库 j 中的计数，α0 是背景语料库的缩放规模，αw 是词 w 在背景语料库中的缩放计数。）</p>
+<p>f j ! (23.9)δ (i−j) f i w +αw w +αw = log −log ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)（其中 ni 是语料库 i 的规模，n j 是语料库 j 的规模，f i w 是词 w 在语料库 i 中的计数，f j w 是词 w 在语料库 j 中的计数，α0 是背景语料库的缩放规模，αw 是词 w 在背景语料库中的缩放计数。）</p>
 <blockquote><p>(where ni is the size of corpus i, n j is the size of corpus j, f i w is the count of word w in corpus i, f j w is the count of word w in corpus j, α0 is the scaled size of the background corpus, and αw is the scaled count of word w in the background corpus.)</p></blockquote>
 <p>此外，Monroe 等人（2008）还利用了对方差的一个估计，该方差属于</p>
 <blockquote><p>In addition, Monroe et al. (2008) make use of an estimate for the variance of the</p></blockquote>
 <p>对数几率比：</p>
 <blockquote><p>log–odds–ratio:</p></blockquote>
 <blockquote><p>w</p></blockquote>
-<p>σ2   1 1ˆδ (i−j) (23.10)≈ + f iw +αw f j w +αw一个词最终的统计量就是其对数几率比的 z 分数：</p>
+<p>σ2   1 1ˆδ (i−j) (23.10)≈ + f iw +αw f j w +αw一个词最终的统计量就是其对数几率比的 z 分数：</p>
 <blockquote><p>The final statistic for a word is then the z–score of its log–odds–ratio:</p></blockquote>
 <blockquote><p>w</p></blockquote>
-<p>ˆδ (i−j) (23.11) r  σ2 ˆδ (i−j)因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。</p>
+<p>ˆδ (i−j) (23.11) r  σ2 ˆδ (i−j)因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。</p>
 <blockquote><p>The Monroe et al. (2008) method thus modifies the commonly used log odds ratio in two ways: it uses the z-scores of the log odds ratio, which controls for the amount of variance in a word’s frequency, and it uses counts from a background corpus to provide a prior count for words.</p></blockquote>
 <blockquote><p>w</p></blockquote>
 <blockquote><p>w</p></blockquote>
@@ -488,11 +498,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>data to build a supervised sentiment analyzer; it can often be expensive to have a human assign sentiment to each document to train the supervised classifier.</p></blockquote>
 <p>在这类情况下，词表可以用于基于规则的分类算法。最简单的版本就是使用正面词与负面词的比例：如果一篇文档中的正面词多于负面词（用词表来判定文档中每个词的极性），就把它分类为正面。通常会使用一个阈值 λ，只有当该比例大于 λ 时，才把文档分类为正面。如果情感词表为每个词都给出了正面权重和负面权重 θ + w 与 θ − w ，这些权重也可以使用。下面是一个这样的简单情感算法：</p>
 <blockquote><p>In such situations, lexicons can be used in a rule-based algorithm for classification. The simplest version is just to use the ratio of positive to negative words: if a document has more positive than negative words (using the lexicon to decide the polarity of each word in the document), it is classified as positive. Often a threshold λis used, in which a document is classified as positive only if the ratio is greater thanλ. If the sentiment lexicon includes positive and negative weights for each word,θ + w and θ − w , these can be used as well. Here’s a simple such sentiment algorithm:</p></blockquote>
-<p>f + = Xθ + w count(w) X f −= θ − w count(w) if f + + f −&gt; λ</p>
-<blockquote><p> if f +  + f −&gt; λ </p></blockquote>
-<p>sentiment = if f − (23.12)− f + &gt; λ 0 otherwise.</p>
-<blockquote><p>− f + &gt; λ   0 otherwise.</p></blockquote>
+<p>f + = X</p>
+<div class="formula">$$θ_{w}^{+}\text{count}(w)$$</div>
 <blockquote><p>w 满足 w∈positivelexicon</p><p><em>w s.t. w∈positivelexicon</em></p></blockquote>
+<p>X f −= θ − w count(w) if f + + f −&gt; λ</p>
+<blockquote><p>if f +  + f −&gt; λ</p></blockquote>
+<p>sentiment = if f − (23.12)− f + &gt; λ 0 otherwise.</p>
+<blockquote><p>− f + &gt; λ   0 otherwise.</p></blockquote>
 <blockquote><p>w 满足 w∈negativelexicon</p><p><em>w s.t. w∈negativelexicon</em></p></blockquote>
 <p>如果有有监督训练数据，那么从情感词表计算出的这些计数（有时会以各种方式加权或归一化），也可以与其他词汇特征或非词汇特征一起用作分类器中的特征。我们将在第 23.7 节回到这类算法。</p>
 <blockquote><p>If supervised training data is available, these counts computed from sentiment lexicons, sometimes weighted or normalized in various ways, can also be used as features in a classifier along with other lexical or non-lexical features. We return to such algorithms in Section 23.7.</p></blockquote>
@@ -513,18 +525,23 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>p(phrase) pmi(phrase) = log Y (23.13) p(w)这些特征可以使用各种权重，包括训练集中的原始计数，或某种归一化概率或对数概率。例如，Schwartz 等人（2013）用每个被试的总用词量对特征计数做归一化，从而把它们转换为短语似然度。</p>
 <blockquote><p>Various weights can be used for the features, including the raw count in the training set, or some normalized probability or log probability. Schwartz et al. (2013), for example, turn feature counts into phrase likelihoods by normalizing them by each subject’s total word use.</p></blockquote>
 <blockquote><p>w∈phrase</p></blockquote>
-<p>freq(phrase,subject) p(phrase|subject) = X (23.14) freq(phrase′,subject) phrase′∈vocab(subject)如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。</p>
+<p>freq(phrase,subject) p(phrase|subject) = X (23.14)</p>
+<div class="formula">$$\text{freq}(\text{phrase}^{′},\text{subject})$$</div>
+<div class="formula">$$\text{phrase}^{′}_{\in}\text{vocab}_{(}\text{subject}_{)}$$</div>
+<p>如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。</p>
 <blockquote><p>If the training data is sparser, or not as similar to the test set, any of the lexicons we’ve discussed can play a helpful role, either alone or in combination with all the words and n-grams.</p></blockquote>
 <p>词表特征可以采用许多可能的值。最简单的就是一个</p>
 <blockquote><p>Many possible values can be used for lexicon features. The simplest is just an</p></blockquote>
 <p>指示函数，其中如果某个特定文本含有来自相关词表 L 的任意一个词，特征 fL 的取值就是 1。这里使用附录 B 的记法，即特征值针对特定的输出类别 c 和文档 x 来定义。</p>
 <blockquote><p>indicator function, in which the value of a feature fL takes the value 1 if a particular text has any word from the relevant lexicon L. Using the notation of Appendix B, in which a feature value is defined for a particular output class c and document x.</p></blockquote>
-<p>1 if ∃w : w ∈L &amp; w ∈x &amp; class = c fL(c,x) = 0 otherwise另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：</p>
+<p>1 if ∃w : w ∈L &amp; w ∈x &amp; class = c fL(c,x) = 0 otherwise另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：</p>
 <blockquote><p>Alternatively the value of a feature fL for a particular lexicon L can be the total number of word tokens in the document that occur in L:</p></blockquote>
-<p>X fL = count(w)对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：</p>
+<div class="formula">$$\sum_{w\inL}$$</div>
+<p>fL = count(w)对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：</p>
 <blockquote><p>For lexica in which each word is associated with a score or weight, the count can be multiplied by a weight θ L w:</p></blockquote>
 <blockquote><p>w∈L</p></blockquote>
-<p>X fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。</p>
+<div class="formula">$$\sum_{w\inL}$$</div>
+<p>fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。</p>
 <blockquote><p>fL = θ L wcount(w) Counts can alternatively be logged or normalized per writer as in Eq. 23.14.</p></blockquote>
 <p>无论怎样定义，这些词表特征随后都会被用于一个有监督</p>
 <blockquote><p>However they are defined, these lexicon features are then used in a supervised</p></blockquote>

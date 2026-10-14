@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import html as H
+import os
 import re
 import sys
 from pathlib import Path
@@ -44,6 +45,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -171,6 +173,14 @@ def convert(md: str) -> str:
             i += 1
             continue
 
+        # 公式块：build_markdown 产出的 `$$…$$`（LaTeX），交给 MathJax 渲染。
+        # 转义 HTML 实体后再交给 MathJax（它读文本内容，不会看到实体）。
+        if stripped.startswith("$$") and stripped.endswith("$$") and len(stripped) > 4:
+            tex = stripped[2:-2].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            out.append(f'<div class="formula">$${tex}$$</div>')
+            i += 1
+            continue
+
         if image(stripped):
             out.append(image(stripped))
             i += 1
@@ -228,6 +238,10 @@ def convert(md: str) -> str:
     return "\n".join(out)
 
 
+DOC_ROOT = Path(__file__).resolve().parent.parent
+MATHJAX_JS = DOC_ROOT / "vendor" / "mathjax" / "tex-svg.js"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Markdown → 在线阅读 HTML")
     ap.add_argument("md", nargs="?", help="输入 Markdown（省略时读 stdin）")
@@ -250,17 +264,25 @@ def main() -> int:
         name = args.name or "index"
 
     title = args.title or name
+    out_dir = Path(args.out)
+    mj = ""
+    if MATHJAX_JS.is_file():
+        rel = os.path.relpath(MATHJAX_JS, out_dir).replace(os.sep, "/")
+        mj = (
+            "<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
+            "svg:{fontCache:'global'}};</script>\n"
+            f'<script id="MathJax-script" src="{rel}"></script>\n'
+        )
     doc = f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{H.escape(title)}</title>
 <style>{CSS}</style>
-</head><body><div class="wrap">
+{mj}</head><body><div class="wrap">
 {args.nav}
 {convert(text)}
 </div></body></html>
 """
-    out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     p = out_dir / f"{name}.html"
     p.write_text(doc, encoding="utf-8")

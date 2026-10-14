@@ -75,8 +75,15 @@ def build(mode: str, chs: list[tuple[str, str]], title: str) -> Path:
     toc.append("</ol></div>")
     if not parts:
         sys.exit("[ERROR] 没有可合并的章节（先跑 build_html.py 产出 mono/dual.html）")
+    mj_src = BOOK.parent / "vendor" / "mathjax" / "tex-svg.js"
+    mj = ""
+    if mj_src.is_file():
+        mj = ("<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
+              "svg:{fontCache:'global'}};</script>\n"
+              f'<script id="MathJax-script" src="{mj_src.as_uri()}"></script>\n')
     head = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
-<title>{title}</title><style>{style}
+<title>{title}</title>
+{mj}<style>{style}
 .bookcover {{ page-break-after: always; text-align: center; padding-top: 30%; }}
 .bookcover h1 {{ font-size: 25pt; border: 0; }}
 .bk-author {{ font-size: 12pt; color: #555; }}

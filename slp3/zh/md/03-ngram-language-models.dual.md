@@ -116,24 +116,27 @@ C(The water of Walden Pond is so beautifully) (3.2)
 
 > One thing we can do is decompose this probability using the chain rule of proba- bility:
 
-P(X1...Xn) = P(X1)P(X2|X1)P(X3|X1:2)...P(Xn|X1:n−1)
+$$P(X_{1}...X_{n})=P_{n}(X_{1})P(X_{2}|X_{1})P(X_{3}|X_{1:2})...P(X_{n}|X_{1:n-1})$$
+
+> n
+
 Y P(Xk|X1:k−1)
 = (3.3)
 将链式法则应用于词，我们得到
 
 > Applying the chain rule to words, we get
-P(w1:n) = P(w1)P(w2|w1)P(w3|w1:2)...P(wn|w1:n−1)
+
+> k=1
+
+$$P(w_{1:n})=P_{n}(w_{1})P(w_{2}|w_{1})P(w_{3}|w_{1:2})...P(w_{n}|w_{1:n-1})$$
+
+> n
+
 Y P(wk|w1:k−1)
 = (3.4)
 链式法则揭示了计算一个序列的联合概率与计算给定前文词时某个词的条件概率之间的联系。式 3.4 表明，我们可以通过把若干条件概率相乘，来估计整个词序列的联合概率。但使用链式法则似乎并不能真正帮到我们！我们并不知道有任何方法可以计算给定一长串前文词时某个词的精确概率 P(wn|w1:n−1)。
 
 > The chain rule shows the link between computing the joint probability of a sequence and computing the conditional probability of a word given previous words. Equation 3.4 suggests that we could estimate the joint probability of an entire sequence of words by multiplying together a number of conditional probabilities. But using the chain rule doesn’t really seem to help us! We don’t know any way to compute the exact probability of a word given a long sequence of preceding words, P(wn|w1:n−1).
-
-> n
-
-> k=1
-
-> n
 
 > k=1
 
@@ -167,7 +170,8 @@ P(blue|beautifully) (3.6)
 
 > When we use a bigram model to predict the conditional probability of the next word, we are thus making the following approximation:
 
-P(wn|w1:n−1) ≈P(wn|wn−1) (3.7)
+$$P(w_{n}|w_{1:n-1})\approxP(w_{n}|w_{n-1})(3.7)$$
+
 这种认为一个词的概率仅依赖于前一个词的假设，称为马尔可夫假设。马尔可夫模型是这样一类概率模型
 
 > The assumption that the probability of a word depends only on the previous word is called a Markov assumption. Markov models are the class of probabilistic models
@@ -191,14 +195,16 @@ P(wn|w1:n−1) ≈P(wn|wn−1) (3.7)
 
 > probability of the next word in a sequence. We’ll use N here to mean the n-gram size, so N = 2 means bigrams and N = 3 means trigrams. Then we approximate the probability of a word given its entire context as follows:
 
-P(wn|w1:n−1) ≈P(wn|wn−N+1:n−1) (3.8)
+$$P(w_{n}|w_{1:n-1})\approxP(w_{n}|w_{n-N+1:n-1})$$
+
 在给出单个词概率的 bigram 假设之后，我们可以把式 3.7 代入式 3.4，从而计算整个词序列的概率：
 
 > Given the bigram assumption for the probability of an individual word, we can compute the probability of a complete word sequence by substituting Eq. 3.7 into Eq. 3.4:
 
 > n
 
-Y
+$$\prod_{k=1}^{n}$$
+
 P(w1:n) ≈ P(wk|wk−1) (3.9)
 
 > k=1
@@ -229,9 +235,12 @@ P(w1:n) ≈ P(wk|wk−1) (3.9)
 
 > previous word wn−1, we’ll compute the count of the bigram C(wn−1wn) and normalize by the sum of all the bigrams that share the same first word wn−1:
 
-C(wn−1wn)
+$$C(w_{n-1}w_{n})$$
+
 P(wn|wn−1) = P (3.10)
-wC(wn−1w)
+
+$$_{w}C(w_{n-1}w)$$
+
 我们可以简化这个等式，因为所有以
 
 > We can simplify this equation, since the sum of all bigram counts that start with
@@ -240,7 +249,9 @@ wC(wn−1w)
 > a given word wn−1 must be equal to the unigram count for that word wn−1 (the reader should take a moment to be convinced of this):
 
 P(wn|wn−1) = C(wn−1wn) (3.11)
-C(wn−1)
+
+$$C(w_{n-1})$$
+
 让我们用一个由三个句子组成的迷你语料库来做一个例子。我们将
 
 > Let’s work through an example using a mini-corpus of three sentences. We’ll
@@ -257,17 +268,19 @@ P(_1I|<s>) = 2 3 = 0.67 P(Sam|<s>) = 1 3 = 0.33 P(am|I) = 2 3 = 0.67 P(</s>|Sam)
 > P(_1I|<s>) = 2 3 = 0.67 P(Sam|<s>) = 1 3 = 0.33 P(am|I) = 2 3 = 0.67 P(</s>|Sam) = 1 2 = 0.5 P(Sam|am) = 1 2 = 0.5 P(do|I) = 1 3 = 0.33 For the general case of MLE N-gram parameter estimation (N = 2,3,...):
 
 P(wn|wn−N+1:n−1) = C(wn−N+1:n−1 wn) (3.12)
-C(wn−N+1:n−1)
+
+$$C(w_{n-N+1:n-1})$$
+
+> 我们需要句末符号，才能让 bigram 语法成为一个真正的概率分布。如果没有句末符号，那么就不是所有句子的句子概率之和等于一，而是给定长度的所有句子的句子概率之和等于一。这个模型将会定义一组无穷多的概率
+>
+> *We need the end-symbol to make the bigram grammar a true probability distribution. Without an endsymbol, instead of the sentence probabilities of all sentences summing to one, the sentence probabilities for all sentences of a given length would sum to one. This model would define an infinite set of probability*
+
 式 3.12（与式 3.11 类似）通过将
 
 > Equation 3.12 (like Eq. 3.11) estimates the n-gram probability by dividing the
 某个特定序列的观测频率除以某个前缀的观测频率来估计 n-gram 概率。
 
 > observed frequency of a particular sequence by the observed frequency of a prefix.
-
-> 我们需要句末符号，才能让 bigram 语法成为一个真正的概率分布。如果没有句末符号，那么就不是所有句子的句子概率之和等于一，而是给定长度的所有句子的句子概率之和等于一。这个模型将会定义一组无穷多的概率
->
-> *We need the end-symbol to make the bigram grammar a true probability distribution. Without an endsymbol, instead of the sentence probabilities of all sentences summing to one, the sentence probabilities for all sentences of a given length would sum to one. This model would define an infinite set of probability*
 
 > `relative frequency`（相对频率）
 
@@ -395,7 +408,8 @@ P(food|english)P(</s>|food)
 
 > than or equal to 1, and so the more probabilities we multiply together, the smaller the product becomes. Multiplying enough n-grams together would result in numerical underflow. Adding in log space is equivalent to multiplying in linear space, so we combine log probabilities by adding them. By adding log probabilities instead of multiplying probabilities, we get results that are not as small. We do all computation and storage in log space, and just convert back into probabilities if we need to report probabilities at the end by taking the exp of the logprob:
 
-p1 × p2 × p3 × p4 = exp(log p1 +log p2 +log p3 +log p4) (3.13)
+$$p_{1}\timesp_{2}\timesp_{3}\timesp_{4}=\text{exp}(\text{log}p_{1}+\text{log}p_{2}+\text{log}p_{3}+\text{log}p_{4})$$
+
 在本书通篇的实践中，当未指定底数时，我们用 log 表示自然对数（ln）。
 
 > In practice throughout this book, we’ll use log to mean natural log (ln) when the base is not specified.
@@ -611,7 +625,10 @@ n-gram，它们取自当代美国英语语料库（Corpus of Contemporary Americ
 
 > test set is the inverse probability of the test set (one over the probability of the test set), normalized by the number of words (or tokens). For this reason it’s sometimes called the per-word or per-token perplexity. We normalize by the number of words N by taking the Nth root. For a test set W = w1w2 ...wN,:
 
-perplexity(W) = P(w1w2 ...wN)−1 (3.14)
+$$\text{perplexity}(W)=P(w_{1}w_{2}...w_{N})^{-\frac{1}{N}}$$
+
+> N
+
 s
 1
 = P(w1w2 ...wN)
@@ -621,21 +638,21 @@ s
 
 > N
 
-> N
-
 v u
 u t Y 1
 perplexity(W) = (3.15)
-P(wi|w1 ...wi−1)
+
+> N
+
+> N
+
+$$P(w_{i}|w_{1}...w_{i-1})$$
+
+> i=1
+
 请注意，由于式 3.15 中的倒数，词序列的概率越高，困惑度就越低。因此，模型在数据上的困惑度越低，模型就越好。最小化困惑度等价于最大化语言模型下测试集的概率。困惑度为什么要使用概率的倒数？原来这个倒数源自信息论中由交叉熵率给出的困惑度的最初定义；感兴趣者可参阅进阶的第 3.7 节。与此同时，我们只需记住，困惑度与概率之间是倒数关系。
 
 > Note that because of the inverse in Eq. 3.15, the higher the probability of the word sequence, the lower the perplexity. Thus the lower the perplexity of a model on the data, the better the model. Minimizing perplexity is equivalent to maximizing the test set probability according to the language model. Why does perplexity use the inverse probability? It turns out the inverse arises from the original definition of perplexity from cross-entropy rate in information theory; for those interested, the explanation is in the advanced Section 3.7. Meanwhile, we just have to remember that perplexity has an inverse relationship with probability.
-
-> N
-
-> N
-
-> i=1
 
 计算测试集 W 的困惑度的具体做法，取决于我们使用哪一种语言模型。以下是 W 在 unigram 语言模型下的困惑度（即 unigram 概率的倒数的几何平均）：
 
@@ -653,7 +670,15 @@ P(wi) 用 bigram 语言模型计算的 W 的困惑度仍然是几何平均，只
 v u
 u t Y 1
 perplexity(W) = (3.17)
-P(wi|wi−1)
+
+> N
+
+> N
+
+$$P(w_{i}|w_{i-1})$$
+
+> i=1
+
 我们在式 3.15 或式 3.17 中通常代入的词序列，就是整个
 
 > What we generally use for word sequence in Eq. 3.15 or Eq. 3.17 is the entire
@@ -663,12 +688,6 @@ P(wi|wi−1)
 我们上文提到，困惑度既是文本的函数，也是语言模型的函数：给定一个文本 W，不同的语言模型会得到不同的困惑度。正因如此，困惑度可以用来比较不同的语言模型。
 
 > We mentioned above that perplexity is a function of both the text and the language model: given a text W, different language models will have different perplexities. Because of this, perplexity can be used to compare different language models.
-
-> N
-
-> N
-
-> i=1
 
 例如，我们在这里用《华尔街日报》的 3800 万个词训练了 unigram、bigram 和 trigram 模型。然后，我们用一个 WSJ 测试集计算这些模型各自的困惑度：对 unigram 使用式 3.16，对 bigram 使用式 3.17，对 trigram 使用相应的公式。下表给出了 150 万词的测试集在每种语言模型下的困惑度。
 
@@ -739,11 +758,11 @@ L = {red,blue,green} (3.18)
 
 > color language on this test set (or any such test set) we indeed get 3. By Eq. 3.15, the perplexity of A on T is:
 
-perplexityA(T) = PA(red red red red blue)−1_5
+$$\text{perplexity}_{A}(T)=P_{A}(\texttt{red}\ \texttt{red}\ \texttt{red}\ \texttt{red}\ \texttt{blue})^{-\frac{1}{5}}$$
 
-1 5!−1^5
+1 5!−1^5
 
-= 31 −1
+= 31 −1
 = 3 (3.19)
 = 3
 但现在假设在另一个 LM B 的训练集中 red 非常可能出现，于是 B 具有以下概率：
@@ -755,11 +774,11 @@ P(red) = 0.8 P(green) = 0.1 P(blue) = 0.1 (3.20)
 
 > We should expect the perplexity of the same test set red red red red blue for language model B to be lower since most of the time the next color will be red, which is very predictable, i.e. has a high probability. So the probability of the test set will be higher, and since perplexity is inversely related to probability, the perplexity will be lower. Thus, although the branching factor is still 3, the perplexity or weighted branching factor is smaller:
 
-perplexityB(T) = PB(red red red red blue)−1/5
+$$\text{perplexity}_{B}(T)=P_{B}(\texttt{red}\ \texttt{red}\ \texttt{red}\ \texttt{red}\ \texttt{blue})^{-1/5}$$
 
-= 0.04096−1_5
+$$=0.04096^{-\frac{1}{5}}$$
 
-= 0.527−1 = 1.89 (3.21)
+$$=0.527^{-1}=1.89$$
 
 ## 3.4 从语言模型采样句子
 
@@ -1068,14 +1087,18 @@ N +V
 > computed by Eq. 3.26 below. Recall that normal bigram probabilities are computed by normalizing each row of counts by the unigram count:
 
 PMLE(wn|wn−1) = C(wn−1wn) (3.25)
-C(wn−1)
+
+$$C(w_{n-1})$$
+
 对于加一平滑后的 bigram 计数，我们需要在分母的 unigram 计数上再加上词表中词型（word types）的总数 V。从下面的公式可以看出原因：该公式明确表明，分母中的 unigram 计数实际上是对所有以 wn−1 开头的 bigram 求和。由于我们给其中每一个都加了一，而它们共有 V 个，所以分母总共要加上 V：
 
 > For add-one smoothed bigram counts, we need to augment the unigram count in the denominator by the number of total word types in the vocabulary V. We can see why this is in the following equation, which makes it explicit that the unigram count in the denominator is really the sum over all the bigrams that start with wn−1. Since we add one to each of these, and there are V of them, we add a total of V to the denominator:
 
 C(wn−1wn)+1 w (C(wn−1w)+1) = C(wn−1wn)+1 (3.26)
 PLaplace(wn|wn−1) = P
-C(wn−1)+V
+
+$$C(w_{n-1})+V$$
+
 因此，第 72 页给出的每一个 unigram 计数都需要加上 V = 1446。利用式 3.26 得到的结果就是图 3.7 中的平滑 bigram 概率。
 
 > Thus, each of the unigram counts given on page 72 will need to be augmented byV =1446. The result, using Eq. 3.26, is the smoothed bigram probabilities in Fig. 3.7.
@@ -1113,7 +1136,9 @@ C(wn−1)+V C(wn−1)
 > Rearranging terms, we can solve for C∗(wn−1wn) :
 
 C∗(wn−1wn) = [C(wn−1wn)+1]×C(wn−1) (3.27)
-C(wn−1)+V
+
+$$C(w_{n-1})+V$$
+
 图 3.8 给出了由式 3.27 计算的重建计数。
 
 > Figure 3.8 shows the reconstructed counts, computed by Eq. 3.27.
@@ -1147,7 +1172,9 @@ C(wn−1)+V
 > `add-k`（加 k）
 
 Add-k(wn|wn−1) = C(wn−1wn)+k P∗ (3.28)
-C(wn−1)+kV
+
+$$C(w_{n-1})+\text{kV}$$
+
 加 k 平滑要求我们有一种选择 k 的方法；这可以
 
 > Add-k smoothing requires that we have a method for choosing k; this can be
@@ -1173,13 +1200,15 @@ C(wn−1)+kV
 
 > computing a new probability by interpolating (weighting and combining) the trigram, bigram, and unigram probabilities. In simple linear interpolation, we combine different order n-grams by linearly interpolating them. Thus, we estimate the trigram probability P(wn|wn−2wn−1) by mixing together the unigram, bigram, and trigram probabilities, each weighted by a λ:
 
-ˆP(wn|wn−2wn−1) = λ1P(wn)
+$$Pˆ(w_{n}|w_{n-2}w_{n-1})=\lambda_{1}P(w_{n})$$
+
 +λ2P(wn|wn−1)+λ3P(wn|wn−2wn−1) (3.29)
 各个 λ 之和必须为 1，这使得式 3.29 等价于一个加权平均。在稍复杂一些的线性插值版本中，每个 λ 权重都通过以上下文为条件来计算。这样，如果我们对某个特定 bigram 的计数特别准确，我们就假定基于该 bigram 的 trigram 计数更可信，因此可以把这些 trigram 的 λ 取得更高，从而在插值中赋予该 trigram 更大的权重。式 3.30 给出了以上下文为条件的权重的插值公式，其中每个 lambda 都接受一个参数，即前两个词构成的上下文：
 
 > The λs must sum to 1, making Eq. 3.29 equivalent to a weighted average. In a slightly more sophisticated version of linear interpolation, each λ weight is computed by conditioning on the context. This way, if we have particularly accurate counts for a particular bigram, we assume that the counts of the trigrams based on this bigram will be more trustworthy, so we can make the λs for those trigrams higher and thus give that trigram more weight in the interpolation. Equation 3.30 shows the equation for interpolation with context-conditioned weights, where each lambda takes an argument that is the two prior word context:
 
-ˆP(wn|wn−2wn−1) = λ1(wn−2:n−1)P(wn)
+$$Pˆ(w_{n}|w_{n-2}w_{n-1})=\lambda_{1}(w_{n-2:n-1})P(w_{n})$$
+
 +λ2(wn−2:n−1)P(wn|wn−1)+λ3(wn−2:n−1)P(wn|wn−2wn−1) (3.30)
 这些 λ 值是如何设定的？简单插值和条件插值的 λ 都是从一个留出语料库中学习得到的。留出语料库是一个额外的
 
@@ -1213,12 +1242,8 @@ C(wn−1)+kV
 > probability distribution. There is no discounting of the higher-order probabilities. If a higher-order n-gram has a zero count, we simply backoff to a lower order n-gram, weighed by a fixed (context-independent) weight. This algorithm does not produce a probability distribution, so we’ll follow Brants et al. (2007) in referring to it as S:
 
 count(wi−N+1:i) if count(wi−N+1:i) > 0 (3.31)
-
->  count(wi−N+1:i) if count(wi−N+1:i) > 0 (3.31)
 S(wi|wi−N+1:i−1) = count(wi−N+1:i−1)
 λS(wi|wi−N+2:i−1) otherwise
-
->  λS(wi|wi−N+2:i−1) otherwise
 回退最终终止于 unigram，其得分为 S(w) = count(w) 。Brants et al.
 
 > The backoff terminates in the unigram, which has score S(w) = count(w) . Brants et al.
@@ -1247,7 +1272,8 @@ S(wi|wi−N+1:i−1) = count(wi−N+1:i−1)
 
 > measure of information. Given a random variable X ranging over whatever we are predicting (words, letters, parts of speech), the set of which we’ll call χ, and with a particular probability function, call it p(x), the entropy of the random variable X is:
 
-X
+$$\sum_{x\in\chi}$$
+
 H(X) = − p(x)log2 p(x) (3.32)
 原则上，对数可以取任意底数计算。如果我们使用以 2 为底的对数，那么
 
@@ -1289,7 +1315,7 @@ Horse 4 ^(1/16)Horse 8^(1/64)
 
 > i=8
 
-X^(1/2 −1)
+$$\sum_{1i=1}^{i=8}$$
 
 H(X) = − p(i)log2 p(^(1/4 −1)i)
 
@@ -1324,7 +1350,8 @@ H(X) = − 8 log2 8 = −log2 8 = 3 比特 (3.34)
 
 > One way to do this is to have a variable that ranges over sequences of words. For example we can compute the entropy of a random variable that ranges over all sequences of words of length n in some language L as follows:
 
-X
+$$\sum_{1:n\in}$$
+
 H(w1,w2,...,wn) = − p(w1:n)log p(w1:n) (3.35)
 我们可以定义熵率（也可以把它看作每个词的
 
@@ -1339,7 +1366,9 @@ H(w1,w2,...,wn) = − p(w1:n)log p(w1:n) (3.35)
 > entropy) as the entropy of this sequence divided by the number of words:
 
 1 nH(w1:n) = −1 X
-p(w1:n)log p(w1:n) (3.36)
+
+$$p(w_{1:n})\text{log}p(w_{1:n})(3.36)$$
+
 n
 但要度量一种语言的真实熵，我们需要考虑无限长的序列。如果我们把一种语言看作产生词序列的随机过程 L，并用 W 表示词序列 w1,...,wn，那么 L 的熵率 H(L) 定义为
 
@@ -1427,13 +1456,15 @@ N log2 P(w1w2 ...wN)
 
 > 2 raised to the power of this cross-entropy:
 
-Perplexity(W) = 2H(W)
-= P(w1w2 ...wN)−1
+$$\text{Perplexity}(W)=2^{H(W)}$$
+
+$$=P(w_{1}w_{2}...w_{N})^{-\frac{1}{N}}$$
+
+> N
+
 s
 1
 = P(w1w2 ...wN)
-
-> N
 
 > N
 

@@ -612,8 +612,10 @@ Yu 等人（2018）的系统使用编码器-解码器架构，其中编码器
 
 > represents the input span of words and EDUs using a hierarchical biLSTM. The first biLSTM layer represents the words inside an EDU, and the second represents the EDU sequence. Given an input sentence w1,w2,...,wm, the words can be represented as usual (by static embeddings, combinations with character embeddings or tags, or contextual embeddings) resulting in an input word representation sequence xw 1 ,xw 2 ,...,xw m. The result of the word-level biLSTM is then a sequence of hw values:
 
-hw 1 ,hw 2 ,...,hw m = biLSTM(xw 1 ,xw 2 ,...,xw (25.17)
-m)
+$$h^{w}_{1},h^{w}_{2},...,h^{w}_{m}=\text{biLSTM}(x^{w}_{1},x^{w}_{2},...,x^{w}_{m}$$
+
+$$^{w}_{m})$$
+
 跨度为 ws,ws+1,...,wt 的 EDU 则具有 biLSTM 输出表示 hw s ,hw s+1,...,hw t ，并通过平均池化表示：
 
 > An EDU of span ws,ws+1,...,wt then has biLSTM output representation hw s ,hw s+1,...,hw t , and is represented by average pooling:
@@ -629,8 +631,10 @@ t −s+1
 
 > k=s
 
-he 1,he 2,...,he n = biLSTM(xe 1,xe 2,...,xe (25.19)
-n)
+$$h^{e}_{1},h^{e}_{2},...,h^{e}_{n}=\text{biLSTM}(x_{1}^{e},x^{e}_{2},...,x^{e}_{n}$$
+
+$$^{e}_{n})$$
+
 解码器则是一个前馈网络 W，它基于栈顶三个子树（so,s1,s2）与队列中第一个 EDU（q0）的拼接输出一个动作 o：
 
 > The decoder is then a feedforward network W that outputs an action o based on a concatenation of the top three subtrees on the stack (so,s1,s2) plus the first EDU in the queue (q0):
@@ -649,9 +653,12 @@ j −i+1 训练首先把每棵标注的 RST 分析树映射为一个 oracle 动�
 
 > j −i+1 Training first maps each RST gold parse tree into a sequence of oracle actions, and then uses the standard cross-entropy loss (with l2 regularization) to train the system to take such actions. Give a state S and oracle action a, we first compute the decoder output using Eq. 25.20, apply a softmax to get probabilities:
 
-exp(oa) (25.22)
+$$\text{exp}(o_{a})$$
+
 pa = P
-a′∈A exp(oa′)
+
+$$_{a′\inA}\text{exp}(o_{a′})$$
+
 然后计算交叉熵损失：
 
 > and then computing the cross-entropy loss:
@@ -1149,14 +1156,17 @@ et al., 2019）。与早期模型一样，LCD 把一个文本的连贯计算为�
 
 > negative pairs. More formally, the training objective for a corpus C of documents d, each of which consists of a list of sentences si, is:
 
-X X
+$$\sum_{d\inCsi\ind}\sum$$
+
 Lθ = [L(fθ(si,si+1), fθ(si,s′))] (25.33)
-E
+
+$$_{s}E$$
+
+> d∈C si∈d p(s′|si)
+
 Ep(s′|si) 是关于以 si 为条件的负采样分布的期望：给定一个句子 si，算法采样出一个负样本句子 s′
 
 > Ep(s′|si) is the expectation with respect to the negative sampling distribution conditioned on si: given a sentence si the algorithms samples a negative sentence s′
-
-> d∈C si∈d p(s′|si)
 
 ![](images/25-discourse-coherence/fig_p16_0.png)
 

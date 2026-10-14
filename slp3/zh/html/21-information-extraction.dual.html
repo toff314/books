@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/21-information-extraction.md">Markdown 源文件</a></div>
 <h1>第 21 章 信息抽取：关系、事件与时间</h1>
@@ -85,9 +88,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>文本呈现的正是这样一种典型情境，因为航空公司常常先涨价，然后观望竞争对手是否跟进。这里我们可以识别出 United 是率先涨价的领头航空公司，$6 是涨价金额，Thursday 是涨价日期，而 American 是跟进的航空公司，由此得到如下填好的模板：</p>
 <blockquote><p>text presents such a stereotypical situation since airlines often raise fares and then wait to see if competitors follow along. Here we can identify United as a lead airline that initially raised its fares, $6 as the amount, Thursday as the increase date, and American as an airline that followed along, leading to a filled template like the following:</p></blockquote>
 <div class="figbox">
-<blockquote><p> </p><p><em> </em></p></blockquote>
+<blockquote></blockquote>
 <blockquote><p>涨价尝试：领头航空公司：UNITED AIRLINES</p><p><em>FARE-RAISE ATTEMPT: LEAD AIRLINE: UNITED AIRLINES</em></p></blockquote>
-<blockquote><p>金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES</p><p><em> AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES</em></p></blockquote>
+<blockquote><p>金额：$6 生效日期：2006-10-26 跟进者：AMERICAN AIRLINES</p><p><em>AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES</em></p></blockquote>
 </div>
 <h2>21.1 关系抽取</h2>
 <blockquote><p>21.1 Relation Extraction</p></blockquote>
@@ -180,8 +183,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>NP0 such as NP1{,NP2 ...,(and|or)NPi},i ≥1 (21.2)</p></blockquote>
 <p>蕴含以下语义</p>
 <blockquote><p>implies the following semantics</p></blockquote>
-<p>∀NPi，i ≥1，hyponym(NPi,NP0) （21.3）</p>
-<blockquote><p>∀NPi,i ≥1,hyponym(NPi,NP0) (21.3)</p></blockquote>
+<div class="formula">$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$</div>
 <p>从而使我们能够推断出</p>
 <blockquote><p>allowing us to infer</p></blockquote>
 <p>hyponym(Gelidium,red algae) （21.4）</p>
@@ -326,7 +328,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>noisy-or</code><span class="term-zh">噪声或（noisy-or）</span><span class="term-explain">一种组合多个独立证据的模型，用 1 减去各来源失败概率之积，来估计新元组成立的置信度。</span></aside>
 <p>给定元组由 P 中模式的一个子集支持，其中每个模式都有按上述方法评估出的置信度。在噪声或模型中，我们做两个基本假设。第一，要让一个候选元组为假，它的所有支持模式都必须出错；第二，它们各自失败的来源相互独立。如果我们粗略地把置信度当作概率，那么任一模式 p 失败的概率为 1 −Conf(p)；一个元组的所有支持模式都出错的概率等于它们各自失败概率的乘积，由此就得到下面这个关于新元组置信度的公式。</p>
 <blockquote><p>that a given tuple is supported by a subset of the patterns in P, each with its own confidence assessed as above. In the noisy-or model, we make two basic assumptions. First, that for a proposed tuple to be false, all of its supporting patterns must have been in error, and second, that the sources of their individual failures are all independent. If we loosely treat our confidence measures as probabilities, then the probability of any individual pattern p failing is 1 −Conf(p); the probability of all of the supporting patterns for a tuple being wrong is the product of their individual failure probabilities, leaving us with the following equation for our confidence in a new tuple.</p></blockquote>
-<p>Y Conf(t) = 1− (1−Conf(p))（21.11）</p>
+<div class="formula">$$\prod_{p\inP′}$$</div>
+<p>Conf(t) = 1− (1−Conf(p))（21.11）</p>
 <blockquote><p>Conf(t) = 1− (1−Conf(p)) (21.11)</p></blockquote>
 <p>为新模式的接受设定保守的置信度阈值</p>
 <blockquote><p>Setting conservative confidence thresholds for the acceptance of new patterns</p></blockquote>
@@ -782,10 +785,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>slots in the associated templates with fillers extracted from the text. These slot-fillers may consist of text segments extracted directly from the text, or they may consist of concepts that have been inferred from text elements through some additional processing.</p></blockquote>
 <p>来自我们最初那个航空公司故事的已填充模板可能如下所示。</p>
 <blockquote><p>A filled template from our original airline story might look like the following.</p></blockquote>
-<p> FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES</p>
+<p>FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES</p>
 <blockquote><p>FARE-RAISE ATTEMPT: LEAD AIRLINE: UNITED AIRLINES</p></blockquote>
 <p>AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES</p>
-<blockquote><p> AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES</p></blockquote>
+<blockquote><p>AMOUNT: $6 EFFECTIVE DATE: 2006-10-26 FOLLOWER: AMERICAN AIRLINES</p></blockquote>
 <p>该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司</p>
 <blockquote><p>This template has four slots (LEAD AIRLINE, AMOUNT, EFFECTIVE DATE, FOL-</p></blockquote>
 <p>）。下一节将描述一种填充槽的标准序列标注方法。21.8.2 节随后介绍一个更早的系统，它基于有限状态转换器级联的使用，旨在处理一项更复杂的模板填充任务，而当前基于学习的系统尚未处理该任务。</p>

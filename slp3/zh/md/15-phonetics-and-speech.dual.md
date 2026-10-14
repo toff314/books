@@ -1599,10 +1599,10 @@ y[n] = w[n]s[n] (15.11)
 
 > zero at the window boundaries, avoiding discontinuities. Figure 15.27 shows both; the equations are as follows (assuming a window that is L frames long):
 
- 1
+1
 0 ≤n ≤L−1
 rectangular w[n] = (15.12)
-0 otherwise0.54−0.46cos( 2πn L ) 0 ≤n ≤L−1
+0 otherwise0.54−0.46cos( 2πn L ) 0 ≤n ≤L−1
 Hamming w[n] = (15.13)
 0 otherwise
 
@@ -1659,7 +1659,8 @@ N 个离散频带，则是一个复数 X[k]，表示原始信号中该频率分�
 >
 > 释义：把复指数与三角函数联系起来的等式，傅里叶分析正是借助它把信号表示为一组复指数。
 
-e jθ = cosθ + jsinθ (15.14)
+$$e^{jθ}=\text{cos}θ+j\text{sin}θ$$
+
 为已经学过信号处理的学生作一点简要回顾：DFT 的定义如下：
 
 > As a brief reminder for those students who have already studied signal processing, the DFT is defined as follows:
@@ -1866,13 +1867,15 @@ c[n] = log (15.17)
 该帧中各样本功率随时间的累加和；因此，对于从时间样本 t1 到时间样本 t2 的窗口内的信号 x，其能量为
 
 > over time of the power of the samples in the frame; thus, for a signal x in a window from time sample t1 to time sample t2, the energy is
-X
+
+> t2
+
+$$\sum_{t=t1}^{t2}$$
+
 Energy = x2[t] (15.18)
 差分特征 我们还加入与倒谱特征随时间变化有关的特征。语音信号的变化，例如共振峰在过渡处的斜率，或从塞音闭塞到塞音除阻爆发的变化，同样能为音子身份提供有用的线索。对 13 个特征（12 个倒谱特征加能量）中的每一个，都再配上一个差分
 
 > Delta features We also add features related to the change in cepstral features over time. Changes in the speech signal, like the slope of a formant at its transitions, or the change from a stop closure to stop burst, can again provide a useful cue for phone identity. To each of the 13 features (12 cepstral features plus energy) a delta
-
-> t2
 
 > t=t1
 

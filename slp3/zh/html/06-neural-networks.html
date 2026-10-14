@@ -29,6 +29,7 @@ th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertica
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
 .caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
 .figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
   margin:1.2em 0; background:#fff; }
 .figbox p { margin:.4em 0; }
@@ -40,6 +41,8 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/06-neural-networks.md">Markdown 源文件</a></div>
 <h1>第 6 章 神经网络</h1>
@@ -60,7 +63,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>从本质上说，神经单元是取其输入的加权和，并在和中额外加一项，称为偏置项。给定一组输入 x1...xn，一个单元具有</p>
 <aside class="term"><code>bias term</code><span class="term-zh">偏置项</span><span class="term-explain">加权和之外额外加入的一个可学习常数，用于平移激活阈值与决策边界。</span></aside>
 <p>一组对应的权重 w1...wn 和一个偏置 b，因此加权和 z 可以表示为：</p>
-<p>X z = b+ wixi (6.1)用向量记号来表达这个加权和往往更方便；回想线性代数可知，一个向量本质上只是一个数字的列表或数组。因此</p>
+<div class="formula">$$\sum_{i}$$</div>
+<p>z = b+ wixi (6.1)用向量记号来表达这个加权和往往更方便；回想线性代数可知，一个向量本质上只是一个数字的列表或数组。因此</p>
 <blockquote><p>i</p></blockquote>
 <aside class="term"><code>vector</code><span class="term-zh">向量</span><span class="term-explain">由若干实数按固定顺序排列而成的列表，可看作高维空间中的一个点或有向线段。</span></aside>
 <p>我们将用权重向量 w、标量偏置 b 和输入向量 x 来讨论 z，并把那个求和替换为方便的点积：</p>
@@ -70,7 +74,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>节点的激活值实际上就是网络的最终输出，我们一般将其称为 y。因此值 y 定义为：</p>
 <p>y = a = f(z)下面我们将讨论三种常用的非线性函数 f（sigmoid 函数、tanh 函数，以及修正线性单元即 ReLU），但从教学角度考虑，先讲 sigmoid 函数更为方便，因为我们在第 4 章已经见过它：</p>
 <aside class="term"><code>sigmoid</code><span class="term-zh">sigmoid 函数</span><span class="term-explain">把任意实数压缩到 0 与 1 之间的 S 形非线性函数，其输出常被解释为概率。</span></aside>
-<p>1 y = σ(z) = (6.3) 1+e−z sigmoid 函数（如图 6.1 所示）有许多优点；它把输出映射到区间 (0,1)，这有助于把离群值压缩到接近 0 或 1。而且它是可微的，正如我们在 4.15 节所看到的，这对学习很有用。</p>
+<p>1 y = σ(z) = (6.3)</p>
+<div class="formula">$$1+e^{-z}$$</div>
+<p>sigmoid 函数（如图 6.1 所示）有许多优点；它把输出映射到区间 (0,1)，这有助于把离群值压缩到接近 0 或 1。而且它是可微的，正如我们在 4.15 节所看到的，这对学习很有用。</p>
 <img src="../md/images/06-neural-networks/fig_p2_0.png" alt="">
 <p class="caption">图 6.1 sigmoid 函数接受一个实数值并将其映射到区间 (0,1)。它在 0 附近近似线性，但离群值会被压缩到接近 0 或 1。</p>
 <p>把式 6.2 代入式 6.3，就得到神经单元的输出：</p>
@@ -103,7 +109,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>x1 x2 y x1 x2 y x1 x2 y 0 0 0 0 0 0 0 0 0 0 1 0 0 1 1 0 1 1 1 0 0 1 0 1 1 0 1 1 1 1 1 1 1 1 1 0这个例子最初是为感知机给出的，感知机是一种非常简单的神经</p>
 <aside class="term"><code>perceptron</code><span class="term-zh">感知机</span><span class="term-explain">一种输出为 0 或 1 的简单神经单元，以阶跃函数作激活函数，只能实现线性可分的逻辑功能。</span></aside>
 <p>单元，其输出为二值，并以一个非常简单的阶跃函数作为非线性激活函数。感知机的输出 y 为 0 或 1，其计算方式如下（使用与式 6.2 相同的权重 w、输入 x 和偏置 b）：</p>
-<p> 0, if w ·x+b ≤0 y = 1, if w ·x+b &gt; 0 (6.7)构建一个能够计算其二进制输入的逻辑 AND 和 OR 函数的感知机是很容易的，图 6.4 给出了所需的权重。</p>
+<p>0, if w ·x+b ≤0 y = 1, if w ·x+b &gt; 0 (6.7)构建一个能够计算其二进制输入的逻辑 AND 和 OR 函数的感知机是很容易的，图 6.4 给出了所需的权重。</p>
 <img src="../md/images/06-neural-networks/fig_p5_0.png" alt="">
 <p class="caption">图 6.4 用于计算逻辑函数的感知机的权重 w 与偏置 b。输入记为 x1 和 x2，偏置表示为一个取值为 +1 的特殊节点，它与偏置权重 b 相乘。(a) 逻辑 AND，权重 w1 = 1、w2 = 1，偏置权重 b = −1。(b) 逻辑 OR，权重 w1 = 1、w2 = 1，偏置权重 b = 0。这些权重/偏置只是能够实现这些函数的无穷多组可能权重与偏置中的一组。</p>
 <p>然而事实证明，不可能构建出一个感知机来计算逻辑 XOR！（值得花一点时间试一试！）这一重要结果背后的直觉，依赖于理解感知机是一个线性分类器。对于二维输入 x1 和 x2，感知机方程 w1x1 + w2x2 + b = 0 是一条直线的方程。（我们可以把它写成标准线性形式来看出这一点：x2 = (−w1/w2)x1 + (−b/w2)。）这条直线充当一个</p>
@@ -147,7 +153,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>因此，隐藏层的输出，即向量 h，如下所示（在本例中我们使用 sigmoid 函数 σ 作为激活函数）：</p>
 <p>h = σ(Wx+b) (6.8)请注意，这里我们是把 σ 函数作用于一个向量，而在式 6.3 中它作用于一个标量。因此我们允许 σ(·)，乃至任何激活函数 g(·)，按元素作用于向量，即 g[z1,z2,z3] = [g(z1),g(z2),g(z3)]。</p>
 <p>我们引入一些常量来表示这些向量和矩阵的维度。我们把输入层称为网络的第 0 层，并用 n0 表示输入的数量，于是 x 是维度为 n0 的实数向量，更形式化地写作 x ∈Rn0，即维度为 [n0 × 1] 的列向量。我们把隐藏层称为第 1 层，把输出层称为第 2 层。隐藏层的维度为 n1，因此 h ∈Rn1，同时 b ∈Rn1（因为每个隐藏单元可以取不同的偏置值）。而权重矩阵 W 的维度为 W ∈Rn1×n0，即 [n1 ×n0]。</p>
-<p>请花点时间确认，式 6.8 中的矩阵乘法会  Pn0 计算出每个 h j 的值为 σ i=1 Wjixi +b j 。</p>
+<p>请花点时间确认，式 6.8 中的矩阵乘法会 Pn0计算出每个 h j 的值为 σ i=1 Wjixi +b j 。</p>
 <p>正如我们在 6.2 节所见，所得到的值 h（既取 hidden 之意，也取 hypothesis 之意）构成了输入的表示。输出层的作用是接收这个新的表示 h 并计算最终输出。这个输出可以是一个实数值，但在许多情况下网络的目标是做出某种分类决策，因此我们将聚焦于分类的情形。</p>
 <p>如果我们做的是像情感分类这样的二分类任务，我们可能只有一个输出节点，其标量值 y 就是正面情感相对于负面情感的概率。如果我们做的是多项分类，例如标注词性，我们可能为每个可能的词性各设置一个输出节点，其输出值是该词性的概率，并且所有输出节点的值之和必须为 1。因此输出层是一个向量 y，它给出各输出节点上的概率分布。</p>
 <p>我们来看看这是如何发生的。与隐藏层一样，输出层也有一个权重矩阵（我们称它为 U），但有些模型在输出层不含偏置向量 b，因此在本例中我们为简化起见省去偏置向量。权重矩阵与其输入向量（h）相乘，产生中间输出 z：</p>
@@ -157,7 +163,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>把它转换为一个编码概率分布的向量（所有数值都位于 0 与 1 之间且总和为 1）：也就是我们在第 109 页见到的 softmax 函数</p>
 <aside class="term"><code>softmax</code><span class="term-explain">把实数向量转换为概率分布的函数，输出各分量非负且总和为 1，常用于分类器的输出层。</span></aside>
 <p>（见第 4 章）。更一般地，对于任意维度为 d 的向量 z，softmax 定义为：</p>
-<p>exp(zi) softmax(zi) = 1 ≤i ≤d (6.9) Pd j=1 exp(z j)因此，举例来说，给定一个向量z = [0.6,1.1,−1.5,1.2,3.2,−1.1], (6.10) softmax 函数会把它归一化为一个概率分布（数值已四舍五入）：</p>
+<div class="formula">$$\text{exp}(z_{i})$$</div>
+<p>softmax(zi) = 1 ≤i ≤d (6.9) Pd j=1 exp(z j)因此，举例来说，给定一个向量z = [0.6,1.1,−1.5,1.2,3.2,−1.1], (6.10) softmax 函数会把它归一化为一个概率分布（数值已四舍五入）：</p>
 <p>softmax(z) = [0.055,0.090,0.0067,0.10,0.74,0.010] (6.11)你可能还记得，在第 4 章多项逻辑回归的版本中，我们用 softmax 从一组实数值（由权重与特征相乘再求和得到）构造出一个概率分布。</p>
 <p>这意味着，我们可以把带有一个隐藏层的神经网络分类器看作它先构造出一个向量 h，即输入的隐藏层表示，然后针对网络在 h 中发展出的特征运行标准的多项逻辑回归。相比之下，第 4 章中的特征主要是通过特征模板手工设计的。因此，神经网络就像多项逻辑回归，只不过：(a) 它有许多层，因为深度神经网络就像一层接一层的逻辑回归分类器；(b) 这些中间层可以有许多种可选的激活函数（tanh 函数、ReLU（修正线性单元）、sigmoid 函数），而不只是 sigmoid 函数（不过为方便起见，我们仍继续用 σ 表示任意激活函数）；(c) 特征并非由特征模板构造，而是由网络先前各层自行导出特征的表示。</p>
 <p>下面是带单个隐藏层的前馈网络的最终公式，该网络接收输入向量 x，输出概率分布 y，并由权重矩阵 W 和 U 以及偏置向量 b 参数化：</p>
@@ -174,7 +181,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>logits</code><span class="term-explain">指输出层做归一化之前的那组未归一化得分，是最终向量 z[n] 的取值，经 softmax 后转成概率分布。</span></aside>
 <p>非线性激活函数的必要性　我们在神经网络中为每一层使用非线性激活函数的原因之一是：如果不这样做，得到的网络就完全等价于一个单层网络。我们来看看为什么会这样。设想这样一个纯线性层网络的前两层：</p>
 <p>z[1] = W[1]x+b[1] z[2] = W[2]z[1] +b[2]我们可以把网络所计算的函数改写为：</p>
-<p>z[2] = W[2]z[1] +b[2] = W[2](W[1]x+b[1])+b[2]= W[2]W[1]x+W[2]b[1] +b[2] = W′x+b′ (6.14)这一点可推广到任意层数。因此，如果没有非线性激活函数，多层网络就只是一个权重集合不同的单层网络在记号上的变体，我们也就失去了多层网络的全部表示能力。</p>
+<div class="formula">$$z^{[2]}=W^{[2]}z^{[1]}+b^{[2]}$$</div>
+<p>= W[2](W[1]x+b[1])+b[2]= W[2]W[1]x+W[2]b[1] +b[2]</p>
+<div class="formula">$$=W^{′}x+b^{′}$$</div>
+<p>这一点可推广到任意层数。因此，如果没有非线性激活函数，多层网络就只是一个权重集合不同的单层网络在记号上的变体，我们也就失去了多层网络的全部表示能力。</p>
 <p>替换偏置单元　在描述网络时，我们有时会使用一种略微简化的记号，它表示完全相同的函数，却不显式引用偏置节点 b。取而代之的是，我们在每一层添加一个取值恒为 1 的哑节点 a0。这样，第 0 层即输入层会有一个哑节点 a[0] 0 = 1，第 1 层会有 a[1] 0 = 1，依此类推。这个哑节点仍然带有一个相关权重，该权重就代表偏置值 b。例如，我们不写成下面这样的等式h = σ(Wx+b) (6.15)而是使用：</p>
 <p>h = σ(Wx) (6.16)但现在我们的向量 x 不再是具有 n0 个值：x = x1,...,xn0，而是具有 n0 +1 个值，其中新增了一个第 0 个哑值 x0 = 1：x = x0,...,xn0。并且，我们不再按如下方式计算每个 h j：</p>
 <p>n0 ! X (6.17) h j = σ Wji xi +b j ,我们改用：</p>
@@ -226,9 +236,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>mean-pooling</code><span class="term-zh">平均池化</span><span class="term-explain">把一组嵌入逐维求算术平均，合成单个向量，不区分各词所处的位置。</span></aside>
 <p>即把各嵌入相加再除以 N：</p>
 <blockquote><p>N</p></blockquote>
-<p>xmean = 1 X e(wi) (6.21) N下面是这个分类器在采用平均池化时的方程：</p>
+<p>xmean = 1 X</p>
+<div class="formula">$$e(w_{i})$$</div>
+<p>N下面是这个分类器在采用平均池化时的方程：</p>
 <blockquote><p>i=1</p></blockquote>
-<p>x = mean(e(w1),e(w2),...,e(wn)) h = σ(xW +b) z = hUˆy = softmax(z) (6.22)该架构如图 6.13 所示，图中也给出了所有相关矩阵的形状（注意我们现在使用的是行向量）。</p>
+<div class="formula">$$x=\text{mean}(e(w_{1}),e(w_{2}),...,e(w_{n}))$$</div>
+<p>h = σ(xW +b) z = hUˆy = softmax(z) (6.22)该架构如图 6.13 所示，图中也给出了所有相关矩阵的形状（注意我们现在使用的是行向量）。</p>
 <p>池化还有许多其他选择，例如最大池化，在这种情况下，对</p>
 <aside class="term"><code>max-pooling</code><span class="term-zh">最大池化</span><span class="term-explain">在每个维度上取所有输入嵌入该维的最大值，合成单个向量。</span></aside>
 <p>每个维度，我们在所有输入上取逐元素最大值。一组 N 个向量的逐元素最大值是一个新向量，其第 k 个元素是这 N 个向量第 k 个元素中的最大值。</p>
@@ -238,7 +251,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/06-neural-networks/fig_p16_0.png" alt="">
 <p class="caption">图 6.13 使用输入词的池化嵌入进行的前馈网络情感分析。在每个时间步，网络为每个上下文词计算一个 d 维嵌入（用一个独热向量乘以嵌入矩阵 E），并把得到的 N 个嵌入池化，得到一个表示上下文窗口的单一嵌入，作为层 x。</p>
 <p>前馈神经语言模型是一种前馈网络，它在时刻 t 把若干前面词的表示（wt−1、wt−2 等）作为输入，并输出在可能的下一词上的概率分布。因此——与 n-gram 语言模型一样——前馈神经语言模型通过基于前面的 N−1 个词进行近似，来近似给定全部先前上下文时一个词的概率 P(wt|w1:t−1)：</p>
-<p>P(wt|w1,...,wt−1) ≈P(wt|wt−N+1,...,wt−1) (6.23)在下面的例子中我们使用一个 4-gram 的示例，因此我们将展示一个用于估计概率 P(wt = i|wt−3,wt−2,wt−1) 的神经网络。</p>
+<div class="formula">$$P(w_{t}|w_{1},...,w_{t-1})\approxP(w_{t}|w_{t-N+1},...,w_{t-1})$$</div>
+<p>在下面的例子中我们使用一个 4-gram 的示例，因此我们将展示一个用于估计概率 P(wt = i|wt−3,wt−2,wt−1) 的神经网络。</p>
 <p>神经语言模型用词的嵌入来表示这一先前上下文中的词，而不是像 n-gram 语言模型那样仅仅使用词的标识。</p>
 <p>使用嵌入使神经语言模型能够更好地泛化到未见过的数据。例如，假设我们在训练中见过下面这个句子：</p>
 <p>我得确保这只猫有人喂。</p>
@@ -260,26 +274,40 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>6.6.1 损失函数</h3>
 <aside class="term"><code>cross-entropy loss</code><span class="term-zh">交叉熵损失</span><span class="term-explain">衡量模型输出的概率分布与真实标签分布之间差距的损失函数，逻辑回归和神经网络分类器都用它来指导参数学习。</span></aside>
 <p>神经网络中使用的交叉熵损失，与我们在逻辑回归中看到的那个是同一个。如果神经网络被用作二分类器，最后一层是 sigmoid 函数，那么损失函数就是我们在式 4.19 中看到的同一个逻辑回归损失：</p>
-<p>LCE(ˆy,y) = −log p(y|x) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.25)如果我们用该网络划分 3 个或更多类别，那么损失函数与我们第 4 章第 112 页看到的多项式回归损失完全相同。为方便起见，这里简要重述一下。首先，当类别数超过 2 时，我们需要把 y 和 ˆy 都表示为向量。假设我们做的是硬分类，即只有一个类别是正确的。</p>
+<div class="formula">$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<p>如果我们用该网络划分 3 个或更多类别，那么损失函数与我们第 4 章第 112 页看到的多项式回归损失完全相同。为方便起见，这里简要重述一下。首先，当类别数超过 2 时，我们需要把 y 和 ˆy 都表示为向量。假设我们做的是硬分类，即只有一个类别是正确的。</p>
 <p>真实标签 y 则是一个含 K 个元素的向量，每个元素对应一个类别；若正确类别为 c，则 yc = 1，而 y 的其余元素均为 0。回想一下，这种一个值为 1、其余为 0 的向量称为独热向量。</p>
 <p>我们的分类器将产生一个含 K 个元素的估计向量 ˆy，其中每个元素 ˆyk 表示估计概率 p(yk = 1|x)。</p>
 <p>对于单个样本 x，损失函数是 K 个输出类别的对数之和的负值，其中每一项都按其概率 yk 加权：</p>
 <blockquote><p>K</p></blockquote>
-<p>X LCE(ˆy,y) = − yk log ˆyk (6.26)我们可以进一步简化这个等式；先用函数 1{} 重写该式，当括号中的条件成立时它取值为 1，否则取值为 0。这样就更容易看出，式 6.26 中求和各项除真实类别所对应的那一项（其 yk = 1）之外都为 0：</p>
+<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<p>LCE(ˆy,y) = − yk log ˆyk (6.26)我们可以进一步简化这个等式；先用函数 1{} 重写该式，当括号中的条件成立时它取值为 1，否则取值为 0。这样就更容易看出，式 6.26 中求和各项除真实类别所对应的那一项（其 yk = 1）之外都为 0：</p>
 <blockquote><p>k=1</p></blockquote>
 <blockquote><p>K</p></blockquote>
-<p>X LCE(ˆy,y) = − 1{yk = 1}log ˆyk换言之，交叉熵损失就是正确类别所对应的输出概率的负对数，因此我们也把它称为负</p>
+<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<p>LCE(ˆy,y) = − 1{yk = 1}log ˆyk换言之，交叉熵损失就是正确类别所对应的输出概率的负对数，因此我们也把它称为负</p>
 <blockquote><p>k=1</p></blockquote>
 <aside class="term"><code>negative log likelihood loss</code><span class="term-zh">负对数似然损失</span><span class="term-explain">多分类硬标签下与交叉熵损失等价的形式，其值是模型赋给正确类别的输出概率取对数后再取负所得。</span></aside>
 <p>对数似然损失：</p>
 <p>LCE(ˆy,y) = −log ˆyc （其中 c 为正确类别） (6.27)代入式 6.9 中的 softmax 公式，其中 K 为类别数：</p>
-<p>exp(zc) LCE(ˆy,y) = −log （其中 c 为正确类别） (6.28) PK j=1 exp(z j)让我们把负对数概率看作损失函数。一个完美的分类器会给正确类别 i 赋予概率 1，而给所有错误类别赋予概率 0。这意味着 p(ˆyi) 越高（越接近 1），分类器就越好；p(ˆyi) 越低（越接近 0），分类器就越差。该概率的负对数是一个很理想的损失度量，因为它从 0（1 的负对数，无损失）一直变化到无穷大（0 的负对数，无穷大损失）。该损失函数还保证：当正确答案的概率被最大化时，所有错误答案的概率被最小化；由于它们之和为 1，正确答案概率的任何增加都是以错误答案的概率为代价的。</p>
+<div class="formula">$$\text{exp}(z_{c})$$</div>
+<p>LCE(ˆy,y) = −log （其中 c 为正确类别） (6.28) PK j=1 exp(z j)让我们把负对数概率看作损失函数。一个完美的分类器会给正确类别 i 赋予概率 1，而给所有错误类别赋予概率 0。这意味着 p(ˆyi) 越高（越接近 1），分类器就越好；p(ˆyi) 越低（越接近 0），分类器就越差。该概率的负对数是一个很理想的损失度量，因为它从 0（1 的负对数，无损失）一直变化到无穷大（0 的负对数，无穷大损失）。该损失函数还保证：当正确答案的概率被最大化时，所有错误答案的概率被最小化；由于它们之和为 1，正确答案概率的任何增加都是以错误答案的概率为代价的。</p>
 <p>输出向量 ˆy 的类别数 K 可小可大。也许我们的任务是三分类情感分析，那么类别可能是正面、负面和中性。或者，如果我们的任务是判定一个词的词性（即它是名词、动词还是形容词等），那么 K 就是标记集中所有可能的词性（在我们第 18 章将定义的标记集中共有 17 个）。而如果我们的任务是语言建模，分类器要预测下一个词是什么，那么我们的类别集合就是词的集合，可能有 50,000 或 100,000 个。</p>
 <h3>6.6.2 计算梯度</h3>
 <p>我们如何计算这个损失函数的梯度？计算梯度需要求出损失函数对每个参数的偏导数。</p>
 <p>对于只有一个权重层、输出为 sigmoid 的网络（也就是逻辑回归的情形），我们可以直接使用式 6.29 中用于逻辑回归的损失导数（其推导见第 4.15 节）：</p>
-<p>∂LCE(ˆy,y) = (ˆy−y)xj∂wj = (σ(w ·x+b)−y)xj (6.29)或者，对于只有一个权重层、输出为 softmax 的网络（即多项式逻辑回归），我们可以使用式 4.41 中 softmax 损失的导数，这里针对某个特定权重 wk 和输入 xi 给出∂LCE(ˆy,y) = −(yk −ˆyk)xi∂wk,i = −(yk −p(yk = 1|x))xi</p>
-<p>exp(wk ·x+bk) (6.30) = − yk − PK xi j=1 exp(w j ·x+bj)但这些导数只能为某一个权重层给出正确的更新：最后一层！</p>
+<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
+<div class="formula">$$=(yˆ-y)x_{j}$$</div>
+<div class="formula">$$\partialw_{j}$$</div>
+<div class="formula">$$=(σ(w\cdotx+b)-y)x_{j}$$</div>
+<p>或者，对于只有一个权重层、输出为 softmax 的网络（即多项式逻辑回归），我们可以使用式 4.41 中 softmax 损失的导数，这里针对某个特定权重 wk 和输入 xi 给出</p>
+<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
+<div class="formula">$$=-(y_{k}-yˆ_{k})x_{i}$$</div>
+<div class="formula">$$\partialw_{k,i}$$</div>
+<div class="formula">$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$</div>
+<p>exp(wk ·x+bk) (6.30) = − yk − PK xi</p>
+<div class="formula">$$^{K}_{j=1}\text{exp}(w^{j}\cdotx+b_{j})$$</div>
+<p>但这些导数只能为某一个权重层给出正确的更新：最后一层！</p>
 <p>对于深层网络，为每个权重计算梯度要复杂得多，因为我们要对出现在网络最早期层中的权重参数求导，而损失却只在网络的最后端计算。</p>
 <p>解决这一梯度计算问题的算法称为误差反向传播（error backpropagation），简称 backprop（Rumelhart et al., 1986）。尽管反向传播最初是专门</p>
 <aside class="term"><code>error back- propagation</code><span class="term-zh">误差反向传播</span><span class="term-explain">从网络输出端的损失出发，利用链式法则把梯度逐层回传到前面各层，从而一次求得所有权重梯度的算法。</span></aside>
@@ -310,18 +338,24 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 6.17 函数 L(a,b,c) = c(a+2b) 的计算图，展示了反向传播的计算过程</p>
 <p>神经网络的反向微分当然，真实神经网络的计算图要复杂得多。</p>
 <p>图 6.18 给出了一个 2 层神经网络的示例计算图，其中 n0 =2，n1 = 2，n2 = 1；这里假设是二分类任务，因此为简单起见使用 sigmoid 输出单元。该计算图所计算的函数为：</p>
-<p>z[1] = W[1]x+b[1] a[1] = ReLU(z[1]) z[2] = W[2]a[1] +b[2] a[2] = σ(z[2])ˆy = a[2]对于反向传播过程，我们还需要计算损失 L。损失函数 (6.35)对于二分类 sigmoid 输出，由式 6.25 给出，其形式为LCE(ˆy,y) = −[ylog ˆy+(1−y)log(1−ˆy)] (6.36)我们的输出是 ˆy = a[2]，因此可以把它改写为h i LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2]) (6.37)</p>
+<p>z[1] = W[1]x+b[1] a[1] = ReLU(z[1]) z[2] = W[2]a[1] +b[2] a[2] = σ(z[2])ˆy = a[2]对于反向传播过程，我们还需要计算损失 L。损失函数 (6.35)对于二分类 sigmoid 输出，由式 6.25 给出，其形式为</p>
+<div class="formula">$$L_{\text{CE}}(yˆ,y)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<p>我们的输出是 ˆy = a[2]，因此可以把它改写为h i LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2]) (6.37)</p>
 <img src="../md/images/06-neural-networks/fig_p23_0.png" alt="">
 <p class="caption">图 6.18 一个简单 2 层神经网络（即 1 个隐藏层）的示例计算图，该网络有两个输入单元和 2 个隐藏单元。我们对记号作了少许调整，以避免在节点中写出冗长的公式，只标出所计算的函数及结果变量名。因此，节点 w[1] 11 右侧的 * 表示 w[1] 11 要与 x1 相乘，节点 z[1] = + 则表示 z[1] 的值由输入到该节点的三个节点求和得到（两个乘积项以及偏置项 b[1] i ）。</p>
 <p>需要更新的权重（那些我们需要知道其损失函数偏导数的权重）以青色显示。为了完成反向传播过程，我们需要知道图中所有函数的导数。我们在第 4.15 节已经看到 sigmoid 函数 σ 的导数：</p>
 <p>dσ(z) = σ(z)(1−σ(z)) dz 我们还需要其他各个激活函数的导数。tanh 函数的导数为：</p>
-<p>d tanh(z) = 1−tanh2(z) (6.39) dz ReLU（修正线性单元）的导数为2  0 for z &lt; 0 (6.40) d ReLU(z) dz = 1 for z ≥0我们将给出计算的开头部分，即计算损失函数 L 关于 z 的导数 ∂L ∂z （其余计算留给读者作为练习）。根据链式法则：</p>
-<p>∂L ∂z = ∂L ∂a[2] (6.41)∂a[2] ∂z因此我们先计算 ∂a[2] ，对式 6.37 求导，该式重写如下：</p>
+<p>d tanh(z) = 1−tanh2(z) (6.39) dz ReLU（修正线性单元）的导数为2 0 for z &lt; 0 (6.40) d ReLU(z) dz = 1 for z ≥0我们将给出计算的开头部分，即计算损失函数 L 关于 z 的导数 ∂L ∂z （其余计算留给读者作为练习）。根据链式法则：</p>
+<p>∂L ∂z = ∂L ∂a[2] (6.41)</p>
+<div class="formula">$$\partiala^{[2]}\partialz$$</div>
 <blockquote><p>∂L</p></blockquote>
+<p>因此我们先计算 ∂a[2] ，对式 6.37 求导，该式重写如下：</p>
 <p>h i LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2])</p>
-<p>∂L y∂log(a[2]) +(1−y)∂log(1−a[2])∂a[2] = − ∂a[2] ∂a[2]  y 1  1  = − +(1−y) 1−a[2] (−1) a[2]  y a[2] + y−1 (6.42) = − 1−a[2]接下来，根据 sigmoid 函数的导数：</p>
+<p>∂L y∂log(a[2]) +(1−y)∂log(1−a[2])∂a[2] = − ∂a[2] ∂a[2] y 1  1 = − +(1−y) 1−a[2] (−1)</p>
+<div class="formula">$$a^{[2]}$$</div>
+<p>y a[2] + y−1 (6.42) = − 1−a[2]接下来，根据 sigmoid 函数的导数：</p>
 <p>∂a[2] = a[2](1−a[2])∂z最后，我们可以使用链式法则：</p>
-<p>∂L ∂L ∂a[2]∂z = ∂a[2] ∂z  y a[2] + y−1 a[2](1−a[2]) = − 1−a[2]= a[2] −y (6.43)继续反向计算梯度（接下来让梯度经过 b[2] 1 和两个乘积节点，依此类推，一直回到所有蓝绿色的节点），这一步留给读者作为练习。</p>
+<p>∂L ∂L ∂a[2]∂z = ∂a[2] ∂z y a[2] + y−1 a[2](1−a[2]) = − 1−a[2]= a[2] −y (6.43)继续反向计算梯度（接下来让梯度经过 b[2] 1 和两个乘积节点，依此类推，一直回到所有蓝绿色的节点），这一步留给读者作为练习。</p>
 <h3>6.6.5 关于学习的更多细节</h3>
 <p>神经网络中的优化是一个非凸优化问题，比逻辑回归的优化更为复杂；出于这一原因以及其他原因，要想成功学习有许多最佳实践。</p>
 <p>对于逻辑回归，我们可以让所有权重和偏置都取值为 0，以此初始化梯度下降。相比之下，在神经网络中，我们需要用小随机数来初始化权重。把输入值归一化为均值为 0、方差为单位方差，也很有帮助。</p>

@@ -453,25 +453,28 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 > n
 
 V+ = 1 X
-E(w+ i )
+
+$$E(w_{i}^{+})$$
+
 n
 
 > 1 m
 
 V−= 1 X_1
 
-E(w− (23.1)
+$$E(w_{i}^{-}$$
+
 m i )
 由这两个极点定义的语义轴，只需把这两个向量相减即可算出：
 
 > The semantic axis defined by the poles is computed just by subtracting the two vectors:
 
-Vaxis = V+ −V− (23.2)
+$$V_{\text{axis}}=V^{+}-V^{-}$$
+
 Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。
 
 > Vaxis, the semantic axis, is a vector in the direction of positive sentiment. Finally, we compute (via cosine similarity) the angle between the vector in the direction of positive sentiment and the direction of w’s embedding. A higher cosine means that w is more aligned with S+ than S−.
 
-  
 score(w) = cos E(w),Vaxis
 E(w)·Vaxis (23.3)
 = ∥E(w)∥∥Vaxis∥
@@ -494,8 +497,10 @@ E(w)·Vaxis (23.3)
 
 > Define a graph: Given word embeddings, build a weighted lexical graph by connecting each word with its k nearest neighbors (according to cosine similarity). The weights of the edge between words wi and wj are set as:
 
- wi⊤wj  (23.4)
-Ei,j = arccos
+wi⊤wj  (23.4)
+
+$$E_{i,j}=\text{arccos}$$
+
 − .∥wi∥∥wj∥
 
 - 定义种子集：选取正向种子词和负向种子词。
@@ -512,9 +517,12 @@ Ei,j = arccos
 
 > Create word scores: We walk from both positive and negative seed sets, resulting in positive (rawscore+(wi)) and negative (rawscore−(wi)) raw label scores. We then combine these values into a positive-polarity score as:
 
-rawscore+(wi)
-score+(wi) = (23.5)
-rawscore+(wi)+rawscore−(wi)
+$$\text{rawscore}^{+}(w_{i})$$
+
+$$\text{score}^{+}(w_{i}) =$$
+
+$$\text{rawscore}^{+}(w_{i})+\text{rawscore}^{-}(w_{i})$$
+
 通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。
 
 > It’s often helpful to standardize the scores to have zero mean and unit variance within a corpus.
@@ -761,7 +769,9 @@ count(w,c)
 P(w|c) = P
 w∈C count(w,c) P(w|c)
 PottsScore(w) = P
-c P(w|c) (23.6)
+
+$$_{c}P(w|c)$$
+
 将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。
 
 > Dividing the IMDb estimate P(disappointing|1) of .0003 by the sum of the likelihood P(w|c) over all categories gives a Potts score of 0.10. The word disappointing thus is associated with the vector [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05]. The Potts diagram (Potts, 2011) is a visualization of these word scores, representing the prior sentiment of a word as a distribution over the rating categories.
@@ -861,7 +871,9 @@ Monroe 等人（2008）提出的“对数几率比信息狄利克雷先验”方
 > using f i(w) to mean the frequency of word w in corpus i, and ni to mean the total number of words in corpus i:
 
 llr(horrible) = log Pi(horrible)
-Pj(horrible)
+
+$$P^{j}(\text{horrible})$$
+
 = logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible)
 ni nj (23.7)
 取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：
@@ -872,19 +884,13 @@ ni nj (23.7)
 >
 > 释义：指两个词几率之比的对数，用于比较某个词在两个语料库或类别中的相对关联强度。
 
- Pi(horrible)   Pj(horrible) 
+Pi(horrible)   Pj(horrible)
 lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible)
- fi(horrible)   f j(horrible) 
-
->  fi(horrible)   f j(horrible) 
-= log  ni  −log  n j 
-
-> = log  ni  −log  n j 
- 1−fi(horrible)  1−fj(horrible) 
-
->  1−fi(horrible)  1−fj(horrible) 
+fi(horrible)   f j(horrible)
+= log  ni  −log  n j
+1−fi(horrible)  1−fj(horrible)
 ni nj
- fi(horrible)   f j(horrible)  (23.8)
+fi(horrible)   f j(horrible)  (23.8)
 = log −log
 ni −fi(horrible) nj −fj(horrible)
 狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。
@@ -903,7 +909,7 @@ ni −fi(horrible) nj −fj(horrible)
 
 > w
 
-  f j ! (23.9)
+f j ! (23.9)
 δ (i−j) f i w +αw w +αw
 = log −log
 ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)
@@ -919,7 +925,7 @@ ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)
 
 > w
 
-σ2   1 1
+σ2   1 1
 ˆδ (i−j) (23.10)
 ≈ +
 f iw +αw f j w +αw
@@ -930,7 +936,7 @@ f iw +αw f j w +αw
 > w
 
 ˆδ (i−j) (23.11)
-r  σ2 ˆδ (i−j)
+r  σ2 ˆδ (i−j)
 因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。
 
 > The Monroe et al. (2008) method thus modifies the commonly used log odds ratio in two ways: it uses the z-scores of the log odds ratio, which controls for the amount of variance in a word’s frequency, and it uses counts from a background corpus to provide a prior count for words.
@@ -1003,20 +1009,22 @@ Yelp，把一星评论中使用的词与五星评论中使用的词加以比较�
 > In such situations, lexicons can be used in a rule-based algorithm for classification. The simplest version is just to use the ratio of positive to negative words: if a document has more positive than negative words (using the lexicon to decide the polarity of each word in the document), it is classified as positive. Often a threshold λis used, in which a document is classified as positive only if the ratio is greater thanλ. If the sentiment lexicon includes positive and negative weights for each word,θ + w and θ − w , these can be used as well. Here’s a simple such sentiment algorithm:
 
 f + = X
-θ + w count(w)
-X
-f −= θ − w count(w)
-if f + + f −> λ
 
->  if f +  + f −> λ 
-sentiment = if f − (23.12)
-− f + > λ 0 otherwise.
-
-> − f + > λ   0 otherwise.
+$$θ_{w}^{+}\text{count}(w)$$
 
 > w 满足 w∈positivelexicon
 >
 > *w s.t. w∈positivelexicon*
+
+X
+f −= θ − w count(w)
+if f + + f −> λ
+
+> if f +  + f −> λ
+sentiment = if f − (23.12)
+− f + > λ 0 otherwise.
+
+> − f + > λ   0 otherwise.
 
 > w 满足 w∈negativelexicon
 >
@@ -1063,8 +1071,11 @@ p(w)
 
 freq(phrase,subject)
 p(phrase|subject) = X (23.14)
-freq(phrase′,subject)
-phrase′∈vocab(subject)
+
+$$\text{freq}(\text{phrase}^{′},\text{subject})$$
+
+$$\text{phrase}^{′}_{\in}\text{vocab}_{(}\text{subject}_{)}$$
+
 如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。
 
 > If the training data is sparser, or not as similar to the test set, any of the lexicons we’ve discussed can play a helpful role, either alone or in combination with all the words and n-grams.
@@ -1076,13 +1087,14 @@ phrase′∈vocab(subject)
 
 > indicator function, in which the value of a feature fL takes the value 1 if a particular text has any word from the relevant lexicon L. Using the notation of Appendix B, in which a feature value is defined for a particular output class c and document x.
 
-1 if ∃w : w ∈L & w ∈x & class = c
+1 if ∃w : w ∈L & w ∈x & class = c
 fL(c,x) = 0 otherwise
 另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：
 
 > Alternatively the value of a feature fL for a particular lexicon L can be the total number of word tokens in the document that occur in L:
 
-X
+$$\sum_{w\inL}$$
+
 fL = count(w)
 对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：
 
@@ -1090,7 +1102,8 @@ fL = count(w)
 
 > w∈L
 
-X
+$$\sum_{w\inL}$$
+
 fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。
 
 > fL = θ L wcount(w) Counts can alternatively be logged or normalized per writer as in Eq. 23.14.

@@ -64,7 +64,7 @@
 文本呈现的正是这样一种典型情境，因为航空公司常常先涨价，然后观望竞争对手是否跟进。这里我们可以识别出 United 是率先涨价的领头航空公司，$6 是涨价金额，Thursday 是涨价日期，而 American 是跟进的航空公司，由此得到如下填好的模板：
 
 <!--figbox-->
->  
+> 
 
 > 涨价尝试：领头航空公司：UNITED AIRLINES
 
@@ -178,7 +178,9 @@ Hearst 指出，大多数人类读者并不知道 Gelidium 是什么，但他们
 她提出，以下词汇-句法模式
 NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）
 蕴含以下语义
-∀NPi，i ≥1，hyponym(NPi,NP0) （21.3）
+
+$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$
+
 从而使我们能够推断出
 hyponym(Gelidium,red algae) （21.4）
 
@@ -337,7 +339,8 @@ Conf RlogF(p) = |hits(p)|（21.10）
 
 给定元组由 P 中模式的一个子集支持，其中每个模式都有按上述方法评估出的置信度。在噪声或模型中，我们做两个基本假设。第一，要让一个候选元组为假，它的所有支持模式都必须出错；第二，它们各自失败的来源相互独立。如果我们粗略地把置信度当作概率，那么任一模式 p 失败的概率为 1 −Conf(p)；一个元组的所有支持模式都出错的概率等于它们各自失败概率的乘积，由此就得到下面这个关于新元组置信度的公式。
 
-Y
+$$\prod_{p\inP′}$$
+
 Conf(t) = 1− (1−Conf(p))（21.11）
 为新模式的接受设定保守的置信度阈值
 和元组，这在自举（bootstrapping）过程中有助于防止系统偏离目标关系。
@@ -883,7 +886,6 @@ pattern: /(\d+)[-\s]($TEUnits)(s)?([-\s]old)?/result: Duration($1, $2)
 
 来自我们最初那个航空公司故事的已填充模板可能如下所示。
 
- 
 FARE-RAISE ATTEMPT（票价上调尝试）：LEAD AIRLINE（领头航空公司）：UNITED AIRLINES
 AMOUNT（金额）：$6 EFFECTIVE DATE（生效日期）：2006-10-26 FOLLOWER（跟随航空公司）：AMERICAN AIRLINES
 该模板有四个槽（领头航空公司、金额、生效日期、跟随航空公司

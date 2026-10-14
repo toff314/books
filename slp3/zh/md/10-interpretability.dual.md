@@ -74,7 +74,7 @@
 > meaning of words, we can use contextual embeddings as representations of word meanings in context for any task that might require a model of word meaning. Where
 243
 
-![](images/fig_p2_0.png)
+![](images/10-interpretability/fig_p2_0.png)
 
 *图 10.1 BERT 风格模型的输出是为每个输入词元 xi 给出的上下文嵌入向量 hL i。*
 *Figure 10.1 The output of a BERT-style model is a contextual embedding vector hL i for each input token xi.*
@@ -140,7 +140,7 @@
 >
 > *ambiguities with no relation between the senses (Haber and Poesio, 2020). Here we will use ‘polysemy’*
 
-![](images/fig_p3_0.png)
+![](images/10-interpretability/fig_p3_0.png)
 
 *图 10.2 每个蓝点表示 die 一词在英文和德文不同句子中的一个 BERT 上下文嵌入，它们用 UMAP 算法投影到二维空间。德语和英语的含义以及英语的不同义项落入不同的簇中。部分样本点标注了它们所在的语境句子。图出自 Coenen 等（2019）。*
 *Figure 10.2 Each blue dot shows a BERT contextual embedding for the word die from different sentences in English and German, projected into two dimensions with the UMAP algorithm. The German and English meanings and the different English senses fall into different clusters. Some sample points are shown with the contextual sentence they came from. Figure from Coenen et al. (2019).*
@@ -170,7 +170,7 @@
 
 > sense in context. Fig. 10.3 sketches out the task.
 
-![](images/fig_p3_1.png)
+![](images/10-interpretability/fig_p3_1.png)
 
 *图 10.3 全词 WSD 任务：从输入词（x）映射到 WordNet 义项（y）。图改编自 Chaplot 和 Salakhutdinov（2018）。*
 *Figure 10.3 The all-words WSD task, mapping from input words (x) to WordNet senses(y). Figure inspired by Chaplot and Salakhutdinov (2018).*
@@ -195,7 +195,9 @@ WSD 可以成为人文与社会科学领域文本分析的一种有用工具，�
 > using contextual word embeddings, due to Melamud et al. (2016) and Peters et al.(2018). At training time we pass each sentence in some sense-labeled dataset (like the SemCore or SenseEval datasets in various languages) through any contextual embedding (e.g., BERT) resulting in a contextual embedding for each labeled token.(There are various ways to compute this contextual embedding vi for a token i; for BERT it is common to pool multiple layers by summing the vector representations of i from the last four BERT layers). Then for each sense s of any word in the corpus, for each of the n tokens of that sense, we average their n contextual representations vi to produce a contextual sense embedding vs for s:
 
 vs = 1 X
-∀vi ∈tokens(s)
+
+$$∀v_{i}\in\text{tokens}(s)$$
+
 n vi (10.1)
 在测试时，给定语境中目标词 t 的一个词元，我们计算它的上下文嵌入 t，并从训练集中选择其最近邻义项，即其义项嵌入与 t 的余弦最高的义项：
 
@@ -203,14 +205,15 @@ n vi (10.1)
 
 > i
 
-sense(t) = argmax cosine(t,vs) (10.2)
+$$\text{sense}(t) =\text{argmax}\text{cosine}(t,v_{s})$$
+
+> s∈senses(t)
+
 图 10.4 展示了该模型。
 
 > Fig. 10.4 illustrates the model.
 
-> s∈senses(t)
-
-![](images/fig_p4_0.png)
+![](images/10-interpretability/fig_p4_0.png)
 
 *图 10.4 WSD 的最近邻算法。绿色部分是为每个词的每个义项预先计算好的上下文嵌入；这里只展示 find 的少数几个义项。为目标词 found 计算上下文嵌入，然后选择最近邻义项（本例中为 find9v）。图改编自 Loureiro 和 Jorge（2019）。*
 *Figure 10.4 The nearest-neighbor algorithm for WSD. In green are the contextual embeddings precomputed for each sense of each word; here we just show a few of the senses for find. A contextual embedding is computed for the target word found, and then the nearest neighbor sense (in this case find9v) is chosen. Figure inspired by Loureiro and Jorge (2019).*
@@ -255,7 +258,9 @@ Timkey 和 van Schijndel（2021）表明，我们可以让嵌入更加
 
 s (10.4)
 1 X
-(x−µ)2
+
+$$(x-µ)^{2}$$
+
 σ = |C|
 然后，每个词向量 x 都被替换为其标准化版本 z：
 
@@ -295,7 +300,7 @@ z = x−µ (10.5)
 
 > higher layers in the transformer, showing for example that grammatical information about tokens seems to be encoded at lower layers, semantic information at middle layers, and discourse information like coreference still higher (Tenney et al., 2019).
 
-![](images/fig_p6_0.png)
+![](images/10-interpretability/fig_p6_0.png)
 
 *图 10.5 在探针分析中，我们通过训练简单分类器来提取词元（如是否为动词、是否为过去时）或句子（如是否发生在西班牙）的语言学属性或其他属性，从而探究模型中的某个表示编码了哪些信息。这里我们看到 3 个不同的探针考察 2 个表示，h3 CLS 与 h1 2。*
 *Figure 10.5 In probing, we explore what information is encoded in some representation in the model by training simple classifiers to extract linguistic or other properties of tokens (like being a verb or being in the past tense) or sentences (like taking place in Spain). Here we see 3 different probes examining 2 representations, h3 CLS and h1 2.*
@@ -382,7 +387,7 @@ logit lens 把 Transformer 的中间层当作它们已经
 
 > .
 
-![](images/fig_p7_0.png)
+![](images/10-interpretability/fig_p7_0.png)
 
 *图 10.6 对于 2 个不同的前缀，模型在不同层上最可能的词。*
 *Figure 10.6 The most likely words at different layers of the model for 2 different prefixes.*
@@ -475,7 +480,7 @@ Olsson 等人（2022）提出，这一模式补全规则的一种广义模糊版
 
 > Olsson et al. (2022) propose that a generalized fuzzy version of this pattern completion rule, implementing a rule like A*B*...A→B, where A* ≈A and B* ≈B(by ≈we mean they are semantically similar in some way), might be responsible for in-context learning. Suggestive evidence for their hypothesis comes from Cros-
 
-![](images/fig_p9_0.png)
+![](images/10-interpretability/fig_p9_0.png)
 
 *图 10.7 一个归纳头在处理 vintage 时，使用前缀匹配机制找到此前出现过的 vintage，并用复制机制预测 cars 会再次出现。图来自 Crosbie 与 Shutova（2022）。*
 *Figure 10.7 An induction head looking at vintage uses the prefix matching mechanism to find a prior instance of vintage, and the copying mechanism to predict that cars will occur again. Figure from Crosbie and Shutova (2022).*

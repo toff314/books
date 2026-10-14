@@ -260,21 +260,24 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 > n
 
 V+ = 1 X
-E(w+ i )
+
+$$E(w_{i}^{+})$$
+
 n
 
 > 1 m
 
 V−= 1 X_1
 
-E(w− (23.1)
+$$E(w_{i}^{-}$$
+
 m i )
 由这两个极点定义的语义轴，只需把这两个向量相减即可算出：
 
-Vaxis = V+ −V− (23.2)
+$$V_{\text{axis}}=V^{+}-V^{-}$$
+
 Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。
 
-  
 score(w) = cos E(w),Vaxis
 E(w)·Vaxis (23.3)
 = ∥E(w)∥∥Vaxis∥
@@ -287,8 +290,10 @@ E(w)·Vaxis (23.3)
 
 - 定义图：给定词嵌入，通过把每个词与其 k 个最近邻（依据余弦相似度）相连，构建一张带权的词汇图。词 wi 与 wj 之间边的权重设定为：
 
- wi⊤wj  (23.4)
-Ei,j = arccos
+wi⊤wj  (23.4)
+
+$$E_{i,j}=\text{arccos}$$
+
 − .∥wi∥∥wj∥
 
 - 定义种子集：选取正向种子词和负向种子词。
@@ -298,9 +303,12 @@ Ei,j = arccos
 
 - 生成词得分：我们分别从正向和负向种子集出发进行游走，得到正向（rawscore+(wi)）和负向（rawscore−(wi)）的原始标签得分。然后我们将这些值合并为一个正向极性得分：
 
-rawscore+(wi)
-score+(wi) = (23.5)
-rawscore+(wi)+rawscore−(wi)
+$$\text{rawscore}^{+}(w_{i})$$
+
+$$\text{score}^{+}(w_{i}) =$$
+
+$$\text{rawscore}^{+}(w_{i})+\text{rawscore}^{-}(w_{i})$$
+
 通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。
 
 - 为每个得分赋予置信度：由于情感得分受种子集影响，我们想知道如果换用不同的种子集，一个词的得分会变化多少。我们可以使用自举（bootstrapping）抽样来得到置信区域，方法是在正向和负向种子集的随机子集上计算传播 B 次（例如取 B = 50，每次从 10 个种子词中选择 7 个）。自举抽样的极性得分的标准差给出了一个置信度量。
@@ -430,7 +438,9 @@ count(w,c)
 P(w|c) = P
 w∈C count(w,c) P(w|c)
 PottsScore(w) = P
-c P(w|c) (23.6)
+
+$$_{c}P(w|c)$$
+
 将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。
 
 > `Potts diagram`（Potts 图）
@@ -496,7 +506,9 @@ Monroe 等人（2008）提出的“对数几率比信息狄利克雷先验”方
 其中用 f i(w) 表示词 w 在语料库 i 中的频率，用 ni 表示语料库 i 中的总词数：
 
 llr(horrible) = log Pi(horrible)
-Pj(horrible)
+
+$$P^{j}(\text{horrible})$$
+
 = logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible)
 ni nj (23.7)
 取而代之，我们来计算对数几率比：horrible 在 i 中还是在 j 中的几率更高：
@@ -505,13 +517,13 @@ ni nj (23.7)
 >
 > 释义：指两个词几率之比的对数，用于比较某个词在两个语料库或类别中的相对关联强度。
 
- Pi(horrible)   Pj(horrible) 
+Pi(horrible)   Pj(horrible)
 lor(horrible) = log 1−Pi(horrible) −log 1−Pj(horrible)
- fi(horrible)   f j(horrible) 
-= log  ni  −log  n j 
- 1−fi(horrible)  1−fj(horrible) 
+fi(horrible)   f j(horrible)
+= log  ni  −log  n j
+1−fi(horrible)  1−fj(horrible)
 ni nj
- fi(horrible)   f j(horrible)  (23.8)
+fi(horrible)   f j(horrible)  (23.8)
 = log −log
 ni −fi(horrible) nj −fj(horrible)
 狄利克雷先验的直觉是：利用一个大规模背景语料库，来获得我们对每个词 w 的频率应当是多少的先验估计。做法非常简单：把该语料库中的计数加到分子和分母上，从而在实质上把计数朝该先验收缩。这就好比在问：相较于一个估计良好的大规模背景语料库所预期的频率，i 与 j 之间的差异究竟有多大。
@@ -522,7 +534,7 @@ ni −fi(horrible) nj −fj(horrible)
 
 > w
 
-  f j ! (23.9)
+f j ! (23.9)
 δ (i−j) f i w +αw w +αw
 = log −log
 ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)
@@ -532,7 +544,7 @@ ni +α0 −(f iw +αw) nj +α0 −(f j w +αw)
 
 > w
 
-σ2   1 1
+σ2   1 1
 ˆδ (i−j) (23.10)
 ≈ +
 f iw +αw f j w +αw
@@ -541,7 +553,7 @@ f iw +αw f j w +αw
 > w
 
 ˆδ (i−j) (23.11)
-r  σ2 ˆδ (i−j)
+r  σ2 ˆδ (i−j)
 因此，Monroe 等人（2008）的方法从两个方面改造了常用的对数几率比：它使用对数几率比的 z 分数，从而控制了词频中方差的大小；它还使用背景语料库中的计数，为各个词提供一个先验计数。
 
 > w
@@ -581,14 +593,16 @@ Yelp，把一星评论中使用的词与五星评论中使用的词加以比较�
 在这类情况下，词表可以用于基于规则的分类算法。最简单的版本就是使用正面词与负面词的比例：如果一篇文档中的正面词多于负面词（用词表来判定文档中每个词的极性），就把它分类为正面。通常会使用一个阈值 λ，只有当该比例大于 λ 时，才把文档分类为正面。如果情感词表为每个词都给出了正面权重和负面权重 θ + w 与 θ − w ，这些权重也可以使用。下面是一个这样的简单情感算法：
 
 f + = X
-θ + w count(w)
+
+$$θ_{w}^{+}\text{count}(w)$$
+
+> w 满足 w∈positivelexicon
+
 X
 f −= θ − w count(w)
 if f + + f −> λ
 sentiment = if f − (23.12)
 − f + > λ 0 otherwise.
-
-> w 满足 w∈positivelexicon
 
 > w 满足 w∈negativelexicon
 
@@ -615,24 +629,29 @@ p(w)
 
 freq(phrase,subject)
 p(phrase|subject) = X (23.14)
-freq(phrase′,subject)
-phrase′∈vocab(subject)
+
+$$\text{freq}(\text{phrase}^{′},\text{subject})$$
+
+$$\text{phrase}^{′}_{\in}\text{vocab}_{(}\text{subject}_{)}$$
+
 如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。
 
 词表特征可以采用许多可能的值。最简单的就是一个
 指示函数，其中如果某个特定文本含有来自相关词表 L 的任意一个词，特征 fL 的取值就是 1。这里使用附录 B 的记法，即特征值针对特定的输出类别 c 和文档 x 来定义。
 
-1 if ∃w : w ∈L & w ∈x & class = c
+1 if ∃w : w ∈L & w ∈x & class = c
 fL(c,x) = 0 otherwise
 另一种做法是，针对特定词表 L 的特征 fL 的取值，可以是文档中出现在 L 中的词例总数：
 
-X
+$$\sum_{w\inL}$$
+
 fL = count(w)
 对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：
 
 > w∈L
 
-X
+$$\sum_{w\inL}$$
+
 fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。
 
 无论怎样定义，这些词表特征随后都会被用于一个有监督

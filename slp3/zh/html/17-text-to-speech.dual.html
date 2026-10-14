@@ -28,12 +28,21 @@ table { border-collapse:collapse; width:100%; margin:1em 0; font-size:14px; }
 th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
 th { background:#f3f5f7; font-weight:600; }
 code { background:#f0f2f5; padding:.1em .35em; border-radius:3px; font-size:.9em; }
+.caption { font-size:14px; color:#4a4a4a; margin:.2em 0 1.3em; text-align:center; }
+.formula { text-align:center; margin:1.1em 0; overflow-x:auto; }
+.figbox { border:2.5px solid #1d3f9e; border-radius:3px; padding:.6em .95em;
+  margin:1.2em 0; background:#fff; }
+.figbox p { margin:.4em 0; }
+.figbox blockquote { background:transparent; border-left:0; padding:0; margin:.4em 0;
+  color:#333; font-size:15px; }
 hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 .nav { margin-bottom:1.5em; font-size:14px; color:var(--muted); }
 .nav a { color:var(--accent); text-decoration:none; margin-right:1em; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
+<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/17-text-to-speech.md">Markdown 源文件</a></div>
 <h1>第 17 章 文本转语音</h1>
@@ -102,6 +111,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>一段目标音色的样本（已由编解码器分词为离散音频词元）来提示该语言模型，并条件生成以产生所需的音频词元。随后这些词元可以转换为波形。</p>
 <blockquote><p>a sample of the desired voice (tokenized by the codec into discrete audio tokens) and conditionally generate to produce the desired audio tokens. Then these tokens can be converted into a waveform.</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p2_0.png" alt="">
+<p class="caption">Figure 17.1 用于个性化 TTS 的 VALL-E 架构（图取自 Chen et al. (2025)）。</p>
+<p class="caption">Figure 17.1 VALL-E architecture for personalized TTS (figure from Chen et al. (2025)).</p>
 <p>Chen et al. (2025) 的图 17.1 展示了这样一个 TTS 系统的思路，</p>
 <blockquote><p>Fig. 17.1 from Chen et al. (2025) shows the intuition for one such TTS system,</p></blockquote>
 <p>该系统称为 VALL-E。VALL-E 在 6 万小时的英语语音上训练，语音来自超过 7000</p>
@@ -127,6 +138,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>当然，我们在第 15 章描述的语音数字表示本身已经是离散的。例如，以 16 位格式存储的 16 kHz 语音可以看作由 2^16 = 65,536 个符号构成的一个序列，每秒钟语音对应其中的 16,000 个符号。但一个每秒生成 16,000 个符号的系统会使语音信号过长，语言模型难以实际处理，尤其是基于 Transformer 的模型，其注意力机制具有低效的平方复杂度。我们需要的是代表更长语音片段的符号，大概处于每秒数百个词元的量级。</p>
 <blockquote><p>Of course the digital representation of speech we described in Chapter 15 is already discrete. For example 16 kHz speech stored in 16-bit format could be thought of as a series of 216 = 65,536 symbols, with 16,000 of those symbols per second of speech. But a system that generates 16,000 symbols per second makes the speech signal too long to be feasibly processed by a language model, especially one based on transformers with their inefficient quadratic attention. Instead we want symbols that represent longer chunks of speech, perhaps something on the order of a few hundred tokens a second.</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p3_0.png" alt="">
+<p class="caption">Figure 17.2 音频词元化器执行推理时的标准架构，图改编自 Mousavi et al. (2025)。输入波形 x 被编码（通常使用一系列下采样卷积网络）为一系列嵌入 zt。每个嵌入随后通过一个量化器，产生一系列量化词元 qt。为重新生成语音信号，量化词元被重新映射回一个向量 zqt，然后被解码（通常使用一系列上采样卷积网络）还原为波形。我们将在 17.2.4 节讨论该架构的训练方式。</p>
+<p class="caption">Figure 17.2 Standard architecture of an audio tokenizer performing inference, figure adapted from Mousavi et al. (2025). An input waveform x is encoded (generally using a series of downsampling convolution networks) into a series of embeddings zt. Each embedding is then passed through a quantizer to produce a series of quantized tokens qt. To regenerate the speech signal, the quantized tokens are re-mapped back to a vector zqt and then decoded (usually using a series of upsampling convolution networks) back to a waveform. We’ll discuss how the architecture is trained in Section 17.2.4.</p>
 <p>改编自 Mousavi et al. (2025) 的图 17.2 展示了音频词元化器的标准架构</p>
 <blockquote><p>Fig. 17.2 adapted from Mousavi et al. (2025). shows the standard architecture</p></blockquote>
 <p>。音频词元化器以音频波形为输入，并被训练为经由一种由矢量量化产生的离散词元构成的中间表示，重建出相同的音频波形。</p>
@@ -142,6 +155,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>17.2.1 ENCODEC 模型的编码器与解码器</h3>
 <blockquote><p>17.2.1 The Encoder and Decoder for the ENCODEC model</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p4_0.png" alt="">
+<p class="caption">Figure 17.3 ENCODEC 模型的编码器阶段与解码器阶段。编码器的目标是对输入波形进行下采样，将其编码为 75Hz 的一系列嵌入 zt，即每秒 75 个嵌入。</p>
+<p class="caption">Figure 17.3 The encoder and decoder stages of the ENCODEC model. The goal of the encoder is to downsample an input waveform by encoded it as a series of embeddings zt at 75Hz, i.e. 75 embeddings a second.</p>
 <blockquote><p>由于原始信号以 24kHz 表示，这相当于 24000/75 = 320 倍的下采样。在</p><p><em>Because the original signal was represented at 24kHz, this is a downsampling of 24000 = 320 times. Between</em></p></blockquote>
 <blockquote><p>编码器与解码器之间是一个量化步骤，它产生有损嵌入 zqt。解码器的目标是接收该有损嵌入 zqt 并对其进行上采样，将其转换回波形。</p><p><em>the encoder and decoder is a quantization step producing a lossy embedding zqt. The goal of the decoder is to take the lossy embedding zqt and upsample it, converting it back to a waveform.</em></p></blockquote>
 <p>ENCODEC 模型（D´efossez et al., 2023）的编码器与解码器</p>
@@ -188,6 +203,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>第 k 个聚类。随后有两个迭代步骤。在分配步骤中，给定 k 个当前质心和整个矢量数据集，每个矢量被分配到其码字最接近（按平方欧氏距离）的那个聚类。在重新</p>
 <blockquote><p>cluster k. Then there are two iterative steps. In the assignment step, given a set of k current centroids and the entire dataset of vectors, each vector is assigned to the cluster whose codeword is the closest (by squared Euclidean distance). In the re-</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p6_0.png" alt="">
+<p class="caption">图 17.4 码本学习完成后，推理阶段的基本 VQ 算法。</p>
+<p class="caption">Figure 17.4 The basic VQ algorithm at inference time, after the codebook has been learned.</p>
 <blockquote><p>输入是一段语音，由编码器编码为维度 D = 的矢量</p><p><em>The input is a span of speech encoded by the encoder into a vector of dimensionality D =</em></p></blockquote>
 <blockquote><p>256。该矢量与码本中的每个码字（聚类质心）进行比较。聚类 3 的码字最为相似，因此 VQ 输出 3 作为该矢量的离散表示。</p><p><em>256. This vector is compared with each codeword (cluster centroid) in the codebook. The codeword for cluster 3 is most similar, so the VQ outputs 3 as the discrete representation of this vector.</em></p></blockquote>
 <p>估计步骤中，每个聚类的码字通过重新计算一个新的均值矢量来重新计算。结果是聚类及其质心缓慢地适应训练空间。我们在这两个步骤之间来回迭代，直到算法收敛。</p>
@@ -226,15 +243,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>层级方式组织。</p>
 <blockquote><p>of hierarchy.</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p7_0.png" alt="">
+<p class="caption">图 17.5 残差 VQ（图来自 Chen et al. (2025)）。我们对编码器输出的嵌入运行 VQ，产生一个离散符号及相应的码字。然后我们考察残差，即编码器输出嵌入 zt 与 VQ 所选码字之差。接着我们取第二个码本并对该残差运行 VQ。我们重复该过程，直到得到 8 个词元。</p>
+<p class="caption">Figure 17.5 Residual VQ (figure from Chen et al. (2025)). We run VQ on the encoder output embedding to produce a discrete symbol and the corresponding codeword. We then look at the residual, the difference between the encoder output embedding zt and the codeword chosen by VQ. We then take a second codebook and run VQ on this residual. We repeat the process until we have 8 tokens.</p>
 <p>其思想非常简单。我们像图 17.4 那样用一个码本运行标准 VQ</p>
 <blockquote><p>The idea is very simple. We run standard VQ with a codebook just as in Fig. 17.4</p></blockquote>
 <p>（见上一节）。然后，对于输入嵌入 zt，我们取出所产生的码字矢量——不妨把它记为 zq1t，表示由码本 1 量化后的 zt——并取两者之差：</p>
 <blockquote><p>in the prior section. Then for an input embedding zt we take the codeword vector that is produced, let’s call it zq1t for the zt as quantified by codebook 1, and take the difference between the two:</p></blockquote>
-<p>residual = zt −z(1) t。（17.1）</p>
-<blockquote><p>residual = zt −z(1) t. (17.1)</p></blockquote>
+<div class="formula">$$\text{residual}=z_{t}-z_{q}^{(1)}_{t}.(17.1)$$</div>
+<blockquote><p>q</p></blockquote>
 <p>该残差是 VQ 中的误差，即原矢量中 VQ</p>
 <blockquote><p>This residual is the error in the VQ; the part of the original vector that the VQ</p></blockquote>
-<blockquote><p>q</p></blockquote>
 <aside class="term"><code>residual</code><span class="term-zh">残差</span><span class="term-explain">原始矢量与其码字之差，代表矢量量化未能捕捉的那部分信息。</span></aside>
 <p>未能捕捉的那部分。残差有点像舍入误差；这就好比在 VQ 中我们把矢量“舍入”到最近的码字，从而产生了某种误差。于是我们取出该残差矢量，把它送入另一个矢量量化器！这样我们得到第二个码字，用来表示矢量中残差的那部分。然后我们再取第二个码字产生的残差，重复这一做法。最终结果是 8 个码字（原始码字加上 7 个残差）。</p>
 <blockquote><p>didn’t capture. The residual is kind of a rounding error; it’s as if in VQ we ‘round’the vector to the nearest codeword, and that creates some error. So we then take that residual vector and pass it through another vector quantizer! That gives us a second codeword that represents the residual part of the vector. We then take the residual from the second codeword, and do this again. The total result is 8 codewords (the original codeword and the 7 residuals).</p></blockquote>
@@ -257,13 +275,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>输入是一个波形，即从更长的原始波形中截取的一段约 1 秒或 10 秒的语音。期望的输出是同一个波形段，因为该模型是一种学习映射到自身的自编码器。该模型在大规模语音数据集上训练完成这种重建，例如 Common Voice（Ardila et al., 2020）（133 种语言、超过 30,000 小时的语音），以及诸如 Audio Set（Gemmeke et al., 2017）等其他音频数据（170 万段来自 YouTube 视频的 10 秒片段，其标签来自一个大型本体，涵盖自然声、动物声和机械声、音乐等）。</p>
 <blockquote><p>The input is a waveform, a span of speech of perhaps 1 or 10 seconds extracted from a longer original waveform. The desired output is the same waveform span, since the model is a kind of autoencoder that learns to map to itself. The model is trained to do this reconstruction on large speech datasets like Common Voice (Ardila et al., 2020) (over 30,000 hours of speech in 133 languages) as well as other audio data like Audio Set (Gemmeke et al., 2017) (1.7 million 10 sec excerpts from YouTube videos labeled from a large ontology including natural, animal, and machine sounds, music, and so on).</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p8_0.png" alt="">
+<p class="caption">Figure 17.6 音频分词器的训练架构，图改编自 Mousavi et al.(2025)。音频分词器使用多种损失函数的加权组合进行训练，这些损失函数在图中进行了概述，并在下文予以描述。</p>
+<p class="caption">Figure 17.6 Architecture of audio tokenizer training, figure adapted from Mousavi et al.(2025). The audio tokenizer is trained with a weighted combination of various loss functions, summarized in the figure and described below.</p>
 <p>ENCODEC 模型与大多数音频分词器一样，使用若干</p>
 <blockquote><p>The ENCODEC model, like most audio tokenizers, is trained with a number of</p></blockquote>
 <aside class="term"><code>reconstruction loss</code><span class="term-zh">重构损失</span><span class="term-explain">衡量重构波形与输入波形相似程度的损失，差值越小表示重构出的音频越接近原始音频。</span></aside>
 <p>损失函数进行训练，如图 17.6 所示。重构损失 Lreconstruction 衡量输出波形与输入波形的相似程度，例如通过原始音频与重构音频之间的平方和差值来度量：</p>
 <blockquote><p>loss functions, as suggested in Fig. 17.6. The reconstruction loss Lreconstruction measures how similar the output waveform is to the input waveform, for example by the sum-squared difference between the original and reconstructed audio:</p></blockquote>
 <blockquote><p>T</p></blockquote>
-<p>X Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。</p>
+<div class="formula">$$\sum_{t=1}^{T}$$</div>
+<p>Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。</p>
 <blockquote><p>Similarity can additionally be measured in the frequency domain, by comparing the original and reconstructed mel-spectrogram, again using sum-squared (L2) distance or L1 distance or some combination.</p></blockquote>
 <blockquote><p>t=1</p></blockquote>
 <p>另一类损失是对抗损失 LGAN。对于该损失，我们训练一个</p>
@@ -282,30 +303,38 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>步骤在训练期间得到更新。一种方法是先使用 k-means 对向量 zt 进行聚类，得到初始的聚类。然后我们可以添加一个损失分量 LVQ，它将是编码器输出向量 zt 与量化后的重构向量 zqt（即码字）之差的函数，并在所有 Nc 个码本与残差上求和。</p>
 <blockquote><p>step get updated during training. One method is to start these off using k-means clustering of the vectors zt to get an initial clustering. Then we can add to a loss component, LVQ, which will be a function of the difference between the encoder output vector zt and the reconstructed vector after the quantization zqt, i.e. the codeword, summed over all the Nc codebooks and residuals.</p></blockquote>
 <blockquote><p>T Nc</p></blockquote>
-<p>X X LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)于是，总损失函数可以简单地为这些损失的加权和：</p>
+<div class="formula">$$\sum_{t=1c=1}^{TNc}\sum$$</div>
+<p>LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)于是，总损失函数可以简单地为这些损失的加权和：</p>
 <blockquote><p>The total loss function can then just be a weighted sum of these losses:</p></blockquote>
 <blockquote><p>t=1 c=1</p></blockquote>
-<p>L(x, ˆx) = λ1Lreconstruction(x, ˆx)+λ2LGAN(x, ˆx)+λ3LVQ(x, ˆx) (17.4)</p>
+<div class="formula">$$L(x,ˆx) =\lambda_{1}L_{\text{reconstruction}}(x,ˆx)+\lambda_{2}L_{\text{GAN}}(x,ˆx)+\lambda_{3}L_{\text{VQ}}(x,ˆx)(17.4)$$</div>
 <h2>17.3 VALL-E：用两阶段语言模型生成音频</h2>
 <blockquote><p>17.3 VALL-E: Generating audio with 2-stage LM</p></blockquote>
 <p>正如我们在引言中所总结的，像 VALL-E 这样的 TTS 系统的结构是：以待合成的文本和待使用的声音样本作为输入，并对二者进行分词，其中文本使用 BPE，语音使用音频编解码器。然后我们使用一个语言模型，以文本提示为条件，用该语音样本的音色有条件地生成与文本提示相对应的离散音频词元。</p>
 <blockquote><p>As we summarized in the introduction, the structure of TTS systems like VALL-E is to take as input a text to be synthesized and a sample of the voice to be used, and tokenize both, using BPE for the text and an audio codec for the speech. We then use a language model to conditionally generate discrete audio tokens corresponding to the text prompt, in the voice of the speech sample.</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p9_0.png" alt="">
+<p class="caption">Figure 17.7 VALL-E 的两阶段语言建模方法，展示了自回归 Transformer 的推理阶段，以及 7 个非自回归 Transformer 中的前 3 个。离散音频编码的输出序列分两个阶段生成。首先，自回归语言模型从左到右生成第一个量化器的全部编码。随后，非自回归模型被调用 7 次，以前一个量化器的全部编码为条件生成其余编码，其中也包括对右侧编码的条件依赖。</p>
+<p class="caption">Figure 17.7 The 2-stage language modelling approach for VALL-E, showing the inference stage for the autoregressive transformer and the first 3 of the 7 non-autoregressive transformers. The output sequence of discrete audio codes is generated in two stages. First the autoregressive LM generates all the codes for the first quantizer from left to right. Then the non-autoregressive model is called 7 times to generate the remaining codes conditioned on all the codes from the preceding quantizer, including conditioning on the codes to the right.</p>
 <p>VALL-E 没有用单个自回归语言模型来完成这种条件生成，而是使用两个不同的语言模型，通过两阶段过程进行条件生成。这一架构选择受到生成音频词元的 RVQ 量化器分层特性的影响。第一个 RVQ 量化器的输出是对最终语音最重要的词元，而后续量化器向最终信号贡献的残差信息越来越少。因此，语言模型分两个阶段生成声学编码。首先，一个自回归语言模型在给定输入文本与注册音频的情况下，为整个输出序列生成第一个量化器的编码。然后，在给定这些编码的情况下，一个非自回归语言模型被运行 7 次，每次以初始自回归编码的输出以及前一个非自回归量化器的输出作为输入，从而逐个生成其余量化器的编码。图 17.7 展示了该推理步骤的直观示意。</p>
 <blockquote><p>Instead of doing this conditional generation with a single autoregressive language model, VALL-E does the conditional generation in a 2-stage process, using two distinct language models. This architectural choice is influenced by the hierarchical nature of the RVQ quantizer that generates the audio tokens. The output of the first RVQ quantizer is the most important token to the final speech, while the subsequent quantizers contribute less and less residual information to the final signal. So the language model generates the acoustic codes in two stages. First, an autoregressive LM generates the first-quantizer codes for the entire output sequence, given the input text and enrolled audio. Then given those codes, a non-autoregressive LM is run 7 times, each time taking as input the output of the initial autoregressive codes and the prior non-autoregressive quantizer and thus generating the codes from the remaining quantizers one by one. Fig. 17.7 shows the intuition for the inference step.</p></blockquote>
 <p>现在我们稍微详细地看一下该架构。在训练时，给定</p>
 <blockquote><p>Now let’s see the architecture in a bit more detail. For training, we are given</p></blockquote>
 <p>一个音频样本 y 及其分词后的文本转写 x = [x0,x1,...,xL]。我们使用预训练的 ENCODEC 将 y 转换为编码矩阵 C。设 T 为 ENCODEC 输出的下采样向量个数，每个向量有 8 个编码。于是，我们可以将编码器输出表示为</p>
 <blockquote><p>an audio sample y and its tokenized text transcription x = [x0,x1,...,xL]. We use a pretrained ENCODEC to convert y into a code matrix C. Let T be the number of downsampled vectors output by ENCODEC, with 8 codes per vector. Then we can represent the encoder output as</p></blockquote>
-<p>CT×8 = ENCODEC(y) (17.5)这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。</p>
+<div class="formula">$$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$</div>
+<p>这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。</p>
 <blockquote><p>Here C is a two-dimensional acoustic code matrix that has T ×8 entries, where the columns represent time and the rows represent different quantizers. That is, the row vector ct,: of the matrix contains the 8 codes for the t-th frame, and the column vector c:,j contains the code sequence from the j-th vector quantizer where j ∈[1,...,8].</p></blockquote>
 <p>给定文本 x 与音频 C，我们把 TTS 训练为一个条件编码语言</p>
 <blockquote><p>Given the text x and audio C, we train the TTS as a conditional code language</p></blockquote>
 <p>模型，以最大化在给定 x 条件下 C 的似然：</p>
 <blockquote><p>model to maximize the likelihood of C conditioned on x:</p></blockquote>
-<p>L = −log p(C|x) TY = −log p(c&lt;t,:,x) (17.6)</p>
+<div class="formula">$$L=-\text{log}p_{T}(C|x)$$</div>
+<div class="formula">$$\prod_{t=0}^{T}$$</div>
+<p>= −log p(c&lt;t,:,x) (17.6)</p>
 <blockquote><p>t=0</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p10_0.png" alt="">
+<p class="caption">Figure 17.8 VALL-E 的训练过程。给定文本提示，首先训练自回归 Transformer 以自回归方式生成第一个量化器编码序列中的每一个编码。随后，非自回归 Transformer 生成其余的编码。图引自 Chen et al. (2025)。</p>
+<p class="caption">Figure 17.8 Training procedure for VALL-E. Given the text prompt, the autoregressive transformer is first trained to generate each code of the first-quantizer code sequence, autoregressively The the non-autoregressive transformer generates the rest of the codes. Figure from Chen et al. (2025).</p>
 <p>图 17.8 展示了其直观示意。左侧，我们有一个音频样本及其</p>
 <blockquote><p>Fig. 17.8 shows the intuition. On the left, we have an audio sample and its</p></blockquote>
 <p>转写文本，二者都经过分词。然后我们在 x 后附加一个 [EOS] 和一个 [BOS] 词元，并在 C 的末尾附加一个 [EOS] 词元，训练自回归 Transformer 预测声学词元，从 c0,1 开始，直到 [EOS] 为止，再由非自回归 Transformer 填充其余的词元。</p>
@@ -314,13 +343,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>During inference, we are given a text sequence to be spoken as well as y′, an enrolled speech sample from some unseen speaker, for which we have the transcription transcript(y′). We first run the codec to get an acoustic code matrix for y′, which will be CP = C:T ′,: = [c0,:,c1,:,...cT ′,: :]. Next we concatenate the transcription of y′ to the text sequence to be spoken to create the total input text x, which we pass through a text tokenizer. At this stage we thus have a tokenized text x and a tokenized audio prompt CP.</p></blockquote>
 <p>然后，我们以文本序列 x 和提示 CP 为条件，生成 CT = C&gt;T ′,: = [cT ′+1,:,...cT,:]：</p>
 <blockquote><p>Then we generate CT = C&gt;T ′,: = [cT ′+1,:,...cT,:] conditioned on the text sequence x and the prompt CP:</p></blockquote>
-<p>CT = argmax p(CT|CP,x) TY = argmax p(ct,:|c&lt;t,:,x) (17.7)随后，生成的词元 CT 可由 ENCODEC 解码器转换为</p>
+<div class="formula">$$C^{T}=\text{argmax}_{CT}p(C^{T}|C^{P},x)$$</div>
+<blockquote><p>CT</p></blockquote>
+<div class="formula">$$\prod_{=T′+}^{T}$$</div>
+<p>= argmax p(ct,:|c&lt;t,:,x) (17.7)随后，生成的词元 CT 可由 ENCODEC 解码器转换为</p>
 <blockquote><p>Then the generated tokens CT can be converted by the ENCODEC decoder into</p></blockquote>
 <p>一段波形。Fig. 17.9 展示了其直观思路。</p>
 <blockquote><p>a waveform. Fig. 17.9 shows the intuition.</p></blockquote>
-<blockquote><p>CT</p></blockquote>
 <blockquote><p>CT t=T ′+1</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p11_0.png" alt="">
+<p class="caption">Figure 17.9 VALL-E 的推理流程。图源自 Chen et al. (2025)。首先把 3 秒注册语音的转写前置到待生成的文本之前，并对语音和文本分别进行分词。接着，自回归 transformer 以转写和声学提示为条件，开始生成第一个码 ct′+1,1。</p>
+<p class="caption">Figure 17.9 Inference procedure for VALL-E. Figure from Chen et al. (2025). The transcript for the 3 seconds of enrolled speech is first prepended to the text to be generated, and both the speech and text are tokenized. Next the autoregressive transformer starts generating the first codes ct′+1,1 conditioned on the transcript and acoustic prompt.</p>
 <p>关于 transformer 组件以及其他方面的更多细节，参见 Chen et al. (2025)，</p>
 <blockquote><p>See Chen et al. (2025) for more details on the transformer components and other</p></blockquote>
 <p>训练的细节见同一文献。</p>
