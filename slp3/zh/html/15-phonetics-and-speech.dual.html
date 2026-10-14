@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/15-phonetics-and-speech.md">Markdown 源文件</a></div>
@@ -802,7 +802,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>傅里叶分析依赖欧拉公式，其中 j 为虚数单位：</p>
 <blockquote><p>that Fourier analysis relies on Euler’s formula, with j as the imaginary unit:</p></blockquote>
 <aside class="term"><code>Euler’s formula</code><span class="term-zh">欧拉公式</span><span class="term-explain">把复指数与三角函数联系起来的等式，傅里叶分析正是借助它把信号表示为一组复指数。</span></aside>
-<div class="formula">$$e^{jθ}=\text{cos}θ+j\text{sin}θ$$</div>
+<div class="formula">$$e ^{j θ} = \text{cos} θ + j \text{sin} θ$$</div>
 <p>为已经学过信号处理的学生作一点简要回顾：DFT 的定义如下：</p>
 <blockquote><p>As a brief reminder for those students who have already studied signal processing, the DFT is defined as follows:</p></blockquote>
 <blockquote><p>N−1</p></blockquote>
@@ -903,7 +903,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>该帧中各样本功率随时间的累加和；因此，对于从时间样本 t1 到时间样本 t2 的窗口内的信号 x，其能量为</p>
 <blockquote><p>over time of the power of the samples in the frame; thus, for a signal x in a window from time sample t1 to time sample t2, the energy is</p></blockquote>
 <blockquote><p>t2</p></blockquote>
-<div class="formula">$$\sum_{t=t1}^{t2}$$</div>
+<div class="formula">$$\sum_{t = t 1}^{t 2}$$</div>
 <p>Energy = x2[t] (15.18)差分特征 我们还加入与倒谱特征随时间变化有关的特征。语音信号的变化，例如共振峰在过渡处的斜率，或从塞音闭塞到塞音除阻爆发的变化，同样能为音子身份提供有用的线索。对 13 个特征（12 个倒谱特征加能量）中的每一个，都再配上一个差分</p>
 <blockquote><p>Delta features We also add features related to the change in cepstral features over time. Changes in the speech signal, like the slope of a formant at its transitions, or the change from a stop closure to stop burst, can again provide a useful cue for phone identity. To each of the 13 features (12 cepstral features plus energy) a delta</p></blockquote>
 <blockquote><p>t=t1</p></blockquote>

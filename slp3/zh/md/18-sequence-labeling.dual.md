@@ -809,7 +809,7 @@ HMM 建立在扩展马尔可夫链的基础上。马尔可夫链是一种模型
 
 > when predicting the future, the past doesn’t matter, only the present.
 
-$$\text{Markov Assumption:}P(q_{i}=a|q_{1}...q_{i-1}) =P(q_{i}=a|q_{i-1})$$
+$$\text{Markov Assumption:} P ( q _{i} = a | q _{1} ... q _{i - 1} ) = P ( q _{i} = a | q _{i - 1} )$$
 
 图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。
 
@@ -909,7 +909,7 @@ HMM 的输入为 O = o1o2 ...oT：由 T 个观测组成的序列，其中每个
 
 > First, as with a first-order Markov chain, the probability of a particular state depends only on the previous state:
 
-$$P(q_{i}|q_{1},...,q_{i-1}) =P(q_{i}|q_{i-1})(18.6)$$
+$$P ( q _{i} | q _{1} ,..., q _{i - 1} ) = P ( q _{i} | q _{i - 1} ) (18.6)$$
 
 > 马尔可夫假设：
 >
@@ -942,7 +942,7 @@ A 矩阵包含标记转移概率 P(ti|ti−1)，它表示
 
 P(ti|ti−1) = C(ti−1,ti) (18.8)
 
-$$C(t_{i-1})$$
+$$C ( t _{i - 1} )$$
 
 例如在 WSJ 语料库中，MD 出现了 13124 次，其中它后面跟着
 
@@ -961,7 +961,7 @@ MD）时，它与某个给定词（比如 will）相关联的概率。发射概�
 > MD), that it will be associated with a given word (say will). The MLE of the emission probability is
 P(wi|ti) = C(ti,wi) (18.10)
 
-$$C(t_{i})$$
+$$C ( t _{i} )$$
 
 在 WSJ 语料库中 MD 的 13124 次出现里，有 4046 次与 will 相关联：
 
@@ -1012,7 +1012,7 @@ HMM 的 A 转移概率和 B 观测似然
 
 > sequence t1 ...tn that is most probable given the observation sequence of n words w1 ...wn:
 
-$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(t_{1}...t_{n}|w_{1}...w_{n})(18.12)$$
+$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( t _{1} ... t _{n} | w _{1} ... w _{n} ) (18.12)$$
 
 > t1... tn
 
@@ -1022,7 +1022,7 @@ $$tˆ_{1:n}=\text{argmax}_{t1...tn}P(t_{1}...t_{n}|w_{1}...w_{n})(18.12)$$
 
 ˆt1:n = argmax P(w1 ...wn|t1 ...tn)P(t1 ...tn) (18.13)
 
-$$P(w_{1}...w_{n})$$
+$$P ( w _{1} ... w _{n} )$$
 
 > t1... tn
 
@@ -1030,7 +1030,7 @@ $$P(w_{1}...w_{n})$$
 
 > Furthermore, we simplify Eq. 18.13 by dropping the denominator P(wn 1):
 
-$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(w_{1}...w_{n}|t_{1}...t_{n})P(t_{1}...t_{n})(18.14)$$
+$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( w _{1} ... w _{n} | t _{1} ... t _{n} ) P ( t _{1} ... t _{n} ) (18.14)$$
 
 > t1... tn
 
@@ -1040,7 +1040,7 @@ HMM 标注器还做了两个进一步的简化假设。第一个假设（输出�
 
 > n
 
-$$\prod_{i=1}^{n}$$
+$$\prod_{i = 1}^{n}$$
 
 P(w1 ...wn|t1 ...tn) ≈ P(wi|ti) (18.15)
 第二个假设（马尔可夫假设，式 18.6）是：一个标记的概率只依赖于前一个标记，而不是整个标记序列；
@@ -1051,7 +1051,7 @@ P(w1 ...wn|t1 ...tn) ≈ P(wi|ti) (18.15)
 
 > n
 
-$$\prod_{i=1}^{n}$$
+$$\prod_{i = 1}^{n}$$
 
 P(t1 ...tn) ≈ P(ti|ti−1) (18.16)
 把式 18.15 和式 18.16 中的简化假设代入式 18.14，就得到 bigram 标注器求最可能标记序列的如下公式：
@@ -1102,7 +1102,7 @@ HMM 的解码算法就是图 18.10 所示的维特比算法。
 
 > Each cell of the lattice, vt(j), represents the probability that the HMM is in state j after seeing the first t observations and passing through the most probable state sequence q1,...,qt−1, given the HMM λ. The value of each cell vt(j) is computed by recursively taking the most probable path that could lead us to this cell. Formally, each cell expresses the probability
 
-$$v_{t}(j) =_{q1}\text{max}_{,...,qt-1}P(q_{1}...q_{t-1},o_{1},o_{2}...o_{t},q_{t}=j|\lambda)(18.18)$$
+$$v _{t} ( j ) = _{q 1} \text{max} _{,..., q t - 1} P ( q _{1} ... q _{t - 1} , o _{1} , o _{2} ... o _{t} , q _{t} = j | \lambda ) (18.18)$$
 
 我们通过对所有可能的取值取最大值来表示最可能的路径，
 
@@ -1113,7 +1113,7 @@ $$v_{t}(j) =_{q1}\text{max}_{,...,qt-1}P(q_{1}...q_{t-1},o_{1},o_{2}...o_{t},q_{
 
 > N
 
-$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t})$$
+$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} )$$
 
 式 18.19 中，为把之前的路径延伸出去、以计算 t 时刻的维特比概率，所相乘的三个因子是
 
@@ -1255,11 +1255,11 @@ NNP 0.000032 0 0 0.000048 0 MD 0 0.308431 0 0 0 VB 0 0.000028 0.000672 0 0.00002
 
 > a sequence of output tags Y = y1...yn. In an HMM to compute the best tag sequence that maximizes P(Y|X) we rely on Bayes’ rule and the likelihood P(X|Y):
 
-$$Yˆ=\text{argmax}_{Y}p(Y|X)$$
+$$Y ˆ = \text{argmax} _{Y} p ( Y | X )$$
 
 > Y
 
-$$=\text{argmax}_{Y}p(X|Y)p(Y)$$
+$$= \text{argmax} _{Y} p ( X | Y ) p ( Y )$$
 
 > Y
 
@@ -1271,7 +1271,7 @@ Y Y
 
 > Y i i
 
-$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$
+$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$
 
 > Y∈Y
 
@@ -1319,7 +1319,7 @@ Z(X) = exp wkFk(X,Y ′) (18.25)
 
 > n
 
-$$\sum_{i=1}^{n}$$
+$$\sum_{i = 1}^{n}$$
 
 Fk(X,Y) = fk(yi−1,yi,X,i) (18.26)
 在线性链 CRF 中，每个这样的局部特征 fk 都可以利用当前的输出词元 yi、前一个输出词元 yi−1、整个输入串 X（或它的任意一部分）以及当前位置 i。只依赖当前输出词元与前一个输出词元 yi 和 yi−1 这一约束，正是线性
@@ -1378,7 +1378,7 @@ HMM 中高效的维特比算法和前向-后向算法。相比之下，一般 CR
 
 > briefly mentioned in Chapter 4. Here are some templates that only use information from (yi−1,yi,X,i):
 
-$$⟨y_{i},x_{i}⟩,⟨y_{i},y_{i-1}⟩,⟨y_{i},x_{i-1},x_{i+2}⟩$$
+$$⟨ y _{i} , x _{i} ⟩ , ⟨ y _{i} , y _{i - 1} ⟩ , ⟨ y _{i} , x _{i - 1} , x _{i + 2} ⟩$$
 
 这些模板会从训练集和测试集的每个实例中自动生成特征集合。因此对于我们例子中的 Janet/NNP will/MD back/VB the/DT bill/NN，当 xi 是词 back 时，会生成以下特征并取值为 1（我们给它们分配了任意的特征编号）：
 
@@ -1492,7 +1492,7 @@ prefix(xi) = L suffix(xi) = tane prefix(xi) = L’ suffix(xi) = ane prefix(xi) =
 
 > How do we find the best tag sequence ˆY for a given input X? We start with Eq. 18.22:
 
-$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$
+$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$
 
 > Y∈Y
 
@@ -1519,7 +1519,7 @@ X X
 
 > n K
 
-$$\sum_{i=1k=1}^{nK}\sum$$
+$$\sum_{i = 1 k = 1}^{n K} \sum$$
 
 = argmax wk fk(yi−1,yi,X,i) (18.30)
 如上所示，我们可以忽略 exp 函数和分母 Z(X)，因为 exp 不改变 argmax，而且对于给定的观测序列 X，分母 Z(X) 是常数。
@@ -1548,7 +1548,7 @@ $$\sum_{i=1k=1}^{nK}\sum$$
 
 > N
 
-$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t});1\lej\leN,1<t\leT$$
+$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} ) ; 1 \le j \le N , 1 < t \le T$$
 
 > i=1
 
@@ -1558,7 +1558,7 @@ $$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t});1\lej\leN,
 
 > N
 
-$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)P(s_{j}|s_{i})P(o_{t}|s_{j})1\lej\leN,1<t\leT$$
+$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) P ( s _{j} | s _{i} ) P ( o _{t} | s _{j} ) 1 \le j \le N , 1 < t \le T$$
 
 > i=1
 
@@ -1570,7 +1570,7 @@ CRF 只需对后一个公式作少许改动，即把 a 和 b 这两个先验概�
 
 > K
 
-$$\sum_{k=1}^{K}$$
+$$\sum_{k = 1}^{K}$$
 
 > N
 

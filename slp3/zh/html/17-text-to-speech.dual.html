@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/17-text-to-speech.md">Markdown 源文件</a></div>
@@ -249,7 +249,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The idea is very simple. We run standard VQ with a codebook just as in Fig. 17.4</p></blockquote>
 <p>（见上一节）。然后，对于输入嵌入 zt，我们取出所产生的码字矢量——不妨把它记为 zq1t，表示由码本 1 量化后的 zt——并取两者之差：</p>
 <blockquote><p>in the prior section. Then for an input embedding zt we take the codeword vector that is produced, let’s call it zq1t for the zt as quantified by codebook 1, and take the difference between the two:</p></blockquote>
-<div class="formula">$$\text{residual}=z_{t}-z_{q}^{(1)}_{t}.(17.1)$$</div>
+<div class="formula">$$\text{residual} = z _{t} - z _{q t} ^{( 1 )} . (17.1)$$</div>
 <blockquote><p>q</p></blockquote>
 <p>该残差是 VQ 中的误差，即原矢量中 VQ</p>
 <blockquote><p>This residual is the error in the VQ; the part of the original vector that the VQ</p></blockquote>
@@ -283,7 +283,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>损失函数进行训练，如图 17.6 所示。重构损失 Lreconstruction 衡量输出波形与输入波形的相似程度，例如通过原始音频与重构音频之间的平方和差值来度量：</p>
 <blockquote><p>loss functions, as suggested in Fig. 17.6. The reconstruction loss Lreconstruction measures how similar the output waveform is to the input waveform, for example by the sum-squared difference between the original and reconstructed audio:</p></blockquote>
 <blockquote><p>T</p></blockquote>
-<div class="formula">$$\sum_{t=1}^{T}$$</div>
+<div class="formula">$$\sum_{t = 1}^{T}$$</div>
 <p>Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。</p>
 <blockquote><p>Similarity can additionally be measured in the frequency domain, by comparing the original and reconstructed mel-spectrogram, again using sum-squared (L2) distance or L1 distance or some combination.</p></blockquote>
 <blockquote><p>t=1</p></blockquote>
@@ -303,11 +303,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>步骤在训练期间得到更新。一种方法是先使用 k-means 对向量 zt 进行聚类，得到初始的聚类。然后我们可以添加一个损失分量 LVQ，它将是编码器输出向量 zt 与量化后的重构向量 zqt（即码字）之差的函数，并在所有 Nc 个码本与残差上求和。</p>
 <blockquote><p>step get updated during training. One method is to start these off using k-means clustering of the vectors zt to get an initial clustering. Then we can add to a loss component, LVQ, which will be a function of the difference between the encoder output vector zt and the reconstructed vector after the quantization zqt, i.e. the codeword, summed over all the Nc codebooks and residuals.</p></blockquote>
 <blockquote><p>T Nc</p></blockquote>
-<div class="formula">$$\sum_{t=1c=1}^{TNc}\sum$$</div>
+<div class="formula">$$\sum_{t = 1 c = 1}^{T N c} \sum$$</div>
 <p>LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)于是，总损失函数可以简单地为这些损失的加权和：</p>
 <blockquote><p>The total loss function can then just be a weighted sum of these losses:</p></blockquote>
 <blockquote><p>t=1 c=1</p></blockquote>
-<div class="formula">$$L(x,ˆx) =\lambda_{1}L_{\text{reconstruction}}(x,ˆx)+\lambda_{2}L_{\text{GAN}}(x,ˆx)+\lambda_{3}L_{\text{VQ}}(x,ˆx)(17.4)$$</div>
+<div class="formula">$$L ( x , ˆ x ) = \lambda _{1} L _{\text{reconstruction}} ( x , ˆ x )+ \lambda _{2} L _{\text{GAN}} ( x , ˆ x )+ \lambda _{3} L _{\text{VQ}} ( x , ˆ x ) (17.4)$$</div>
 <h2>17.3 VALL-E：用两阶段语言模型生成音频</h2>
 <blockquote><p>17.3 VALL-E: Generating audio with 2-stage LM</p></blockquote>
 <p>正如我们在引言中所总结的，像 VALL-E 这样的 TTS 系统的结构是：以待合成的文本和待使用的声音样本作为输入，并对二者进行分词，其中文本使用 BPE，语音使用音频编解码器。然后我们使用一个语言模型，以文本提示为条件，用该语音样本的音色有条件地生成与文本提示相对应的离散音频词元。</p>
@@ -321,15 +321,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Now let’s see the architecture in a bit more detail. For training, we are given</p></blockquote>
 <p>一个音频样本 y 及其分词后的文本转写 x = [x0,x1,...,xL]。我们使用预训练的 ENCODEC 将 y 转换为编码矩阵 C。设 T 为 ENCODEC 输出的下采样向量个数，每个向量有 8 个编码。于是，我们可以将编码器输出表示为</p>
 <blockquote><p>an audio sample y and its tokenized text transcription x = [x0,x1,...,xL]. We use a pretrained ENCODEC to convert y into a code matrix C. Let T be the number of downsampled vectors output by ENCODEC, with 8 codes per vector. Then we can represent the encoder output as</p></blockquote>
-<div class="formula">$$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$</div>
+<div class="formula">$$C ^{T \times 8} = E _{N} C _{\text{ODEC}} ( y )$$</div>
 <p>这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。</p>
 <blockquote><p>Here C is a two-dimensional acoustic code matrix that has T ×8 entries, where the columns represent time and the rows represent different quantizers. That is, the row vector ct,: of the matrix contains the 8 codes for the t-th frame, and the column vector c:,j contains the code sequence from the j-th vector quantizer where j ∈[1,...,8].</p></blockquote>
 <p>给定文本 x 与音频 C，我们把 TTS 训练为一个条件编码语言</p>
 <blockquote><p>Given the text x and audio C, we train the TTS as a conditional code language</p></blockquote>
 <p>模型，以最大化在给定 x 条件下 C 的似然：</p>
 <blockquote><p>model to maximize the likelihood of C conditioned on x:</p></blockquote>
-<div class="formula">$$L=-\text{log}p_{T}(C|x)$$</div>
-<div class="formula">$$\prod_{t=0}^{T}$$</div>
+<div class="formula">$$L = - \text{log} p _{T} ( C | x )$$</div>
+<div class="formula">$$\prod_{t = 0}^{T}$$</div>
 <p>= −log p(c&lt;t,:,x) (17.6)</p>
 <blockquote><p>t=0</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p10_0.png" alt="">
@@ -343,9 +343,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>During inference, we are given a text sequence to be spoken as well as y′, an enrolled speech sample from some unseen speaker, for which we have the transcription transcript(y′). We first run the codec to get an acoustic code matrix for y′, which will be CP = C:T ′,: = [c0,:,c1,:,...cT ′,: :]. Next we concatenate the transcription of y′ to the text sequence to be spoken to create the total input text x, which we pass through a text tokenizer. At this stage we thus have a tokenized text x and a tokenized audio prompt CP.</p></blockquote>
 <p>然后，我们以文本序列 x 和提示 CP 为条件，生成 CT = C&gt;T ′,: = [cT ′+1,:,...cT,:]：</p>
 <blockquote><p>Then we generate CT = C&gt;T ′,: = [cT ′+1,:,...cT,:] conditioned on the text sequence x and the prompt CP:</p></blockquote>
-<div class="formula">$$C^{T}=\text{argmax}_{CT}p(C^{T}|C^{P},x)$$</div>
+<div class="formula">$$C ^{T} = \text{argmax} _{C T} p ( C ^{T} | C ^{P} , x )$$</div>
 <blockquote><p>CT</p></blockquote>
-<div class="formula">$$\prod_{=T′+}^{T}$$</div>
+<div class="formula">$$\prod_{= T ′ +}^{T}$$</div>
 <p>= argmax p(ct,:|c&lt;t,:,x) (17.7)随后，生成的词元 CT 可由 ENCODEC 解码器转换为</p>
 <blockquote><p>Then the generated tokens CT can be converted by the ENCODEC decoder into</p></blockquote>
 <p>一段波形。Fig. 17.9 展示了其直观思路。</p>

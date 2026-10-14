@@ -454,7 +454,7 @@ NRC VAD 词表（Mohammad，2018a）的构建方式是，挑选来自既有词�
 
 V+ = 1 X
 
-$$E(w_{i}^{+})$$
+$$E ( w _{i} ^{+} )$$
 
 n
 
@@ -462,14 +462,14 @@ n
 
 V−= 1 X_1
 
-$$E(w_{i}^{-}$$
+$$E ( w _{i} ^{-}$$
 
 m i )
 由这两个极点定义的语义轴，只需把这两个向量相减即可算出：
 
 > The semantic axis defined by the poles is computed just by subtracting the two vectors:
 
-$$V_{\text{axis}}=V^{+}-V^{-}$$
+$$V _{\text{axis}} = V ^{+} - V ^{-}$$
 
 Vaxis 即语义轴，是指向正向情感方向的向量。最后，我们（通过余弦相似度）计算正向情感方向向量与 w 的嵌入方向之间的夹角。余弦值越高，意味着 w 与 S+ 的一致性比与 S− 的一致性更强。
 
@@ -499,7 +499,7 @@ E(w)·Vaxis (23.3)
 
 wi⊤wj  (23.4)
 
-$$E_{i,j}=\text{arccos}$$
+$$E _{i , j} = \text{arccos}$$
 
 − .∥wi∥∥wj∥
 
@@ -517,11 +517,11 @@ $$E_{i,j}=\text{arccos}$$
 
 > Create word scores: We walk from both positive and negative seed sets, resulting in positive (rawscore+(wi)) and negative (rawscore−(wi)) raw label scores. We then combine these values into a positive-polarity score as:
 
-$$\text{rawscore}^{+}(w_{i})$$
+$$\text{rawscore} ^{+} ( w _{i} )$$
 
-$$\text{score}^{+}(w_{i}) =$$
+$$\text{score} ^{+} ( w _{i} ) =$$
 
-$$\text{rawscore}^{+}(w_{i})+\text{rawscore}^{-}(w_{i})$$
+$$\text{rawscore} ^{+} ( w _{i} )+ \text{rawscore} ^{-} ( w _{i} )$$
 
 通常有帮助的做法是对得分进行标准化，使其在某个语料库内具有零均值和单位方差。
 
@@ -770,7 +770,7 @@ P(w|c) = P
 w∈C count(w,c) P(w|c)
 PottsScore(w) = P
 
-$$_{c}P(w|c)$$
+$$_{c} P ( w | c )$$
 
 将 IMDb 估计值 P(disappointing|1)=.0003 除以所有类别上似然 P(w|c) 之和，得到 Potts 分数 0.10。于是词 disappointing 与向量 [.10, .12, .14, .14, .13, .11, .08, .06, .06, .05] 相关联。Potts 图（Potts, 2011）是这些词分数的可视化，它表示单词的先验情感在各评分类别上的分布。
 
@@ -872,7 +872,7 @@ Monroe 等人（2008）提出的“对数几率比信息狄利克雷先验”方
 
 llr(horrible) = log Pi(horrible)
 
-$$P^{j}(\text{horrible})$$
+$$P ^{j} ( \text{horrible} )$$
 
 = logPi(horrible)−logPj(horrible)= log fi(horrible) −log fj(horrible)
 ni nj (23.7)
@@ -1010,7 +1010,7 @@ Yelp，把一星评论中使用的词与五星评论中使用的词加以比较�
 
 f + = X
 
-$$θ_{w}^{+}\text{count}(w)$$
+$$θ _{w} ^{+} \text{count} ( w )$$
 
 > w 满足 w∈positivelexicon
 >
@@ -1072,9 +1072,9 @@ p(w)
 freq(phrase,subject)
 p(phrase|subject) = X (23.14)
 
-$$\text{freq}(\text{phrase}^{′},\text{subject})$$
+$$\text{freq} ( \text{phrase} ^{′} , \text{subject} )$$
 
-$$\text{phrase}^{′}_{\in}\text{vocab}_{(}\text{subject}_{)}$$
+$$\text{phrase} ^{′} _{\in} \text{vocab} _{(} \text{subject} _{)}$$
 
 如果训练数据更稀疏，或者与测试集不那么相似，那么我们已经讨论过的任何词表都能发挥有益的作用，既可以单独使用，也可以与所有词和 n-gram 结合使用。
 
@@ -1093,7 +1093,7 @@ fL(c,x) = 0 otherwise
 
 > Alternatively the value of a feature fL for a particular lexicon L can be the total number of word tokens in the document that occur in L:
 
-$$\sum_{w\inL}$$
+$$\sum_{w \in L}$$
 
 fL = count(w)
 对于每个词都关联一个得分或权重的词表，该计数可以乘以权重 θ L w：
@@ -1102,7 +1102,7 @@ fL = count(w)
 
 > w∈L
 
-$$\sum_{w\inL}$$
+$$\sum_{w \in L}$$
 
 fL = θ L wcount(w) 计数也可以取对数，或像式 23.14 那样按作者做归一化。
 

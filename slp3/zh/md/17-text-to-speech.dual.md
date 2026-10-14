@@ -411,7 +411,7 @@ RVQ。在残差矢量量化中，我们使用多个码本，按某种
 
 > in the prior section. Then for an input embedding zt we take the codeword vector that is produced, let’s call it zq1t for the zt as quantified by codebook 1, and take the difference between the two:
 
-$$\text{residual}=z_{t}-z_{q}^{(1)}_{t}.(17.1)$$
+$$\text{residual} = z _{t} - z _{q t} ^{( 1 )} . (17.1)$$
 
 > q
 
@@ -480,7 +480,7 @@ ENCODEC 模型与大多数音频分词器一样，使用若干
 
 > T
 
-$$\sum_{t=1}^{T}$$
+$$\sum_{t = 1}^{T}$$
 
 Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)
 此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。
@@ -521,7 +521,7 @@ Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)
 
 > T Nc
 
-$$\sum_{t=1c=1}^{TNc}\sum$$
+$$\sum_{t = 1 c = 1}^{T N c} \sum$$
 
 LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)
 于是，总损失函数可以简单地为这些损失的加权和：
@@ -530,7 +530,7 @@ LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)
 
 > t=1 c=1
 
-$$L(x,ˆx) =\lambda_{1}L_{\text{reconstruction}}(x,ˆx)+\lambda_{2}L_{\text{GAN}}(x,ˆx)+\lambda_{3}L_{\text{VQ}}(x,ˆx)(17.4)$$
+$$L ( x , ˆ x ) = \lambda _{1} L _{\text{reconstruction}} ( x , ˆ x )+ \lambda _{2} L _{\text{GAN}} ( x , ˆ x )+ \lambda _{3} L _{\text{VQ}} ( x , ˆ x ) (17.4)$$
 
 ## 17.3 VALL-E：用两阶段语言模型生成音频
 
@@ -556,7 +556,7 @@ VALL-E 没有用单个自回归语言模型来完成这种条件生成，而是�
 
 > an audio sample y and its tokenized text transcription x = [x0,x1,...,xL]. We use a pretrained ENCODEC to convert y into a code matrix C. Let T be the number of downsampled vectors output by ENCODEC, with 8 codes per vector. Then we can represent the encoder output as
 
-$$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$
+$$C ^{T \times 8} = E _{N} C _{\text{ODEC}} ( y )$$
 
 这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。
 
@@ -569,9 +569,9 @@ $$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$
 
 > model to maximize the likelihood of C conditioned on x:
 
-$$L=-\text{log}p_{T}(C|x)$$
+$$L = - \text{log} p _{T} ( C | x )$$
 
-$$\prod_{t=0}^{T}$$
+$$\prod_{t = 0}^{T}$$
 
 = −log p(c<t,:,x) (17.6)
 
@@ -597,11 +597,11 @@ $$\prod_{t=0}^{T}$$
 
 > Then we generate CT = C>T ′,: = [cT ′+1,:,...cT,:] conditioned on the text sequence x and the prompt CP:
 
-$$C^{T}=\text{argmax}_{CT}p(C^{T}|C^{P},x)$$
+$$C ^{T} = \text{argmax} _{C T} p ( C ^{T} | C ^{P} , x )$$
 
 > CT
 
-$$\prod_{=T′+}^{T}$$
+$$\prod_{= T ′ +}^{T}$$
 
 = argmax p(ct,:|c<t,:,x) (17.7)
 随后，生成的词元 CT 可由 ENCODEC 解码器转换为

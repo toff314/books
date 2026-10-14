@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/05-embeddings.md">Markdown 源文件</a></div>
@@ -180,7 +180,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>余弦——如同 NLP 中使用的大多数向量相似度度量一样——基于线性代数中的点积算子，它也称为内积：</p>
 <aside class="term"><code>dot product inner product</code><span class="term-zh">点积、内积</span><span class="term-explain">把两个同维向量对应分量相乘后求和所得的数，是本书中向量相似度度量的基础。</span></aside>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <p>dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。</p>
 <blockquote><p>i=1</p></blockquote>
 <p>然而，作为相似度度量，这个原始点积存在一个问题：它偏爱长向量。向量长度定义为</p>
@@ -196,7 +196,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>a·b = |a||b|cosθ|a||b| = cosθ a·b (5.9)因此，两个向量 v 和 w 之间的余弦相似度指标可以按如下方式计算：</p>
 <aside class="term"><code>cosine</code><span class="term-zh">余弦</span><span class="term-explain">两个向量夹角的余弦值，等于长度归一化后的点积，是本书标准的向量相似度度量。</span></aside>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <p>viwi cosine(v,w) = v ·w (5.10)</p>
 <table><tr><th>v</th><th></th><th>w</th><th>= v u v u</th></tr></table>
 <p>u t X u t X v2 w2对于某些应用，我们会预先对每个向量做归一化，即用它除以自身的长度，从而得到一个长度为 1 的单位向量。因此，我们可以由 a 计算出单位向量，方法是</p>
@@ -247,12 +247,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>1 P(+|w,c) = σ(c·w) = (5.15) 1+exp(−c·w) Sigmoid 函数返回 0 到 1 之间的一个数，但要使其成为概率，我们还需要让两个可能事件（c 是上下文词，以及 c 不是上下文词）的概率之和为 1。因此，我们把词 c 不是 w 的真实上下文词的概率估计为：</p>
 <p>P(−|w,c) = 1−P(+|w,c) 1 (5.16) = σ(−c·w) = 1+exp(c·w)式 5.15 给出了针对一个词的概率，但窗口中存在许多上下文词。skip-gram 作了如下简化假设：所有上下文词都是相互独立的，这使我们只需将它们的概率相乘即可：</p>
 <blockquote><p>L</p></blockquote>
-<div class="formula">$$\prod_{i=L1}^{L}$$</div>
-<div class="formula">$$P(+|w,c_{1:L})=$$</div>
-<div class="formula">$$σ(c_{i}\cdotw)$$</div>
+<div class="formula">$$\prod_{i = L 1}^{L}$$</div>
+<div class="formula">$$P (+ | w , c _{1: L} ) =$$</div>
+<div class="formula">$$σ ( c _{i} \cdot w )$$</div>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>L</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{L}$$</div>
+<div class="formula">$$\sum_{i = 1}^{L}$$</div>
 <p>logP(+|w,c1:L) = logσ(ci ·w) (5.18)总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将</p>
 <blockquote><p>i=1</p></blockquote>
 <img src="../md/images/05-embeddings/fig_p13_0.png" alt="">
@@ -267,13 +267,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>正例 + 负例 w cpos w cneg w cneg apricot tablespoon apricot aardvark apricot seven apricot of apricot my apricot forever apricot jam apricot where apricot dear apricot a apricot coaxial apricot if训练二分类器时，我们还需要负例。事实上，带负采样的 skip-gram（SGNS）使用的负例比正例更多（二者之间的比例由参数 k 设定）。因此，对于每一个 (w,cpos) 训练实例，我们会创建 k 个负样本，每个负样本由目标词 w 加上一个“噪声词”cneg 组成。噪声词是从词表中随机抽取的一个词，并被限制为不能是目标词 w。上表展示的是 k = 2 的情形，因此对于每个正例 w,cpos，负训练集中会有 2 个负例。</p>
 <blockquote><p>原则上，目标矩阵和上下文矩阵可以使用不同的词汇表，但我们会加以简化</p></blockquote>
 <p>噪声词是根据其加权一元概率来选取的pα(w)，其中 α 是一个权重。如果我们按照未加权的一元概率 P(w) 来采样，那就意味着：以一元概率 P(“the”) 把词 the 选作噪声词，以一元概率 P(“aardvark”) 把 aardvark 选作噪声词，依此类推。但实践中通常把 α 设为 0.75，即使用加权 P3 4 (w)：</p>
-<div class="formula">$$\text{count}(w)^{α}$$</div>
+<div class="formula">$$\text{count} ( w ) ^{α}$$</div>
 <p>Pα(w) = P</p>
-<div class="formula">$$_{w′}\text{count}(w^{′})^{α}$$</div>
+<div class="formula">$$_{w ′} \text{count} ( w ^{′} ) ^{α}$$</div>
 <p>把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) &gt; P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：</p>
-<div class="formula">$$.99^{.75}$$</div>
+<div class="formula">$$. 99 ^{. 75}$$</div>
 <p>Pα(a) = .99.75 +.01.75 = 0.97</p>
-<div class="formula">$$.01^{.75}$$</div>
+<div class="formula">$$. 01 ^{. 75}$$</div>
 <p>Pα(b) = .99.75 +.01.75 = 0.03 (5.20)因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。</p>
 <p>给定正、负训练实例的集合，以及一组初始嵌入，学习算法的目标是调整这些嵌入，以</p>
 <ul><li>最大化从正例中抽取的目标词、上下文词对 (w,cpos) 的相似度</li><li>最小化来自负例的 (w,cneg) 对的相似度。</li></ul>
@@ -281,28 +281,28 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>&quot; kY # L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi) &quot; #</p>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>k</p></blockquote>
-<div class="formula">$$\sum_{i=k1}^{k}$$</div>
+<div class="formula">$$\sum_{i = k 1}^{k}$$</div>
 <p>= − logP(+|w,cpos)+ logP(−|w,cnegi) &quot; # X = − logP(+|w,cpos)+ log 1−P(+|w,cnegi) &quot; #</p>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{k}$$</div>
+<div class="formula">$$\sum_{i = 1}^{k}$$</div>
 <p>logσ(cpos ·w)+ logσ(−cnegi ·w) = − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。</p>
 <p>我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了一步学习的直观过程。</p>
 <img src="../md/images/05-embeddings/fig_p15_0.png" alt="">
 <p class="caption">图 5.7 一步梯度下降的直观示意。skip-gram 模型试图移动嵌入，使目标嵌入（此处为 apricot）更靠近（与之具有更高的点积）邻近词的上下文嵌入（此处为 jam），并更远离（与之具有更低的点积）不在附近出现的噪声词的上下文嵌入（此处为 Tolstoy 和 matrix）。</p>
 <p>为了得到梯度，我们需要对式 5.21 求关于各个不同嵌入的导数。结果表明，导数如下（我们将证明留作本章末尾的练习）：</p>
 <p>∂L</p>
-<div class="formula">$$=[σ(c_{\text{pos}}\cdotw)-1]w$$</div>
+<div class="formula">$$= [ σ ( c _{\text{pos}} \cdot w ) - 1 ] w$$</div>
 <p>∂cpos∂L∂cnegi = [σ(cnegi ·w)]w (5.23)∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24) [σ(cnegi ·w)]cnegi因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程如下：</p>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$c_{t}^{t}_{\frac{\text{pos}}{+}}^{+}_{1}^{1}=c^{t}_{\frac{\text{pos}}{t}}-η[σ(c^{t}_{\frac{\text{pos}}{t}}\cdotw^{t})_{t}-1_{t}]w^{t}$$</div>
+<div class="formula">$$c _{t \frac{\text{pos}}{+} 1} ^{t + 1} = c ^{t} _{\frac{\text{pos}}{t}} - η [ σ ( c ^{t} _{\frac{\text{pos}}{t}} \cdot w ^{t} ) _{t} - 1 _{t} ] w ^{t}$$</div>
 <blockquote><p>pos</p></blockquote>
-<div class="formula">$$c^{t}_{\text{neg}}^{+1}_{i}=c^{t}_{\text{neg}i}-η[σ(c^{t}_{\text{neg}i}\cdotw^{t})]w^{t}$$</div>
+<div class="formula">$$c ^{t + 1} _{\text{neg} i} = c ^{t} _{\text{neg} i} - η [ σ ( c ^{t} _{\text{neg} i} \cdot w ^{t} )] w ^{t}$$</div>
 <p>&quot; # wt+1 = wt −η X [σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct</p>
 <blockquote><p>k</p></blockquote>
-<div class="formula">$$^{t}_{\text{pos}}+$$</div>
+<div class="formula">$$^{t} _{\text{pos}} +$$</div>
 <blockquote><p>negi</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <p>于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。</p>

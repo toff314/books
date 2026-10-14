@@ -78,7 +78,7 @@ def build(mode: str, chs: list[tuple[str, str]], title: str) -> Path:
     mj_src = BOOK.parent / "vendor" / "mathjax" / "tex-svg.js"
     mj = ""
     if mj_src.is_file():
-        mj = ("<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
+        mj = ("<script>MathJax={tex:{displayMath:[['$$','$$']]},"
               "svg:{fontCache:'global'}};</script>\n"
               f'<script id="MathJax-script" src="{mj_src.as_uri()}"></script>\n')
     head = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">

@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/11-retrieval-based-models.md">Markdown 源文件</a></div>
@@ -129,17 +129,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>tf-idf（这里的“-”是连字符，而不是减号）是两个量的乘积，即词频 tf 与逆文档频率 idf。</p>
 <p>词频这一项告诉我们该词出现的频繁程度；在一篇文档中出现得越频繁的词，往往越能反映该文档的内容。</p>
 <p>我们通常使用词频的 log10，而不是原始计数。其直觉是：一个词在文档中出现 100 次，并不意味着它与文档含义相关的可能性就是出现 1 次时的 100 倍。此外，对计数为 0 的情况也需要特殊处理，因为我们无法对 0 取对数。3 因此，如果我们把 count(t,d) 定义为词项 t 在文档 d 中的原始计数，那么 tft,d，也就是词项 t 在文档 d 中的 tf，为(1+log10 count(t,d) 若 count(t,d) &gt; 0</p>
-<div class="formula">$$\text{tf}_{t,d}=$$</div>
+<div class="formula">$$\text{tf} _{t , d} =$$</div>
 <p>0 其他情况如果采用对数加权，出现 0 次的词项其 tf = 0，在一篇文档中出现 1 次时 tf = 1 + log10(1) = 1 + 0 = 1，出现 10 次时 tf = 1+log10(10) = 2，出现 100 次时 tf = 1+log10(100) = 3，出现 1000 次时 tf = 4，依此类推。</p>
 <p>词项 t 的文档频率 dft 是包含该词项的文档数量。只在少数文档中出现的词项，有助于把这些文档与文档集合中的其余文档区分开来；而在整个文档集合中都出现的词项则没有那么有用。逆文档频率（inverse document frequency），即 idf 词项权重（Sparck Jones, 1972），定义为：</p>
 <p>N</p>
-<div class="formula">$$\text{idf}_{t}=\text{log}_{10}$$</div>
+<div class="formula">$$\text{idf} _{t} = \text{log} _{10}$$</div>
 <p>dft其中 N 是文档集合中文档的总数，dft 是包含词项 t 的文档数量。一个词项出现的文档越少，该权重就越高；在每篇文档中都出现的词项则被赋予最低的权重 0。</p>
 <p>以下是莎士比亚戏剧语料库中一些词的 idf 值，其范围从只在一部戏剧中出现、信息量极大的词（如 Romeo），到只在少数几部戏剧中出现的词（如 salad 或 Falstaff），再到非常常见的词（如 fool），乃至因为出现在全部 37 部戏剧中而完全没有区分度的词（如 good 或 sweet）。4</p>
 <table><tr><th>词</th><th>df</th><th>idf</th></tr><tr><td>Romeo</td><td>1</td><td>1.57</td></tr><tr><td>salad</td><td>2</td><td>1.27</td></tr><tr><td>Falstaff</td><td>4</td><td>0.967</td></tr><tr><td>forest</td><td>12</td><td>0.489</td></tr><tr><td>battle</td><td>21</td><td>0.246</td></tr><tr><td>wit</td><td>34</td><td>0.037</td></tr><tr><td>fool</td><td>36</td><td>0.012</td></tr><tr><td>good</td><td>37</td><td>0</td></tr><tr><td>sweet</td><td>37</td><td>0</td></tr></table>
 <p>于是，词 t 在文档 d 中的 tf-idf 值就是词频</p>
-<div class="formula">$$\text{tf}_{t,d}\text{and IDF:}$$</div>
-<div class="formula">$$\text{tf-idf}(t,d) =\text{tf}_{t,d}\cdot\text{idf}_{t}$$</div>
+<div class="formula">$$\text{tf} _{t , d} \text{and IDF:}$$</div>
+<div class="formula">$$\text{tf-idf} ( t , d ) = \text{tf} _{t , d} \cdot \text{idf} _{t}$$</div>
 <p>3</p>
 <blockquote><p>我们也可以使用下面这种替代写法，即我们在早先版本中使用的形式：tft,d =log10(count(t,d)+1)</p></blockquote>
 <h3>11.1.3 文档评分</h3>
@@ -225,7 +225,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>精确率和召回率的方式，是在一条精确率-召回率曲线中把精确率对召回率作图，就像图 11.8 中针对表 11.7 的数据所展示的那样。</p>
 <p>图 11.8 展示的是单个查询的取值。但我们需要把所有查询的取值合并起来，而且要以一种能让我们对不同系统进行比较的方式来合并。做法之一是在 11 个固定召回率水平（从 0 到 100，步长为 10）上绘制平均精确率值。由于我们不太可能恰好在这些水平上有数据点，因此我们就为我们确实拥有的数据点，对这 11 个召回率取值使用插值精确率值来做到这一点。为此，我们只需选取在等于或高于当前所计算召回率水平的任意召回率水平上所达到的最大精确率值。换言之，</p>
 <aside class="term"><code>interpolated precision</code><span class="term-zh">插值精确率</span><span class="term-explain">在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。</span></aside>
-<div class="formula">$$\text{IntPrecision}(r) =\text{max}_{i&gt;=r}\text{Precision}(i)$$</div>
+<div class="formula">$$\text{IntPrecision} ( r ) = \text{max} _{i &gt; = r} \text{Precision} ( i )$$</div>
 <p>这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。</p>
 <div class="figbox">
 <blockquote><p>插值精确率 召回率</p></blockquote>
@@ -235,7 +235,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>有了像图 11.10 那样的曲线，我们就可以通过比较曲线来比较两个系统或方法。显然，在所有召回率取值上精确率都更高的曲线更可取。不过，这些曲线还能让我们洞悉系统的整体行为。在左侧精确率更高的系统，可能更偏重精确率而非召回率；而更偏重召回率的系统，则在更高的召回率水平上（即右侧）更高。</p>
 <aside class="term"><code>mean average precision</code><span class="term-zh">平均精确率均值</span><span class="term-explain">先对每个查询求平均精确率，再对一组查询的这些平均值取平均，得到用于比较不同检索系统或方法的单一指标。</span></aside>
 <p>评估排序检索的第二种方式是平均精确率均值（MAP），它提供了一个可用于比较相互竞争的系统或方法的单一指标。在这种做法中，我们同样沿着排序后的条目列表自上而下遍历，但这次只关注那些遇到相关条目的位置上的精确率（例如图 11.7 中的排名 1、3、5、6，而不包括 2 或 4）。对于单个查询，我们把这些单个精确率测量值在返回集合上（截至某个固定截断值）取平均。更形式化地说，如果假设 Rr 是位于 r 处及 r 之上的相关文档集合，那么单个查询的平均精确率（AP）为1 X AP = Precisionr(d) (11.16)</p>
-<div class="formula">$$|R_{r}|$$</div>
+<div class="formula">$$| R _{r} |$$</div>
 <blockquote><p>d∈Rr</p></blockquote>
 <p>其中 Precisionr(d) 是在文档 d 被找到的那个排名处测得的精确率。对于一组查询 Q，我们再对这些平均值取平均，从而得到最终的 MAP 度量：</p>
 <p>MAP = 1 X AP(q) (11.17)</p>
@@ -261,7 +261,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 11.12 推理阶段 ColBERT 算法的示意图。查询和文档首先分别通过独立的 BERT 编码器。查询与文档之间的相似度，通过把查询中词元与文档中词元的上下文表示之间的软对齐相加来计算。训练是端到端的。（图中未画出各种细节；例如查询前面会加上 [CLS] 和 [Q:] 词元，文档前面会加上 [CLS] 和 [D:] 词元。）图改编自 Khattab 和 Zaharia（2020）。</p>
 <p>更形式化地说，问题 q 被分词为 [q1,...,qn]，前面加上一个 [CLS]以及一个特殊的 [Q] 词元，截断到 N=32 个词元（若长度不足则用 [MASK] 词元填充），然后送入 BERT，得到输出向量 q = [q1,...,qN]。词元为 [d1,...,dm] 的段落 d 也以类似方式处理，其中包括一个 [CLS] 和特殊的 [D] 词元。在 d 和 q 之上施加一个线性层以控制输出维度，从而保持向量较小、便于存储，并把向量重新缩放到单位长度，得到最终的向量序列 Eq（长度为 N）和 Ed（长度为 m）。ColBERT 的打分机制为：</p>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <blockquote><p>m</p></blockquote>
 <p>score(q,d) = max (11.20) j=1 Eqi ·Edj虽然交互机制本身没有可调参数，但 ColBERT 架构仍然需要端到端训练，以便微调 BERT 编码器，并从零开始训练线性层（以及特殊的 [Q] 和 [D] 嵌入）。它使用由查询 q、正文档 d+ 和负文档 d− 组成的三元组 ⟨q,d+,d−⟩ 进行训练，利用式 11.20 为每篇文档产生分数，并用交叉熵损失优化模型参数。</p>
 <blockquote><p>i=1</p></blockquote>
@@ -295,7 +295,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 </div>
 <p>于是，语言模型的任务是按如下概率模型生成文本：</p>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>p(x1,...,xn) = p(xi|R(q) ; 回答下面这个问题... ; q ;x&lt;i)这一基本 RAG 范式有许多扩展，其中一项增补是采用基于智能体的 RAG。在到目前为止所描述的 RAG 范式中，总是先运行一次检索，然后在提示中把检索到的段落与用户的问题组合起来。但在实际应用中，我们可能并不希望在每个用户轮次都运行检索。或者，我们可能想针对不同的用户需求从不同的集合中检索（有时是网络，有时是私有集合）。在基于智能体的 RAG 中，系统决定何时调用检索智能体，以及针对哪个集合。</p>
 <blockquote><p>i=1</p></blockquote>
 <p>另一个研究领域关注检索器与生成器之间的关系。例如，检索到的段落中可能存在噪声；其中一些可能无关紧要或是错误的，或者顺序没有帮助。我们怎样才能促使大语言模型关注那些好的段落？一些 RAG 架构会加入重排器，在段落被检索出来之后对其重新排序。又或者，一些复杂问题可能需要多跳架构，即先用一个查询检索文档，再把这些文档追加到原始查询上，进行第二阶段的检索。</p>

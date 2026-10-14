@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/10-interpretability.md">Markdown 源文件</a></div>
@@ -140,11 +140,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>它使用上下文词嵌入，由 Melamud 等（2016）与 Peters 等（2018）提出。在训练时，我们把某个带义项标注的数据集（如多种语言中的 SemCor 或 SenseEval 数据集）中的每个句子输入任意一种上下文嵌入模型（例如 BERT），从而为每个带标注的词元得到一个上下文嵌入。（计算词元 i 的上下文嵌入 vi 有多种方式；对 BERT 而言，常见做法是把 i 在最后四个 BERT 层中的向量表示相加，以汇聚多个层。）随后，对语料中任何词的每个义项 s，针对该义项的 n 个词元，我们对它们的 n 个上下文表示 vi 取平均，得到 s 的上下文义项嵌入 vs：</p>
 <blockquote><p>using contextual word embeddings, due to Melamud et al. (2016) and Peters et al.(2018). At training time we pass each sentence in some sense-labeled dataset (like the SemCore or SenseEval datasets in various languages) through any contextual embedding (e.g., BERT) resulting in a contextual embedding for each labeled token.(There are various ways to compute this contextual embedding vi for a token i; for BERT it is common to pool multiple layers by summing the vector representations of i from the last four BERT layers). Then for each sense s of any word in the corpus, for each of the n tokens of that sense, we average their n contextual representations vi to produce a contextual sense embedding vs for s:</p></blockquote>
 <p>vs = 1 X</p>
-<div class="formula">$$∀v_{i}\in\text{tokens}(s)$$</div>
+<div class="formula">$$∀ v _{i} \in \text{tokens} ( s )$$</div>
 <p>n vi (10.1)在测试时，给定语境中目标词 t 的一个词元，我们计算它的上下文嵌入 t，并从训练集中选择其最近邻义项，即其义项嵌入与 t 的余弦最高的义项：</p>
 <blockquote><p>At test time, given a token of a target word t in context, we compute its contextual embedding t and choose its nearest neighbor sense from the training set, i.e., the sense whose sense embedding has the highest cosine with t:</p></blockquote>
 <blockquote><p>i</p></blockquote>
-<div class="formula">$$\text{sense}(t) =\text{argmax}\text{cosine}(t,v_{s})$$</div>
+<div class="formula">$$\text{sense} ( t ) = \text{argmax} \text{cosine} ( t , v _{s} )$$</div>
 <blockquote><p>s∈senses(t)</p></blockquote>
 <p>图 10.4 展示了该模型。</p>
 <blockquote><p>Fig. 10.4 illustrates the model.</p></blockquote>
@@ -172,7 +172,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The standard deviation in each dimension σ ∈Rd is:</p></blockquote>
 <blockquote><p>x∈C</p></blockquote>
 <p>s (10.4) 1 X</p>
-<div class="formula">$$(x-µ)^{2}$$</div>
+<div class="formula">$$( x - µ ) ^{2}$$</div>
 <p>σ = |C|然后，每个词向量 x 都被替换为其标准化版本 z：</p>
 <blockquote><p>Then each word vector x is replaced by a standardized version z:</p></blockquote>
 <blockquote><p>x∈C</p></blockquote>

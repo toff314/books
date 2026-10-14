@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/20-dependency-parsing.md">Markdown 源文件</a></div>
@@ -462,8 +462,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We’ll use a feature template as we did for sentiment analysis and part-of-speech</p></blockquote>
 <p>标注中那样使用特征模板。特征模板使我们能够从训练集中自动生成大量具体特征。例如，考察下列基于格局中单个位置的特征模板。</p>
 <blockquote><p>tagging. Feature templates allow us to automatically generate large numbers of specific features from a training set. For example, consider the following feature templates that are based on single positions in a configuration.</p></blockquote>
-<div class="formula">$$⟨s_{1}.w,\text{op}⟩,⟨s_{2}.w,\text{op}⟩⟨s_{1}.t,\text{op}⟩,⟨s_{2}.t,\text{op}⟩$$</div>
-<div class="formula">$$⟨b_{1}.w,\text{op}⟩,⟨b_{1}.t,\text{op}⟩⟨s_{1}.\text{wt},\text{op}⟩$$</div>
+<div class="formula">$$⟨ s _{1} . w , \text{op} ⟩ , ⟨ s _{2} . w , \text{op} ⟩⟨ s _{1} . t , \text{op} ⟩ , ⟨ s _{2} . t , \text{op} ⟩$$</div>
+<div class="formula">$$⟨ b _{1} . w , \text{op} ⟩ , ⟨ b _{1} . t , \text{op} ⟩⟨ s _{1} . \text{wt} , \text{op} ⟩$$</div>
 <p>这里特征记作 location.property，其中 s = 栈，b = 词</p>
 <blockquote><p>Here features are denoted as location.property, where s = stack, b = the word</p></blockquote>
 <p>缓冲区，w = 词形，t = 词性，op = 操作符。因此，栈顶词形的特征就是 s1.w，缓冲区首词的词性标注就是 b1.t，而拼接特征 s1.wt 表示栈顶词的词形与其词性拼接在一起。下面考虑把这些模板应用于由 (20.2) 的训练神谕导出的下列中间格局。</p>
@@ -472,15 +472,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Stack Word buffer Relations[root, canceled, flights] [to Houston] (canceled →United)</p></blockquote>
 <p>(flights →morning)(flights →the) 这里正确的转移是 SHIFT（继续往下之前你应当先说服自己确信这一点）。把我们的那组特征模板应用于该格局，会得到下列这组实例化特征。</p>
 <blockquote><p>(flights →morning)(flights →the) The correct transition here is SHIFT (you should convince yourself of this before proceeding). The application of our set of feature templates to this configuration would result in the following set of instantiated features.</p></blockquote>
-<div class="formula">$$⟨s_{1}.w=\text{flights},\text{op}=\text{shift}⟩$$</div>
-<div class="formula">$$⟨s_{2}.w=\text{canceled},\text{op}=\text{shift}⟩$$</div>
+<div class="formula">$$⟨ s _{1} . w = \text{flights} , \text{op} = \text{shift} ⟩$$</div>
+<div class="formula">$$⟨ s _{2} . w = \text{canceled} , \text{op} = \text{shift} ⟩$$</div>
 <p>⟨s1.t = NNS,op = shift⟩⟨s2.t = VBD,op = shift⟩⟨b1.w = to,op = shift⟩⟨b1.t = TO,op = shift⟩</p>
-<div class="formula">$$⟨s_{1}.\text{wt}=\text{flightsNNS},\text{op}=\text{shift}⟩$$</div>
+<div class="formula">$$⟨ s _{1} . \text{wt} = \text{flightsNNS} , \text{op} = \text{shift} ⟩$$</div>
 <p>鉴于左弧和右弧转移都作用于栈顶的两个元素，结合这两个位置属性的特征就更为有用。</p>
 <blockquote><p>Given that the left and right arc transitions operate on the top two elements of the stack, features that combine properties from these positions are even more useful.</p></blockquote>
 <p>例如，诸如 s1.t ◦s2.t 这样的特征会把栈顶词的词性标注与其下方词的词性标注拼接起来。</p>
 <blockquote><p>For example, a feature like s1.t ◦s2.t concatenates the part of speech tag of the word at the top of the stack with the tag of the word beneath it.</p></blockquote>
-<div class="formula">$$⟨s_{1}.t◦s_{2}.t=\text{NNSVBD},\text{op}=\text{shift}⟩$$</div>
+<div class="formula">$$⟨ s _{1} . t ◦ s _{2} . t = \text{NNSVBD} , \text{op} = \text{shift} ⟩$$</div>
 <p>给定训练数据和特征，可以使用任何分类器，例如多项逻辑回归或支持向量机。</p>
 <blockquote><p>Given the training data and features, any classifier, like multinomial logistic regression or support vector machines, can be used.</p></blockquote>
 <h3>20.2.3 神经分类器</h3>
@@ -569,7 +569,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>ˆT(S) = argmax Score(t,S) 我们将做一个简化假设，即该分数可以是边因子化的，也就是说，一棵树的总体分数是构成该树的各条边的分数之和。</p>
 <blockquote><p>ˆT(S) = argmax Score(t,S) We’ll make the simplifying assumption that this score can be edge-factored, meaning that the overall score for a tree is the sum of the scores of each of the scores of the edges that comprise the tree.</p></blockquote>
 <aside class="term"><code>edge-factored</code><span class="term-zh">边因子化的</span><span class="term-explain">指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。</span></aside>
-<div class="formula">$$\sum_{e\int}$$</div>
+<div class="formula">$$\sum_{e \in t}$$</div>
 <p>Score(t,S) = Score(e)基于图的算法必须解决两个问题：（1）为</p>
 <blockquote><p>Graph-based algorithms have to solve two problems: (1) assigning a score to</p></blockquote>
 <p>每条边赋予分数；（2）在给定所有可能边的分数的情况下找出最佳分析树。</p>
@@ -646,12 +646,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>20.3.2 A feature-based algorithm for assigning scores</p></blockquote>
 <p>回想一下，给定一个句子 S 和一个候选树 T，边因子化的句法分析模型做了这样的简化：树的分数等于构成该树的各条边的分数之和：</p>
 <blockquote><p>Recall that given a sentence, S, and a candidate tree, T, edge-factored parsing models make the simplification that the score for the tree is the sum of the scores of the edges that comprise the tree:</p></blockquote>
-<div class="formula">$$\sum_{e\inT}$$</div>
+<div class="formula">$$\sum_{e \in T}$$</div>
 <p>score(S,T) = score(S,e)在基于特征的算法中，我们把边的分数计算为从该边提取出的特征的加权和：</p>
 <blockquote><p>In a feature-based algorithm we compute the edge score as a weighted sum of features extracted from it:</p></blockquote>
 <blockquote><p>e∈T</p></blockquote>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <p>score(S,e) = wi fi(S,e)或者写得更简洁一些。</p>
 <blockquote><p>Or more succinctly.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -682,9 +682,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Here we’ll sketch the biaffine algorithm of Dozat and Manning (2017) and Dozat</p></blockquote>
 <p>等人（2017）的算法，如图 20.14 所示，它借鉴了 Gr¨unewald 等人（2021）的工作，后者通过其 STEPS 系统测试了该算法的许多版本。该算法首先将句子 X = x1,...,xn 送入编码器，为每个词元生成上下文嵌入表示 R = r1,...,rn。每个词元的嵌入随后分别通过两个独立的前馈网络，一个用于生成该词元作为中心词的表示，另一个用于生成该词元作为依存词的表示：</p>
 <blockquote><p>et al. (2017) shown in Fig. 20.14, drawing on the work of Gr¨unewald et al. (2021) who tested many versions of the algorithm via their STEPS system. The algorithm first runs the sentence X = x1,...,xn through an encoder to produce a contextual embedding representation for each token R = r1,...,rn. The embedding for each token is now passed through two separate feedforward networks, one to produce a representation of this token as a head, and one to produce a representation of this token as a dependent:</p></blockquote>
-<div class="formula">$$h^{\text{head}}_{i}=\text{FFN}^{\text{head}}(r_{i})$$</div>
+<div class="formula">$$h ^{\text{head}} _{i} = \text{FFN} ^{\text{head}} ( r _{i} )$$</div>
 <blockquote><p>i</p></blockquote>
-<div class="formula">$$h^{\text{dep}}_{i}=\text{FFN}^{\text{dep}}(r_{i})$$</div>
+<div class="formula">$$h ^{\text{dep}} _{i} = \text{FFN} ^{\text{dep}} ( r _{i} )$$</div>
 <blockquote><p>i</p></blockquote>
 <p>现在，为了给有向边 i →j 赋分（其中 wi 是中心词，w j 是依存词），我们将 i 的中心词表示 hhead 以及依存词的表示</p>
 <blockquote><p>Now to assign a score to the directed edge i →j, (wi is the head and w j is the dependent), we feed the head representation of i, hhead , and the dependent representation</p></blockquote>
@@ -692,7 +692,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>of j, hdep , into a biaffine scoring function:</p></blockquote>
 <blockquote><p>i</p></blockquote>
 <blockquote><p>j</p></blockquote>
-<div class="formula">$$\text{Score}(i\toj)=\text{Biaff}_{⊺}(h_{i}^{\text{head}},h^{\text{dep}}_{j}$$</div>
+<div class="formula">$$\text{Score} ( i \to j ) = \text{Biaff} _{⊺} ( h _{i} ^{\text{head}} , h ^{\text{dep}} _{j}$$</div>
 <p>) Biaff(x,y) = x⊺Uy +W(x⊕y)+b，其中 U、W 和 b 是模型学习到的权重。使用双仿射函数的目的，是让系统能够学习向量 x 与 y 之间的乘性交互。</p>
 <blockquote><p>Biaff(x,y) = x⊺Uy +W(x⊕y)+b where U, W, and b are weights learned by the model. The idea of using a biaffine function is to allow the system to learn multiplicative interactions between the vectors x and y.</p></blockquote>
 <p>若将 Score(i →j) 通过 softmax，我们便得到对于每个词元 j、在其所有可能的中心词 i（句子中所有其他词元）上的一个概率分布：</p>

@@ -83,9 +83,9 @@ RNN 中的前向推断（把一个输入序列映射为一个输出序列）与�
 
 > Forward inference (mapping a sequence of inputs to a sequence of outputs) in an RNN is nearly identical to what we’ve already seen with feedforward networks. To compute an output yt for an input xt, we need the activation value for the hidden layer ht. To calculate this, we multiply the input xt with the weight matrix W, and the hidden layer from the previous time step ht−1 with the weight matrix U. We add these values together and pass them through a suitable activation function, g, to arrive at the activation value for the current hidden layer, ht. Once we have the values for the hidden layer, we proceed with the usual computation to generate the output vector.
 
-$$h_{t}=g(\text{Uh}_{t-1}+\text{Wx}_{t})$$
+$$h _{t} = g ( \text{Uh} _{t - 1} + \text{Wx} _{t} )$$
 
-$$y_{t}=f(\text{Vh}_{t})$$
+$$y _{t} = f ( \text{Vh} _{t} )$$
 
 我们把输入层、隐藏层和输出层的维度分别记为 din、dh 和 dout。由此，我们的三个参数矩阵为：W ∈Rdh×din，U ∈Rdh×dh，以及 V ∈Rdout×dh。
 
@@ -98,7 +98,7 @@ $$y_{t}=f(\text{Vh}_{t})$$
 
 > over the possible output classes.
 
-$$y_{t}=\text{softmax}(\text{Vh}_{t})$$
+$$y _{t} = \text{softmax} ( \text{Vh} _{t} )$$
 
 时刻 t 的计算需要时刻 t −1 的隐藏层值，这一事实决定了一个从序列开头推进到结尾的增量式推断算法，如图 14.3 所示。简单循环网络的顺序性也可以通过按时间展开网络来看到，如图 14.4 所示。在该图中，各层单元在每个时间步都被复制出来，以表明它们在不同时刻会取不同的值。不过，各个权重矩阵在所有时间上是共享的。
 
@@ -167,7 +167,7 @@ P(fish|Thanks for all the)
 
 > n
 
-$$\prod_{i=1}^{n}$$
+$$\prod_{i = 1}^{n}$$
 
 P(w1:n) = P(wi|w<i)
 第 3 章的 n-gram 语言模型依据一个词与前面 n−1 个词共同出现的计数来计算该词的概率。因此上下文的大小为 n−1。
@@ -202,13 +202,13 @@ RNN 语言模型（Mikolov 等，2010）一次处理输入序列中的一个
 
 et = Ext ht = g(Uht−1 +Wet) (14.4) (14.5)
 
-$$ˆy_{t}=\text{softmax}(\text{Vh}_{t})$$
+$$ˆy _{t} = \text{softmax} ( \text{Vh} _{t} )$$
 
 当我们用 RNN 做语言建模时（在第 7 章讲 transformer 时我们会再次看到这一点），一个便利的假设是令嵌入维度 de 与隐藏维度 dh 相同。这样我们就笼统地把二者都称为模型维度 d。于是嵌入矩阵 E 的形状为 [d ×|V|]，而 xt 是形状为 [|V|×1] 的独热向量。因此乘积 et 的形状为 [d ×1]。W 和 U 的形状为 [d × d]，所以 ht 的形状也是 [d × 1]。V 的形状为 [|V| × d]，所以 Vh 的结果是形状为 [|V| × 1] 的向量。这个向量可以看作在 h 所提供的证据下、词表上的一组得分。将这些得分通过 softmax，即可把得分归一化为一个概率分布。词表中某个特定的词 k 是下一个词的概率由 ˆyt[k] 表示，即 ˆyt 的第 k 个分量：
 
 > When we do language modeling with RNNs (and we’ll see this again in Chapter 7 with transformers), it’s convenient to make the assumption that the embedding dimension de and the hidden dimension dh are the same. So we’ll just call both of these the model dimension d. So the embedding matrix E is of shape [d ×|V|], and xt is a one-hot vector of shape [|V|×1]. The product et is thus of shape [d ×1]. W and U are of shape [d × d], so ht is also of shape [d × 1]. V is of shape [|V| × d], so the result of Vh is a vector of shape [|V| × 1]. This vector can be thought of as a set of scores over the vocabulary given the evidence provided in h. Passing these scores through the softmax normalizes the scores into a probability distribution. The probability that a particular word k in the vocabulary is the next word is represented by ˆyt[k], the kth component of ˆyt:
 
-$$P(w_{t+1}=k|w_{1},...,w_{t})=ˆy_{t}[k]$$
+$$P ( w _{t + 1} = k | w _{1} ,..., w _{t} ) = ˆy _{t} [ k ]$$
 
 整个序列的概率就是序列中各项概率的乘积，其中我们用 ˆyi[wi] 表示在时间步 i 真实词 wi 的概率。
 
@@ -216,7 +216,7 @@ $$P(w_{t+1}=k|w_{1},...,w_{t})=ˆy_{t}[k]$$
 
 > n
 
-$$\prod_{i=n1}^{n}$$
+$$\prod_{i = n 1}^{n}$$
 
 P(w1:n) = P(wi|w1:i−1) (14.8)
 Yˆyi[wi]
@@ -238,7 +238,7 @@ Yˆyi[wi]
 >
 > 释义：利用数据自身蕴含的自然序列作为监督信号、无需额外人工标注标签的训练方式。
 
-$$\sum_{w\inV}$$
+$$\sum_{w \in V}$$
 
 LCE( ˆyt,yt) = − yt[w]log ˆyt[w]
 
@@ -251,7 +251,7 @@ LCE( ˆyt,yt) = − yt[w]log ˆyt[w]
 
 > In the case of language modeling, the correct distribution yt comes from knowing the next word. This is represented as a one-hot vector corresponding to the vocabulary where the entry for the actual next word is 1, and all the other entries are 0. Thus, the cross-entropy loss for language modeling is determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence.
 
-$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$
+$$L _{\text{CE}} ( y ˆ _{t} , y _{t} ) = - \text{log ˆ} y _{t} [ w _{t + 1} ]$$
 
 因此，在输入的每个词位置 t 上，模型以正确的词 wt 连同 ht−1 作为输入，其中 ht−1 编码了来自先前 w1:t−1 的信息，并用它们计算可能的下一个词上的概率分布，从而计算模型对下一个词元 wt+1 的损失。随后我们移到下一个词，忽略模型对下一个词所预测的结果，转而使用正确的词 wt+1 连同已编码的先前历史来估计词元 wt+2 的概率。这种始终把正确的历史序列交给模型来预测下一个词（而不是把模型在上一个时间步的最佳结果喂回模型）的做法，称为教师强制。
 
@@ -301,7 +301,7 @@ E 的各列表示词表中每个词的词嵌入，这些嵌入是在训练过程
 
 et = Ext ht = g(Uht−1 +Wet) (14.12) (14.13)
 
-$$ˆy_{t}=\text{softmax}(E^{⊺}h_{t})$$
+$$ˆy _{t} = \text{softmax} ( E ^{⊺} h _{t} )$$
 
 除了能带来更好的模型困惑度之外，这种做法还显著减少了模型所需的参数数量。
 
@@ -542,7 +542,7 @@ t 表示网络到该时刻为止对序列所知的一切。该状态是输入 x1
 
 > t represents everything the network knows about the sequence up to that point. The state is a function of the inputs x1,...,xt and represents the context of the network to the left of the current time.
 
-$$h^{f}_{t}=\text{RNN}_{\text{forward}}(x_{1},...,x_{t})$$
+$$h ^{f} _{t} = \text{RNN} _{\text{forward}} ( x _{1} ,..., x _{t} )$$
 
 这个新记号 hf t 只不过对应于 t 时刻通常的隐状态，表示网络到目前为止从序列中收集到的一切。
 
@@ -555,7 +555,7 @@ RNN，让它在反转的输入序列上训练。采用这种方法，时刻 t �
 
 > RNN on a reversed input sequence. With this approach, the hidden state at time t represents information about the sequence to the right of the current input:
 
-$$h^{b}_{t}=\text{RNN}_{\text{backward}}(x_{t},...x_{n})$$
+$$h ^{b} _{t} = \text{RNN} _{\text{backward}} ( x _{t} ,... x _{n} )$$
 
 这里，隐状态 hb t 表示我们从 t 到序列末尾所辨识出的关于该序列的全部信息。
 
@@ -572,7 +572,7 @@ RNN，其中一个从头到尾处理输入，另一个从尾到头处理输入�
 
 > RNNs, one where the input is processed from the start to the end, and the other from the end to the start. We then concatenate the two representations computed by the networks into a single vector that captures both the left and right contexts of an input at each point in time. Here we use either the semicolon ”;” or the equivalent symbol⊕to mean vector concatenation:
 
-$$h_{t}=[h^{f}_{t};h^{b}_{t}]$$
+$$h _{t} = [ h ^{f} _{t} ; h ^{b} _{t} ]$$
 
 = h f t ⊕hb 图 14.11 展示了这样一个双向网络，它拼接了前向传播和后向传播的输出。其他组合前向与后向上下文的简单方式包括逐元素相加或逐元素相乘。于是每个时间步的输出都捕捉了当前输入左侧和右侧的信息。在序列标注应用中，这些拼接后的输出可以作为局部标注决策的基础。
 
@@ -675,15 +675,15 @@ LSTM 中的门遵循一种共同的设计模式：每个门都由一个前馈层
 
 > to delete information from the context that is no longer needed. The forget gate computes a weighted sum of the previous state’s hidden layer and the current input and passes that through a sigmoid. This mask is then multiplied element-wise by the context vector to remove the information from context that is no longer required. Element-wise multiplication of two vectors (represented by the operator ⊙, and sometimes called the Hadamard product) is the vector of the same dimension as the two input vectors, where each element i is the product of element i in the two input vectors:
 
-$$f_{t}=σ(U_{f}h_{t-1}+W_{f}x_{t})$$
+$$f _{t} = σ ( U _{f} h _{t - 1} + W _{f} x _{t} )$$
 
-$$k_{t}=c_{t-1}⊙f_{t}$$
+$$k _{t} = c _{t - 1} ⊙ f _{t}$$
 
 下一项任务是计算我们需要从前一隐状态和当前输入中提取的实际信息——这与我们一直用于所有循环网络的基本计算相同。
 
 > The next task is to compute the actual information we need to extract from the previous hidden state and current inputs—the same basic computation we’ve been using for all our recurrent networks.
 
-$$g_{t}=\text{tanh}(U_{g}h_{t-1}+W_{g}x_{t})$$
+$$g _{t} = \text{tanh} ( U _{g} h _{t - 1} + W _{g} x _{t} )$$
 
 接下来，我们生成添加门的掩码，以选择要添加到
 
@@ -697,15 +697,15 @@ $$g_{t}=\text{tanh}(U_{g}h_{t-1}+W_{g}x_{t})$$
 
 > current context.
 
-$$i_{t}=σ(U_{i}h_{t-1}+W_{i}x_{t})$$
+$$i _{t} = σ ( U _{i} h _{t - 1} + W _{i} x _{t} )$$
 
-$$j_{t}=g_{t}⊙i_{t}$$
+$$j _{t} = g _{t} ⊙ i _{t}$$
 
 接下来，我们把它加到修改后的上下文向量上，得到新的上下文向量。
 
 > Next, we add this to the modified context vector to get our new context vector.
 
-$$c_{t}=j_{t}+k_{t}$$
+$$c _{t} = j _{t} + k _{t}$$
 
 我们要用的最后一个门是输出门，它用于决定当前隐状态需要哪些信息（相对于哪些信息需要为未来的决策而保留）。
 
@@ -862,7 +862,7 @@ RNN 的编码器-解码器网络；我们已经在第 13 章见过用于机器�
 
 > Recall that in any language model, we can break down the probability as follows:
 
-$$p(y)=p(y_{1})p(y_{2}|y_{1})p(y_{3}|y_{1},y_{2})...p(y_{m}|y_{1},...,y_{m-1})$$
+$$p ( y ) = p ( y _{1} ) p ( y _{2} | y _{1} ) p ( y _{3} | y _{1} , y _{2} ) ... p ( y _{m} | y _{1} ,..., y _{m - 1} )$$
 
 在 RNN 语言建模中，在特定的时刻 t，我们将由 t −1 个
 
@@ -878,9 +878,9 @@ $$p(y)=p(y_{1})p(y_{2}|y_{1})p(y_{3}|y_{1},y_{2})...p(y_{m}|y_{1},...,y_{m-1})$$
 
 > the input at time t and the hidden state at time t −1, and the softmax is over the set of possible vocabulary items, then at time t the output yt and hidden state ht are computed as:
 
-$$h_{t}=g(h_{t-1},x_{t})$$
+$$h _{t} = g ( h _{t - 1} , x _{t} )$$
 
-$$ˆy_{t}=\text{softmax}(h_{t})$$
+$$ˆy _{t} = \text{softmax} ( h _{t} )$$
 
 我们只需做一个微小的改动，就能把这个带自回归生成的语言模型转变为一个编码器-解码器模型，即一个能把一种语言的源文本翻译成另一种语言的目标文本的翻译模型：
 
@@ -915,7 +915,7 @@ $$ˆy_{t}=\text{softmax}(h_{t})$$
 
 > token <s>, and y to refer to the target text y (in this case in Spanish). Then an encoder-decoder model computes the probability p(y|x) as follows:
 
-$$p(y|x)=p(y_{1}|x)p(y_{2}|y_{1},x)p(y_{3}|y_{1},y_{2},x)...p(y_{m}|y_{1},...,y_{m-1},x)$$
+$$p ( y | x ) = p ( y _{1} | x ) p ( y _{2} | y _{1} , x ) p ( y _{3} | y _{1} , y _{2} , x ) ... p ( y _{m} | y _{1} ,..., y _{m - 1} , x )$$
 
 图 14.17 展示了一个简化版编码器-解码器模型的设置
 
@@ -973,15 +973,15 @@ $$p(y|x)=p(y_{1}|x)p(y_{2}|y_{1},x)p(y_{3}|y_{1},y_{2},x)...p(y_{m}|y_{1},...,y_
 
 > We do this by adding c as a parameter to the computation of the current hidden state. using the following equation:
 
-$$h_{t}^{d}=g(yˆ_{t-1},h_{t}^{d}$$
+$$h _{t} ^{d} = g ( y ˆ _{t - 1} , h _{t} ^{d}$$
 
-$$_{t}^{d}_{-1},c)$$
+$$_{t - 1} ^{d} , c )$$
 
 现在我们准备来看这个基本编码器-解码器模型中该版本解码器的完整方程，其中上下文在每个解码时间步都可用。回顾一下，g 是某种 RNN 的代称，而 ˆyt−1 是上一步从 softmax 中采样得到的输出的嵌入：
 
 > Now we’re ready to see the full equations for this version of the decoder in the basic encoder-decoder model, with context available at each decoding timestep. Recall that g is a stand-in for some flavor of RNN and ˆyt−1 is the embedding for the output sampled from the softmax at the previous step:
 
-$$c=h^{e}_{n}$$
+$$c = h ^{e} _{n}$$
 
 > n
 
@@ -989,9 +989,9 @@ hd 0 = c hd = g(ˆyt−1,hd t−1,c)
 
 > t
 
-$$ˆy_{t}=\text{softmax}(h_{t}^{d}$$
+$$ˆy _{t} = \text{softmax} ( h _{t} ^{d}$$
 
-$$_{t}^{d})$$
+$$_{t} ^{d} )$$
 
 因此，ˆyt 是词表上的一个概率向量，表示在时间 t 出现每个词的概率。要生成文本，我们便从这个分布 ˆyt 中采样。例如，贪心选择就是在每个时间步选择最可能的词来生成。我们在第 7.6 节讨论了其他采样方法。
 
@@ -1079,9 +1079,9 @@ $$_{t}^{d})$$
 
 > all of the encoder hidden states into account in its derivation. We then make this context available during decoding by conditioning the computation of the current decoder hidden state on it (along with the prior hidden state and the previous output generated by the decoder), as we see in this equation (and Fig. 14.21):
 
-$$h^{d}_{i}=g(yˆ_{i-1},h^{d}_{i}$$
+$$h ^{d} _{i} = g ( y ˆ _{i - 1} , h ^{d} _{i}$$
 
-$$^{d}_{i-1},c_{i})$$
+$$^{d} _{i - 1} , c _{i} )$$
 
 > i
 
@@ -1108,7 +1108,7 @@ $$^{d}_{i-1},c_{i})$$
 
 > similarity: measuring how similar the decoder hidden state is to an encoder hidden state, by computing the dot product between them:
 
-$$\text{score}(h^{d}_{i-1},h^{e}_{j})=h^{d}_{i-1}\cdoth^{e}_{j}$$
+$$\text{score} ( h ^{d} _{i - 1} , h ^{e} _{j} ) = h ^{d} _{i - 1} \cdot h ^{e} _{j}$$
 
 > j
 
@@ -1123,13 +1123,13 @@ $$\text{score}(h^{d}_{i-1},h^{e}_{j})=h^{d}_{i-1}\cdoth^{e}_{j}$$
 
 > vector of weights, αi j, that tells us the proportional relevance of each encoder hidden state j to the prior hidden decoder state, hd i−1.
 
-$$α_{i j}=\text{softmax}(\text{score}(h^{d}_{i-1},h^{e}_{j}))$$
+$$α _{i j} = \text{softmax} ( \text{score} ( h ^{d} _{i - 1} , h ^{e} _{j} ))$$
 
-$$\text{exp}(\text{score}(h^{d}_{i-\frac{1}{d}},h^{e}_{j})_{e}$$
+$$\text{exp} ( \text{score} ( h ^{d} _{i - \frac{1}{d}} , h ^{e} _{j} ) _{e}$$
 
 = P k exp(score(hd i−1,he
 
-$$_{k}^{e}))$$
+$$_{k} ^{e} ))$$
 
 最后，给定 α 中的分布，我们可以通过对所有编码器隐状态取加权平均，为当前解码器状态计算出一个固定长度的上下文向量。
 
@@ -1137,7 +1137,7 @@ $$_{k}^{e}))$$
 
 $$\sum_{j}$$
 
-$$α_{\text{ij}}h^{e}_{j}$$
+$$α _{\text{ij}} h ^{e} _{j}$$
 
 ci = 有了它，我们终于得到一个固定长度的上下文向量，它考虑了来自整个编码器状态的信息，并会动态更新，以反映解码器在解码每一步时的需要。图 14.22 展示了一个带注意力的编码器-解码器网络，重点说明了一个上下文向量 ci 的计算。
 
@@ -1160,7 +1160,7 @@ ci = 有了它，我们终于得到一个固定长度的上下文向量，它考
 
 > models. Instead of simple dot product attention, we can get a more powerful function that computes the relevance of each encoder hidden state to the decoder hidden state by parameterizing the score with its own set of weights, Ws.
 
-$$\text{score}(h^{d}_{i-1},h^{e}_{j})=h^{d}_{i-1}W_{s}h^{e}_{j}$$
+$$\text{score} ( h ^{d} _{i - 1} , h ^{e} _{j} ) = h ^{d} _{i - 1} W _{s} h ^{e} _{j}$$
 
 > j
 

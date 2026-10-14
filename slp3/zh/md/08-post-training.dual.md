@@ -524,11 +524,11 @@ N ^2
 
 1
 
-$$P(o_{i}≻o^{j}|x)=$$
+$$P ( o _{i} ≻ o ^{j} | x ) =$$
 
-$$1+e^{-(zi-zj)}$$
+$$1 + e ^{- ( z i - z j )}$$
 
-$$=σ(z_{i}-z_{j})$$
+$$= σ ( z _{i} - z _{j} )$$
 
 > `Bradley-Terry Model`（Bradley-Terry 模型）
 >
@@ -550,7 +550,7 @@ P(oi ≻o j|x)
 P(o j ≻oi|x) P(oi ≻o j|x)
 = log
 
-$$1-P(o_{i}≻o^{j}|x)$$
+$$1 - P ( o _{i} ≻ o ^{j} | x )$$
 
 对两边取指数，并用一些代数运算整理各项，即得到我们如今熟悉的 logistic sigmoid。
 
@@ -564,7 +564,7 @@ exp(δ)−exp(δ)P(oi ≻o j|x) = P(oi ≻o j|x)
 exp(δ) = P(oi ≻o j|x)+exp(δ)P(oi ≻o j|x) exp(δ) = P(oi ≻o j|x)(1+exp(δ))
 exp(δ)
 
-$$P(o_{i}≻o^{j}|x)=$$
+$$P ( o _{i} ≻ o ^{j} | x ) =$$
 
 1+exp(δ)
 1
@@ -575,7 +575,7 @@ $$P(o_{i}≻o^{j}|x)=$$
 
 > Bringing us right back to our original formulation.
 
-$$P(o_{i}≻o^{j}|x)=σ(z_{i}-z_{j})$$
+$$P ( o _{i} ≻ o ^{j} | x ) = σ ( z _{i} - z _{j} )$$
 
 ### 8.3.3 学习为偏好打分
 
@@ -595,7 +595,7 @@ $$P(o_{i}≻o^{j}|x)=σ(z_{i}-z_{j})$$
 
 P(oi ≻o j|x) = σ(zi −zj) (8.2)
 
-$$=σ(r(o_{i},x)-r(o_{j},x))$$
+$$= σ ( r ( o _{i} , x ) - r ( o _{j} , x ))$$
 
 为了从偏好数据中学习 r(x,o)，我们将使用梯度下降来最小化
 
@@ -606,13 +606,13 @@ $$=σ(r(o_{i},x)-r(o_{j},x))$$
 
 LCE(x,ow,ol) = −logP(ow ≻ol|x)
 
-$$=-\text{log}σ(r(x,o_{w})-r(x,o_{l}))$$
+$$= - \text{log} σ ( r ( x , o _{w} ) - r ( x , o _{l} ))$$
 
 也就是说，该损失是模型对 P(ow ≻ol|x) 的估计的负对数似然。而偏好训练集 D 上的损失由以下期望给出：
 
 > That is, the loss is the negative log-likelihood of the model’s estimate of P(ow ≻ol|x). And the loss over the preference training set, D, is given by the following expectation:
 
-$$L_{\text{CE}}=-E_{(x,ow,ol)\simD}[\text{log}σ(r(x,o_{w})-r(x,o_{l}))]$$
+$$L _{\text{CE}} = - E _{( x , o w , o l ) \sim D} [ \text{log} σ ( r ( x , o _{w} ) - r ( x , o _{l} ))]$$
 
 为了用这个损失学习奖励模型，我们可以采用任何能够以文本为输入并返回标量输出的回归模型。如图 8.10 所示，当前更受青睐的做法是从一个已有的预训练 LLM 初始化奖励模型（Ziegler et al., 2019）。为生成标量输出，我们去掉最后一层中的语言建模头，将其替换为单个稠密线性层。然后我们使用梯度下降，配合 8.4 中的损失，利用偏好训练数据学习为模型输出打分。
 
@@ -656,7 +656,7 @@ $$L_{\text{CE}}=-E_{(x,ow,ol)\simD}[\text{log}σ(r(x,o_{w})-r(x,o_{l}))]$$
 
 > With this, our goal is to train a policy, πθ, that maximizes the rewards for the outputs from the policy given a reward model derived from preference data. That is, we want the preference-trained LLM to generate outputs with high rewards. We can express this as an optimization problem as follows:
 
-$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}[r(x,o)]$$
+$$π ^{\ast} = \text{argmax} _{π θ} E _{x \sim D , o \sim π θ ( o | x )} [ r ( x , o )]$$
 
 > πθ
 
@@ -687,7 +687,7 @@ $$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}[r(x,o)]$$
 
 > typically forget everything it learned during pretraining as it pivots to seeking high rewards from the relatively small amount of available preference data. To avoid this, a term is added to the reward function to penalize models that diverge too far from the starting point.
 
-$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}[r(x,o)-βD_{\text{KL}}[π_{θ}(o|x)||π_{\text{ref}}(o|x)]]$$
+$$π ^{\ast} = \text{argmax} _{π θ} E _{x \sim D , o \sim π θ ( o | x )} [ r ( x , o ) - β D _{\text{KL}} [ π _{θ} ( o | x ) || π _{\text{ref}} ( o | x )]]$$
 
 > πθ
 
@@ -700,9 +700,9 @@ Leibler（KL）散度。简言之，KL 散度衡量两个概率分布之间的�
 
 rφ(x,o)−β log πθ(o|x)  (8.7)
 
-$$π^{\ast}=\text{argmax}_{πθ}E_{x\simD,o\simπθ(o|x)}$$
+$$π ^{\ast} = \text{argmax} _{π θ} E _{x \sim D , o \sim π θ ( o | x )}$$
 
-$$π_{\text{ref}}(o|x)$$
+$$π _{\text{ref}} ( o | x )$$
 
 > πθ
 
@@ -726,7 +726,7 @@ TBD
 
 P(oi ≻o j|x) = σ(zi −zj) (8.8)
 
-$$=σ(r(x,o_{i})-r(x,o_{j}))$$
+$$= σ ( r ( x , o _{i} ) - r ( x , o _{j} ))$$
 
 DPO 从前面 8.7 节引入的 KL 约束最大化出发，
 
@@ -768,9 +768,9 @@ P(oi ≻o j|x) = σ(r(x,oi)−r(x,oj)) (8.12)
 
 β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x)
 
-$$L_{\text{DPO}}(x,o_{w},o_{l})=-\text{log}σ$$
+$$L _{\text{DPO}} ( x , o _{w} , o _{l} ) = - \text{log} σ$$
 
-$$π_{\text{ref}}(o_{l}|x)$$
+$$π _{\text{ref}} ( o _{l} | x )$$
 
 而训练集 D 上的损失由以下期望给出：
 
@@ -779,7 +779,7 @@ $$π_{\text{ref}}(o_{l}|x)$$
 β log πθ(ow|x) πref(ow|x) −β log πθ(ol|x)
 LDPO(πθ) = −E(x,ow,ol)∼D logσ
 
-$$π_{\text{ref}}(o_{l}|x)$$
+$$π _{\text{ref}} ( o _{l} | x )$$
 
 该损失源自 sigmoid 的导数，并且与
 

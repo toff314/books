@@ -381,7 +381,7 @@ tf-idf（这里的“-”是连字符，而不是减号）是两个量的乘积�
 
 > (1+log10 count(t,d) if count(t,d) > 0
 
-$$\text{tf}_{t,d}=$$
+$$\text{tf} _{t , d} =$$
 
 0 其他情况
 
@@ -396,7 +396,7 @@ $$\text{tf}_{t,d}=$$
 
 N
 
-$$\text{idf}_{t}=\text{log}_{10}$$
+$$\text{idf} _{t} = \text{log} _{10}$$
 
 dft
 其中 N 是文档集合中文档的总数，dft 是包含词项 t 的文档数量。一个词项出现的文档越少，该权重就越高；在每篇文档中都出现的词项则被赋予最低的权重 0。
@@ -426,9 +426,9 @@ dft
 
 > The tf-idf value for word t in document d is then the product of term frequency
 
-$$\text{tf}_{t,d}\text{and IDF:}$$
+$$\text{tf} _{t , d} \text{and IDF:}$$
 
-$$\text{tf-idf}(t,d) =\text{tf}_{t,d}\cdot\text{idf}_{t}$$
+$$\text{tf-idf} ( t , d ) = \text{tf} _{t , d} \cdot \text{idf} _{t}$$
 
 3
 
@@ -765,7 +765,7 @@ Recallk = |前 k 个中的相关文档数|
 >
 > 释义：在某一给定召回率水平上，取该水平及更高召回率处所达到的最大精确率作为其取值，用于得到平滑且可跨查询平均的曲线。
 
-$$\text{IntPrecision}(r) =\text{max}_{i>=r}\text{Precision}(i)$$
+$$\text{IntPrecision} ( r ) = \text{max} _{i > = r} \text{Precision} ( i )$$
 
 这种插值方案不仅能让我们对一组查询的性能取平均，还有助于平滑原始数据中不规则的精确率取值。它的设计意图是，把在高于所测量召回率水平的更高召回率处所达到的最大精确率值赋给系统，从而对系统作有利的推定。图 11.9 和图 11.10 展示了由我们的示例得到的插值数据点。
 
@@ -799,7 +799,7 @@ $$\text{IntPrecision}(r) =\text{max}_{i>=r}\text{Precision}(i)$$
 1 X
 AP = Precisionr(d) (11.16)
 
-$$|R_{r}|$$
+$$| R _{r} |$$
 
 > d∈Rr
 
@@ -895,7 +895,7 @@ zq = BERTQ(q)[CLS] zd = BERTD(d)[CLS] score(q,d) = zq ·zd (11.19)
 
 > N
 
-$$\sum_{i=1}^{N}$$
+$$\sum_{i = 1}^{N}$$
 
 > m
 
@@ -1027,7 +1027,7 @@ RAG 提示的示意图
 
 > n
 
-$$\prod_{i=1}^{n}$$
+$$\prod_{i = 1}^{n}$$
 
 p(x1,...,xn) = p(xi|R(q) ; 回答下面这个问题... ; q ;x<i)
 

@@ -459,7 +459,7 @@ N 非终结符（或称变量）的集合 Σ 终结符的集合（与 N 不相�
 
 > Let α1, α2, ..., αm be strings in (Σ∪N)∗,m ≥1, such that
 
-$$α_{1}⇒α_{2},α_{2}⇒α_{3},...,α_{m-1}⇒α_{m}$$
+$$α _{1} ⇒ α _{2} , α _{2} ⇒ α _{3} ,..., α _{m - 1} ⇒ α _{m}$$
 
 我们说 α1 推导出 αm，或记作 α1 ∗⇒αm。
 
@@ -476,7 +476,7 @@ $$α_{1}⇒α_{2},α_{2}⇒α_{3},...,α_{m-1}⇒α_{m}$$
 
 > set of strings composed of terminal symbols that can be derived from the designated start symbol S.
 
-$$L_{G}=\{w|w\text{is in}Σ^{\ast}\text{and}S⇒^{\ast}w\}$$
+$$L _{G} = \{ w | w \text{is in} Σ ^{\ast} \text{and} S ⇒ ^{\ast} w \}$$
 
 从词串映射到其解析树的问题称为句法分析，我们将在 19.6 节中看到。
 
@@ -1118,8 +1118,7 @@ y0 −→ y0 ←− y1 y1 −→ y1 ←− y2 y2 −→ y2 ←− y3 y3 −→ y
 
 > START0
 
-$$⃝_{0}⃝_{1}⃝_{2}⃝_{3}⃝_{4}$$
-
+0⃝ 1⃝ 2⃝ 3⃝ 4⃝
 span(1,3)
 表示跨度的一种传统做法最初是为基于 RNN 的模型提出的（Wang and Chang, 2016），后来也被推广到 Transformer：取其起点与终点嵌入之差，即用 j 的嵌入减去 i 的嵌入来表示跨度 (i, j)。这里我们则通过拼接跨度各个栅栏位置分量的差值来表示一个跨度：
 
@@ -1130,7 +1129,7 @@ v(i, j) = [−→ yj −−→ yi ; ←−− y j+1 −←−− yi+1] (19.5)
 
 > The span vector v is then passed through an MLP span classifier, with two fullyconnected layers and one ReLU activation function, whose output dimensionality is the number of possible non-terminal labels:
 
-$$s(i,j,\cdot) =W_{2}\text{ReLU}(\text{LayerNorm}(W_{1}v(i,j)))$$
+$$s ( i , j , \cdot ) = W _{2} \text{ReLU} ( \text{LayerNorm} ( W _{1} v ( i , j )))$$
 
 随后该 MLP 为每一个可能的非终结符输出一个得分。
 
@@ -1144,13 +1143,13 @@ $$s(i,j,\cdot) =W_{2}\text{ReLU}(\text{LayerNorm}(W_{1}v(i,j)))$$
 
 > Now we have a score for each labeled constituent span s(i, j,l). But we need a score for an entire parse tree. Formally a tree T is represented as a set of |T| such labeled spans, with the tth span starting at position it and ending at position jt, with label lt:
 
-$$T=\{(i_{t},j_{t},l_{t}):t=1,...,|T|\}$$
+$$T = \{ ( i _{t} , j _{t} , l _{t} ) : t = 1 ,..., | T |\}$$
 
 因此，一旦有了每个跨度的得分，分析器只需把构成这棵树的所有跨度的得分相加，就能算出整棵树 s(T) 的得分：
 
 > Thus once we have a score for each span, the parser can compute a score for the whole tree s(T) simply by summing over the scores of its constituent spans:
 
-$$\sum_{,j,l)\in}$$
+$$\sum_{, j , l ) \in}$$
 
 s(T) = s(i, j,l) 我们可以选取得分最大的树作为最终的解析树：
 
@@ -1173,7 +1172,7 @@ s(T) = s(i, j,l) 我们可以选取得分最大的树作为最终的解析树：
 
 > full parse. The variant defined in Gaddy et al. (2018) works as follows. Let’s define sbest(i, j) as the score of the best subtree spanning (i, j). For spans of length one, we choose the best label:
 
-$$s_{\text{best}}(i,i+1) =\text{max}_{l}s(i,i+1,l)$$
+$$s _{\text{best}} ( i , i + 1 ) = \text{max} _{l} s ( i , i + 1 , l )$$
 
 > l
 
@@ -1181,11 +1180,11 @@ $$s_{\text{best}}(i,i+1) =\text{max}_{l}s(i,i+1,l)$$
 
 > For other spans (i, j), the recursion is:
 
-$$s_{\text{best}}(i,j)=\text{max}_{l}s(i,j,l)$$
+$$s _{\text{best}} ( i , j ) = \text{max} _{l} s ( i , j , l )$$
 
 > l
 
-$$+\text{max}_{k}[s_{\text{best}}(i,k)+s_{\text{best}}(k,j)]$$
+$$+ \text{max} _{k} [ s _{\text{best}} ( i , k )+ s _{\text{best}} ( k , j )]$$
 
 注意，分析器使用的是跨度 (i, j) 的最大标签加上跨度 (i,k) 与 (k, j) 的最大标签，而不考虑这些决策在给定文法下是否合理。在经典句法分析中，文法的作用是帮助约束成分的可能组合（NP 之后倾向于跟 VP）。相比之下，神经模型似乎在从跨度到非终结符的映射过程中学到了这类上下文约束。
 

@@ -216,7 +216,7 @@ CNN 使用一个卷积核，即一个小的权重向量 w1 ...wk，来提取特�
 
 > p
 
-$$\sum_{i=-p}^{p}$$
+$$\sum_{i = - p}^{p}$$
 
 z j = xj+iwi+p (16.2)
 图 16.3 展示了卷积 x∗w 的计算，其中卷积核宽度为 3，并分别在 x 的首尾各填充 1 帧、取值为零。
@@ -250,9 +250,9 @@ z j = xj+iwi+p (16.2)
 
 > Ci
 
-$$\sum_{c=1}^{Ci}$$
+$$\sum_{c = 1}^{C i}$$
 
-$$x^{c}\astw$$
+$$x ^{c} \ast w$$
 
 z = (16.3)
 因此，第 j 帧的输出 zj 综合了来自所有输入通道的信息。
@@ -296,7 +296,7 @@ Chan et al. 2016）。
 该架构的输入 x 是 t 个声学特征向量构成的序列 X =
 x1,x2,...,xt，每 10 ms 一帧对应一个向量。我们通常以前一节所述的对数梅尔频谱特征作为起点，不过也可以从原始波形文件开始。输出序列 Y 既可以是字母，也可以是标记（BPE 或 sentencepiece）；这里为简化说明，我们假定它是字母。因此输出序列 Y = (⟨SOS⟩,y1,...,ym⟨EOS⟩)，其中假定使用特殊的序列起始标记和序列结束标记 ⟨sos⟩ 与 ⟨eos⟩，且每个 yi 是一个字符；对于英语，我们可能选择如下字符集：
 
-$$y_{i}\in \{a,b,c,...,z,0,...,9,⟨\text{space}⟩,⟨\text{comma}⟩,⟨\text{period}⟩,⟨\text{apostrophe}⟩,⟨\text{unk}⟩\}$$
+$$y _{i} \in \{ a , b , c ,..., z , 0 ,..., 9 , ⟨ \text{space} ⟩ , ⟨ \text{comma} ⟩ , ⟨ \text{period} ⟩ , ⟨ \text{apostrophe} ⟩ , ⟨ \text{unk} ⟩\}$$
 
 ![](images/16-speech-recognition/fig_p8_0.png)
 
@@ -367,7 +367,7 @@ Henc 的形状为 [n×d]，每一行表示一个声学输入标记。为了把�
 
 我们将编码器输出 Henc 与交叉注意力层的键权重 WK 和值权重 WV 相乘。查询来自前一个解码器层的输出 Hdec[ℓ−1]，它与交叉注意力层的查询权重 WQ 相乘：
 
-$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$
+$$Q = H ^{\text{dec} [ ℓ - 1 ]} W ^{Q} ; K = H ^{\text{enc}} W ^{K} ; V = H ^{\text{enc}} W ^{V}$$
 
 QK⊺  (16.5)
 CrossAttention(Q,K,V) = softmax
@@ -378,14 +378,14 @@ CrossAttention(Q,K,V) = softmax
 
 > n
 
-$$\prod_{i=1}^{n}$$
+$$\prod_{i = 1}^{n}$$
 
 p(y1,...,yn) = p(yi|y1,...,yi−1,X) (16.6)
 我们可以通过贪心解码产生输出的每个字母：
 
 > i=1
 
-$$yˆ_{i}=\text{argmax}_{\text{char}\in\text{Alphabet}}P(\text{char}|y_{1}...y_{i-1},X)$$
+$$y ˆ _{i} = \text{argmax} _{\text{char} \in \text{Alphabet}} P ( \text{char} | y _{1} ... y _{i - 1} , X )$$
 
 另外，像 Whisper 或 OWSM 这样的编码器-解码器也使用下一节所述的束搜索。这在我们加入语言模型时尤为相关。
 
@@ -402,19 +402,19 @@ $$yˆ_{i}=\text{argmax}_{\text{char}\in\text{Alphabet}}P(\text{char}|y_{1}...y_{
 1
 score(Y|X) = logP(Y|X)+λ logPLM(Y) (16.8)
 
-$$|Y|_{c}$$
+$$| Y | _{c}$$
 
 ### 16.3.3 学习
 
 用于语音的编码器-解码器使用条件语言模型通常采用的普通交叉熵损失进行训练。在解码的时间步 i，损失是正确词元（字母）yi 的对数概率：
 
-$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,y_{i-1},X)$$
+$$L _{\text{CE}} = - \text{log} p ( y _{i} | y _{1} ,..., y _{i - 1} , X )$$
 
 整个句子的损失是这些损失之和：
 
 > m
 
-$$\sum_{i=1}^{m}$$
+$$\sum_{i = 1}^{m}$$
 
 LCE = − log p(yi|y1,...,yi−1,X) (16.10)
 然后该损失通过整个端到端模型反向传播，以训练整个编码器-解码器。
@@ -424,7 +424,7 @@ LCE = − log p(yi|y1,...,yi−1,X) (16.10)
 正如我们在第 13 章所述，我们通常使用教师强制，其中
 解码器历史被强制设为正确的标准答案 yi，而不是预测的 ˆyi。也可以混合使用标准答案与解码器输出，例如 90% 的时间使用标准答案输出，而以 0.1 的概率改用解码器输出：
 
-$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,ˆy_{i-1},X)$$
+$$L _{\text{CE}} = - \text{log} p ( y _{i} | y _{1} ,..., ˆ y _{i - 1} , X )$$
 
 现代数据规模相当大。例如，Whisper-v2 在一个语料库上训练，该语料库
 由 680,000 小时语音组成，主要来自英语，但也包括来自其他 96 种语言的 118,000 小时。数据质量很重要，因此从网络抓取训练数据的系统会实现一些方法，从训练语料中移除由 ASR 生成的转写，例如过滤全大写或全小写的数据。开放的 OWSM 系统在 180k 小时数据上训练，主要是人工转写的公开可用数据，包括 LibriSpeech 和 Multilingual LibriSpeech、Common Voice、FLEURS、Switchboard、AMI 等数据集；详见（Peng 等，2023）。
@@ -474,14 +474,14 @@ CNN 层之后，上下文窗口中有一段词元被选作掩码，对这些词�
 
 整个上下文窗口经过 Transformer 层，每个时间步 t 上的 Transformer 输出 hL t 乘以投影层矩阵 A，将其投影到类别嵌入空间。得到的表示再与 C 中每个类别的嵌入进行比较（使用余弦相似度），并用 softmax（温度参数 τ=0.1）把相似度转成概率：
 
-$$\text{exp}(\text{sim}(\text{Ah}_{t},e_{c})/τ)$$
+$$\text{exp} ( \text{sim} ( \text{Ah} _{t} , e _{c} ) / τ )$$
 
 p(c|X,t) = (16.12)
 PC c′=1 exp(sim(Aht,ec′)/τ)
 如图 16.9 所示，与这一前向传播并行地，输入波形
 经过 MFCC 处理，生成一个 39 维向量，再通过在码本中选择最相似的质心，将其映射到 100 个类别之一。于是损失函数就是模型赋予这些正确单元的概率在掩码词元集合 M 上的求和：
 
-$$\sum_{t\inM}$$
+$$\sum_{t \in M}$$
 
 L = log p(zt|X) (16.13)
 因此，正如掩码语言建模那样，模型被训练来预测与掩码帧相关联的单元。该损失随后通过模型反向传播
@@ -542,7 +542,7 @@ CNN 被冻结，模型其余部分使用将在第 16.5 节描述的 CTC 损失�
 
 - 分配：对数据集中的每个向量 v(i)，将其分配到 k 个簇之一，即选择码字 µ 最近的那个簇。最简单地，我们可以把“最近”定义为码字到 v(i) 的平方欧氏距离最小的簇。
 
-$$\text{cluster}^{(i)}=\text{argmin}_{1<j<k}||v^{(i)}-µ_{j}||^{2}$$
+$$\text{cluster} ^{( i )} = \text{argmin} _{1 < j < k} || v ^{( i )} - µ _{j} || ^{2}$$
 
 > 1<j<k
 
@@ -615,11 +615,11 @@ CTC 折叠函数是多对一的；许多不同的对齐都映射
 
 在我们了解如何计算 PCTC(Y|X) 之前，先看看 CTC 如何为一个特定的对齐 ˆA = { ˆa1,..., ˆan} 分配概率。CTC 做了一个很强的条件独立性假设：它假设在给定输入 X 的条件下，CTC 模型在时刻 t 的输出与任何其他时刻 ai 的输出标签相互独立。因此：
 
-$$\prod_{t=1}^{T}$$
+$$\prod_{t = 1}^{T}$$
 
 PCTC(A|X) = p(at|X) 因此，为了找到最佳对齐 ˆA = { ˆa1,..., ˆaT}，我们可以在每个时间步 t 贪心地选择概率最大的字符：
 
-$$aˆ_{t}=\text{argmax}_{c\inC}p_{t}(c|X)$$
+$$a ˆ _{t} = \text{argmax} _{c \in C} p _{t} ( c | X )$$
 
 > c∈C
 
@@ -637,13 +637,13 @@ $$aˆ_{t}=\text{argmax}_{c\inC}p_{t}(c|X)$$
 出于这个原因，最可能的输出序列 Y 并不是拥有
 单个最佳 CTC 对齐的那个，而是其所有可能对齐概率求和最高者：
 
-$$\sum_{B-1(}$$
+$$\sum_{B - 1 (}$$
 
 PCTC(Y|X) = P(A|X)
 
 > A∈B−1(Y)
 
-$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$
 
 = p(at|ht)
 ˆY = argmax PCTC(Y|X) 可惜的是，对所有对齐求和代价极高（对齐数量非常庞大），因此我们通过一种 Viterbi 束搜索的变体来近似这个求和：它巧妙地在束中保留那些映射到同一输出串的高概率对齐，并将它们求和作为 (式 16.18) 的近似。关于这种针对 CTC 的束搜索扩展的清晰解释，参见 Hannun (2017)。
@@ -653,20 +653,20 @@ $$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
 由于前面提到的强条件独立性假设
 （即在给定输入的条件下，时间 t 的输出与时间 t−1 的输出相互独立），CTC 并不会在数据上隐式地学习一个语言模型（不同于基于注意力的编码器-解码器架构）。因此，使用 CTC 时，必须用在一个开发集上训练得到的插值权重来插值一个语言模型（以及某种长度因子 L(Y)）：
 
-$$\text{score}_{\text{CTC}}(Y|X) =\text{log}P_{\text{CTC}}(Y|X)+\lambda_{1}\text{log}P_{LM}(Y)\lambda_{2}L(Y)$$
+$$\text{score} _{\text{CTC}} ( Y | X ) = \text{log} P _{\text{CTC}} ( Y | X )+ \lambda _{1} \text{log} P _{L M} ( Y ) \lambda _{2} L ( Y )$$
 
 ### 16.5.2 CTC 训练
 
 为了训练基于 CTC 的 ASR 系统，我们使用带有特殊 CTC 损失函数的负对数似然损失。于是，整个数据集 D 的损失就是每个输入 X 对应正确输出 Y 的负对数似然之和：
 
-$$\sum_{,Y)\in}$$
+$$\sum_{, Y ) \in}$$
 
 LCTC = −logPCTC(Y|X) (16.20)
 要计算单个输入对 (X,Y) 的 CTC 损失函数，我们需要给定输入 X 时输出 Y 的概率。正如我们在式 16.18 中看到的，要计算给定输出 Y 的概率，我们需要对所有会合并为 Y 的可能对齐求和。换言之：
 
 > (X,Y)∈D
 
-$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$
 
 PCTC(Y|X) = p(at|ht) (16.21)
 朴素地对所有可能对齐求和并不可行（对齐数量太多）。不过，我们可以用动态规划来合并对齐，从而高效地计算这个求和，所用的是一种同样用于训练 HMM（附录 A）和 CRF 的前向-后向算法。训练与推理各自的原始动态规划算法见 (Graves et al., 2006)；关于两者的详细解释参见 (Hannun, 2017)。
@@ -679,11 +679,11 @@ PCTC(Y|X) = p(at|ht) (16.21)
 
 图 16.16 给出了示意。训练时，我们只需用在开发集上调好的 λ 对两种损失加权：
 
-$$L=-\lambda\text{log}P_{e\text{ncdec}}(Y|X)-(1-\lambda)\text{log}P_{c\text{tc}}(Y|X)$$
+$$L = - \lambda \text{log} P _{e \text{ncdec}} ( Y | X ) - ( 1 - \lambda ) \text{log} P _{c \text{tc}} ( Y | X )$$
 
 推理时，我们可以把两者与语言模型（或长度惩罚）结合，同样使用学习得到的权重：
 
-$$Yˆ=\text{argmax}_{Y}[\lambda\text{log}P_{e\text{ncdec}}(Y|X)+(1-\lambda)\text{log}P_{C\text{TC}}(Y|X)+γ\text{log}P_{LM}(Y)](16.23)$$
+$$Y ˆ = \text{argmax} _{Y} [ \lambda \text{log} P _{e \text{ncdec}} ( Y | X )+( 1 - \lambda ) \text{log} P _{C \text{TC}} ( Y | X )+ γ \text{log} P _{L M} ( Y )] (16.23)$$
 
 ![](images/16-speech-recognition/fig_p21_0.png)
 
@@ -713,13 +713,13 @@ $$Yˆ=\text{argmax}_{Y}[\lambda\text{log}P_{e\text{ncdec}}(Y|X)+(1-\lambda)\text
 
 两者被送入另一个网络，其输出再经过 softmax，以预测下一个字符。
 
-$$\sum_{B-1(}$$
+$$\sum_{B - 1 (}$$
 
 PRNN−T(Y|X) = P(A|X)
 
 > A∈B−1(Y)
 
-$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$
+$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$
 
 = p(at|ht,y<ut)
 
@@ -816,14 +816,14 @@ i=1 Zi/n。Zi 的方差的估计值
 
 > n
 
-$$σ_{z}^{2}$$
+$$σ _{z} ^{2}$$
 
 z = n−1
 令
 
 > i=1
 
-$$µˆ_{z}$$
+$$µ ˆ _{z}$$
 
 W = (16.25)
 σz/√n

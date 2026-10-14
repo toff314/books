@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/18-sequence-labeling.md">Markdown 源文件</a></div>
@@ -248,7 +248,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>模型体现了关于该序列概率的马尔可夫假设：即</p>
 <aside class="term"><code>assumption</code><span class="term-zh">假设</span><span class="term-explain">在本书中特指马尔可夫假设，即序列中某个状态的概率只依赖于前一个状态，而与更早的状态无关。</span></aside>
 <p>在预测未来时，过去并不重要，重要的只有现在。</p>
-<div class="formula">$$\text{Markov Assumption:}P(q_{i}=a|q_{1}...q_{i-1}) =P(q_{i}=a|q_{i-1})$$</div>
+<div class="formula">$$\text{Markov Assumption:} P ( q _{i} = a | q _{1} ... q _{i - 1} ) = P ( q _{i} = a | q _{i - 1} )$$</div>
 <p>图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。</p>
 <div class="figbox">
 <blockquote><p>形式化地，马尔可夫链由以下组成部分指定：Q = q1q2 ...qN，由 N 个状态组成的集合；A = a11a12 ...aN1 ...aNN，转移概率矩阵 A，其中每个 aij 表示从状态 i 转移到状态 j 的概率，满足 Pn j=1 aij = 1 ∀i</p></blockquote>
@@ -275,16 +275,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>HMM 的输入为 O = o1o2 ...oT：由 T 个观测组成的序列，其中每个观测都取自词表 V。</p>
 <p>一阶隐马尔可夫模型实例化了两条简化假设。</p>
 <p>第一，与一阶马尔可夫链一样，某个特定状态的概率只依赖于前一个状态：</p>
-<div class="formula">$$P(q_{i}|q_{1},...,q_{i-1}) =P(q_{i}|q_{i-1})(18.6)$$</div>
+<div class="formula">$$P ( q _{i} | q _{1} ,..., q _{i - 1} ) = P ( q _{i} | q _{i - 1} ) (18.6)$$</div>
 <blockquote><p>马尔可夫假设：</p></blockquote>
 <p>第二，输出观测 oi 的概率只依赖于产生该观测的那个状态 qi，而与任何其他状态或任何其他观测无关：</p>
 <p>输出独立性：P(oi|q1,...qi,...,qT,o1,...,oi,...,oT) = P(oi|qi) (18.7)</p>
 <h3>18.4.3 HMM 标注器的组成部分</h3>
 <p>HMM 有两个组成部分，即 A 概率和 B 概率，二者都是通过在带标记的训练语料上计数来估计的。（本示例中我们将使用带标记的 WSJ 语料库。）A 矩阵包含标记转移概率 P(ti|ti−1)，它表示在给定前一个标记的条件下某个标记出现的概率。例如，像 will 这样的情态动词后面非常可能跟着一个原形动词，即 VB，如 race，因此我们预期这个概率会很高。我们通过计数来计算该转移概率的最大似然估计：在标注语料中看到第一个标记的所有次数里，第一个标记后面跟着第二个标记的频率：</p>
 <p>P(ti|ti−1) = C(ti−1,ti) (18.8)</p>
-<div class="formula">$$C(t_{i-1})$$</div>
+<div class="formula">$$C ( t _{i - 1} )$$</div>
 <p>例如在 WSJ 语料库中，MD 出现了 13124 次，其中它后面跟着后接 VB 的有 10471 次，其 MLE 估计为P(VB|MD) = C(MD,VB) = 10471 13124 = .80 (18.9) C(MD) B 发射概率 P(wi|ti) 表示：给定一个标记（比如MD）时，它与某个给定词（比如 will）相关联的概率。发射概率的 MLE 为P(wi|ti) = C(ti,wi) (18.10)</p>
-<div class="formula">$$C(t_{i})$$</div>
+<div class="formula">$$C ( t _{i} )$$</div>
 <p>在 WSJ 语料库中 MD 的 13124 次出现里，有 4046 次与 will 相关联：</p>
 <p>P(will|MD) = C(MD,will) = 4046 13124 = .31 (18.11) C(MD)我们在附录 B 中见过这类贝叶斯建模；回忆一下，这个似然项并不是在问“will 这个词最可能的标记是哪个？”那是后验概率 P(MD|will)。相反，P(will|MD) 回答的是一个略显反直觉的问题：“如果我们要生成一个 MD，那么这条情态动词是 will 的可能性有多大？”</p>
 <img src="../md/images/18-sequence-labeling/fig_p10_0.png" alt="">
@@ -295,22 +295,22 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>decoding</code><span class="term-zh">解码</span><span class="term-explain">在含隐藏变量的模型中，根据观测序列推断出最可能的隐藏状态序列这一任务。</span></aside>
 <p>解码：输入一个 HMM λ = (A,B) 以及一个观测序列 O = o1,o2,...,oT，找出最可能的状态序列 Q = q1q2q3 ...qT。</p>
 <p>对于词性标注，HMM 解码的目标是选择标记序列 t1 ...tn，使其在给定由 n 个词构成的观测序列 w1 ...wn 时最可能：</p>
-<div class="formula">$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(t_{1}...t_{n}|w_{1}...w_{n})(18.12)$$</div>
+<div class="formula">$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( t _{1} ... t _{n} | w _{1} ... w _{n} ) (18.12)$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>在 HMM 中我们采用的做法是：用贝叶斯法则改为计算：</p>
 <p>ˆt1:n = argmax P(w1 ...wn|t1 ...tn)P(t1 ...tn) (18.13)</p>
-<div class="formula">$$P(w_{1}...w_{n})$$</div>
+<div class="formula">$$P ( w _{1} ... w _{n} )$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>此外，我们略去分母 P(wn 1)，从而简化式 18.13：</p>
-<div class="formula">$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(w_{1}...w_{n}|t_{1}...t_{n})P(t_{1}...t_{n})(18.14)$$</div>
+<div class="formula">$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( w _{1} ... w _{n} | t _{1} ... t _{n} ) P ( t _{1} ... t _{n} ) (18.14)$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>HMM 标注器还做了两个进一步的简化假设。第一个假设（输出独立性，来自式 18.7）是：一个词出现的概率只取决于它自身的标记，而与相邻的词和标记无关：</p>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>P(w1 ...wn|t1 ...tn) ≈ P(wi|ti) (18.15)第二个假设（马尔可夫假设，式 18.6）是：一个标记的概率只依赖于前一个标记，而不是整个标记序列；</p>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>P(t1 ...tn) ≈ P(ti|ti−1) (18.16)把式 18.15 和式 18.16 中的简化假设代入式 18.14，就得到 bigram 标注器求最可能标记序列的如下公式：</p>
 <blockquote><p>i=1</p></blockquote>
 <p>发射 转移Y z }| { z }| {ˆt1:n = argmax P(t1 ...tn|w1 ...wn) ≈argmax P(wi|ti) P(ti|ti−1) (18.17)式 18.17 的两部分恰好对应我们上面刚刚定义的 B 发射概率和 A 转移概率！</p>
@@ -324,10 +324,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>作为动态规划的一个实例，维特比算法与第 2 章的最小编辑距离动态规划算法相似。</p>
 <p>维特比算法首先建立一个概率矩阵，或称网格：每个观测 ot 对应一列，状态图中的每个状态对应一行。于是每一列中，这个组合自动机里的每个状态 qi 都有一个单元格。图 18.11 直观展示了句子 Janet will back the bill 对应的网格。</p>
 <p>网格中的每个单元格 vt(j) 表示：给定 HMM λ，在观测到前 t 个观测值、并经过最可能的状态序列 q1,...,qt−1 之后，HMM 处于状态 j 的概率。每个单元格 vt(j) 的值，是通过递归地取能够到达该单元格的最可能路径计算出来的。形式上，每个单元格所表示的概率为</p>
-<div class="formula">$$v_{t}(j) =_{q1}\text{max}_{,...,qt-1}P(q_{1}...q_{t-1},o_{1},o_{2}...o_{t},q_{t}=j|\lambda)(18.18)$$</div>
+<div class="formula">$$v _{t} ( j ) = _{q 1} \text{max} _{,..., q t - 1} P ( q _{1} ... q _{t - 1} , o _{1} , o _{2} ... o _{t} , q _{t} = j | \lambda ) (18.18)$$</div>
 <p>我们通过对所有可能的取值取最大值来表示最可能的路径，即前一状态序列 q1,...,qt−1。与其他动态规划算法一样，维特比中的 max 递归地填充每个单元格。既然我们已经算出 t −1 时刻处于每个状态的概率，就可以通过取通向当前单元格的各条路径之延伸中最可能的那一个，来计算维特比概率。对于 t 时刻的给定状态 qj，其值 vt(j) 计算为</p>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t})$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} )$$</div>
 <p>式 18.19 中，为把之前的路径延伸出去、以计算 t 时刻的维特比概率，所相乘的三个因子是</p>
 <img src="../md/images/18-sequence-labeling/fig_p13_0.png" alt="">
 <p class="caption">图 18.11 Janet will back the bill 的网格示意图，显示了每个词可能的标记（qi），并高亮出穿过隐藏状态、对应正确标记序列的那条路径。根据 B 矩阵生成某个特定词的概率为零的状态（词性）（例如限定词 DT 被实现为 Janet 的概率），在图中以灰色显示。</p>
@@ -357,13 +357,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>CRF</code><span class="term-explain">条件随机场（conditional random field）。一种判别式序列模型，直接对后验概率 p(Y|X) 建模：它把整条输入序列 X 和整条输出标记序列 Y 映射为特征向量，用对数线性函数打分，并通过归一化因子 Z(X) 把分数转成整条序列的概率。这里的全局特征可分解为每个位置的局部特征之和，最常用于语言处理的是线性链 CRF（linear chain CRF），其条件化方式与 HMM 密切对应。</span></aside>
 <p>它是语言处理中最常用的 CRF 版本，其条件化方式与 HMM 紧密对应。</p>
 <p>假设我们有一个输入词序列 X = x1...xn，想要计算一个输出标记序列 Y = y1...yn。在 HMM 中，为了计算使 P(Y|X) 最大的最佳标记序列，我们依赖贝叶斯法则和似然 P(X|Y)：</p>
-<div class="formula">$$Yˆ=\text{argmax}_{Y}p(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y} p ( Y | X )$$</div>
 <blockquote><p>Y</p></blockquote>
-<div class="formula">$$=\text{argmax}_{Y}p(X|Y)p(Y)$$</div>
+<div class="formula">$$= \text{argmax} _{Y} p ( X | Y ) p ( Y )$$</div>
 <blockquote><p>Y</p></blockquote>
 <p>Y Y = argmax p(xi|yi) p(yi|yi−1) (18.21)相比之下，在 CRF 中我们直接计算后验概率 p(Y|X)，通过训练让 CRF 在可能的标记序列之间进行判别：</p>
 <blockquote><p>Y i i</p></blockquote>
-<div class="formula">$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$</div>
 <blockquote><p>Y∈Y</p></blockquote>
 <p>然而，CRF 并不在每个时间步为每个标记计算一个概率。相反，在每个时间步 CRF 会在一组相关特征上计算对数线性函数，这些局部特征被聚合并归一化，从而产生整条序列的全局概率。</p>
 <p>让我们更正式地介绍 CRF，仍然用 X 和 Y 表示输入和输出序列。CRF 是一种对数线性模型：在给定整个输入（词）序列 X 的条件下，它为所有可能的序列 Y 中的某个完整输出（标记）序列 Y 分配一个概率。我们可以把 CRF 看作我们为文本分类见过的多项逻辑回归算法的一个巨型序列版本。回忆一下，我们在用于文本分类的普通多项逻辑回归中引入了特征函数 f，它以一个元组为自变量：输入文本 x 和单个类别 y（第 110 页）。在 CRF 中，我们处理的是一个序列，因此函数 F 把整个输入序列 X 和整个输出序列 Y 映射为一个特征向量。假设我们有 K 个特征，每个特征 Fk 对应一个权重 wk：</p>
@@ -377,7 +377,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>X X Z(X) = exp wkFk(X,Y ′) (18.25)我们将这 K 个函数 Fk(X,Y) 称为全局特征，因为每一个都是整个输入序列 X 和输出序列 Y 的性质。我们通过把它们分解为 Y 中每个位置 i 的局部特征之和来计算它们：</p>
 <blockquote><p>Y ′∈Y k=1</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{n}$$</div>
+<div class="formula">$$\sum_{i = 1}^{n}$$</div>
 <p>Fk(X,Y) = fk(yi−1,yi,X,i) (18.26)在线性链 CRF 中，每个这样的局部特征 fk 都可以利用当前的输出词元 yi、前一个输出词元 yi−1、整个输入串 X（或它的任意一部分）以及当前位置 i。只依赖当前输出词元与前一个输出词元 yi 和 yi−1 这一约束，正是线性</p>
 <blockquote><p>i=1</p></blockquote>
 <aside class="term"><code>linear chain CRF</code><span class="term-zh">线性链 CRF</span><span class="term-explain">一种条件随机场，其局部特征只依赖当前输出词元与前一个输出词元，因此可以沿用 HMM 中高效的维特比算法与前向-后向算法进行推理。</span></aside>
@@ -390,7 +390,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>但具体特征是通过特征模板自动生成的，正如我们</p>
 <aside class="term"><code>templates</code><span class="term-zh">模板</span><span class="term-explain">特征模板是形如 ⟨yi,xi⟩、⟨yi,yi−1⟩ 的模式，用来在训练集和测试集的每个实例上自动实例化出一组具体特征。</span></aside>
 <p>在第 4 章简要提到的那样。下面是一些只使用 (yi−1,yi,X,i) 信息的模板：</p>
-<div class="formula">$$⟨y_{i},x_{i}⟩,⟨y_{i},y_{i-1}⟩,⟨y_{i},x_{i-1},x_{i+2}⟩$$</div>
+<div class="formula">$$⟨ y _{i} , x _{i} ⟩ , ⟨ y _{i} , y _{i - 1} ⟩ , ⟨ y _{i} , x _{i - 1} , x _{i + 2} ⟩$$</div>
 <p>这些模板会从训练集和测试集的每个实例中自动生成特征集合。因此对于我们例子中的 Janet/NNP will/MD back/VB the/DT bill/NN，当 xi 是词 back 时，会生成以下特征并取值为 1（我们给它们分配了任意的特征编号）：</p>
 <p>f3743: yi = VB 且 xi = back f156: yi = VB 且 yi−1 = MD f99732: yi = VB 且 xi−1 = will 且 xi+2 = bill拥有有助于处理未登录词的特征同样重要。其中最重要的是词形特征，它表示单词的抽象字母模式</p>
 <aside class="term"><code>word shape</code><span class="term-zh">词形</span><span class="term-explain">把单词中的字符按类别映射后得到的抽象模式：小写字母映射为 x、大写字母映射为 X、数字映射为 d，标点保留。例如 I.M.F. 映射为 X.X.X.，DC10-30 映射为 XXdd-dd。</span></aside>
@@ -419,7 +419,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 18.16 示例句子的若干 NER 特征，假设 Chicago 和 Villanueva 在地名词典中被列为地点。我们假设特征只取 0 或 1 两种取值，因此例如第一个词性特征会表示为 1{POS = NNP}。</p>
 <h3>18.5.3 CRF 的推理与训练</h3>
 <p>对于给定的输入 X，我们如何找到最佳标记序列 ˆY？我们从式 18.22 开始：</p>
-<div class="formula">$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$</div>
 <blockquote><p>Y∈Y</p></blockquote>
 <p>K !</p>
 <p>1 X = argmax Z(X)exp wkFk(X,Y) (18.27) K !</p>
@@ -430,23 +430,23 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>K n</p></blockquote>
 <blockquote><p>Y∈Y k=1 i=1</p></blockquote>
 <blockquote><p>n K</p></blockquote>
-<div class="formula">$$\sum_{i=1k=1}^{nK}\sum$$</div>
+<div class="formula">$$\sum_{i = 1 k = 1}^{n K} \sum$$</div>
 <p>= argmax wk fk(yi−1,yi,X,i) (18.30)如上所示，我们可以忽略 exp 函数和分母 Z(X)，因为 exp 不改变 argmax，而且对于给定的观测序列 X，分母 Z(X) 是常数。</p>
 <blockquote><p>Y∈Y i=1 k=1</p></blockquote>
 <p>我们应如何解码才能找到这个最优标记序列 ˆy？正如使用 HMM 时一样，我们将转向维特比算法；它之所以可行，是因为与 HMM 一样，线性链 CRF 在每个时间步只依赖于前一个输出词元 yi−1。</p>
 <p>具体来说，这涉及用一个 N×T 数组填入相应的值，并在过程中维护回溯指针。与 HMM 的维特比算法一样，当表格填满后，我们只需从最后一列的最大值沿指针回溯，即可取出所需的标签集合。</p>
 <p>相对于 HMM 的维特比算法，所需的改动只在于我们如何填充每个单元格。回忆式 18.19，维特比方程的递推步骤把状态 j 在时刻 t 的维特比值计算为</p>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t});1\lej\leN,1&lt;t\leT$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} ) ; 1 \le j \le N , 1 &lt; t \le T$$</div>
 <blockquote><p>i=1</p></blockquote>
 <p>这是如下式子的 HMM 实现：</p>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)P(s_{j}|s_{i})P(o_{t}|s_{j})1\lej\leN,1&lt;t\leT$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) P ( s _{j} | s _{i} ) P ( o _{t} | s _{j} ) 1 \le j \le N , 1 &lt; t \le T$$</div>
 <blockquote><p>i=1</p></blockquote>
 <p>CRF 只需对后一个公式作少许改动，即把 a 和 b 这两个先验概率与似然概率替换为 CRF 特征：</p>
 <p>&quot; #</p>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<div class="formula">$$\sum_{k = 1}^{K}$$</div>
 <blockquote><p>N</p></blockquote>
 <p>vt(j) = max vt−1(i)+ wk fk(yt−1,yt,X,t) 1 ≤j ≤N,1 &lt; t ≤T (18.33) CRF 的学习依赖于我们为逻辑回归介绍过的同一套有监督学习算法。给定观测序列、特征函数和相应的输出，我们使用随机梯度下降来训练权重，以最大化训练语料库的对数似然。线性链 CRF 的局部性质意味着，附录 A 中为 HMM 引入的前向-后向算法可以扩展为一个 CRF 版本，从而高效地计算所需的导数。与逻辑回归一样，L1 或 L2 正则化很重要。</p>
 <blockquote><p>i=1 k=1</p></blockquote>

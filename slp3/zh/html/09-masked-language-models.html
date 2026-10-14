@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/09-masked-language-models.md">Markdown 源文件</a></div>
@@ -119,13 +119,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/09-masked-language-models/fig_p6_0.png" alt="">
 <p class="caption">图 9.4 掩码语言模型训练。在此例中，输入词元中有三个被选中，其中两个被掩码，第三个被替换为一个不相关的词。模型为这三项分配的概率被用作训练损失。其余 5 个词元不参与训练损失。</p>
 <p>图 9.4 用一个简单的例子说明了这一做法。这里，long、thanks 和the 已从训练序列中抽样出来，其中前两个被掩码，最后一个被替换为随机抽样的词元 apricot。得到的嵌入通过堆叠的双向 Transformer 块。回想第 7 章 7.5 节，为了对每个被掩码词元生成词表上的概率分布，语言建模头取出最终 Transformer 层 L 中每个被掩码词元 i 的输出向量 hL i，将其与解嵌入层 ET 相乘得到 logits u，然后用 softmax 把 logits 转换为词表上的概率 y：</p>
-<div class="formula">$$u_{i}=h^{L}_{i}E^{T}$$</div>
-<div class="formula">$$y_{i}=\text{softmax}(u_{i})$$</div>
+<div class="formula">$$u _{i} = h ^{L} _{i} E ^{T}$$</div>
+<div class="formula">$$y _{i} = \text{softmax} ( u _{i} )$$</div>
 <p>有了每个被掩码项的预测概率分布，我们就可以用交叉熵计算每个被掩码项的损失——即分配给真实被掩码词的负对数概率，如图 9.4 所示。更形式化地说，对于句子或批次 x 中给定的输入词元向量，设被掩码的词元集合为 M，把该句子中某些词元替换为掩码后的版本为 xmask，输出向量序列为 h。对于给定的输入词元 xi，例如图 9.4 中的词 long，损失就是在给定 xmask（概括为单个输出向量 hL i）下正确词 long 的概率：</p>
-<div class="formula">$$L_{\text{MLM}}(x_{i}) =-\text{log}P(x_{i}|h_{i}^{L})$$</div>
+<div class="formula">$$L _{\text{MLM}} ( x _{i} ) = - \text{log} P ( x _{i} | h _{i} ^{L} )$$</div>
 <p>构成权重更新基础的梯度，基于单个训练序列（或一批序列）中被抽样的学习项的平均损失。</p>
 <p>LMLM = −1 X</p>
-<div class="formula">$$\text{log}P(x_{i}|h_{i}^{L})$$</div>
+<div class="formula">$$\text{log} P ( x _{i} | h _{i} ^{L} )$$</div>
 <table><tr><th>M</th></tr></table>
 <p>注意只有 M 中的词元在学习中起作用；其他词在损失函数中不起作用，因此在这个意义上 BERT 及其后继者效率不高；训练数据中只有 15% 的输入样本真正用于训练权重。1</p>
 <blockquote><p>i∈M</p></blockquote>
@@ -163,8 +163,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>classifier head</code><span class="term-zh">分类头</span><span class="term-explain">在预训练模型之上加装的一层小型任务专用结构，接收模型输出向量并据此作出该任务的判断，微调时主要训练它的参数。</span></aside>
 <p>回归或神经网络分类器，由它做出相应的判断。</p>
 <p>举例来说，让我们回到情感分类这个问题。微调该应用中的分类器，需要学习一组权重 WC，把 [CLS] 词元的输出向量——hL CLS——映射为在各个可能的情感类别上的一组得分。假设是一个三分类的情感任务（正面、负面、中立），并以维度 d 作为模型维度，那么 WC 的大小为 [d ×3]。要对一篇文档分类，我们把输入文本送入预训练语言模型以生成 hL CLS，将其与 WC 相乘，再把得到的向量送入 softmax。</p>
-<div class="formula">$$y=\text{softmax}(h^{L}$$</div>
-<div class="formula">$$^{L}_{\text{CLS}}W_{C})$$</div>
+<div class="formula">$$y = \text{softmax} ( h ^{L}$$</div>
+<div class="formula">$$^{L} _{\text{CLS}} W _{C} )$$</div>
 <p>微调 WC 中的值需要监督训练数据，这些数据由输入序列构成，并带有相应情感类别的标签。训练按通常的方式进行；用 softmax 输出与正确答案之间的交叉熵损失来驱动产生 WC 的学习过程。</p>
 <p>这种损失不仅可以用来学习分类器的权重，还可以用来更新预训练语言模型自身的权重。在实践中，通常只需对语言模型参数做极小的改动就能取得合理的分类性能，而且改动往往仅限于 Transformer 最后几层上的更新。图 9.6 展示了序列分类的这一整体方法。</p>
 <h3>9.4.2 序列对分类</h3>
@@ -223,9 +223,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们还展示了两种变体的标注方案：IO 标注，它通过取消 B 标签而丢失了一些信息；以及 BIOES 标注，它为片段的结尾增加了一个结束标签 E，并为仅由一个词构成的片段增加了一个片段标签 S。</p>
 <h3>9.5.3 序列标注</h3>
 <p>在序列标注中，我们把与每个输入词元对应的最终输出向量送入一个分类器，由该分类器在可能的标签集合上产生 softmax 分布。对于单层前馈层分类器，需要学习的权重集合为 WK，其大小为 [d × k]，其中 k 是该任务可能的标签数量。可以采用贪心方法生成最终的输出标签序列，即把每个词元的 argmax 标签当作可能的答案。图 9.10 展示了这种方法的一个例子，其中 yi 是标签上的概率向量，k 用于索引标签。</p>
-<div class="formula">$$y_{i}=\text{softmax}(h^{L}_{i}$$</div>
-<div class="formula">$$^{L}_{i}W_{K})$$</div>
-<div class="formula">$$t_{i}=\text{argmax}_{k}(y_{i})$$</div>
+<div class="formula">$$y _{i} = \text{softmax} ( h ^{L} _{i}$$</div>
+<div class="formula">$$^{L} _{i} W _{K} )$$</div>
+<div class="formula">$$t _{i} = \text{argmax} _{k} ( y _{i} )$$</div>
 <p>另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。</p>
 <img src="../md/images/09-masked-language-models/fig_p14_0.png" alt="">
 <p class="caption">图 9.10 使用双向 Transformer 编码器进行命名实体识别的序列标注。每个输入词元的输出向量被送入一个简单的 k 路分类器。</p>

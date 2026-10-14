@@ -269,7 +269,7 @@ def main() -> int:
     if MATHJAX_JS.is_file():
         rel = os.path.relpath(MATHJAX_JS, out_dir).replace(os.sep, "/")
         mj = (
-            "<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},"
+            "<script>MathJax={tex:{displayMath:[['$$','$$']]},"
             "svg:{fontCache:'global'}};</script>\n"
             f'<script id="MathJax-script" src="{rel}"></script>\n'
         )

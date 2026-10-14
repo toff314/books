@@ -959,7 +959,7 @@ FrameNet（22.27）使用许多特定于框架的框架元素作为角色，而 
 
 > As with all the taggers, the goal is to compute the highest probability tag sequence ˆy, given the input sequence of words w:
 
-$$yˆ=\text{argmax}_{y\inT}P(y|w)$$
+$$y ˆ = \text{argmax} _{y \in T} P ( y | w )$$
 
 > y∈T
 
@@ -1175,7 +1175,7 @@ Q(x)
 
 > x
 
-$$S_{R}(v)=D(P(c|v)||P(c))$$
+$$S _{R} ( v ) = D ( P ( c | v ) || P ( c ))$$
 
 X P(c|v)log P(c|v)
 = P(c) (22.39)
@@ -1195,7 +1195,7 @@ X P(c|v)log P(c|v)
 
 SR(v)P(c|v)log P(c|v) 1
 
-$$A_{R}(v,c)=$$
+$$A _{R} ( v , c ) =$$
 
 P(c)
 因此，选择关联是对谓词与支配该谓词论元的某个类别之间关联强度的一种概率度量。

@@ -420,7 +420,7 @@ Lleg´o la bruja verde
 
 > large set of parallel sentences (each sentence in a source language matched with a sentence in the target language), and learns to map source sentences into target sentences. In practice, rather than using words (as in the example above), we split the sentences into a sequence of subword tokens (tokens can be words, or subwords, or individual characters). The systems are then trained to maximize the probability of the sequence of tokens in the target language y1,...,ym given the sequence of tokens in the source language x1,...,xn:
 
-$$P(y_{1},...,y_{m}|x_{1},...,x_{n})$$
+$$P ( y _{1} ,..., y _{m} | x _{1} ,..., x _{n} )$$
 
 编码器-解码器架构并不直接使用输入词元，而是由两个组件构成：编码器和解码器。编码器接收输入词 x = [x1,...,xn]，产生一个中间上下文 h。在解码时，系统以 h 为输入，逐词生成输出 y：
 
@@ -594,7 +594,7 @@ wordpiece 中则相反，我们指定词表总量，这是一个更直观的参�
 
 > sentences or spans x,y from the source and target documents respectively:
 
-$$(1-\text{cos}(x,y))\text{nSents}(_{S}x)\text{nSents}(y)$$
+$$( 1 - \text{cos} ( x , y )) \text{nSents} ( _{S} x ) \text{nSents} ( y )$$
 
 c(x,y) = (13.10)
 PS s=1 1−cos(x,ys)+PS s=1 1−cos(xs,y)
@@ -664,7 +664,7 @@ Henc 的形状为 [n × d]，每一行代表一个输入词元。为了将来自
 
 > Henc is of shape [n × d], each row representing one input token. To link the keys and values from the encoder with the query from the prior layer of the decoder, we multiply the encoder output Henc by the cross-attention layer’s key weights WK and value weights WV. The query comes from the output from the prior decoder layer Hdec[ℓ−1], which is multiplied by the cross-attention layer’s query weights WQ:
 
-$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$
+$$Q = H ^{\text{dec} [ ℓ - 1 ]} W ^{Q} ; K = H ^{\text{enc}} W ^{K} ; V = H ^{\text{enc}} W ^{V}$$
 
 QK⊺  (13.12)
 CrossAttention(Q,K,V) = softmax
@@ -689,7 +689,7 @@ CrossAttention(Q,K,V) = softmax
 
 > determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence:
 
-$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$
+$$L _{\text{CE}} ( y ˆ _{t} , y _{t} ) = - \text{log ˆ} y _{t} [ w _{t + 1} ]$$
 
 与那种情况一样，我们在解码器中使用教师强制。回想一下，在教师强制中，解码的每个时间步我们都强制系统使用训练中的标准答案目标词元作为下一个输入 xt+1，而不是让它依赖（可能有误的）解码器输出 ˆyt。
 
@@ -707,7 +707,7 @@ $$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$
 
 > Recall the greedy decoding algorithm from Chapter 7: at each time step t in generation, the output yt is chosen by computing the probability for each word in the vocabulary and then choosing the highest probability word (the argmax):
 
-$$wˆ_{t}=\text{argmax}_{w\inV}P(w|w_{<t})$$
+$$w ˆ _{t} = \text{argmax} _{w \in V} P ( w | w _{< t} )$$
 
 贪心解码的一个问题是：在词 t 处看起来概率很高的选择，到了词 t +1 时可能被证明是错误的选择。束搜索算法会保留多个选择，直到稍后我们能够看出哪一个最好。
 
@@ -789,7 +789,7 @@ p(y|x) 分解为每个词在给定其先前上下文的条件下概率的乘积�
 score(y) = logP(y|x)
 = log(P(y1|x)P(y2|y1,x)P(y3|y1,y2,x)...P(yt|y1,...,yt−1,x)) tX
 
-$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$
+$$\text{log} P ( y _{i} | y _{1} ,..., y _{i - 1} , x )$$
 
 = (13.15)
 因此，在每一步，为计算一个部分句子的概率，我们只需把迄今为止前缀句子的对数概率与生成下一个词元的对数概率相加。图 13.9 用一些简单虚构的概率展示了图 13.8 中示例句子的评分过程。对数概率为负数或 0，两个对数概率中较大者（更接近 0）即为最大值。
@@ -812,7 +812,7 @@ $$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$
 
 score(y) = 1 t logP(y|x) = 1 tX
 
-$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$
+$$\text{log} P ( y _{i} | y _{1} ,..., y _{i - 1} , x )$$
 
 t
 对于机器翻译，我们通常使用 5 到 10 之间的束宽 k，最终得到 k 个候选假设。我们可以把这 k 个候选假设连同它们各自的分数一起传给下游应用；如果只需要一个译文，就传概率最大的那个候选假设。
@@ -867,7 +867,7 @@ MBR 解码算法中使用的标准简化做法是：转而选择与某组候选�
 
 > Given this set of possible candidate translations Y, and some similarity or alignment function util, we choose the best translation ˆy as the translation which is most similar to all the other candidate translations:
 
-$$\sum_{c\inY}$$
+$$\sum_{c \in Y}$$
 
 ˆy = argmax util(y,c) (13.17)
 可以使用各种 util 函数，例如 chrF、BERTscore 或 BLEU。我们可以通过采样获得候选译文集合，使用第 7.6 节中的某种基础采样算法，例如温度采样；即使候选只有 32 或 64 个，也能获得不错的结果。
@@ -955,9 +955,9 @@ $$\sum_{c\inY}$$
 
 > Thus we slightly update Eq. 13.9 above to add these tokens in Eq. 13.19:
 
-$$h=\text{encoder}(x,l_{s})$$
+$$h = \text{encoder} ( x , l _{s} )$$
 
-$$y_{i+1}=\text{decoder}(h,l_{t},y_{1},...,y_{i})∀i\in[1,...,m]$$
+$$y _{i + 1} = \text{decoder} ( h , l _{t} , y _{1} ,..., y _{i} ) ∀ i \in [ 1 ,..., m ]$$
 
 多语言模型的一个优点是，它们可以通过利用训练数据中恰好资源更丰富的相似语言的信息，来改进
 
@@ -1111,7 +1111,7 @@ chrR 参考译文中字符 1 元、2 元、……、k 元的百分比，这些 n
 
 chrFβ = (1+β 2) chrP·chrR (13.20)
 
-$$β^{2}\cdot\text{chrP}+\text{chrR}$$
+$$β ^{2} \cdot \text{chrP} + \text{chrR}$$
 
 当 β = 2 时，该式即为：
 

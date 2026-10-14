@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/24-coreference-entity-linking.md">Markdown 源文件</a></div>
@@ -317,24 +317,24 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>本节介绍 Lee et al. (2017b) 的神经 e2e-coref 算法（做了少许简化和扩展，并借鉴了 Joshi et al. (2019) 等人的工作）。这是一种提及排序算法，它考虑文档中所有可能的文本跨度，为每个跨度赋予一个提及得分，依据该得分对提及进行剪枝，然后为剩余的提及分配共指链接。</p>
 <p>更形式化地说，给定一个含 T 个词的文档 D，模型考虑D 中全部 T(T+1)/2 个文本跨度（一元、二元、三元、四元等；实践中我们只考虑最大长度约为 10 的跨度）。任务是为每个跨度 i 分配一个先行语 yi，这是一个随机变量，取值范围为 Y(i) ={1,...,i −1,ϵ}，即每个先前的跨度以及一个特殊的哑元标记 ϵ。选择哑元标记意味着 i 没有先行语，原因可能是 i 是新引入话语并开启了一条新的共指链，也可能是 i 为非回指。</p>
 <p>对于每一对跨度 i 和 j，系统为跨度 i 与跨度 j 之间的共指链接赋予一个得分 s(i, j)。随后系统学习跨度 i 的先行语上的一个分布 P(yi)：</p>
-<div class="formula">$$\text{exp}(s(i,y_{i}))$$</div>
+<div class="formula">$$\text{exp} ( s ( i , y _{i} ))$$</div>
 <p>P(yi) = P</p>
-<div class="formula">$$_{y′\inY(i)}\text{exp}(s(i,y^{′}))$$</div>
+<div class="formula">$$_{y ′ \in Y ( i )} \text{exp} ( s ( i , y ^{′} ))$$</div>
 <p>该得分 s(i, j) 包含三个我们将在下面定义的因子：m(i)，即跨度 i 是否为提及；m(j)，即跨度 j 是否为提及；以及 c(i, j)，即 j 是否为 i 的先行语：</p>
 <p>s(i, j) = m(i)+m(j)+c(i, j) (24.49)对于哑元先行语 ϵ，得分 s(i,ϵ) 固定为 0。这样，只要有任何非哑元得分为正，模型就预测得分最高的先行语；而如果所有得分均为负，模型则弃权。</p>
 <h3>24.6.1 计算跨度表示</h3>
 <p>为了计算为跨度 i 或跨度对 (i, j) 打分的两个函数 m(i) 与 c(i, j)，我们需要一种表示跨度的方法。e2e-coref 系列算法通过设法捕捉 3 个词/词元来表示每个跨度：第一个词、最后一个词和最重要的词。我们首先将每个段落或子文档送入编码器（如 BERT），为每个词元 i 生成嵌入 hi。跨度 i 随后由一个向量 gi 表示，该向量是跨度第一个（起始）词元的编码器输出嵌入、跨度最后一个（结束）词元的编码器输出，以及第三个基于注意力的表示的拼接：</p>
-<div class="formula">$$g_{i}= [h_{\text{START}(i)},h_{\text{END}(i)},h_{\text{ATT}(i)}]$$</div>
+<div class="formula">$$g _{i} = [ h _{\text{START} ( i )} , h _{\text{END} ( i )} , h _{\text{ATT} ( i )} ]$$</div>
 <p>注意力向量的目标是表示哪个词/词元是该跨度可能的句法中心词；我们在前一节中看到，中心词是一种有用的特征；中心词匹配是共指的一个良好指示。注意力表示按通常方式计算；系统学习一个权重向量 wα，并计算它与经 FFN 变换后的隐藏状态 ht 的点积：</p>
-<div class="formula">$$α_{t}=w_{α}\cdot^{\text{FFN}}_{α}(h_{t})$$</div>
+<div class="formula">$$α _{t} = w _{α} \cdot ^{\text{FFN}} _{α} ( h _{t} )$$</div>
 <p>注意力得分通过 softmax 归一化为一个分布：</p>
-<div class="formula">$$\text{exp}(α_{t})$$</div>
-<div class="formula">$$a_{i,t}=$$</div>
+<div class="formula">$$\text{exp} ( α _{t} )$$</div>
+<div class="formula">$$a _{i , t} =$$</div>
 <p>PEND(i) k=START(i) exp(αk)然后用这一注意力分布构造向量 hATT(i)，它是对跨度 i 中每个词的嵌入 et 所做的注意力加权求和：</p>
 <blockquote><p>END(i)</p></blockquote>
-<div class="formula">$$\sum_{\text{START}}^{\text{END}(}$$</div>
-<div class="formula">$$a_{i,t}\cdote_{t}$$</div>
-<div class="formula">$$h_{\text{ATT}(i)}=$$</div>
+<div class="formula">$$\sum_{\text{START}}^{\text{END} (}$$</div>
+<div class="formula">$$a _{i , t} \cdot e _{t}$$</div>
+<div class="formula">$$h _{\text{ATT} ( i )} =$$</div>
 <blockquote><p>t=START(i)</p></blockquote>
 <p>图 24.5 展示了跨度表示的计算以及提及得分的计算。</p>
 <img src="../md/images/24-coreference-entity-linking/fig_p18_0.png" alt="">
@@ -342,7 +342,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>24.6.2 计算提及得分与先行语得分 m 和 c</h3>
 <p>既然已经知道如何计算表示跨度 i 的向量 gi，我们就可以来看两个打分函数 m(i) 和 c(i, j) 的细节了。二者都由前馈网络计算：</p>
 <p>m(i) = wm ·FFNm(gi) (24.54)</p>
-<div class="formula">$$c(i,j)=w_{c}\cdot\text{FFN}_{c}([g_{i},g^{j},g_{i}◦g_{j},])$$</div>
+<div class="formula">$$c ( i , j ) = w _{c} \cdot \text{FFN} _{c} ([ g _{i} , g ^{j} , g _{i} ◦ g _{j} , ])$$</div>
 <p>在推断阶段，该提及得分 m 被用作过滤器，只保留得分最高的少数几个提及。</p>
 <p>随后我们为得分高的提及计算先行语得分。先行语得分 c(i, j) 的输入是跨度 i 与 j 的表示，此外还有两个跨度彼此的逐元素相似度 gi ◦gj（这里 ◦ 表示逐元素相乘）。图 24.6 展示了图 24.5 的例句中 the company 的三个可能先行语的得分 s 的计算。</p>
 <img src="../md/images/24-coreference-entity-linking/fig_p19_0.png" alt="">
@@ -393,7 +393,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>E(b)</th></tr></table>
 <p>a →X 的总相关度得分，是 q 中检测到的所有其他锚点投票之和：</p>
 <blockquote><p>Y∈E(b)</p></blockquote>
-<div class="formula">$$\sum_{\inXq\\}$$</div>
+<div class="formula">$$\sum_{\in X q \\}$$</div>
 <p>relatedness(a →X) = vote(b,X) (24.61)为给 a →X 打分，我们结合相关度与先验概率，做法是选择实体 X该实体具有最高的 relatedness(a →X)；再找出与该值相差不超过一个小量 ϵ 的其他实体，并从这个集合中选择先验 P(X|a) 最高的实体。这一步的结果是为 q 中的每个跨度各指派一个实体。</p>
 <blockquote><p>b∈Xq\a</p></blockquote>
 <p>TAGME 算法还有一个步骤，用于剪除虚假的锚点/实体对，并赋予一个将链接概率与一致性取平均的得分。</p>
@@ -404,33 +404,33 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <h3>24.7.2 基于神经图的链接</h3>
 <p>较新的实体链接模型基于双编码器：对候选提及跨度进行编码，对实体进行编码，再计算两个编码之间的点积。这样，知识库中所有实体的嵌入都可以预先计算并缓存（Wu et al., 2020）。下面概述 Li et al. (2020) 的 ELQ 链接算法：该算法输入一个问题 q 以及一组来自 Wikipedia 的候选实体（附带相应的 Wikipedia 文本），输出由实体 id、提及起点和提及终点构成的元组 (e,ms,me)。如图 24.8 所示，其做法是用 Wikipedia 文本对每个 Wikipedia 实体进行编码，用问题文本对每个提及跨度进行编码，再计算二者的相似度，具体如下所述。</p>
 <p>实体提及检测 为了得到每个问题词元的 h 维嵌入，算法以常规方式将问题输入 BERT：</p>
-<div class="formula">$$[q_{1}\cdot \cdot \cdotq_{n}] =\text{BERT}([\texttt{CLS}]q_{1}\cdot \cdot \cdotq_{n}[\texttt{SEP}])$$</div>
+<div class="formula">$$[ q _{1} \cdot \cdot \cdot q _{n} ] = \text{BERT} ([ \texttt{CLS} ] q _{1} \cdot \cdot \cdot q _{n} [ \texttt{SEP} ])$$</div>
 <p>随后，它以类似于上文阅读理解器中基于跨度的算法的方式，计算 q 中每个跨度 [i, j] 是实体提及的似然。首先计算 i/j 作为提及起点/终点的得分：</p>
-<div class="formula">$$s_{\text{start}}(i) =w_{\text{start}}\cdotq_{i},s_{\text{end}}(j) =w_{\text{end}}\cdotq_{j},$$</div>
+<div class="formula">$$s _{\text{start}} ( i ) = w _{\text{start}} \cdot q _{i} , s _{\text{end}} ( j ) = w _{\text{end}} \cdot q _{j} ,$$</div>
 <img src="../md/images/24-coreference-entity-linking/fig_p23_0.png" alt="">
 <p class="caption">图 24.8 ELQ 算法在问题中进行实体链接的推理过程示意（Li et al., 2020）。每个候选的问题提及跨度与候选实体分别编码，然后通过实体/跨度点积打分。</p>
 <p>其中 wstart 与 wend 是训练中学到的向量。接下来，用另一个可训练的嵌入 wmention 计算每个词元属于某个提及的得分：</p>
-<div class="formula">$$s_{\text{mention}}(t) =w_{\text{mention}}\cdotq_{t}$$</div>
+<div class="formula">$$s _{\text{mention}} ( t ) = w _{\text{mention}} \cdot q _{t}$$</div>
 <p>然后通过组合这三个得分来计算提及概率：</p>
 <blockquote><p>j</p></blockquote>
-<div class="formula">$$\sum_{t=i}^{j}$$</div>
+<div class="formula">$$\sum_{t = i}^{j}$$</div>
 <p>p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)实体链接 为了把提及链接到实体，我们接下来为全部 Wikipedia 实体构成的集合 E = e1,··· ,ei,··· ,ew 中的每个实体计算嵌入。对于每个实体 ei，我们取其 Wikipedia 页面的文本，即标题 t(ei) 以及该 Wikipedia 页面的前 128 个词元（我们称之为描述 d(ei)）。这些内容同样输入 BERT，并取 CLS 词元的输出 BERT[CLS] 作为实体表示：</p>
 <blockquote><p>t=i</p></blockquote>
-<div class="formula">$$x_{ei}=\text{BERT}_{\text{[CLS]}}([\texttt{CLS}]t(e_{i})[\texttt{ENT}]d(e_{i})[\texttt{SEP}])$$</div>
+<div class="formula">$$x _{e i} = \text{BERT} _{\text{[CLS]}} ([ \texttt{CLS} ] t ( e _{i} )[ \texttt{ENT} ] d ( e _{i} )[ \texttt{SEP} ])$$</div>
 <p>通过为每个实体 e 与跨度 [i, j] 计算跨度编码（各词元嵌入的平均）与实体编码之间的点积相似度，即可把提及跨度链接到实体。</p>
 <blockquote><p>j</p></blockquote>
 <p>1 X yi,j = (j −i+1) qt</p>
 <blockquote><p>t=i</p></blockquote>
-<div class="formula">$$s(e,[i,j]) =x^{\cdot}_{e}$$</div>
-<div class="formula">$$^{\cdot}_{e}y_{i,j}$$</div>
+<div class="formula">$$s ( e , [ i , j ]) = x ^{\cdot} _{e}$$</div>
+<div class="formula">$$^{\cdot} _{e} y _{i , j}$$</div>
 <p>最后，我们取 softmax，得到每个跨度上关于实体的分布：</p>
 <p>exp(s(e,[i, j])) (24.69) p(e|[i, j]) = P</p>
-<div class="formula">$$_{e′\inE}\text{exp}(s(e^{′},[i,j]))$$</div>
+<div class="formula">$$_{e ′ \in E} \text{exp} ( s ( e ^{′} , [ i , j ]))$$</div>
 <p>训练 ELQ 的提及检测与实体链接算法是全监督的。这意味着，与 24.7.1 节中的锚词典算法不同，它要求数据集中的实体边界已被标注并链接。两个这样的标注数据集是 WebQuestionsSP（Yih et al., 2016）和 GraphQuestions（Su et al., 2016），前者是源自 Google 搜索问题的 WebQuestions（Berant et al., 2013）数据集的扩展。二者的问句中实体跨度都已被标注并链接（Sorokin and Gurevych 2018, Li et al. 2020），从而产生了实体标注版本 WebQSPEL 和 GraphQEL（Li et al., 2020）。</p>
 <p>给定一个训练集，ELQ 的提及检测阶段与实体链接阶段被联合训练，优化二者损失之和。提及检测损失是二元交叉熵损失，其中 L 为段落长度，N 为候选数量：</p>
 <p>LMD = −1 X y[i,j] log p([i, j])+(1−y[i,j])log(1−p([i, j])) (24.70) N其中若 [i, j] 是标准提及跨度则 y[i,j] = 1，否则为 0。实体链接损失为：</p>
 <blockquote><p>1≤i≤j≤min(i+L−1,n)</p></blockquote>
-<div class="formula">$$L_{\text{ED}}=-\text{logp}(e_{g}|[i,j])$$</div>
+<div class="formula">$$L _{\text{ED}} = - \text{logp} ( e _{g} | [ i , j ])$$</div>
 <p>其中 eg 是提及 [i, j] 对应的标准实体。</p>
 <h2>24.8 共指消解的评价</h2>
 <p>我们以模型论的方式评价共指算法，将系统产生的一组假设链或簇 H 与人工标注得到的一组标准链或参考链或簇 R 进行比较，并报告精确率与召回率。</p>

@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/15-phonetics-and-speech.md">Markdown 源文件</a></div>
@@ -447,7 +447,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 15.28 （a）取自元音 [iy] 的信号中一段 25 ms 的汉明窗加窗片段；（b）由 DFT 计算得到的其频谱。</p>
 <p>这里不介绍 DFT 的数学细节，只指出傅里叶分析依赖欧拉公式，其中 j 为虚数单位：</p>
 <aside class="term"><code>Euler’s formula</code><span class="term-zh">欧拉公式</span><span class="term-explain">把复指数与三角函数联系起来的等式，傅里叶分析正是借助它把信号表示为一组复指数。</span></aside>
-<div class="formula">$$e^{jθ}=\text{cos}θ+j\text{sin}θ$$</div>
+<div class="formula">$$e ^{j θ} = \text{cos} θ + j \text{sin} θ$$</div>
 <p>为已经学过信号处理的学生作一点简要回顾：DFT 的定义如下：</p>
 <blockquote><p>N−1</p></blockquote>
 <p>X x[n]e−j 2πX[k] = (15.15)</p>
@@ -494,7 +494,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>energy</code><span class="term-zh">能量</span><span class="term-explain">一帧语音内各样本功率随时间的累加和，是判断音子身份的有效线索，元音与咝音通常高于塞音。</span></aside>
 <p>该帧中各样本功率随时间的累加和；因此，对于从时间样本 t1 到时间样本 t2 的窗口内的信号 x，其能量为</p>
 <blockquote><p>t2</p></blockquote>
-<div class="formula">$$\sum_{t=t1}^{t2}$$</div>
+<div class="formula">$$\sum_{t = t 1}^{t 2}$$</div>
 <p>Energy = x2[t] (15.18)差分特征 我们还加入与倒谱特征随时间变化有关的特征。语音信号的变化，例如共振峰在过渡处的斜率，或从塞音闭塞到塞音除阻爆发的变化，同样能为音子身份提供有用的线索。对 13 个特征（12 个倒谱特征加能量）中的每一个，都再配上一个差分</p>
 <blockquote><p>t=t1</p></blockquote>
 <aside class="term"><code>delta feature double delta</code><span class="term-zh">差分特征；双差分</span><span class="term-explain">差分特征刻画相邻帧间对应特征取值的改变，即速度；双差分再对差分特征求一次帧间变化，即加速度。</span></aside>

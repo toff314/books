@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/16-speech-recognition.md">Markdown 源文件</a></div>
@@ -128,7 +128,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>pad</code><span class="term-zh">填充</span><span class="term-explain">在信号首尾各补上若干零值，使卷积核中心能对准第一个元素、且在边缘处有确定值可取。</span></aside>
 <p>输入进行填充，即在信号的首尾各加入少量的 p 个零，这样我们就能把卷积核的中心对准第一个元素 x1，且在 x1 左侧也有确定的值可取。这也恰好使得让输出长度与输入长度保持一致变得简单。为此，方便的做法是把卷积核向量定义为具有奇数个元素、长度为 k = 2p+1，从而中心元素两侧各有 p 个元素。输出向量 z 的每个元素 zj 随后按如下点积计算：</p>
 <blockquote><p>p</p></blockquote>
-<div class="formula">$$\sum_{i=-p}^{p}$$</div>
+<div class="formula">$$\sum_{i = - p}^{p}$$</div>
 <p>z j = xj+iwi+p (16.2)图 16.3 展示了卷积 x∗w 的计算，其中卷积核宽度为 3，并分别在 x 的首尾各填充 1 帧、取值为零。</p>
 <blockquote><p>i=−p</p></blockquote>
 <img src="../md/images/16-speech-recognition/fig_p6_0.png" alt="">
@@ -141,8 +141,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>形状为 [128,3]。</p>
 <p>为得到卷积核的输出，我们对所有输入通道求和。也就是说，我们对每个输入通道 xc 用卷积核 w 与之卷积，得到单个输出 zc，然后把所有得到的输出相加：</p>
 <blockquote><p>Ci</p></blockquote>
-<div class="formula">$$\sum_{c=1}^{Ci}$$</div>
-<div class="formula">$$x^{c}\astw$$</div>
+<div class="formula">$$\sum_{c = 1}^{C i}$$</div>
+<div class="formula">$$x ^{c} \ast w$$</div>
 <p>z = (16.3)因此，第 j 帧的输出 zj 综合了来自所有输入通道的信息。</p>
 <blockquote><p>c=1</p></blockquote>
 <p>最后，卷积层的输出也比仅仅一个由单个标量值来表示每一帧的向量更复杂。相反，对于给定的输入帧，卷积层的输出需要是一个嵌入，即该帧的潜在表示。与所有神经模型一样，潜在表示应具有模型维度，无论该维度是多少。例如 Whisper 的模型维度为 1280，因此卷积层需要为这 1280 个模型维度各设一个输出通道。为此，我们实际上会为每个模型维度学习一个独立的卷积核。也就是说，我们将学习 1280 个独立的卷积核，每个卷积核的深度等于输入通道数（例如 128），并具有一个滤波器宽度（比如为 3）。这样，每一帧的嵌入表示将包含 1280 个对输入信号独立计算出的特征。我们在图 16.4 中给出示意图</p>
@@ -159,7 +159,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>listen attend and spell</code><span class="term-zh">listen, attend and spell</span><span class="term-explain">一种端到端语音识别架构，先用编码器提取声学表示，再以注意力完成对齐并由解码器逐字符生成转写结果。</span></aside>
 <p>（LAS），这一缩写取自最早将其应用于语音的两篇论文（Chorowski et al. 2014，Chan et al. 2016）。</p>
 <p>该架构的输入 x 是 t 个声学特征向量构成的序列 X = x1,x2,...,xt，每 10 ms 一帧对应一个向量。我们通常以前一节所述的对数梅尔频谱特征作为起点，不过也可以从原始波形文件开始。输出序列 Y 既可以是字母，也可以是标记（BPE 或 sentencepiece）；这里为简化说明，我们假定它是字母。因此输出序列 Y = (⟨SOS⟩,y1,...,ym⟨EOS⟩)，其中假定使用特殊的序列起始标记和序列结束标记 ⟨sos⟩ 与 ⟨eos⟩，且每个 yi 是一个字符；对于英语，我们可能选择如下字符集：</p>
-<div class="formula">$$y_{i}\in \{a,b,c,...,z,0,...,9,⟨\text{space}⟩,⟨\text{comma}⟩,⟨\text{period}⟩,⟨\text{apostrophe}⟩,⟨\text{unk}⟩\}$$</div>
+<div class="formula">$$y _{i} \in \{ a , b , c ,..., z , 0 ,..., 9 , ⟨ \text{space} ⟩ , ⟨ \text{comma} ⟩ , ⟨ \text{period} ⟩ , ⟨ \text{apostrophe} ⟩ , ⟨ \text{unk} ⟩\}$$</div>
 <img src="../md/images/16-speech-recognition/fig_p8_0.png" alt="">
 <p class="caption">图 16.5 编码器-解码器语音识别器的示意架构。</p>
 <p>这一架构也被 OpenAI 的 Whisper 模型所采用（Radford et al., 2023）。图 16.6 展示了 Whisper 架构的一个子部分（Whisper 还执行其他语音任务，如语音翻译和语音活动检测，我们将在下一章讨论）。Whisper 的模型和推理代码已公开发布，但训练代码和训练数据并未公开。不过，有一些开源项目采用 Whisper 风格的架构，例如 Open Whisper-style</p>
@@ -188,31 +188,31 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/16-speech-recognition/fig_p11_0.png" alt="">
 <p class="caption">图 16.7 编码器与解码器的 Transformer 块，展示残差流视角。编码器的最终输出 Henc = h1,...,hn 是解码器所使用的上下文。解码器是标准的 Transformer，只是多了一个额外的层，即交叉注意力层，它接收编码器输出 Henc 并用它构成自己的 K 和 V 输入。</p>
 <p>我们将编码器输出 Henc 与交叉注意力层的键权重 WK 和值权重 WV 相乘。查询来自前一个解码器层的输出 Hdec[ℓ−1]，它与交叉注意力层的查询权重 WQ 相乘：</p>
-<div class="formula">$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$</div>
+<div class="formula">$$Q = H ^{\text{dec} [ ℓ - 1 ]} W ^{Q} ; K = H ^{\text{enc}} W ^{K} ; V = H ^{\text{enc}} W ^{V}$$</div>
 <p>QK⊺  (16.5) CrossAttention(Q,K,V) = softmax√dk V因此，交叉注意力使解码器能够关注整个编码器最终输出表示中所投影的声学输入。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。但编码器中的多头注意力则允许前看整个源音频，因此它没有被掩蔽。</p>
 <p>在推理时，输出字符串 y 的概率分解为：</p>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>p(y1,...,yn) = p(yi|y1,...,yi−1,X) (16.6)我们可以通过贪心解码产生输出的每个字母：</p>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$yˆ_{i}=\text{argmax}_{\text{char}\in\text{Alphabet}}P(\text{char}|y_{1}...y_{i-1},X)$$</div>
+<div class="formula">$$y ˆ _{i} = \text{argmax} _{\text{char} \in \text{Alphabet}} P ( \text{char} | y _{1} ... y _{i - 1} , X )$$</div>
 <p>另外，像 Whisper 或 OWSM 这样的编码器-解码器也使用下一节所述的束搜索。这在我们加入语言模型时尤为相关。</p>
 <p>加入语言模型　由于编码器-解码器模型本质上是一个条件语言模型，编码器-解码器会从训练数据中隐式地学习一个针对字母输出域的语言模型。然而，训练数据（与文本转写配对的语音）可能并不包含足够的文本，无法训练出一个好的语言模型。毕竟，找到海量纯文本训练数据比找到与语音配对的文本要容易。因此，我们通常可以通过引入一个非常大的语言模型，至少略微改进模型。</p>
 <p>最简单的方法是使用束搜索得到一束假设句子的最终束；这个束有时被称为 n-best 候选列表。然后我们用一个</p>
 <aside class="term"><code>n-best list rescore</code><span class="term-zh">n-best 候选列表重打分</span><span class="term-explain">用外部语言模型对束搜索得到的多个候选转写重新计算得分，以便在其中选出最优结果。</span></aside>
 <p>语言模型对束中的每个假设重新打分。打分方式是将语言模型给出的分数与用于生成该束的编码器-解码器分数进行插值，权重 λ 在留出集上调优。此外，由于大多数模型偏好较短的句子，ASR 系统通常有某种加入长度因子的方式。一种做法是用假设中的字符数 |Y|c 对概率做归一化。以下是 listen, attend and spell（Chan 等，2016）的打分函数：</p>
 <p>1 score(Y|X) = logP(Y|X)+λ logPLM(Y) (16.8)</p>
-<div class="formula">$$|Y|_{c}$$</div>
+<div class="formula">$$| Y | _{c}$$</div>
 <h3>16.3.3 学习</h3>
 <p>用于语音的编码器-解码器使用条件语言模型通常采用的普通交叉熵损失进行训练。在解码的时间步 i，损失是正确词元（字母）yi 的对数概率：</p>
-<div class="formula">$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,y_{i-1},X)$$</div>
+<div class="formula">$$L _{\text{CE}} = - \text{log} p ( y _{i} | y _{1} ,..., y _{i - 1} , X )$$</div>
 <p>整个句子的损失是这些损失之和：</p>
 <blockquote><p>m</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{m}$$</div>
+<div class="formula">$$\sum_{i = 1}^{m}$$</div>
 <p>LCE = − log p(yi|y1,...,yi−1,X) (16.10)然后该损失通过整个端到端模型反向传播，以训练整个编码器-解码器。</p>
 <blockquote><p>i=1</p></blockquote>
 <p>正如我们在第 13 章所述，我们通常使用教师强制，其中解码器历史被强制设为正确的标准答案 yi，而不是预测的 ˆyi。也可以混合使用标准答案与解码器输出，例如 90% 的时间使用标准答案输出，而以 0.1 的概率改用解码器输出：</p>
-<div class="formula">$$L_{\text{CE}}=-\text{log}p(y_{i}|y_{1},...,ˆy_{i-1},X)$$</div>
+<div class="formula">$$L _{\text{CE}} = - \text{log} p ( y _{i} | y _{1} ,..., ˆ y _{i - 1} , X )$$</div>
 <p>现代数据规模相当大。例如，Whisper-v2 在一个语料库上训练，该语料库由 680,000 小时语音组成，主要来自英语，但也包括来自其他 96 种语言的 118,000 小时。数据质量很重要，因此从网络抓取训练数据的系统会实现一些方法，从训练语料中移除由 ASR 生成的转写，例如过滤全大写或全小写的数据。开放的 OWSM 系统在 180k 小时数据上训练，主要是人工转写的公开可用数据，包括 LibriSpeech 和 Multilingual LibriSpeech、Common Voice、FLEURS、Switchboard、AMI 等数据集；详见（Peng 等，2023）。</p>
 <h2>16.4 自监督模型：HuBERT</h2>
 <p>编码器-解码器架构的一种替代方案是这一类自监督</p>
@@ -233,9 +233,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们先讨论如何诱导出作为训练目标的 100 或 500 个语音类别。为了启动这些单元，HuBERT 从梅尔频率倒谱系数（mel frequency cepstral coefficients，MFCC）向量入手，这是一种 39 维特征向量，强调信号中与检测语音单元相关的方面。这些向量可以按第 15.6 节所述从声学信号中提取。我们对整个声学训练数据集提取 MFCC 向量（原始 HuBERT 实现使用了 960 小时的 LibriSpeech 数据，得到 1.72 亿个向量）。接着，我们用第 16.4.3 节所述的 k-means 聚类算法对 MFCC 向量进行聚类。聚类是指把向量分成 k 类。聚类的输出是一个包含 k 个向量的码本，这些向量称为码字或模板或原型，每个代表一个聚类。这 k 个聚类中的每一个都是一个声学单元，可用作训练的黄金目标。</p>
 <p>现在我们来看整个训练过程。声学输入经过CNN 层之后，上下文窗口中有一段词元被选作掩码，对这些词元而言，CNN 的输出被替换为一个 MASK 嵌入。</p>
 <p>整个上下文窗口经过 Transformer 层，每个时间步 t 上的 Transformer 输出 hL t 乘以投影层矩阵 A，将其投影到类别嵌入空间。得到的表示再与 C 中每个类别的嵌入进行比较（使用余弦相似度），并用 softmax（温度参数 τ=0.1）把相似度转成概率：</p>
-<div class="formula">$$\text{exp}(\text{sim}(\text{Ah}_{t},e_{c})/τ)$$</div>
+<div class="formula">$$\text{exp} ( \text{sim} ( \text{Ah} _{t} , e _{c} ) / τ )$$</div>
 <p>p(c|X,t) = (16.12) PC c′=1 exp(sim(Aht,ec′)/τ)如图 16.9 所示，与这一前向传播并行地，输入波形经过 MFCC 处理，生成一个 39 维向量，再通过在码本中选择最相似的质心，将其映射到 100 个类别之一。于是损失函数就是模型赋予这些正确单元的概率在掩码词元集合 M 上的求和：</p>
-<div class="formula">$$\sum_{t\inM}$$</div>
+<div class="formula">$$\sum_{t \in M}$$</div>
 <p>L = log p(zt|X) (16.13)因此，正如掩码语言建模那样，模型被训练来预测与掩码帧相关联的单元。该损失随后通过模型反向传播</p>
 <img src="../md/images/16-speech-recognition/fig_p15_0.png" alt="">
 <p class="caption">图 16.9 HuBERT 训练的第一阶段。一个包含 100 个单元的码本（定义为 39 维 MFCC 向量的聚类）被用作训练目标。对每个时间步 t，计算该类别的概率，并用对数概率作为损失。</p>
@@ -261,7 +261,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>codeword template prototype codebook</code><span class="term-zh">码字、模板、原型、码本</span><span class="term-explain">聚类中代表每个簇的向量；簇的码字也称模板或原型，全部簇的码字合起来构成码本。</span></aside>
 <p>然后迭代重复直至收敛：</p>
 <ul><li>分配：对数据集中的每个向量 v(i)，将其分配到 k 个簇之一，即选择码字 µ 最近的那个簇。最简单地，我们可以把“最近”定义为码字到 v(i) 的平方欧氏距离最小的簇。</li></ul>
-<div class="formula">$$\text{cluster}^{(i)}=\text{argmin}_{1&lt;j&lt;k}||v^{(i)}-µ_{j}||^{2}$$</div>
+<div class="formula">$$\text{cluster} ^{( i )} = \text{argmin} _{1 &lt; j &lt; k} || v ^{( i )} - µ _{j} || ^{2}$$</div>
 <blockquote><p>1&lt;j&lt;k</p></blockquote>
 <p>其中 ||v|| 是向量 Pd j=1 v2 的 L2 范数</p>
 <blockquote><p>j</p></blockquote>
@@ -292,9 +292,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <ul><li>我们将使用 B 函数的逆像，称为 B−1，并把该集合表示为 B−1(Y)。</li></ul>
 <h3>16.5.1 CTC 推断</h3>
 <p>在我们了解如何计算 PCTC(Y|X) 之前，先看看 CTC 如何为一个特定的对齐 ˆA = { ˆa1,..., ˆan} 分配概率。CTC 做了一个很强的条件独立性假设：它假设在给定输入 X 的条件下，CTC 模型在时刻 t 的输出与任何其他时刻 ai 的输出标签相互独立。因此：</p>
-<div class="formula">$$\prod_{t=1}^{T}$$</div>
+<div class="formula">$$\prod_{t = 1}^{T}$$</div>
 <p>PCTC(A|X) = p(at|X) 因此，为了找到最佳对齐 ˆA = { ˆa1,..., ˆaT}，我们可以在每个时间步 t 贪心地选择概率最大的字符：</p>
-<div class="formula">$$aˆ_{t}=\text{argmax}_{c\inC}p_{t}(c|X)$$</div>
+<div class="formula">$$a ˆ _{t} = \text{argmax} _{c \in C} p _{t} ( c | X )$$</div>
 <blockquote><p>c∈C</p></blockquote>
 <p>随后，我们把得到的序列 A 传给 CTC 合并函数 B，从而得到输出序列 Y。</p>
 <p>我们来讨论一下这个用于寻找最佳对齐 A 的简单推理算法将如何实现。由于我们在每个时间点都要做出决策，可以把 CTC 视为一个序列建模任务：在时间步 t 输出一个字母 ˆyt，对应于每个输入 token xt，从而无需完整的解码器。图 16.15 给出了该架构的示意：我们取一个编码器，在每个时间步产生一个隐状态 ht，并在每个时间步对字符词表做 softmax 来完成解码。</p>
@@ -302,28 +302,28 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">图 16.15 使用 CTC 进行推理：采用仅编码器模型，在每个输出步对隐状态 ht 做简单的 softmax 来完成解码。</p>
 <p>可惜的是，(式 16.17) 中勾勒的推理算法存在一个潜在缺陷以及图 16.14 中。问题在于，我们选择了最可能对齐 A，但最可能的对齐未必对应于最可能的最终合并输出串 Y。这是因为有许多可能的对齐都会导致相同的输出串，因此最可能的输出串未必对应于最可能的对齐。例如，设想输入 X = [x1x2x3] 最可能的对齐 A 是串 [a b ϵ]，而次可能的两个对齐是 [b ϵ b] 和 [ϵ b b]。输出 Y =[b b] 对这两个对齐求和后，可能比 Y =[a b] 更可能。</p>
 <p>出于这个原因，最可能的输出序列 Y 并不是拥有单个最佳 CTC 对齐的那个，而是其所有可能对齐概率求和最高者：</p>
-<div class="formula">$$\sum_{B-1(}$$</div>
+<div class="formula">$$\sum_{B - 1 (}$$</div>
 <p>PCTC(Y|X) = P(A|X)</p>
 <blockquote><p>A∈B−1(Y)</p></blockquote>
-<div class="formula">$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$</div>
+<div class="formula">$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$</div>
 <p>= p(at|ht)ˆY = argmax PCTC(Y|X) 可惜的是，对所有对齐求和代价极高（对齐数量非常庞大），因此我们通过一种 Viterbi 束搜索的变体来近似这个求和：它巧妙地在束中保留那些映射到同一输出串的高概率对齐，并将它们求和作为 (式 16.18) 的近似。关于这种针对 CTC 的束搜索扩展的清晰解释，参见 Hannun (2017)。</p>
 <blockquote><p>A∈B−1(Y) t=1</p></blockquote>
 <p>由于前面提到的强条件独立性假设（即在给定输入的条件下，时间 t 的输出与时间 t−1 的输出相互独立），CTC 并不会在数据上隐式地学习一个语言模型（不同于基于注意力的编码器-解码器架构）。因此，使用 CTC 时，必须用在一个开发集上训练得到的插值权重来插值一个语言模型（以及某种长度因子 L(Y)）：</p>
-<div class="formula">$$\text{score}_{\text{CTC}}(Y|X) =\text{log}P_{\text{CTC}}(Y|X)+\lambda_{1}\text{log}P_{LM}(Y)\lambda_{2}L(Y)$$</div>
+<div class="formula">$$\text{score} _{\text{CTC}} ( Y | X ) = \text{log} P _{\text{CTC}} ( Y | X )+ \lambda _{1} \text{log} P _{L M} ( Y ) \lambda _{2} L ( Y )$$</div>
 <h3>16.5.2 CTC 训练</h3>
 <p>为了训练基于 CTC 的 ASR 系统，我们使用带有特殊 CTC 损失函数的负对数似然损失。于是，整个数据集 D 的损失就是每个输入 X 对应正确输出 Y 的负对数似然之和：</p>
-<div class="formula">$$\sum_{,Y)\in}$$</div>
+<div class="formula">$$\sum_{, Y ) \in}$$</div>
 <p>LCTC = −logPCTC(Y|X) (16.20)要计算单个输入对 (X,Y) 的 CTC 损失函数，我们需要给定输入 X 时输出 Y 的概率。正如我们在式 16.18 中看到的，要计算给定输出 Y 的概率，我们需要对所有会合并为 Y 的可能对齐求和。换言之：</p>
 <blockquote><p>(X,Y)∈D</p></blockquote>
-<div class="formula">$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$</div>
+<div class="formula">$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$</div>
 <p>PCTC(Y|X) = p(at|ht) (16.21)朴素地对所有可能对齐求和并不可行（对齐数量太多）。不过，我们可以用动态规划来合并对齐，从而高效地计算这个求和，所用的是一种同样用于训练 HMM（附录 A）和 CRF 的前向-后向算法。训练与推理各自的原始动态规划算法见 (Graves et al., 2006)；关于两者的详细解释参见 (Hannun, 2017)。</p>
 <blockquote><p>A∈B−1(Y) t=1</p></blockquote>
 <h3>16.5.3 结合 CTC 与编码器-解码器</h3>
 <p>也可以把我们描述的两种架构/损失函数结合起来，即来自编码器-解码器架构的交叉熵损失与 CTC 损失。</p>
 <p>图 16.16 给出了示意。训练时，我们只需用在开发集上调好的 λ 对两种损失加权：</p>
-<div class="formula">$$L=-\lambda\text{log}P_{e\text{ncdec}}(Y|X)-(1-\lambda)\text{log}P_{c\text{tc}}(Y|X)$$</div>
+<div class="formula">$$L = - \lambda \text{log} P _{e \text{ncdec}} ( Y | X ) - ( 1 - \lambda ) \text{log} P _{c \text{tc}} ( Y | X )$$</div>
 <p>推理时，我们可以把两者与语言模型（或长度惩罚）结合，同样使用学习得到的权重：</p>
-<div class="formula">$$Yˆ=\text{argmax}_{Y}[\lambda\text{log}P_{e\text{ncdec}}(Y|X)+(1-\lambda)\text{log}P_{C\text{TC}}(Y|X)+γ\text{log}P_{LM}(Y)](16.23)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y} [ \lambda \text{log} P _{e \text{ncdec}} ( Y | X )+( 1 - \lambda ) \text{log} P _{C \text{TC}} ( Y | X )+ γ \text{log} P _{L M} ( Y )] (16.23)$$</div>
 <img src="../md/images/16-speech-recognition/fig_p21_0.png" alt="">
 <p class="caption">图 16.16 结合 CTC 与编码器-解码器损失函数。</p>
 <h3>16.5.4 流式模型：用 RNN-T 改进 CTC</h3>
@@ -336,10 +336,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>t</p></blockquote>
 <blockquote><p>u</p></blockquote>
 <p>两者被送入另一个网络，其输出再经过 softmax，以预测下一个字符。</p>
-<div class="formula">$$\sum_{B-1(}$$</div>
+<div class="formula">$$\sum_{B - 1 (}$$</div>
 <p>PRNN−T(Y|X) = P(A|X)</p>
 <blockquote><p>A∈B−1(Y)</p></blockquote>
-<div class="formula">$$\sum_{B-1(Y)}\prod_{t=1}^{T}$$</div>
+<div class="formula">$$\sum_{B - 1 ( Y )} \prod_{t = 1}^{T}$$</div>
 <p>= p(at|ht,y&lt;ut)</p>
 <blockquote><p>A∈B−1(Y) t=1</p></blockquote>
 <h2>16.6 ASR 评估：词错误率</h2>
@@ -374,10 +374,10 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>A</p></blockquote>
 <blockquote><p>B</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$σ_{z}^{2}$$</div>
+<div class="formula">$$σ _{z} ^{2}$$</div>
 <p>z = n−1令</p>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$µˆ_{z}$$</div>
+<div class="formula">$$µ ˆ _{z}$$</div>
 <p>W = (16.25)σz/√n当 n 足够大（&gt; 50）时，W 近似服从单位方差的正态分布。原假设为 H0 : µz = 0，因此当 2 ∗P(Z ≥|w|) ≤0.05（双尾）或 P(Z ≥|w|) ≤0.05（单尾）时即可拒绝该原假设，其中 Z 服从标准正态分布，w 为 W 的实现值；这些概率可在正态分布的标准表中查得。</p>
 <p>早期工作有时使用 McNemar 检验来判定显著性，但 McNemar</p>
 <aside class="term"><code>McNemar’s test</code><span class="term-zh">McNemar 检验</span><span class="term-explain">一种比较两个识别系统错误率的配对显著性检验，仅在各错误相互独立时适用，而连续语音中相邻词的错误高度相关，故其前提难以满足。</span></aside>

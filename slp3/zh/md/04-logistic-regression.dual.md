@@ -191,7 +191,7 @@ Y = {Abkhaz,Ainu,Albanian,Amharic,...Zulu,Zu˜ni}
 
 > For these reasons the most common way to do classification is to use supervised machine learning. Supervised machine learning is a paradigm in which, in addition to the input and the set of output classes, we have a labeled training set and a learning algorithm. We talked about training sets in Chapter 3 as a locus for computing n-gram statistics. But in supervised machine learning the training set is labeled, meaning that it contains a set of input observations, each observation associated with the correct output (a ‘supervision signal’). We can generally refer to a training set of m input/output pairs, where each input x is a text, in the case of text classification, and each is hand-labeled with an associated class (the correct label).
 
-$$\text{training set:}\{(x^{(1)},y^{(1)}),(x^{(2)},y^{(2)}),...,(x^{(m)},y^{(m)})\}$$
+$$\text{training set:} \{ ( x ^{( 1 )} , y ^{( 1 )} ) , ( x ^{( 2 )} , y ^{( 2 )} ) ,..., ( x ^{( m )} , y ^{( m )} ) \}$$
 
 我们将使用括号中的上标来指代训练集中的各个观测样本或实例。因此对于情感分类，训练集可能是一组句子或其他文本，每个都带有其正确的情感标签。
 
@@ -370,7 +370,7 @@ sigmoid 函数具有如下性质
 
 > p
 
-$$_{1-}^{p}_{p}:$$
+$$_{1 - p} ^{p} :$$
 
 logit(p) = σ−1(p) = ln p (4.7)
 1−p
@@ -550,7 +550,7 @@ i = xi −µi x′ (4.9)
 
 > j=1 j=1
 
-$$σ_{i}$$
+$$σ _{i}$$
 
 另一种做法是，把输入特征的取值归一化到 0 与 1 之间：
 
@@ -560,7 +560,7 @@ $$σ_{i}$$
 
 xi −min(xi)
 
-$$x_{i}^{′}$$
+$$x _{i} ^{′}$$
 
 i = max(xi)−min(xi)
 在跨特征比较取值时，具有可比取值范围的输入数据是很有用的。数据缩放在大规模神经网络中尤为重要，因为它有助于加快梯度下降。
@@ -585,9 +585,9 @@ i = max(xi)−min(xi)
 
 > One way to compute ˆy(i) (which is how we refer to P(y(i) = 1), i.e., the probability that the output for input x(i) has the value 1), is just to have a for-loop and compute each test example one at a time:
 
-$$\text{foreach}x^{(i)}\text{in input}[x^{(1)},x^{(2)},...,x^{(m)}]$$
+$$\text{foreach} x ^{( i )} \text{in input} [ x ^{( 1 )} , x ^{( 2 )} ,..., x ^{( m )} ]$$
 
-$$yˆ^{(i)}=P(y^{(i)}=1)=σ(w\cdotx^{(i)}+b)$$
+$$y ˆ ^{( i )} = P ( y ^{( i )} = 1 ) = σ ( w \cdot x ^{( i )} + b )$$
 
 那么，对于前 3 个测试样例，我们将按如下方式分别计算预测输出概率：
 
@@ -612,7 +612,7 @@ X = (4.12)
 
 > 1 2 f
 
-$$x_{1}^{(3)}x_{2}^{(3)}...x^{(}_{f}^{3)}$$
+$$x _{1} ^{( 3 )} x _{2} ^{( 3 )} ... x ^{( 3 )} _{f}$$
 
 > 1 2 f
 
@@ -711,7 +711,7 @@ L(ˆy,y) = How much ˆy differs from the true y (4.16)
 
 > learn weights that maximize the probability of the correct label p(y|x). Since there are only two discrete outcomes (1 or 0), this is a Bernoulli distribution, and we can express the probability p(y|x) that our classifier produces for one observation as the following (keeping in mind that if y = 1, Eq. 4.17 simplifies to ˆy; if y = 0, Eq. 4.17 simplifies to 1−ˆy):
 
-$$p(y|x)=yˆ^{y}(1-yˆ)^{1-y}$$
+$$p ( y | x ) = y ˆ ^{y} ( 1 - y ˆ ) ^{1 - y}$$
 
 现在我们对两边取对数。这在数学上会很方便，而且不会带来任何损失；使概率最大化的取值，同样会使概率的对数最大化：
 
@@ -723,26 +723,26 @@ log p(y|x) = log
 
 > = ylog ˆy+(1−y)log(1−ˆy) Eq. 4.18 describes a log likelihood that should be maximized. In order to turn this into a loss function (something that we need to minimize), we’ll just flip the sign on Eq. 4.18. The result is the cross-entropy loss LCE:
 
-$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$
 
 最后，我们可以代入 ˆy = σ(w ·x+b) 的定义：
 
 > Finally, we can plug in the definition of ˆy = σ(w ·x+b):
 
-$$L_{\text{CE}}(yˆ,y)=-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$
 
 让我们看看这个损失函数对图 4.2 中的例子是否表现正确。我们希望当模型的估计接近正确时损失更小，当模型感到困惑时损失更大。因此，先假设图 4.2 中情感示例的正确金标准标签为正面，即 y = 1。此时我们的模型表现良好，因为由式 4.8 可知，它确实给该示例为正面赋予了比负面更高的概率（.70 对 .30）。如果把 σ(w ·x+b) = .70 和 y = 1 代入式 4.20，等式右边会消失，从而得到如下损失（当未指定底数时，我们用 log 表示自然对数）：
 
 > Let’s see if this loss function does the right thing for our example from Fig. 4.2. We want the loss to be smaller if the model’s estimate is close to correct, and bigger if the model is confused. So first let’s suppose the correct gold label for the sentiment example in Fig. 4.2 is positive, i.e., y = 1. In this case our model is doing well, since from Eq. 4.8 it indeed gave the example a higher probability of being positive (.70) than negative (.30). If we plug σ(w ·x+b) = .70 and y = 1 into Eq. 4.20, the right side of the equation drops out, leading to the following loss (we’ll use log to mean natural log when the base is not specified):
 
-$$L_{\text{CE}}(yˆ,y) =-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$
 
 = −[logσ(w ·x+b)]= −log(.70)= .36
 相比之下，我们换一种假设，设想图 4.2 中的示例实际上是负面的，即 y = 0（也许评论者接着写道：“但归根结底，这部电影糟透了！我求你别去看！”）。此时我们的模型感到困惑，我们希望损失更高。现在，如果把 y = 0 以及由式 4.8 得到的 1−σ(w ·x+b) = .30 代入式 4.20，等式左边会消失：
 
 > By contrast, let’s pretend instead that the example in Fig. 4.2 was actually negative, i.e., y = 0 (perhaps the reviewer went on to say “But bottom line, the movie is terrible! I beg you not to see it!”). In this case our model is confused and we’d want the loss to be higher. Now if we plug y = 0 and 1−σ(w ·x+b) = .30 from Eq. 4.8 into Eq. 4.20, the left side of the equation drops out:
 
-$$L_{\text{CE}}(yˆ,y) =-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$
 
 = −[log(1−σ(w ·x+b))]= −log(.30)= 1.2
 果不其然，预测正确标签的损失（.36）小于预测错误标签的损失（1.2）。
@@ -775,7 +775,7 @@ $$L_{\text{CE}}(yˆ,y) =-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+
 
 ˆθ = argmin 1 X
 
-$$L_{\text{CE}}(f(x^{(i)};θ),y^{(i)})$$
+$$L _{\text{CE}} ( f ( x ^{( i )} ; θ ) , y ^{( i )} )$$
 
 m
 我们该如何找到这个（或任意）损失函数的最小值？梯度下降是一种通过判断函数（在参数 θ 空间中）的斜率沿哪个方向上升最陡、然后朝相反方向移动来求函数最小值的方法。其直觉是：如果你在峡谷中徒步，想尽快下到谷底的河流，你可能会环顾四周各个方向，找到地面倾斜最陡的方向，然后朝那个方向下坡走去。
@@ -881,11 +881,11 @@ dwL(f(x;w),y)
 
 > ∂
 
-$$_{\partial}^{\partial}_{wn}L(f(x;θ),y)$$
+$$_{\partial w n} ^{\partial} L ( f ( x ; θ ) , y )$$
 
 > ∂
 
-$$_{\partial}^{\partial}_{b}L(f(x;θ),y)$$
+$$_{\partial b} ^{\partial} L ( f ( x ; θ ) , y )$$
 
 > ∂
 
@@ -893,7 +893,7 @@ $$_{\partial}^{\partial}_{b}L(f(x;θ),y)$$
 
 > The final equation for updating θ based on the gradient is thus
 
-$$θ^{t+1}=θ^{t}-η∇L(f(x;θ),y)$$
+$$θ ^{t + 1} = θ ^{t} - η ∇ L ( f ( x ; θ ) , y )$$
 
 ### 4.6.1 逻辑回归的梯度
 
@@ -903,29 +903,29 @@ $$θ^{t+1}=θ^{t}-η∇L(f(x;θ),y)$$
 
 > In order to update θ, we need a definition for the gradient ∇L(f(x;θ),y). Recall that for logistic regression, the cross-entropy loss function is:
 
-$$L_{\text{CE}}(yˆ,y)=-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$
 
 事实证明，该函数对单个观测向量 x 的导数就是式 4.26（感兴趣的读者可参阅第 4.15 节了解该公式的推导）：
 
 > It turns out that the derivative of this function for one observation vector x is Eq. 4.26(the interested reader can see Section 4.15 for the derivation of this equation):
 
-$$\partialL_{\text{CE}}(yˆ,y)$$
+$$\partial L _{\text{CE}} ( y ˆ , y )$$
 
-$$=[σ(w\cdotx+b)-y]x_{j}$$
+$$= [ σ ( w \cdot x + b ) - y ] x _{j}$$
 
-$$\partialw_{j}$$
+$$\partial w _{j}$$
 
-$$=(yˆ-y)x_{j}$$
+$$= ( y ˆ - y ) x _{j}$$
 
 你有时也会看到该方程写成下面这种等价形式：
 
 > You’ll also sometimes see this equation in the equivalent form:
 
-$$\partialL_{\text{CE}}(yˆ,y)$$
+$$\partial L _{\text{CE}} ( y ˆ , y )$$
 
-$$=-(y-yˆ)x_{j}$$
+$$= - ( y - y ˆ ) x _{j}$$
 
-$$\partialw_{j}$$
+$$\partial w _{j}$$
 
 请注意，在这些公式中，对单个权重 wj 的梯度表示一个非常直观的值：该观测样本的真实 y 与我们估计的 ŷ = σ(w · x + b) 之差，再乘以对应的输入值 x j。
 
@@ -939,7 +939,7 @@ $$\partialw_{j}$$
 
 > That turns out to be:
 
-$$\partialL_{\text{CE}}(yˆ,y)$$
+$$\partial L _{\text{CE}} ( y ˆ , y )$$
 
 = σ(w ·x+b)−y
 ∂b
@@ -990,7 +990,7 @@ x1 = 3（正面词典词的数量） x2 = 2（负面词典词的数量）
 
 > Let’s assume the initial weights and bias in θ 0 are all set to 0, and the initial learning rate η is 0.1:
 
-$$w_{1}=w_{2}=b=0$$
+$$w _{1} = w _{2} = b = 0$$
 
 η = 0.1 单次更新步骤要求我们计算梯度，再乘以学习率 θt+1 = θt −η∇θL(f(x(i);θ),y(i)) 在我们的迷你示例中有三个参数，因此梯度向量有 3 个维度，分别对应 w1、w2 和 b。我们可以如下计算第一个梯度：
 
@@ -1061,7 +1061,7 @@ b −0.5 .05
 
 > m
 
-$$\prod_{i=1}^{m}$$
+$$\prod_{i = 1}^{m}$$
 
 log p(training labels) = log p(y(i)|x(i))
 X= log p(y(i)|x(i))
@@ -1070,9 +1070,9 @@ X= log p(y(i)|x(i))
 
 > i=1 m
 
-$$\sum_{i=1}^{m}$$
+$$\sum_{i = 1}^{m}$$
 
-$$L_{\text{CE}}(yˆ^{(i)},y^{(i)})$$
+$$L _{\text{CE}} ( y ˆ ^{( i )} , y ^{( i )} )$$
 
 = −
 现在，包含 m 个样本的小批量的代价函数是每个样本损失的平均值：
@@ -1090,7 +1090,7 @@ m
 
 > i=1 m
 
-$$1-σ(w\cdotx^{(i)}+b)$$
+$$1 - σ ( w \cdot x ^{( i )} + b )$$
 
 m
 小批量梯度是式 4.26 中各个梯度的平均值：
@@ -1103,7 +1103,7 @@ m
 
 ∂Cost(ˆy,y) 1 X h σ(w ·x(i) +b)−y(i)i
 
-$$x^{(}_{j}^{i)}$$
+$$x ^{( i )} _{j}$$
 
 = (4.31)
 ∂w j m
@@ -1154,7 +1154,7 @@ z = [z1,z2,...,zK]，其中包含 K 个任意值，并将它们映射为一个�
 
 > For a vector z of dimensionality K, the softmax is defined as:
 
-$$\text{exp}(z_{i})$$
+$$\text{exp} ( z _{i} )$$
 
 softmax(zi) = 1 ≤i ≤K (4.33)
 PK j=1 exp(z j)
@@ -1202,15 +1202,15 @@ z = [0.6,1.1,−1.5,1.2,3.2,−1.1]
 
 > When we apply softmax for logistic regression, the input will (just as for the sigmoid) be the dot product between a weight vector w and an input vector x (plus a bias). But now we’ll need separate weight vectors wk and bias bk for each of the K classes. The probability of each of our output classes ˆyk can thus be computed as:
 
-$$_{K}\text{exp}(w_{k}\cdotx+b_{k})$$
+$$_{K} \text{exp} ( w _{k} \cdot x + b _{k} )$$
 
-$$P(y_{k}=1|x)=$$
+$$P ( y _{k} = 1 | x ) =$$
 
 > K
 
-$$\sum_{j=1}^{K}$$
+$$\sum_{j = 1}^{K}$$
 
-$$\text{exp}(w^{j}\cdotx+b_{j})$$
+$$\text{exp} ( w ^{j} \cdot x + b _{j} )$$
 
 > j=1
 
@@ -1301,7 +1301,7 @@ x5 = 0 否则
 
 > The loss function for multinomial logistic regression generalizes the loss function for binary logistic regression from 2 to K classes. Recall that the cross-entropy loss for binary logistic regression (repeated from Eq. 4.19) is:
 
-$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$
 
 多项逻辑回归的损失函数把式 4.37 中的两项（一项在 y = 1 时非零，另一项在 y = 0 时非零）推广为 K 项。如前所述，对于多项回归，我们将把 y 和 ˆy 都表示为向量。真实标签 y 是一个含 K 个元素的向量，每个元素对应一个类别，当正确类别为 c 时 yc = 1，y 的其余元素均为 0。
 
@@ -1317,7 +1317,7 @@ $$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-y�
 
 > K
 
-$$\sum_{k=1}^{K}$$
+$$\sum_{k = 1}^{K}$$
 
 LCE(ˆy,y) = − yk log ˆyk (4.38)
 = −log ˆyc，（其中 c 是正确类别）(4.39)
@@ -1351,13 +1351,13 @@ PK j=1 exp(wj ·x+bj)
 
 > gradient for a single example turns out to be very similar to the gradient for binary logistic regression, (ˆy−y)x, that we saw in Eq. 4.26. Let’s consider one piece of the gradient, the derivative for a single weight. For each class k, the weight of the ith element of input x is wk,i. What is the partial derivative of the loss with respect to wk,i? This derivative turns out to be just the difference between the true value for the class k (which is either 1 or 0) and the probability the classifier outputs for class k, weighted by the value of the input xi corresponding to the ith element of the weight vector for class k:
 
-$$\partialL_{\text{CE}}$$
+$$\partial L _{\text{CE}}$$
 
-$$=-(y_{k}-yˆ_{k})x_{i}$$
+$$= - ( y _{k} - y ˆ _{k} ) x _{i}$$
 
-$$\partialw_{k,i}$$
+$$\partial w _{k , i}$$
 
-$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$
+$$= - ( y _{k} - p ( y _{k} = 1 | x )) x _{i}$$
 
 !
 
@@ -1365,7 +1365,7 @@ exp(wk ·x+bk) (4.41)
 yk − xi
 = − PK
 
-$$^{K}_{j=1}\text{exp}(w_{j}\cdotx+b_{j})$$
+$$^{K} _{j = 1} \text{exp} ( w _{j} \cdot x + b _{j} )$$
 
 ## 4.9 评估：精确率、召回率、F 值
 
@@ -1462,7 +1462,7 @@ Rijsbergen, 1975），定义为：
 
 Fβ = (β 2 +1)PR
 
-$$β^{2}P+R$$
+$$β ^{2} P + R$$
 
 β 参数以不同的方式为召回率和精确率的重要性加权，
 
@@ -1486,9 +1486,9 @@ n
 
 HarmonicMean(a1,a2,a3,a_14,...,an) = (4.43)
 
-$$_{a}^{1}_{1}+_{a}^{1}_{2}$$
+$$_{a 1} ^{1} + _{a 2} ^{1}$$
 
-$$_{a}^{1}_{2}+_{a}^{1}_{3}+...+_{a}^{1}_{n}$$
+$$_{a 2} ^{1} + _{a 3} ^{1} + ... + _{a n} ^{1}$$
 
 > an
 
@@ -1673,7 +1673,7 @@ H0 : δ(x) ≤0 H1 : δ(x) > 0 (4.46)
 
 > assuming the null hypothesis H0 is true, of seeing the δ(x) that we saw or one even greater
 
-$$P(δ(X)\geδ(x)|H_{0}\text{is true})$$
+$$P ( δ ( X ) \ge δ ( x ) | H _{0} \text{is true} )$$
 
 所以在我们的例子中，这个 p 值就是假定 A 并不比 B 更好时我们会看到 δ(x) 的概率。如果 δ(x) 很大（比方说 A 在 x 上有非常可观的 F1，为 .9，而 B 的 F1 只有糟糕的 .2），我们可能会感到惊讶，因为如果 H0 实际上成立，这种情况极不可能出现，因此 p 值会很低（如果 A 实际上并不比 B 更好，就不太可能出现这么大的 δ）。但如果 δ(x) 非常小，那么即使 H0 成立、A 并不真的比 B 更好，我们可能也不会太惊讶，因此 p 值会更高。
 
@@ -1943,7 +1943,7 @@ Numquam ponenda est pluralitas sine necessitate“除非必要，绝不应提出
 
 ˆθ = argmax X
 
-$$\text{log}P(y^{(i)}|x^{(i)})-αR(θ)$$
+$$\text{log} P ( y ^{( i )} | x ^{( i )} ) - α R ( θ )$$
 
 > θ i=1
 
@@ -1965,11 +1965,11 @@ $$\text{log}P(y^{(i)}|x^{(i)})-αR(θ)$$
 
 > n
 
-$$\sum_{j=1}^{n}$$
+$$\sum_{j = 1}^{n}$$
 
 R(θ) = ||θ||2 θ 2
 
-$$_{2}^{2}=$$
+$$_{2} ^{2} =$$
 
 > j
 
@@ -2004,11 +2004,11 @@ L1 正则化是权重值的线性函数，其名称来自 L1 范数
 
 > n
 
-$$\sum_{i=1}^{n}$$
+$$\sum_{i = 1}^{n}$$
 
-$$R(θ)=||θ||_{1}=$$
+$$R ( θ ) = || θ || _{1} =$$
 
-$$|θ_{i}|$$
+$$| θ _{i} |$$
 
 > i=1
 
@@ -2021,7 +2021,7 @@ L1 正则化后的损失函数变为：
 
 > n
 
-$$\text{log}P(y^{(i)}|x^{(i)};θ)$$
+$$\text{log} P ( y ^{( i )} | x ^{( i )} ; θ )$$
 
 −α |θj|
 这类正则化来自统计学，其中 L1 正则化被称为 lasso 回归（Tibshirani, 1996），L2 正则化被称为 ridge 回归，

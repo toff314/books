@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/22-semantic-role-labeling.md">Markdown 源文件</a></div>
@@ -441,7 +441,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">Figure 22.6 A simple neural approach to semantic role labeling. The input sentence is followed by [SEP] and an extra input for the predicate, in this case love. The encoder outputs are concatenated to an indicator variable which is 1 for the predicate and 0 for all other words After He et al. (2017) and Shi and Lin (2019).</p>
 <p>与所有标注器一样，目标是在给定输入词序列 w 的情况下，计算概率最高的标签序列 ŷ：</p>
 <blockquote><p>As with all the taggers, the goal is to compute the highest probability tag sequence ˆy, given the input sequence of words w:</p></blockquote>
-<div class="formula">$$yˆ=\text{argmax}_{y\inT}P(y|w)$$</div>
+<div class="formula">$$y ˆ = \text{argmax} _{y \in T} P ( y | w )$$</div>
 <blockquote><p>y∈T</p></blockquote>
 <p>图 22.6 展示了 He et al. (2017) 中一个标准算法的示意图。这里每个输入词被映射为预训练嵌入，然后每个词元与谓词嵌入拼接，再通过一个带 softmax 的前馈网络，输出每个 SRL 标签上的分布。解码时，可以用 CRF 层代替 biLSTM 输出之上的 MLP 层来做全局推断，但在实践中这似乎并没有带来多少好处。</p>
 <blockquote><p>Fig. 22.6 shows a sketch of a standard algorithm from He et al. (2017). Here each input word is mapped to pretrained embeddings, and then each token is concatenated with the predicate embedding and then passed through a feedforward network with a softmax which outputs a distribution over each SRL label. For decoding, a CRF layer can be used instead of the MLP layer on top of the biLSTM output to do global inference, but in practice this doesn’t seem to provide much benefit.</p></blockquote>
@@ -549,7 +549,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>Q(x)选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。</p>
 <blockquote><p>The selectional preference SR(v) uses the KL divergence to express how much information, in bits, the verb v expresses about the possible semantic class of its argument.</p></blockquote>
 <blockquote><p>x</p></blockquote>
-<div class="formula">$$S_{R}(v)=D(P(c|v)||P(c))$$</div>
+<div class="formula">$$S _{R} ( v ) = D ( P ( c | v ) || P ( c ))$$</div>
 <p>X P(c|v)log P(c|v) = P(c) (22.39)</p>
 <blockquote><p>c</p></blockquote>
 <aside class="term"><code>selectional association</code><span class="term-zh">选择关联</span><span class="term-explain">衡量某个语义类别对谓词整体选择偏好贡献大小的度量。</span></aside>
@@ -558,7 +558,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>该类别对该动词总体选择偏好的相对贡献：</p>
 <blockquote><p>relative contribution of that class to the general selectional preference of the verb:</p></blockquote>
 <p>SR(v)P(c|v)log P(c|v) 1</p>
-<div class="formula">$$A_{R}(v,c)=$$</div>
+<div class="formula">$$A _{R} ( v , c ) =$$</div>
 <p>P(c)因此，选择关联是对谓词与支配该谓词论元的某个类别之间关联强度的一种概率度量。</p>
 <blockquote><p>The selectional association is thus a probabilistic measure of the strength of association between a predicate and a class dominating the argument to the predicate.</p></blockquote>
 <p>Resnik 通过对语料库进行句法分析、统计每个谓词与每个论元词共现的所有次数，并假定每个词都是对包含该词的所有 WordNet 概念的部分观测，来估计这些关联的概率。下面这张取自 Resnik (1996) 的表给出了若干动词与其直接宾语的一些 WordNet 语义类别之间的高、低选择关联样例。</p>

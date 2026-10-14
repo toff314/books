@@ -331,7 +331,7 @@ Yao Ming enter enter overall decision game（姚 明 进 入 总 决 赛）
 
 > Eq. 2.5, where k and β are positive constants, and 0 < β < 1.
 
-$$|V|=\text{kN}^{β}$$
+$$| V | = \text{kN} ^{β}$$
 
 β 的取值取决于语料库规模与体裁；报告中常见 0.44 到 0.56 甚至更高的数值。粗略地说，一段文本的词表规模增长速度略快于其词数长度的平方根。
 

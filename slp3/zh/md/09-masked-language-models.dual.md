@@ -339,15 +339,15 @@ the 已从训练序列中抽样出来，其中前两个被掩码，最后一个�
 
 > the have been sampled from the training sequence, with the first two masked and the replaced with the randomly sampled token apricot. The resulting embeddings are passed through a stack of bidirectional transformer blocks. Recall from Section 7.5 in Chapter 7 that to produce a probability distribution over the vocabulary for each of the masked tokens, the language modeling head takes the output vector hL i from the final transformer layer L for each masked token i, multiplies it by the unembedding layer ET to produce the logits u, and then uses softmax to turn the logits into probabilities y over the vocabulary:
 
-$$u_{i}=h^{L}_{i}E^{T}$$
+$$u _{i} = h ^{L} _{i} E ^{T}$$
 
-$$y_{i}=\text{softmax}(u_{i})$$
+$$y _{i} = \text{softmax} ( u _{i} )$$
 
 有了每个被掩码项的预测概率分布，我们就可以用交叉熵计算每个被掩码项的损失——即分配给真实被掩码词的负对数概率，如图 9.4 所示。更形式化地说，对于句子或批次 x 中给定的输入词元向量，设被掩码的词元集合为 M，把该句子中某些词元替换为掩码后的版本为 xmask，输出向量序列为 h。对于给定的输入词元 xi，例如图 9.4 中的词 long，损失就是在给定 xmask（概括为单个输出向量 hL i）下正确词 long 的概率：
 
 > With a predicted probability distribution for each masked item, we can use crossentropy to compute the loss for each masked item—the negative log probability assigned to the actual masked word, as shown in Fig. 9.4. More formally, for a given vector of input tokens in a sentence or batch x, let the set of tokens that are masked be M, the version of that sentence with some tokens replaced by masks be xmask, and the sequence of output vectors be h. For a given input token xi, such as the word long in Fig. 9.4, the loss is the probability of the correct word long, given xmask (as summarized in the single output vector hL i ):
 
-$$L_{\text{MLM}}(x_{i}) =-\text{log}P(x_{i}|h_{i}^{L})$$
+$$L _{\text{MLM}} ( x _{i} ) = - \text{log} P ( x _{i} | h _{i} ^{L} )$$
 
 构成权重更新基础的梯度，基于单个训练序列（或一批序列）中被抽样的学习项的平均损失。
 
@@ -355,7 +355,7 @@ $$L_{\text{MLM}}(x_{i}) =-\text{log}P(x_{i}|h_{i}^{L})$$
 
 LMLM = −1 X
 
-$$\text{log}P(x_{i}|h_{i}^{L})$$
+$$\text{log} P ( x _{i} | h _{i} ^{L} )$$
 
 |M|
 注意只有 M 中的词元在学习中起作用；其他词在损失函数中不起作用，因此在这个意义上 BERT 及其后继者效率不高；训练数据中只有 15% 的输入样本真正用于训练权重。1
@@ -528,9 +528,9 @@ PN j=1 pα PN k=1 nk
 
 > a classifier for this application involves learning a set of weights, WC, to map the output vector for the [CLS] token—hL CLS—to a set of scores over the possible sentiment classes. Assuming a three-way sentiment classification task (positive, negative, neutral) and dimensionality d as the model dimension, WC will be of size [d ×3]. To classify a document, we pass the input text through the pretrained language model to generate hL CLS, multiply it by WC, and pass the resulting vector through a softmax.
 
-$$y=\text{softmax}(h^{L}$$
+$$y = \text{softmax} ( h ^{L}$$
 
-$$^{L}_{\text{CLS}}W_{C})$$
+$$^{L} _{\text{CLS}} W _{C} )$$
 
 微调 WC 中的值需要监督训练数据，这些数据由输入
 
@@ -767,11 +767,11 @@ a：我感到困惑。 b：并非所有内容对我来说都非常清楚。
 
 > In sequence labeling, we pass the final output vector corresponding to each input token to a classifier that produces a softmax distribution over the possible set of tags. For a single feedforward layer classifier, the set of weights to be learned is WK of size [d × k], where k is the number of possible tags for the task. A greedy approach, where the argmax tag for each token is taken as a likely answer, can be used to generate the final output tag sequence. Fig. 9.10 illustrates an example of this approach, where yi is a vector of probabilities over tags, and k indexes the tags.
 
-$$y_{i}=\text{softmax}(h^{L}_{i}$$
+$$y _{i} = \text{softmax} ( h ^{L} _{i}$$
 
-$$^{L}_{i}W_{K})$$
+$$^{L} _{i} W _{K} )$$
 
-$$t_{i}=\text{argmax}_{k}(y_{i})$$
+$$t _{i} = \text{argmax} _{k} ( y _{i} )$$
 
 另一种做法是，把 softmax 为每个输入词元给出的标签分布送入条件随机场（CRF）层，该层可以考虑全局的标签级转移（参见第 18 章关于 CRF 的内容）。
 

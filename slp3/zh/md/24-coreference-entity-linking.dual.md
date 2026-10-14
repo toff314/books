@@ -1316,11 +1316,11 @@ D 中全部 T(T+1)/2 个文本跨度（一元、二元、三元、四元等；�
 
 > For each pair of spans i and j, the system assigns a score s(i, j) for the coreference link between span i and span j. The system then learns a distribution P(yi) over the antecedents for span i:
 
-$$\text{exp}(s(i,y_{i}))$$
+$$\text{exp} ( s ( i , y _{i} ))$$
 
 P(yi) = P
 
-$$_{y′\inY(i)}\text{exp}(s(i,y^{′}))$$
+$$_{y ′ \in Y ( i )} \text{exp} ( s ( i , y ^{′} ))$$
 
 该得分 s(i, j) 包含三个我们将在下面定义的因子：m(i)，即跨度 i 是否为提及；m(j)，即跨度 j 是否为提及；以及 c(i, j)，即 j 是否为 i 的先行语：
 
@@ -1339,7 +1339,7 @@ s(i, j) = m(i)+m(j)+c(i, j) (24.49)
 
 > To compute the two functions m(i) and c(i, j) which score a span i or a pair of spans(i, j), we’ll need a way to represent a span. The e2e-coref family of algorithms represents each span by trying to capture 3 words/tokens: the first word, the last word, and the most important word. We first run each paragraph or subdocument through an encoder (like BERT) to generate embeddings hi for each token i. The span i is then represented by a vector gi that is a concatenation of the encoder output embedding for the first (start) token of the span, the encoder output for the last (end) token of the span, and a third vector which is an attention-based representation:
 
-$$g_{i}= [h_{\text{START}(i)},h_{\text{END}(i)},h_{\text{ATT}(i)}]$$
+$$g _{i} = [ h _{\text{START} ( i )} , h _{\text{END} ( i )} , h _{\text{ATT} ( i )} ]$$
 
 注意力向量的目标是表示哪个词/词元是该跨度可能的
 
@@ -1348,15 +1348,15 @@ $$g_{i}= [h_{\text{START}(i)},h_{\text{END}(i)},h_{\text{ATT}(i)}]$$
 
 > syntactic head-word of the span; we saw in the prior section that head-words are a useful feature; a matching head-word is a good indicator of coreference. The attention representation is computed as usual; the system learns a weight vector wα, and computes its dot product with the hidden state ht transformed by a FFN:
 
-$$α_{t}=w_{α}\cdot^{\text{FFN}}_{α}(h_{t})$$
+$$α _{t} = w _{α} \cdot ^{\text{FFN}} _{α} ( h _{t} )$$
 
 注意力得分通过 softmax 归一化为一个分布：
 
 > The attention score is normalized into a distribution via a softmax:
 
-$$\text{exp}(α_{t})$$
+$$\text{exp} ( α _{t} )$$
 
-$$a_{i,t}=$$
+$$a _{i , t} =$$
 
 PEND(i) k=START(i) exp(αk)
 然后用这一注意力分布构造向量 hATT(i)，它是对跨度 i 中每个词的嵌入 et 所做的注意力加权求和：
@@ -1365,11 +1365,11 @@ PEND(i) k=START(i) exp(αk)
 
 > END(i)
 
-$$\sum_{\text{START}}^{\text{END}(}$$
+$$\sum_{\text{START}}^{\text{END} (}$$
 
-$$a_{i,t}\cdote_{t}$$
+$$a _{i , t} \cdot e _{t}$$
 
-$$h_{\text{ATT}(i)}=$$
+$$h _{\text{ATT} ( i )} =$$
 
 > t=START(i)
 
@@ -1395,7 +1395,7 @@ $$h_{\text{ATT}(i)}=$$
 
 m(i) = wm ·FFNm(gi) (24.54)
 
-$$c(i,j)=w_{c}\cdot\text{FFN}_{c}([g_{i},g^{j},g_{i}◦g_{j},])$$
+$$c ( i , j ) = w _{c} \cdot \text{FFN} _{c} ([ g _{i} , g ^{j} , g _{i} ◦ g _{j} , ])$$
 
 在推断阶段，该提及得分 m 被用作过滤器，只保留得分最高的少数几个提及。
 
@@ -1613,7 +1613,7 @@ a →X 的总相关度得分，是 q 中检测到的所有其他锚点投票之�
 
 > Y∈E(b)
 
-$$\sum_{\inXq\\}$$
+$$\sum_{\in X q \\}$$
 
 relatedness(a →X) = vote(b,X) (24.61)
 为给 a →X 打分，我们结合相关度与先验概率，做法是选择实体 X
@@ -1655,13 +1655,13 @@ score(a →X) = coherence(a →X)+linkprob(a) (24.62)
 
 > Entity Mention Detection To get an h-dimensional embedding for each question token, the algorithm runs the question through BERT in the normal way:
 
-$$[q_{1}\cdot \cdot \cdotq_{n}] =\text{BERT}([\texttt{CLS}]q_{1}\cdot \cdot \cdotq_{n}[\texttt{SEP}])$$
+$$[ q _{1} \cdot \cdot \cdot q _{n} ] = \text{BERT} ([ \texttt{CLS} ] q _{1} \cdot \cdot \cdot q _{n} [ \texttt{SEP} ])$$
 
 随后，它以类似于上文阅读理解器中基于跨度的算法的方式，计算 q 中每个跨度 [i, j] 是实体提及的似然。首先计算 i/j 作为提及起点/终点的得分：
 
 > It then computes the likelihood of each span [i, j] in q being an entity mention, in a way similar to the span-based algorithm we saw for the reader above. First we compute the score for i/j being the start/end of a mention:
 
-$$s_{\text{start}}(i) =w_{\text{start}}\cdotq_{i},s_{\text{end}}(j) =w_{\text{end}}\cdotq_{j},$$
+$$s _{\text{start}} ( i ) = w _{\text{start}} \cdot q _{i} , s _{\text{end}} ( j ) = w _{\text{end}} \cdot q _{j} ,$$
 
 ![](images/24-coreference-entity-linking/fig_p23_0.png)
 
@@ -1672,7 +1672,7 @@ $$s_{\text{start}}(i) =w_{\text{start}}\cdotq_{i},s_{\text{end}}(j) =w_{\text{en
 
 > where wstart and wend are vectors learned during training. Next, another trainable embedding, wmention is used to compute a score for each token being part of a mention:
 
-$$s_{\text{mention}}(t) =w_{\text{mention}}\cdotq_{t}$$
+$$s _{\text{mention}} ( t ) = w _{\text{mention}} \cdot q _{t}$$
 
 然后通过组合这三个得分来计算提及概率：
 
@@ -1682,7 +1682,7 @@ $$s_{\text{mention}}(t) =w_{\text{mention}}\cdotq_{t}$$
 
 > j
 
-$$\sum_{t=i}^{j}$$
+$$\sum_{t = i}^{j}$$
 
 p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)
 实体链接 为了把提及链接到实体，我们接下来为全部 Wikipedia 实体构成的集合 E = e1,··· ,ei,··· ,ew 中的每个实体计算嵌入。对于每个实体 ei，我们取其 Wikipedia 页面的文本，即标题 t(ei) 以及该 Wikipedia 页面的前 128 个词元（我们称之为描述 d(ei)）。这些内容同样输入 BERT，并取 CLS 词元的输出 BERT[CLS] 作为实体表示：
@@ -1691,7 +1691,7 @@ p([i, j]) = σ sstart(i)+send(j)+ smention(t) (24.66)
 
 > t=i
 
-$$x_{ei}=\text{BERT}_{\text{[CLS]}}([\texttt{CLS}]t(e_{i})[\texttt{ENT}]d(e_{i})[\texttt{SEP}])$$
+$$x _{e i} = \text{BERT} _{\text{[CLS]}} ([ \texttt{CLS} ] t ( e _{i} )[ \texttt{ENT} ] d ( e _{i} )[ \texttt{SEP} ])$$
 
 通过为每个实体 e 与跨度 [i, j] 计算跨度编码（各词元嵌入的平均）与实体编码之间的点积相似度，即可把提及跨度链接到实体。
 
@@ -1704,9 +1704,9 @@ yi,j = (j −i+1) qt
 
 > t=i
 
-$$s(e,[i,j]) =x^{\cdot}_{e}$$
+$$s ( e , [ i , j ]) = x ^{\cdot} _{e}$$
 
-$$^{\cdot}_{e}y_{i,j}$$
+$$^{\cdot} _{e} y _{i , j}$$
 
 最后，我们取 softmax，得到每个跨度上关于实体的分布：
 
@@ -1715,7 +1715,7 @@ $$^{\cdot}_{e}y_{i,j}$$
 exp(s(e,[i, j])) (24.69)
 p(e|[i, j]) = P
 
-$$_{e′\inE}\text{exp}(s(e^{′},[i,j]))$$
+$$_{e ′ \in E} \text{exp} ( s ( e ^{′} , [ i , j ]))$$
 
 训练 ELQ 的提及检测与实体链接算法是全监督的。这意味着，与 24.7.1 节中的锚词典算法不同，它要求数据集中的实体边界已被标注并链接。两个这样的标注数据集是 WebQuestionsSP（Yih et al., 2016）和 GraphQuestions（Su et al., 2016），前者是源自 Google 搜索问题的 WebQuestions（Berant et al., 2013）数据集的扩展。二者的问句中实体跨度都已被标注并链接（Sorokin and Gurevych 2018, Li et al. 2020），从而产生了实体标注版本 WebQSPEL 和 GraphQEL（Li et al., 2020）。
 
@@ -1737,7 +1737,7 @@ N
 
 > 1≤i≤j≤min(i+L−1,n)
 
-$$L_{\text{ED}}=-\text{logp}(e_{g}|[i,j])$$
+$$L _{\text{ED}} = - \text{logp} ( e _{g} | [ i , j ])$$
 
 其中 eg 是提及 [i, j] 对应的标准实体。
 

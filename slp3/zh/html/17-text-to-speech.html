@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/17-text-to-speech.md">Markdown 源文件</a></div>
@@ -128,7 +128,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/17-text-to-speech/fig_p7_0.png" alt="">
 <p class="caption">图 17.5 残差 VQ（图来自 Chen et al. (2025)）。我们对编码器输出的嵌入运行 VQ，产生一个离散符号及相应的码字。然后我们考察残差，即编码器输出嵌入 zt 与 VQ 所选码字之差。接着我们取第二个码本并对该残差运行 VQ。我们重复该过程，直到得到 8 个词元。</p>
 <p>其思想非常简单。我们像图 17.4 那样用一个码本运行标准 VQ（见上一节）。然后，对于输入嵌入 zt，我们取出所产生的码字矢量——不妨把它记为 zq1t，表示由码本 1 量化后的 zt——并取两者之差：</p>
-<div class="formula">$$\text{residual}=z_{t}-z_{q}^{(1)}_{t}.(17.1)$$</div>
+<div class="formula">$$\text{residual} = z _{t} - z _{q t} ^{( 1 )} . (17.1)$$</div>
 <blockquote><p>q</p></blockquote>
 <p>该残差是 VQ 中的误差，即原矢量中 VQ</p>
 <aside class="term"><code>residual</code><span class="term-zh">残差</span><span class="term-explain">原始矢量与其码字之差，代表矢量量化未能捕捉的那部分信息。</span></aside>
@@ -146,7 +146,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>reconstruction loss</code><span class="term-zh">重构损失</span><span class="term-explain">衡量重构波形与输入波形相似程度的损失，差值越小表示重构出的音频越接近原始音频。</span></aside>
 <p>损失函数进行训练，如图 17.6 所示。重构损失 Lreconstruction 衡量输出波形与输入波形的相似程度，例如通过原始音频与重构音频之间的平方和差值来度量：</p>
 <blockquote><p>T</p></blockquote>
-<div class="formula">$$\sum_{t=1}^{T}$$</div>
+<div class="formula">$$\sum_{t = 1}^{T}$$</div>
 <p>Lreconstruction(x, ˆx) = ||xt −ˆxt||2 (17.2)此外，还可以在频域中衡量相似度，即比较原始与重构的梅尔频谱图（mel-spectrogram），同样使用平方和（L2）距离或 L1 距离，或二者的某种组合。</p>
 <blockquote><p>t=1</p></blockquote>
 <p>另一类损失是对抗损失 LGAN。对于该损失，我们训练一个</p>
@@ -156,21 +156,21 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们用两种方式处理这个问题。首先，在反向传播中忽略量化步骤。取而代之，我们把梯度从量化器的输出（zqt）直接复制回量化器的输入（zt），这种方法称为直通估计器（straight-through estimator）（Van Den Oord et al., 2017）。</p>
 <p>但这样一来，我们需要一种方法来确保矢量量化器中的码字步骤在训练期间得到更新。一种方法是先使用 k-means 对向量 zt 进行聚类，得到初始的聚类。然后我们可以添加一个损失分量 LVQ，它将是编码器输出向量 zt 与量化后的重构向量 zqt（即码字）之差的函数，并在所有 Nc 个码本与残差上求和。</p>
 <blockquote><p>T Nc</p></blockquote>
-<div class="formula">$$\sum_{t=1c=1}^{TNc}\sum$$</div>
+<div class="formula">$$\sum_{t = 1 c = 1}^{T N c} \sum$$</div>
 <p>LVQ(x, ˆx) = ||z(c)t −z(c) q t|| (17.3)于是，总损失函数可以简单地为这些损失的加权和：</p>
 <blockquote><p>t=1 c=1</p></blockquote>
-<div class="formula">$$L(x,ˆx) =\lambda_{1}L_{\text{reconstruction}}(x,ˆx)+\lambda_{2}L_{\text{GAN}}(x,ˆx)+\lambda_{3}L_{\text{VQ}}(x,ˆx)(17.4)$$</div>
+<div class="formula">$$L ( x , ˆ x ) = \lambda _{1} L _{\text{reconstruction}} ( x , ˆ x )+ \lambda _{2} L _{\text{GAN}} ( x , ˆ x )+ \lambda _{3} L _{\text{VQ}} ( x , ˆ x ) (17.4)$$</div>
 <h2>17.3 VALL-E：用两阶段语言模型生成音频</h2>
 <p>正如我们在引言中所总结的，像 VALL-E 这样的 TTS 系统的结构是：以待合成的文本和待使用的声音样本作为输入，并对二者进行分词，其中文本使用 BPE，语音使用音频编解码器。然后我们使用一个语言模型，以文本提示为条件，用该语音样本的音色有条件地生成与文本提示相对应的离散音频词元。</p>
 <img src="../md/images/17-text-to-speech/fig_p9_0.png" alt="">
 <p class="caption">Figure 17.7 VALL-E 的两阶段语言建模方法，展示了自回归 Transformer 的推理阶段，以及 7 个非自回归 Transformer 中的前 3 个。离散音频编码的输出序列分两个阶段生成。首先，自回归语言模型从左到右生成第一个量化器的全部编码。随后，非自回归模型被调用 7 次，以前一个量化器的全部编码为条件生成其余编码，其中也包括对右侧编码的条件依赖。</p>
 <p>VALL-E 没有用单个自回归语言模型来完成这种条件生成，而是使用两个不同的语言模型，通过两阶段过程进行条件生成。这一架构选择受到生成音频词元的 RVQ 量化器分层特性的影响。第一个 RVQ 量化器的输出是对最终语音最重要的词元，而后续量化器向最终信号贡献的残差信息越来越少。因此，语言模型分两个阶段生成声学编码。首先，一个自回归语言模型在给定输入文本与注册音频的情况下，为整个输出序列生成第一个量化器的编码。然后，在给定这些编码的情况下，一个非自回归语言模型被运行 7 次，每次以初始自回归编码的输出以及前一个非自回归量化器的输出作为输入，从而逐个生成其余量化器的编码。图 17.7 展示了该推理步骤的直观示意。</p>
 <p>现在我们稍微详细地看一下该架构。在训练时，给定一个音频样本 y 及其分词后的文本转写 x = [x0,x1,...,xL]。我们使用预训练的 ENCODEC 将 y 转换为编码矩阵 C。设 T 为 ENCODEC 输出的下采样向量个数，每个向量有 8 个编码。于是，我们可以将编码器输出表示为</p>
-<div class="formula">$$C^{T\times8}=E_{N}C_{\text{ODEC}}(y)$$</div>
+<div class="formula">$$C ^{T \times 8} = E _{N} C _{\text{ODEC}} ( y )$$</div>
 <p>这里 C 是一个二维声学编码矩阵，共有 T ×8 个元素，其中列表示时间，行表示不同的量化器。也就是说，矩阵的行向量 ct,: 包含第 t 帧的 8 个编码，列向量 c:,j 包含来自第 j 个矢量量化器的编码序列，其中 j ∈[1,...,8]。</p>
 <p>给定文本 x 与音频 C，我们把 TTS 训练为一个条件编码语言模型，以最大化在给定 x 条件下 C 的似然：</p>
-<div class="formula">$$L=-\text{log}p_{T}(C|x)$$</div>
-<div class="formula">$$\prod_{t=0}^{T}$$</div>
+<div class="formula">$$L = - \text{log} p _{T} ( C | x )$$</div>
+<div class="formula">$$\prod_{t = 0}^{T}$$</div>
 <p>= −log p(c&lt;t,:,x) (17.6)</p>
 <blockquote><p>t=0</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p10_0.png" alt="">
@@ -178,9 +178,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>图 17.8 展示了其直观示意。左侧，我们有一个音频样本及其转写文本，二者都经过分词。然后我们在 x 后附加一个 [EOS] 和一个 [BOS] 词元，并在 C 的末尾附加一个 [EOS] 词元，训练自回归 Transformer 预测声学词元，从 c0,1 开始，直到 [EOS] 为止，再由非自回归 Transformer 填充其余的词元。</p>
 <p>在推理阶段，给定一段待朗读的文本序列以及 y′，即来自某个未见说话人的注册语音样本，我们拥有它的转写 transcript(y′)。我们首先运行编解码器，得到 y′ 的声学码矩阵，记为 CP = C:T ′,: = [c0,:,c1,:,...cT ′,: :]。接着，我们把 y′ 的转写与待朗读的文本序列拼接起来，构成总输入文本 x，并将其送入文本分词器。到此阶段，我们便得到了分词后的文本 x 和分词后的音频提示 CP。</p>
 <p>然后，我们以文本序列 x 和提示 CP 为条件，生成 CT = C&gt;T ′,: = [cT ′+1,:,...cT,:]：</p>
-<div class="formula">$$C^{T}=\text{argmax}_{CT}p(C^{T}|C^{P},x)$$</div>
+<div class="formula">$$C ^{T} = \text{argmax} _{C T} p ( C ^{T} | C ^{P} , x )$$</div>
 <blockquote><p>CT</p></blockquote>
-<div class="formula">$$\prod_{=T′+}^{T}$$</div>
+<div class="formula">$$\prod_{= T ′ +}^{T}$$</div>
 <p>= argmax p(ct,:|c&lt;t,:,x) (17.7)随后，生成的词元 CT 可由 ENCODEC 解码器转换为一段波形。Fig. 17.9 展示了其直观思路。</p>
 <blockquote><p>CT t=T ′+1</p></blockquote>
 <img src="../md/images/17-text-to-speech/fig_p11_0.png" alt="">

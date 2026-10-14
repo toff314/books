@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/01-introduction.md">Markdown 源文件</a></div>
@@ -192,7 +192,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>scaling laws</code><span class="term-zh">缩放定律</span><span class="term-explain">描述模型性能与参数量、数据量、算力之间幂律关系的经验规律，用于指导资源分配。</span></aside>
 <p>（2022）表明，在计算成本 C 固定时，参数数量 N 和训练数据 token 数量 D 都应当大致同等地随 C 按幂律增长：</p>
 <blockquote><p>(2022) showed that for a fixed compute cost C the number of parameters N, and the number of training data tokens D, should go up roughly equally as a power law of C:</p></blockquote>
-<div class="formula">$$N_{\text{opt}}\proptoC^{\frac{1}{2}}D_{\text{opt}}\proptoC$$</div>
+<div class="formula">$$N _{\text{opt}} \propto C ^{\frac{1}{2}} D _{\text{opt}} \propto C$$</div>
 <p>缩放定律解释了模型为何倾向于变得更大，这既带来正面结果（更令人印象深刻的性能），也带来负面结果（更高的成本以及水、能源等自然资源的消耗）。但非常大的模型在推理时也很昂贵，每当我们向模型发出一次提示都是如此。所以缩放定律也解释了为什么我们常常选择改为训练一个较小的模型，并通过在更多数据上训练更长时间来让它变得更好。</p>
 <blockquote><p>Scaling laws explain why models tend to get bigger, with both positive outcomes(more impressive performance) and negative ones (more expense and use of natural resources like water and energy). But very big models are also very expensive at inference every time we prompt a model. So scaling laws also explain why we often choose to instead train a smaller model and make it better by training for more time over more data.</p></blockquote>
 <h2>1.2 大语言模型从词（token）预测中学到什么？</h2>

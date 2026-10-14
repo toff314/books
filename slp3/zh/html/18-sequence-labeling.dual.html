@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/18-sequence-labeling.md">Markdown 源文件</a></div>
@@ -388,7 +388,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>assumption</code><span class="term-zh">假设</span><span class="term-explain">在本书中特指马尔可夫假设，即序列中某个状态的概率只依赖于前一个状态，而与更早的状态无关。</span></aside>
 <p>在预测未来时，过去并不重要，重要的只有现在。</p>
 <blockquote><p>when predicting the future, the past doesn’t matter, only the present.</p></blockquote>
-<div class="formula">$$\text{Markov Assumption:}P(q_{i}=a|q_{1}...q_{i-1}) =P(q_{i}=a|q_{i-1})$$</div>
+<div class="formula">$$\text{Markov Assumption:} P ( q _{i} = a | q _{1} ... q _{i - 1} ) = P ( q _{i} = a | q _{i - 1} )$$</div>
 <p>图 18.8a 展示了一条马尔可夫链，用于为天气事件序列赋予概率，其词表由 HOT、COLD 和 WARM 组成。状态在图中表示为节点，转移及其概率则表示为边。这些转移都是概率：离开给定状态的弧的值之和必须为 1。图 18.8b 展示了一条马尔可夫链，用于为词序列 w1...wt 赋予概率。这条马尔可夫链应该很熟悉；事实上，它表示一个 bigram 语言模型，其中每条边表达概率 p(wi|wj)！有了图 18.8 中的这两个模型，我们就可以为词表中的任何序列赋予概率。</p>
 <blockquote><p>Figure 18.8a shows a Markov chain for assigning a probability to a sequence of weather events, for which the vocabulary consists of HOT, COLD, and WARM. The states are represented as nodes in the graph, and the transitions, with their probabilities, as edges. The transitions are probabilities: the values of arcs leaving a given state must sum to 1. Figure 18.8b shows a Markov chain for assigning a probability to a sequence of words w1...wt. This Markov chain should be familiar; in fact, it represents a bigram language model, with each edge expressing the probability p(wi|wj)! Given the two models in Fig. 18.8, we can assign a probability to any sequence from our vocabulary.</p></blockquote>
 <div class="figbox">
@@ -431,7 +431,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>A first-order hidden Markov model instantiates two simplifying assumptions.</p></blockquote>
 <p>第一，与一阶马尔可夫链一样，某个特定状态的概率只依赖于前一个状态：</p>
 <blockquote><p>First, as with a first-order Markov chain, the probability of a particular state depends only on the previous state:</p></blockquote>
-<div class="formula">$$P(q_{i}|q_{1},...,q_{i-1}) =P(q_{i}|q_{i-1})(18.6)$$</div>
+<div class="formula">$$P ( q _{i} | q _{1} ,..., q _{i - 1} ) = P ( q _{i} | q _{i - 1} ) (18.6)$$</div>
 <blockquote><p>马尔可夫假设：</p><p><em>Markov Assumption:</em></p></blockquote>
 <p>第二，输出观测 oi 的概率只依赖于</p>
 <blockquote><p>Second, the probability of an output observation oi depends only on the state that</p></blockquote>
@@ -448,7 +448,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>在给定前一个标记的条件下某个标记出现的概率。例如，像 will 这样的情态动词后面非常可能跟着一个原形动词，即 VB，如 race，因此我们预期这个概率会很高。我们通过计数来计算该转移概率的最大似然估计：在标注语料中看到第一个标记的所有次数里，第一个标记后面跟着第二个标记的频率：</p>
 <blockquote><p>the probability of a tag occurring given the previous tag. For example, modal verbs like will are very likely to be followed by a verb in the base form, a VB, like race, so we expect this probability to be high. We compute the maximum likelihood estimate of this transition probability by counting, out of the times we see the first tag in a labeled corpus, how often the first tag is followed by the second:</p></blockquote>
 <p>P(ti|ti−1) = C(ti−1,ti) (18.8)</p>
-<div class="formula">$$C(t_{i-1})$$</div>
+<div class="formula">$$C ( t _{i - 1} )$$</div>
 <p>例如在 WSJ 语料库中，MD 出现了 13124 次，其中它后面跟着</p>
 <blockquote><p>In the WSJ corpus, for example, MD occurs 13124 times of which it is followed</p></blockquote>
 <p>后接 VB 的有 10471 次，其 MLE 估计为</p>
@@ -458,7 +458,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>MD）时，它与某个给定词（比如 will）相关联的概率。发射概率的 MLE 为</p>
 <blockquote><p>MD), that it will be associated with a given word (say will). The MLE of the emission probability is</p></blockquote>
 <p>P(wi|ti) = C(ti,wi) (18.10)</p>
-<div class="formula">$$C(t_{i})$$</div>
+<div class="formula">$$C ( t _{i} )$$</div>
 <p>在 WSJ 语料库中 MD 的 13124 次出现里，有 4046 次与 will 相关联：</p>
 <blockquote><p>Of the 13124 occurrences of MD in the WSJ corpus, it is associated with will 4046 times:</p></blockquote>
 <p>P(will|MD) = C(MD,will) = 4046 13124 = .31 (18.11) C(MD)我们在附录 B 中见过这类贝叶斯建模；回忆一下，这个似然</p>
@@ -483,26 +483,26 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>For part-of-speech tagging, the goal of HMM decoding is to choose the tag</p></blockquote>
 <p>序列 t1 ...tn，使其在给定由 n 个词构成的观测序列 w1 ...wn 时最可能：</p>
 <blockquote><p>sequence t1 ...tn that is most probable given the observation sequence of n words w1 ...wn:</p></blockquote>
-<div class="formula">$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(t_{1}...t_{n}|w_{1}...w_{n})(18.12)$$</div>
+<div class="formula">$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( t _{1} ... t _{n} | w _{1} ... w _{n} ) (18.12)$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>在 HMM 中我们采用的做法是：用贝叶斯法则改为计算：</p>
 <blockquote><p>The way we’ll do this in the HMM is to use Bayes’ rule to instead compute:</p></blockquote>
 <p>ˆt1:n = argmax P(w1 ...wn|t1 ...tn)P(t1 ...tn) (18.13)</p>
-<div class="formula">$$P(w_{1}...w_{n})$$</div>
+<div class="formula">$$P ( w _{1} ... w _{n} )$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>此外，我们略去分母 P(wn 1)，从而简化式 18.13：</p>
 <blockquote><p>Furthermore, we simplify Eq. 18.13 by dropping the denominator P(wn 1):</p></blockquote>
-<div class="formula">$$tˆ_{1:n}=\text{argmax}_{t1...tn}P(w_{1}...w_{n}|t_{1}...t_{n})P(t_{1}...t_{n})(18.14)$$</div>
+<div class="formula">$$t ˆ _{1: n} = \text{argmax} _{t 1 ... t n} P ( w _{1} ... w _{n} | t _{1} ... t _{n} ) P ( t _{1} ... t _{n} ) (18.14)$$</div>
 <blockquote><p>t1... tn</p></blockquote>
 <p>HMM 标注器还做了两个进一步的简化假设。第一个假设（输出独立性，来自式 18.7）是：一个词出现的概率只取决于它自身的标记，而与相邻的词和标记无关：</p>
 <blockquote><p>HMM taggers make two further simplifying assumptions. The first (output independence, from Eq. 18.7) is that the probability of a word appearing depends only on its own tag and is independent of neighboring words and tags:</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>P(w1 ...wn|t1 ...tn) ≈ P(wi|ti) (18.15)第二个假设（马尔可夫假设，式 18.6）是：一个标记的概率只依赖于前一个标记，而不是整个标记序列；</p>
 <blockquote><p>The second assumption (the Markov assumption, Eq. 18.6) is that the probability of a tag is dependent only on the previous tag, rather than the entire tag sequence;</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{n}$$</div>
+<div class="formula">$$\prod_{i = 1}^{n}$$</div>
 <p>P(t1 ...tn) ≈ P(ti|ti−1) (18.16)把式 18.15 和式 18.16 中的简化假设代入式 18.14，就得到 bigram 标注器求最可能标记序列的如下公式：</p>
 <blockquote><p>Plugging the simplifying assumptions from Eq. 18.15 and Eq. 18.16 into Eq. 18.14 results in the following equation for the most probable tag sequence from a bigram tagger:</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -526,13 +526,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The Viterbi algorithm first sets up a probability matrix or lattice, with one column for each observation ot and one row for each state in the state graph. Each column thus has a cell for each state qi in the single combined automaton. Figure 18.11 shows an intuition of this lattice for the sentence Janet will back the bill.</p></blockquote>
 <p>网格中的每个单元格 vt(j) 表示：给定 HMM λ，在观测到前 t 个观测值、并经过最可能的状态序列 q1,...,qt−1 之后，HMM 处于状态 j 的概率。每个单元格 vt(j) 的值，是通过递归地取能够到达该单元格的最可能路径计算出来的。形式上，每个单元格所表示的概率为</p>
 <blockquote><p>Each cell of the lattice, vt(j), represents the probability that the HMM is in state j after seeing the first t observations and passing through the most probable state sequence q1,...,qt−1, given the HMM λ. The value of each cell vt(j) is computed by recursively taking the most probable path that could lead us to this cell. Formally, each cell expresses the probability</p></blockquote>
-<div class="formula">$$v_{t}(j) =_{q1}\text{max}_{,...,qt-1}P(q_{1}...q_{t-1},o_{1},o_{2}...o_{t},q_{t}=j|\lambda)(18.18)$$</div>
+<div class="formula">$$v _{t} ( j ) = _{q 1} \text{max} _{,..., q t - 1} P ( q _{1} ... q _{t - 1} , o _{1} , o _{2} ... o _{t} , q _{t} = j | \lambda ) (18.18)$$</div>
 <p>我们通过对所有可能的取值取最大值来表示最可能的路径，</p>
 <blockquote><p>We represent the most probable path by taking the maximum over all possible</p></blockquote>
 <p>即前一状态序列 q1,...,qt−1。与其他动态规划算法一样，维特比中的 max 递归地填充每个单元格。既然我们已经算出 t −1 时刻处于每个状态的概率，就可以通过取通向当前单元格的各条路径之延伸中最可能的那一个，来计算维特比概率。对于 t 时刻的给定状态 qj，其值 vt(j) 计算为</p>
 <blockquote><p>previous state sequences q1,...,qt−1. Like other dynamic programming algorithms, max Viterbi fills each cell recursively. Given that we had already computed the probability of being in every state at time t −1, we compute the Viterbi probability by taking the most probable of the extensions of the paths that lead to the current cell. For a given state qj at time t, the value vt(j) is computed as</p></blockquote>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t})$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} )$$</div>
 <p>式 18.19 中，为把之前的路径延伸出去、以计算 t 时刻的维特比概率，所相乘的三个因子是</p>
 <blockquote><p>The three factors that are multiplied in Eq. 18.19 for extending the previous paths to compute the Viterbi probability at time t are</p></blockquote>
 <img src="../md/images/18-sequence-labeling/fig_p13_0.png" alt="">
@@ -597,14 +597,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Assuming we have a sequence of input words X = x1...xn and want to compute</p></blockquote>
 <p>一个输出标记序列 Y = y1...yn。在 HMM 中，为了计算使 P(Y|X) 最大的最佳标记序列，我们依赖贝叶斯法则和似然 P(X|Y)：</p>
 <blockquote><p>a sequence of output tags Y = y1...yn. In an HMM to compute the best tag sequence that maximizes P(Y|X) we rely on Bayes’ rule and the likelihood P(X|Y):</p></blockquote>
-<div class="formula">$$Yˆ=\text{argmax}_{Y}p(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y} p ( Y | X )$$</div>
 <blockquote><p>Y</p></blockquote>
-<div class="formula">$$=\text{argmax}_{Y}p(X|Y)p(Y)$$</div>
+<div class="formula">$$= \text{argmax} _{Y} p ( X | Y ) p ( Y )$$</div>
 <blockquote><p>Y</p></blockquote>
 <p>Y Y = argmax p(xi|yi) p(yi|yi−1) (18.21)相比之下，在 CRF 中我们直接计算后验概率 p(Y|X)，通过训练让 CRF 在可能的标记序列之间进行判别：</p>
 <blockquote><p>In a CRF, by contrast, we compute the posterior p(Y|X) directly, training the CRF to discriminate among the possible tag sequences:</p></blockquote>
 <blockquote><p>Y i i</p></blockquote>
-<div class="formula">$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$</div>
 <blockquote><p>Y∈Y</p></blockquote>
 <p>然而，CRF 并不在每个时间步为每个标记计算一个概率。相反，在每个时间步 CRF 会在一组相关特征上计算对数线性函数，这些局部特征被聚合并归一化，从而产生整条序列的全局概率。</p>
 <blockquote><p>However, the CRF does not compute a probability for each tag at each time step. Instead, at each time step the CRF computes log-linear functions over a set of relevant features, and these local features are aggregated and normalized to produce a global probability for the whole sequence.</p></blockquote>
@@ -624,7 +624,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We’ll call these K functions Fk(X,Y) global features, since each one is a property of the entire input sequence X and output sequence Y. We compute them by decomposing into a sum of local features for each position i in Y:</p></blockquote>
 <blockquote><p>Y ′∈Y k=1</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{n}$$</div>
+<div class="formula">$$\sum_{i = 1}^{n}$$</div>
 <p>Fk(X,Y) = fk(yi−1,yi,X,i) (18.26)在线性链 CRF 中，每个这样的局部特征 fk 都可以利用当前的输出词元 yi、前一个输出词元 yi−1、整个输入串 X（或它的任意一部分）以及当前位置 i。只依赖当前输出词元与前一个输出词元 yi 和 yi−1 这一约束，正是线性</p>
 <blockquote><p>Each of these local features fk in a linear-chain CRF is allowed to make use of the current output token yi, the previous output token yi−1, the entire input string X (or any subpart of it), and the current position i. This constraint to only depend on the current and previous output tokens yi and yi−1 are what characterizes a linear</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -651,7 +651,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>templates</code><span class="term-zh">模板</span><span class="term-explain">特征模板是形如 ⟨yi,xi⟩、⟨yi,yi−1⟩ 的模式，用来在训练集和测试集的每个实例上自动实例化出一组具体特征。</span></aside>
 <p>在第 4 章简要提到的那样。下面是一些只使用 (yi−1,yi,X,i) 信息的模板：</p>
 <blockquote><p>briefly mentioned in Chapter 4. Here are some templates that only use information from (yi−1,yi,X,i):</p></blockquote>
-<div class="formula">$$⟨y_{i},x_{i}⟩,⟨y_{i},y_{i-1}⟩,⟨y_{i},x_{i-1},x_{i+2}⟩$$</div>
+<div class="formula">$$⟨ y _{i} , x _{i} ⟩ , ⟨ y _{i} , y _{i - 1} ⟩ , ⟨ y _{i} , x _{i - 1} , x _{i + 2} ⟩$$</div>
 <p>这些模板会从训练集和测试集的每个实例中自动生成特征集合。因此对于我们例子中的 Janet/NNP will/MD back/VB the/DT bill/NN，当 xi 是词 back 时，会生成以下特征并取值为 1（我们给它们分配了任意的特征编号）：</p>
 <blockquote><p>These templates automatically populate the set of features from every instance in the training and test set. Thus for our example Janet/NNP will/MD back/VB the/DT bill/NN, when xi is the word back, the following features would be generated and have the value 1 (we’ve assigned them arbitrary feature numbers):</p></blockquote>
 <p>f3743: yi = VB 且 xi = back f156: yi = VB 且 yi−1 = MD f99732: yi = VB 且 xi−1 = will 且 xi+2 = bill</p>
@@ -707,7 +707,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>18.5.3 Inference and Training for CRFs</p></blockquote>
 <p>对于给定的输入 X，我们如何找到最佳标记序列 ˆY？我们从式 18.22 开始：</p>
 <blockquote><p>How do we find the best tag sequence ˆY for a given input X? We start with Eq. 18.22:</p></blockquote>
-<div class="formula">$$Yˆ=\text{argmax}_{Y\inY}P(Y|X)$$</div>
+<div class="formula">$$Y ˆ = \text{argmax} _{Y \in Y} P ( Y | X )$$</div>
 <blockquote><p>Y∈Y</p></blockquote>
 <p>K !</p>
 <p>1 X = argmax Z(X)exp wkFk(X,Y) (18.27) K !</p>
@@ -718,7 +718,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>K n</p></blockquote>
 <blockquote><p>Y∈Y k=1 i=1</p></blockquote>
 <blockquote><p>n K</p></blockquote>
-<div class="formula">$$\sum_{i=1k=1}^{nK}\sum$$</div>
+<div class="formula">$$\sum_{i = 1 k = 1}^{n K} \sum$$</div>
 <p>= argmax wk fk(yi−1,yi,X,i) (18.30)如上所示，我们可以忽略 exp 函数和分母 Z(X)，因为 exp 不改变 argmax，而且对于给定的观测序列 X，分母 Z(X) 是常数。</p>
 <blockquote><p>We can ignore the exp function and the denominator Z(X), as we do above, because exp doesn’t change the argmax, and the denominator Z(X) is constant for a given observation sequence X.</p></blockquote>
 <blockquote><p>Y∈Y i=1 k=1</p></blockquote>
@@ -733,18 +733,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>单元格。回忆式 18.19，维特比方程的递推步骤把状态 j 在时刻 t 的维特比值计算为</p>
 <blockquote><p>cell. Recall from Eq. 18.19 that the recursive step of the Viterbi equation computes the Viterbi value of time t for state j as</p></blockquote>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)a_{\text{ij}}b_{j}(o_{t});1\lej\leN,1&lt;t\leT$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) a _{\text{ij}} b _{j} ( o _{t} ) ; 1 \le j \le N , 1 &lt; t \le T$$</div>
 <blockquote><p>i=1</p></blockquote>
 <p>这是如下式子的 HMM 实现：</p>
 <blockquote><p>which is the HMM implementation of</p></blockquote>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$v_{t}(j)=\text{max}_{i=}^{N}_{1}v_{t-1}(i)P(s_{j}|s_{i})P(o_{t}|s_{j})1\lej\leN,1&lt;t\leT$$</div>
+<div class="formula">$$v _{t} ( j ) = \text{max} _{i = 1} ^{N} v _{t - 1} ( i ) P ( s _{j} | s _{i} ) P ( o _{t} | s _{j} ) 1 \le j \le N , 1 &lt; t \le T$$</div>
 <blockquote><p>i=1</p></blockquote>
 <p>CRF 只需对后一个公式作少许改动，即把 a 和 b 这两个先验概率与似然概率替换为 CRF 特征：</p>
 <blockquote><p>The CRF requires only a slight change to this latter formula, replacing the a and b prior and likelihood probabilities with the CRF features:</p></blockquote>
 <p>&quot; #</p>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<div class="formula">$$\sum_{k = 1}^{K}$$</div>
 <blockquote><p>N</p></blockquote>
 <p>vt(j) = max vt−1(i)+ wk fk(yt−1,yt,X,t) 1 ≤j ≤N,1 &lt; t ≤T (18.33) CRF 的学习依赖于我们为逻辑回归介绍过的同一套有监督学习算法。给定观测序列、特征函数和相应的输出，我们使用随机梯度下降来训练权重，以最大化训练语料库的对数似然。线性链 CRF 的局部性质意味着，附录 A 中为 HMM 引入的前向-后向算法可以扩展为一个 CRF 版本，从而高效地计算所需的导数。与逻辑回归一样，L1 或 L2 正则化很重要。</p>
 <blockquote><p>Learning in CRFs relies on the same supervised learning algorithms we presented for logistic regression. Given a sequence of observations, feature functions, and corresponding outputs, we use stochastic gradient descent to train the weights to maximize the log-likelihood of the training corpus. The local nature of linear-chain CRFs means that the forward-backward algorithm introduced for HMMs in Appendix A can be extended to a CRF version that will efficiently compute the necessary derivatives. As with logistic regression, L1 or L2 regularization is important.</p></blockquote>

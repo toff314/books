@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/25-discourse-coherence.md">Markdown 源文件</a></div>
@@ -340,16 +340,16 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The Yu et al. (2018) uses an encoder-decoder architecture, where the encoder</p></blockquote>
 <p>用分层 biLSTM 表示输入的词与基本篇章单元（EDU）片段。第一个 biLSTM 层表示 EDU 内部的词，第二个表示 EDU 序列。给定输入句子 w1,w2,...,wm，词可以按通常方式表示（静态嵌入、与字符嵌入或标记的组合，或上下文嵌入），得到输入词表示序列 xw 1 ,xw 2 ,...,xw m。词级 biLSTM 的结果则是一串 hw 值：</p>
 <blockquote><p>represents the input span of words and EDUs using a hierarchical biLSTM. The first biLSTM layer represents the words inside an EDU, and the second represents the EDU sequence. Given an input sentence w1,w2,...,wm, the words can be represented as usual (by static embeddings, combinations with character embeddings or tags, or contextual embeddings) resulting in an input word representation sequence xw 1 ,xw 2 ,...,xw m. The result of the word-level biLSTM is then a sequence of hw values:</p></blockquote>
-<div class="formula">$$h^{w}_{1},h^{w}_{2},...,h^{w}_{m}=\text{biLSTM}(x^{w}_{1},x^{w}_{2},...,x^{w}_{m}$$</div>
-<div class="formula">$$^{w}_{m})$$</div>
+<div class="formula">$$h ^{w} _{1} , h ^{w} _{2} ,..., h ^{w} _{m} = \text{biLSTM} ( x ^{w} _{1} , x ^{w} _{2} ,..., x ^{w} _{m}$$</div>
+<div class="formula">$$^{w} _{m} )$$</div>
 <p>跨度为 ws,ws+1,...,wt 的 EDU 则具有 biLSTM 输出表示 hw s ,hw s+1,...,hw t ，并通过平均池化表示：</p>
 <blockquote><p>An EDU of span ws,ws+1,...,wt then has biLSTM output representation hw s ,hw s+1,...,hw t , and is represented by average pooling:</p></blockquote>
 <p>1 tX xe = hw (25.18) t −s+1第二层使用该输入计算 EDU 表示序列的最终表示 he：</p>
 <blockquote><p>The second layer uses this input to compute a final representation of the sequence of EDU representations he:</p></blockquote>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>k=s</p></blockquote>
-<div class="formula">$$h^{e}_{1},h^{e}_{2},...,h^{e}_{n}=\text{biLSTM}(x_{1}^{e},x^{e}_{2},...,x^{e}_{n}$$</div>
-<div class="formula">$$^{e}_{n})$$</div>
+<div class="formula">$$h ^{e} _{1} , h ^{e} _{2} ,..., h ^{e} _{n} = \text{biLSTM} ( x _{1} ^{e} , x ^{e} _{2} ,..., x ^{e} _{n}$$</div>
+<div class="formula">$$^{e} _{n} )$$</div>
 <p>解码器则是一个前馈网络 W，它基于栈顶三个子树（so,s1,s2）与队列中第一个 EDU（q0）的拼接输出一个动作 o：</p>
 <blockquote><p>The decoder is then a feedforward network W that outputs an action o based on a concatenation of the top three subtrees on the stack (so,s1,s2) plus the first EDU in the queue (q0):</p></blockquote>
 <p>o = W(ht s0,ht s1,ht s2,he (25.20) q0)其中队列上 EDU 的表示 he q0 直接来自编码器，而表示部分树的三个隐向量则通过对这些树中 EDU 的编码器输出做平均池化计算得到：</p>
@@ -357,9 +357,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>j</p></blockquote>
 <p>hts = 1 X he j −i+1 训练首先把每棵标注的 RST 分析树映射为一个 oracle 动作序列，然后使用标准的交叉熵损失（带 l2 正则化）训练系统采取这些动作。给定状态 S 和 oracle 动作 a，我们先用式 25.20 计算解码器输出，再施加 softmax 得到概率：</p>
 <blockquote><p>j −i+1 Training first maps each RST gold parse tree into a sequence of oracle actions, and then uses the standard cross-entropy loss (with l2 regularization) to train the system to take such actions. Give a state S and oracle action a, we first compute the decoder output using Eq. 25.20, apply a softmax to get probabilities:</p></blockquote>
-<div class="formula">$$\text{exp}(o_{a})$$</div>
+<div class="formula">$$\text{exp} ( o _{a} )$$</div>
 <p>pa = P</p>
-<div class="formula">$$_{a′\inA}\text{exp}(o_{a′})$$</div>
+<div class="formula">$$_{a ′ \in A} \text{exp} ( o _{a ′} )$$</div>
 <p>然后计算交叉熵损失：</p>
 <blockquote><p>and then computing the cross-entropy loss:</p></blockquote>
 <p>LCE() = −log(pa)+ λ 2 ||Θ||2 (25.23) RST 篇章分析器在 RST 篇章树库的测试部分上评估，或使用标注 EDU，或端到端，采用 RST-Pareval 指标（Marcu, 2000b）。通常的做法是先把标注 RST 树转换为右分支二叉树，并报告四项指标：无标签的树（S，表示 Span）、标注核心（nucleus）的树（N）、标注关系的树（R），以及两者兼有的树（F，表示 Full）；每项指标都针对所有文档的全部跨度计算微平均 F1（Marcu 2000b，Morey et al. 2017）。</p>
@@ -602,9 +602,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The model is trained to make this coherence score higher for real pairs than for</p></blockquote>
 <p>负例句子对。更形式化地说，对于一个由文档 d 构成的语料库 C，其中每个文档由句子 si 的列表组成，其训练目标为：</p>
 <blockquote><p>negative pairs. More formally, the training objective for a corpus C of documents d, each of which consists of a list of sentences si, is:</p></blockquote>
-<div class="formula">$$\sum_{d\inCsi\ind}\sum$$</div>
+<div class="formula">$$\sum_{d \in C s i \in d} \sum$$</div>
 <p>Lθ = [L(fθ(si,si+1), fθ(si,s′))] (25.33)</p>
-<div class="formula">$$_{s}E$$</div>
+<div class="formula">$$_{s} E$$</div>
 <blockquote><p>d∈C si∈d p(s′|si)</p></blockquote>
 <p>Ep(s′|si) 是关于以 si 为条件的负采样分布的期望：给定一个句子 si，算法采样出一个负样本句子 s′</p>
 <blockquote><p>Ep(s′|si) is the expectation with respect to the negative sampling distribution conditioned on si: given a sentence si the algorithms samples a negative sentence s′</p></blockquote>

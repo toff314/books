@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/02-words-and-tokens.md">Markdown 源文件</a></div>
@@ -115,7 +115,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>你会注意到，我们考察的语料库越大，发现的词类型就越多！这说明“一共有多少个词”并没有一个明确的答案；随着我们看到的数据增多，这个答案会不断变大！我们可以从数学上看到这一事实，因为类型数 |V| 与实例数 N 之间的关系被称为 Herdan 定律（Herdan, 1960）或 Heaps 定律（Heaps, 1978），其名称取自</p>
 <aside class="term"><code>Herdan’s Law Heaps’ Law</code><span class="term-zh">Herdan 定律 / Heaps 定律</span><span class="term-explain">刻画词类型数与实例数关系的经验规律，形式为 |V| = kN^β；语料越大，新出现的词类型越多。</span></aside>
 <p>其发现者（分别属于语言学界和信息检索界）。该定律见式 2.5，其中 k 和 β 为正的常数，且 0 &lt; β &lt; 1。</p>
-<div class="formula">$$|V|=\text{kN}^{β}$$</div>
+<div class="formula">$$| V | = \text{kN} ^{β}$$</div>
 <p>β 的取值取决于语料库规模与体裁；报告中常见 0.44 到 0.56 甚至更高的数值。粗略地说，一段文本的词表规模增长速度略快于其词数长度的平方根。</p>
 <p>该定律还有一些变体，它们刻画的是这样一个事实：我们可以区分大致两类词。一类是功能词，即像</p>
 <aside class="term"><code>function words</code><span class="term-zh">功能词</span><span class="term-explain">承担语法功能的词，如英语的 a、of，数量相对固定，通常不会随语料增大而无限增长。</span></aside>

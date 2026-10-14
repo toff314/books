@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/05-embeddings.md">Markdown 源文件</a></div>
@@ -348,7 +348,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the dot product operator from linear algebra, also called the inner product:</p></blockquote>
 <aside class="term"><code>dot product inner product</code><span class="term-zh">点积、内积</span><span class="term-explain">把两个同维向量对应分量相乘后求和所得的数，是本书中向量相似度度量的基础。</span></aside>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <p>dot product(v,w) = v ·w = viwi = v1w1 +v2w2 +...+vNwN (5.7)点积之所以能充当相似度度量，是因为当两个向量在相同维度上取值都较大时，它往往也会较大。反之，在不同维度上取零的向量——即正交向量——其点积为 0，表示它们高度不相似。</p>
 <blockquote><p>The dot product acts as a similarity metric because it will tend to be high just when the two vectors have large values in the same dimensions. Alternatively, vectors that have zeros in different dimensions—orthogonal vectors—will have a dot product of 0, representing their strong dissimilarity.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -374,7 +374,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The cosine similarity metric between two vectors v and w thus can be computed as:</p></blockquote>
 <aside class="term"><code>cosine</code><span class="term-zh">余弦</span><span class="term-explain">两个向量夹角的余弦值，等于长度归一化后的点积，是本书标准的向量相似度度量。</span></aside>
 <blockquote><p>N</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{N}$$</div>
+<div class="formula">$$\sum_{i = 1}^{N}$$</div>
 <p>viwi cosine(v,w) = v ·w (5.10)</p>
 <table><tr><th>v</th><th></th><th>w</th><th>= v u v u</th></tr></table>
 <p>u t X u t X v2 w2对于某些应用，我们会预先对每个向量做归一化，即用它除以自身的长度，从而得到一个长度为 1 的单位向量。因此，我们可以由 a 计算出单位向量，方法是</p>
@@ -473,12 +473,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>P(−|w,c) = 1−P(+|w,c) 1 (5.16) = σ(−c·w) = 1+exp(c·w)式 5.15 给出了针对一个词的概率，但窗口中存在许多上下文词。skip-gram 作了如下简化假设：所有上下文词都是相互独立的，这使我们只需将它们的概率相乘即可：</p>
 <blockquote><p>Equation 5.15 gives us the probability for one word, but there are many context words in the window. Skip-gram makes the simplifying assumption that all context words are independent, allowing us to just multiply their probabilities:</p></blockquote>
 <blockquote><p>L</p></blockquote>
-<div class="formula">$$\prod_{i=L1}^{L}$$</div>
-<div class="formula">$$P(+|w,c_{1:L})=$$</div>
-<div class="formula">$$σ(c_{i}\cdotw)$$</div>
+<div class="formula">$$\prod_{i = L 1}^{L}$$</div>
+<div class="formula">$$P (+ | w , c _{1: L} ) =$$</div>
+<div class="formula">$$σ ( c _{i} \cdot w )$$</div>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>L</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{L}$$</div>
+<div class="formula">$$\sum_{i = 1}^{L}$$</div>
 <p>logP(+|w,c1:L) = logσ(ci ·w) (5.18)总之，skip-gram 训练一个概率分类器，对于给定的测试目标词 w 及其由 L 个词 c1:L 组成的上下文窗口，它根据该上下文窗口与目标词的相似程度来分配一个概率。该概率是通过将</p>
 <blockquote><p>In summary, skip-gram trains a probabilistic classifier that, given a test target word w and its context window of L words c1:L, assigns a probability based on how similar this context window is to the target word. The probability is based on applying the</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -510,14 +510,14 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The noise words are chosen according to their weighted unigram probability</p></blockquote>
 <p>pα(w)，其中 α 是一个权重。如果我们按照未加权的一元概率 P(w) 来采样，那就意味着：以一元概率 P(“the”) 把词 the 选作噪声词，以一元概率 P(“aardvark”) 把 aardvark 选作噪声词，依此类推。但实践中通常把 α 设为 0.75，即使用加权 P3 4 (w)：</p>
 <blockquote><p>pα(w), where α is a weight. If we were sampling according to unweighted probability P(w), it would mean that with unigram probability P(“the”) we would choose the word the as a noise word, with unigram probability P(“aardvark”) we would choose aardvark, and so on. But in practice it is common to set α = 0.75, i.e. use the weighting P3 4 (w):</p></blockquote>
-<div class="formula">$$\text{count}(w)^{α}$$</div>
+<div class="formula">$$\text{count} ( w ) ^{α}$$</div>
 <p>Pα(w) = P</p>
-<div class="formula">$$_{w′}\text{count}(w^{′})^{α}$$</div>
+<div class="formula">$$_{w ′} \text{count} ( w ^{′} ) ^{α}$$</div>
 <p>把 α 设为 .75 能带来更好的性能，因为它使稀有的噪声词获得略高一些的概率：对于稀有词，Pα(w) &gt; P(w)。为说明这一直觉，不妨计算一个例子中 α = .75 且有两个事件 P(a) = 0.99 和 P(b) = 0.01 时的概率：</p>
 <blockquote><p>Setting α = .75 gives better performance because it gives rare noise words slightly higher probability: for rare words, Pα(w) &gt; P(w). To illustrate this intuition, it might help to work out the probabilities for an example with α = .75 and two events, P(a) = 0.99 and P(b) = 0.01:</p></blockquote>
-<div class="formula">$$.99^{.75}$$</div>
+<div class="formula">$$. 99 ^{. 75}$$</div>
 <p>Pα(a) = .99.75 +.01.75 = 0.97</p>
-<div class="formula">$$.01^{.75}$$</div>
+<div class="formula">$$. 01 ^{. 75}$$</div>
 <p>Pα(b) = .99.75 +.01.75 = 0.03 (5.20)因此，使用 α = .75 把稀有事件 b 的概率从 0.01 提高到 0.03。</p>
 <blockquote><p>Thus using α = .75 increases the probability of the rare event b from 0.01 to 0.03.</p></blockquote>
 <p>给定正、负训练实例的集合，以及一组初始</p>
@@ -533,12 +533,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>&quot; kY # L(w,cpos,cneg*) = −log P(+|w,cpos) P(−|w,cnegi) &quot; #</p>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>k</p></blockquote>
-<div class="formula">$$\sum_{i=k1}^{k}$$</div>
+<div class="formula">$$\sum_{i = k 1}^{k}$$</div>
 <p>= − logP(+|w,cpos)+ logP(−|w,cnegi) &quot; # X = − logP(+|w,cpos)+ log 1−P(+|w,cnegi) &quot; #</p>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{k}$$</div>
+<div class="formula">$$\sum_{i = 1}^{k}$$</div>
 <p>logσ(cpos ·w)+ logσ(−cnegi ·w) = − 也就是说，我们希望最大化该词与实际上下文词的点积，并最小化该词与 k 个负采样得到的非邻近词的点积。</p>
 <blockquote><p>= − That is, we want to maximize the dot product of the word with the actual context words, and minimize the dot products of the word with the k negative sampled nonneighbor words.</p></blockquote>
 <p>我们使用随机梯度下降来最小化该损失函数。图 5.7 展示了</p>
@@ -553,17 +553,17 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>各个不同嵌入的导数。结果表明，导数如下（我们将证明留作本章末尾的练习）：</p>
 <blockquote><p>the different embeddings. It turns out the derivatives are the following (we leave the proof as an exercise at the end of the chapter):</p></blockquote>
 <p>∂L</p>
-<div class="formula">$$=[σ(c_{\text{pos}}\cdotw)-1]w$$</div>
+<div class="formula">$$= [ σ ( c _{\text{pos}} \cdot w ) - 1 ] w$$</div>
 <p>∂cpos∂L∂cnegi = [σ(cnegi ·w)]w (5.23)∂L X∂w = [σ(cpos ·w)−1]cpos + (5.24) [σ(cnegi ·w)]cnegi因此，随机梯度下降中从时间步 t 到 t + 1 的更新方程如下：</p>
 <blockquote><p>The update equations going from time step t to t + 1 in stochastic gradient descent are thus:</p></blockquote>
 <blockquote><p>k</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$c_{t}^{t}_{\frac{\text{pos}}{+}}^{+}_{1}^{1}=c^{t}_{\frac{\text{pos}}{t}}-η[σ(c^{t}_{\frac{\text{pos}}{t}}\cdotw^{t})_{t}-1_{t}]w^{t}$$</div>
+<div class="formula">$$c _{t \frac{\text{pos}}{+} 1} ^{t + 1} = c ^{t} _{\frac{\text{pos}}{t}} - η [ σ ( c ^{t} _{\frac{\text{pos}}{t}} \cdot w ^{t} ) _{t} - 1 _{t} ] w ^{t}$$</div>
 <blockquote><p>pos</p></blockquote>
-<div class="formula">$$c^{t}_{\text{neg}}^{+1}_{i}=c^{t}_{\text{neg}i}-η[σ(c^{t}_{\text{neg}i}\cdotw^{t})]w^{t}$$</div>
+<div class="formula">$$c ^{t + 1} _{\text{neg} i} = c ^{t} _{\text{neg} i} - η [ σ ( c ^{t} _{\text{neg} i} \cdot w ^{t} )] w ^{t}$$</div>
 <p>&quot; # wt+1 = wt −η X [σ(ct pos ·wt)−1]ct [σ(ct negi ·wt)]ct</p>
 <blockquote><p>k</p></blockquote>
-<div class="formula">$$^{t}_{\text{pos}}+$$</div>
+<div class="formula">$$^{t} _{\text{pos}} +$$</div>
 <blockquote><p>negi</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <p>于是，正如逻辑回归中那样，学习算法从随机初始化的 W 和 C 矩阵出发，然后遍历训练语料库，使用梯度下降移动 W 和 C，通过执行 (式 5.25)-(式 5.27) 中的更新来最小化式 5.21 中的损失。</p>

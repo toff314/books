@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/22-semantic-role-labeling.md">Markdown 源文件</a></div>
@@ -262,7 +262,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <img src="../md/images/22-semantic-role-labeling/fig_p11_0.png" alt="">
 <p class="caption">图 22.6 一种用于语义角色标注的简单神经方法。输入句子后面跟着 [SEP] 以及针对谓词的一个额外输入，本例中是 love。编码器的输出与一个指示变量拼接，该变量对谓词取 1，对其他所有词取 0。改编自 He et al. (2017) 与 Shi and Lin (2019)。</p>
 <p>与所有标注器一样，目标是在给定输入词序列 w 的情况下，计算概率最高的标签序列 ŷ：</p>
-<div class="formula">$$yˆ=\text{argmax}_{y\inT}P(y|w)$$</div>
+<div class="formula">$$y ˆ = \text{argmax} _{y \in T} P ( y | w )$$</div>
 <blockquote><p>y∈T</p></blockquote>
 <p>图 22.6 展示了 He et al. (2017) 中一个标准算法的示意图。这里每个输入词被映射为预训练嵌入，然后每个词元与谓词嵌入拼接，再通过一个带 softmax 的前馈网络，输出每个 SRL 标签上的分布。解码时，可以用 CRF 层代替 biLSTM 输出之上的 MLP 层来做全局推断，但在实践中这似乎并没有带来多少好处。</p>
 <h3>22.6.3 语义角色标注的评估</h3>
@@ -309,13 +309,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>relative entropy KL divergence</code><span class="term-zh">相对熵；KL 散度</span><span class="term-explain">用于度量两个概率分布之间差异的一种指标，在本书中用来量化谓词的选择偏好强度。</span></aside>
 <p>and Leibler, 1951）。Kullback-Leibler 散度或 KL 散度 D(P||Q) 表示两个概率分布 P 和 Q 之间的差异 X P(x)log P(x) D(P||Q) = (22.38) Q(x)选择偏好 SR(v) 用 KL 散度来表示动词 v 就其论元可能的语义类别表达了多少信息（以比特计）。</p>
 <blockquote><p>x</p></blockquote>
-<div class="formula">$$S_{R}(v)=D(P(c|v)||P(c))$$</div>
+<div class="formula">$$S _{R} ( v ) = D ( P ( c | v ) || P ( c ))$$</div>
 <p>X P(c|v)log P(c|v) = P(c) (22.39)</p>
 <blockquote><p>c</p></blockquote>
 <aside class="term"><code>selectional association</code><span class="term-zh">选择关联</span><span class="term-explain">衡量某个语义类别对谓词整体选择偏好贡献大小的度量。</span></aside>
 <p>接着，Resnik 把某个特定类别与动词的选择关联定义为该类别对该动词总体选择偏好的相对贡献：</p>
 <p>SR(v)P(c|v)log P(c|v) 1</p>
-<div class="formula">$$A_{R}(v,c)=$$</div>
+<div class="formula">$$A _{R} ( v , c ) =$$</div>
 <p>P(c)因此，选择关联是对谓词与支配该谓词论元的某个类别之间关联强度的一种概率度量。</p>
 <p>Resnik 通过对语料库进行句法分析、统计每个谓词与每个论元词共现的所有次数，并假定每个词都是对包含该词的所有 WordNet 概念的部分观测，来估计这些关联的概率。下面这张取自 Resnik (1996) 的表给出了若干动词与其直接宾语的一些 WordNet 语义类别之间的高、低选择关联样例。</p>
 <table><tr><th></th><th>直接宾语</th><th></th><th>直接宾语</th><th></th></tr><tr><td>动词</td><td>语义类别</td><td>关联度</td><td>语义类别</td><td>关联度</td></tr><tr><td>read</td><td>WRITING</td><td>6.80</td><td>ACTIVITY</td><td>-.20</td></tr><tr><td>write</td><td>WRITING</td><td>7.26</td><td>COMMERCE</td><td>0</td></tr><tr><td>see</td><td>ENTITY</td><td>5.79</td><td>METHOD</td><td>-0.01</td></tr></table>

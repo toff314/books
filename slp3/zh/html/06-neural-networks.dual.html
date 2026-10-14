@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/06-neural-networks.md">Markdown 源文件</a></div>
@@ -104,7 +104,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We’ll discuss three popular non-linear functions f below (the sigmoid, the tanh, and the rectified linear unit or ReLU) but it’s pedagogically convenient to start with the sigmoid function since we saw it in Chapter 4:</p></blockquote>
 <aside class="term"><code>sigmoid</code><span class="term-zh">sigmoid 函数</span><span class="term-explain">把任意实数压缩到 0 与 1 之间的 S 形非线性函数，其输出常被解释为概率。</span></aside>
 <p>1 y = σ(z) = (6.3)</p>
-<div class="formula">$$1+e^{-z}$$</div>
+<div class="formula">$$1 + e ^{- z}$$</div>
 <p>sigmoid 函数（如图 6.1 所示）有许多优点；它把输出</p>
 <blockquote><p>The sigmoid (shown in Fig. 6.1) has a number of advantages; it maps the output</p></blockquote>
 <p>映射到区间 (0,1)，这有助于把离群值压缩到接近 0 或 1。而且它是可微的，正如我们在 4.15 节所看到的，这对学习很有用。</p>
@@ -305,7 +305,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>softmax</code><span class="term-explain">把实数向量转换为概率分布的函数，输出各分量非负且总和为 1，常用于分类器的输出层。</span></aside>
 <p>（见第 4 章）。更一般地，对于任意维度为 d 的向量 z，softmax 定义为：</p>
 <blockquote><p>of Chapter 4. More generally for any vector z of dimensionality d, the softmax is defined as:</p></blockquote>
-<div class="formula">$$\text{exp}(z_{i})$$</div>
+<div class="formula">$$\text{exp} ( z _{i} )$$</div>
 <p>softmax(zi) = 1 ≤i ≤d (6.9) Pd j=1 exp(z j)因此，举例来说，给定一个向量</p>
 <blockquote><p>Thus for example given a vector</p></blockquote>
 <p>z = [0.6,1.1,−1.5,1.2,3.2,−1.1], (6.10) softmax 函数会把它归一化为一个概率分布（数值已四舍五入）：</p>
@@ -342,9 +342,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The need for non-linear activation functions One of the reasons we use nonlinear activation functions for each layer in a neural network is that if we did not, the resulting network is exactly equivalent to a single-layer network. Let’s see why this is true. Imagine the first two layers of such a network of purely linear layers:</p></blockquote>
 <p>z[1] = W[1]x+b[1] z[2] = W[2]z[1] +b[2]我们可以把网络所计算的函数改写为：</p>
 <blockquote><p>We can rewrite the function that the network is computing as:</p></blockquote>
-<div class="formula">$$z^{[2]}=W^{[2]}z^{[1]}+b^{[2]}$$</div>
+<div class="formula">$$z ^{[ 2 ]} = W ^{[ 2 ]} z ^{[ 1 ]} + b ^{[ 2 ]}$$</div>
 <p>= W[2](W[1]x+b[1])+b[2]= W[2]W[1]x+W[2]b[1] +b[2]</p>
-<div class="formula">$$=W^{′}x+b^{′}$$</div>
+<div class="formula">$$= W ^{′} x + b ^{′}$$</div>
 <p>这一点可推广到任意层数。因此，如果没有非线性激活函数，多层网络就只是一个权重集合不同的单层网络在记号上的变体，我们也就失去了多层网络的全部表示能力。</p>
 <blockquote><p>This generalizes to any number of layers. So without non-linear activation functions, a multilayer network is just a notational variant of a single layer network with a different set of weights, and we lose all the representational power of multilayer networks.</p></blockquote>
 <p>替换偏置单元　在描述网络时，我们有时会使用一种略微简化的记号，它表示完全相同的函数，却不显式引用偏置节点 b。取而代之的是，我们在每一层添加一个取值恒为 1 的哑节点 a0。这样，第 0 层即输入层会有一个哑节点 a[0] 0 = 1，第 1 层会有 a[1] 0 = 1，依此类推。这个哑节点仍然带有一个相关权重，该权重就代表偏置值 b。例如，我们不写成下面这样的等式</p>
@@ -470,11 +470,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>by summing the embeddings and then dividing by N:</p></blockquote>
 <blockquote><p>N</p></blockquote>
 <p>xmean = 1 X</p>
-<div class="formula">$$e(w_{i})$$</div>
+<div class="formula">$$e ( w _{i} )$$</div>
 <p>N下面是这个分类器在采用平均池化时的方程：</p>
 <blockquote><p>Here are the equations for this classifier assuming mean pooling:</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
-<div class="formula">$$x=\text{mean}(e(w_{1}),e(w_{2}),...,e(w_{n}))$$</div>
+<div class="formula">$$x = \text{mean} ( e ( w _{1} ) , e ( w _{2} ) ,..., e ( w _{n} ))$$</div>
 <p>h = σ(xW +b) z = hUˆy = softmax(z) (6.22)该架构如图 6.13 所示，图中也给出了所有相关矩阵的形状（注意我们现在使用的是行向量）。</p>
 <blockquote><p>The architecture is sketched in Fig. 6.13, where we also give the shapes for all the relevant matrices (note that we’re using row vectors now).</p></blockquote>
 <p>池化还有许多其他选择，例如最大池化，在这种情况下，对</p>
@@ -497,7 +497,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>A feedforward neural language model is a feedforward network that takes as</p></blockquote>
 <p>若干前面词的表示（wt−1、wt−2 等）作为输入，并输出在可能的下一词上的概率分布。因此——与 n-gram 语言模型一样——前馈神经语言模型通过基于前面的 N−1 个词进行近似，来近似给定全部先前上下文时一个词的概率 P(wt|w1:t−1)：</p>
 <blockquote><p>input at time t a representation of some number of previous words (wt−1,wt−2, etc.) and outputs a probability distribution over possible next words. Thus—like the ngram LM—the feedforward neural LM approximates the probability of a word given the entire prior context P(wt|w1:t−1) by approximating based on the N −1 previous words:</p></blockquote>
-<div class="formula">$$P(w_{t}|w_{1},...,w_{t-1})\approxP(w_{t}|w_{t-N+1},...,w_{t-1})$$</div>
+<div class="formula">$$P ( w _{t} | w _{1} ,..., w _{t - 1} ) \approx P ( w _{t} | w _{t - N + 1} ,..., w _{t - 1} )$$</div>
 <p>在下面的例子中我们使用一个 4-gram 的示例，因此我们将展示一个用于估计概率 P(wt = i|wt−3,wt−2,wt−1) 的神经网络。</p>
 <blockquote><p>In the following examples we’ll use a 4-gram example, so we’ll show a neural net to estimate the probability P(wt = i|wt−3,wt−2,wt−1).</p></blockquote>
 <p>神经语言模型用词的嵌入来表示这一先前上下文中的词，而不是像 n-gram 语言模型那样仅仅使用词的标识。</p>
@@ -554,7 +554,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>The cross-entropy loss that is used in neural networks is the same one we saw for</p></blockquote>
 <p>逻辑回归中看到的那个是同一个。如果神经网络被用作二分类器，最后一层是 sigmoid 函数，那么损失函数就是我们在式 4.19 中看到的同一个逻辑回归损失：</p>
 <blockquote><p>logistic regression. If the neural network is being used as a binary classifier, with the sigmoid at the final layer, the loss function is the same logistic regression loss we saw in Eq. 4.19:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$</div>
 <p>如果我们用该网络划分 3 个或更多类别，那么损失函数</p>
 <blockquote><p>If we are using the network to classify into 3 or more classes, the loss function is</p></blockquote>
 <p>与我们第 4 章第 112 页看到的多项式回归损失完全相同。为方便起见，这里简要重述一下。首先，当类别数超过 2 时，我们需要把 y 和 ˆy 都表示为向量。假设我们做的是硬分类，即只有一个类别是正确的。</p>
@@ -568,12 +568,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>输出类别的对数之和的负值，其中每一项都按其概率 yk 加权：</p>
 <blockquote><p>output classes, each weighted by their probability yk:</p></blockquote>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<div class="formula">$$\sum_{k = 1}^{K}$$</div>
 <p>LCE(ˆy,y) = − yk log ˆyk (6.26)我们可以进一步简化这个等式；先用函数 1{} 重写该式，当括号中的条件成立时它取值为 1，否则取值为 0。这样就更容易看出，式 6.26 中求和各项除真实类别所对应的那一项（其 yk = 1）之外都为 0：</p>
 <blockquote><p>We can simplify this equation further; let’s first rewrite the equation using the function 1{} which evaluates to 1 if the condition in the brackets is true and to 0 otherwise. This makes it more obvious that the terms in the sum in Eq. 6.26 will be 0 except for the term corresponding to the true class for which yk = 1:</p></blockquote>
 <blockquote><p>k=1</p></blockquote>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<div class="formula">$$\sum_{k = 1}^{K}$$</div>
 <p>LCE(ˆy,y) = − 1{yk = 1}log ˆyk换言之，交叉熵损失就是正确类别所对应的输出概率的负对数，因此我们也把它称为负</p>
 <blockquote><p>In other words, the cross-entropy loss is simply the negative log of the output probability corresponding to the correct class, and we therefore also call this the negative</p></blockquote>
 <blockquote><p>k=1</p></blockquote>
@@ -584,7 +584,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>LCE(ˆy,y) = −log ˆyc (where c is the correct class) (6.27)</p></blockquote>
 <p>代入式 6.9 中的 softmax 公式，其中 K 为类别数：</p>
 <blockquote><p>Plugging in the softmax formula from Eq. 6.9, and with K the number of classes:</p></blockquote>
-<div class="formula">$$\text{exp}(z_{c})$$</div>
+<div class="formula">$$\text{exp} ( z _{c} )$$</div>
 <p>LCE(ˆy,y) = −log （其中 c 为正确类别） (6.28)</p>
 <blockquote><p>LCE(ˆy,y) = −log (where c is the correct class) (6.28)</p></blockquote>
 <p>PK j=1 exp(z j)让我们把负对数概率看作损失函数。一个完美的分类器会给正确类别 i 赋予概率 1，而给所有错误类别赋予概率 0。这意味着 p(ˆyi) 越高（越接近 1），分类器就越好；p(ˆyi) 越低（越接近 0），分类器就越差。该概率的负对数是一个很理想的损失度量，因为它从 0（1 的负对数，无损失）一直变化到无穷大（0 的负对数，无穷大损失）。该损失函数还保证：当正确答案的概率被最大化时，所有错误答案的概率被最小化；由于它们之和为 1，正确答案概率的任何增加都是以错误答案的概率为代价的。</p>
@@ -599,18 +599,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>How do we compute the gradient of this loss function? Computing the gradient requires the partial derivative of the loss function with respect to each parameter.</p></blockquote>
 <p>对于只有一个权重层、输出为 sigmoid 的网络（也就是逻辑回归的情形），我们可以直接使用式 6.29 中用于逻辑回归的损失导数（其推导见第 4.15 节）：</p>
 <blockquote><p>For a network with one weight layer and sigmoid output (which is what logistic regression is), we could simply use the derivative of the loss that we used for logistic regression in Eq. 6.29 (and derived in Section 4.15):</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
-<div class="formula">$$=(yˆ-y)x_{j}$$</div>
-<div class="formula">$$\partialw_{j}$$</div>
-<div class="formula">$$=(σ(w\cdotx+b)-y)x_{j}$$</div>
+<div class="formula">$$\partial L _{\text{CE}} ( y ˆ , y )$$</div>
+<div class="formula">$$= ( y ˆ - y ) x _{j}$$</div>
+<div class="formula">$$\partial w _{j}$$</div>
+<div class="formula">$$= ( σ ( w \cdot x + b ) - y ) x _{j}$$</div>
 <p>或者，对于只有一个权重层、输出为 softmax 的网络（即多项式逻辑回归），我们可以使用式 4.41 中 softmax 损失的导数，这里针对某个特定权重 wk 和输入 xi 给出</p>
 <blockquote><p>Or for a network with one weight layer and softmax output (=multinomial logistic regression), we could use the derivative of the softmax loss from Eq. 4.41, shown for a particular weight wk and input xi</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
-<div class="formula">$$=-(y_{k}-yˆ_{k})x_{i}$$</div>
-<div class="formula">$$\partialw_{k,i}$$</div>
-<div class="formula">$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$</div>
+<div class="formula">$$\partial L _{\text{CE}} ( y ˆ , y )$$</div>
+<div class="formula">$$= - ( y _{k} - y ˆ _{k} ) x _{i}$$</div>
+<div class="formula">$$\partial w _{k , i}$$</div>
+<div class="formula">$$= - ( y _{k} - p ( y _{k} = 1 | x )) x _{i}$$</div>
 <p>exp(wk ·x+bk) (6.30) = − yk − PK xi</p>
-<div class="formula">$$^{K}_{j=1}\text{exp}(w^{j}\cdotx+b_{j})$$</div>
+<div class="formula">$$^{K} _{j = 1} \text{exp} ( w ^{j} \cdot x + b _{j} )$$</div>
 <p>但这些导数只能为某一个权重层给出正确的更新：最后一层！</p>
 <blockquote><p>But these derivatives only give correct updates for one weight layer: the last one!</p></blockquote>
 <p>对于深层网络，为每个权重计算梯度要复杂得多，因为我们要对出现在网络最早期层中的权重参数求导，而损失却只在网络的最后端计算。</p>
@@ -680,7 +680,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>For the backward pass we’ll also need to compute the loss L. The loss function (6.35)</p></blockquote>
 <p>对于二分类 sigmoid 输出，由式 6.25 给出，其形式为</p>
 <blockquote><p>for binary sigmoid output from Eq. 6.25 is</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$</div>
 <p>我们的输出是 ˆy = a[2]，因此可以把它改写为</p>
 <blockquote><p>Our output ˆy = a[2], so we can rephrase this as</p></blockquote>
 <p>h i LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2]) (6.37)</p>
@@ -698,13 +698,13 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>0 for z &lt; 0 (6.40) d ReLU(z) dz = 1 for z ≥0我们将给出计算的开头部分，即计算损失函数 L 关于 z 的导数 ∂L ∂z （其余计算留给读者作为练习）。根据链式法则：</p>
 <blockquote><p>We’ll give the start of the computation, computing the derivative of the loss function L with respect to z, or ∂L ∂z (and leaving the rest of the computation as an exercise for the reader). By the chain rule:</p></blockquote>
 <p>∂L ∂z = ∂L ∂a[2] (6.41)</p>
-<div class="formula">$$\partiala^{[2]}\partialz$$</div>
+<div class="formula">$$\partial a ^{[ 2 ]} \partial z$$</div>
 <blockquote><p>∂L</p></blockquote>
 <p>因此我们先计算 ∂a[2] ，对式 6.37 求导，该式重写如下：</p>
 <blockquote><p>So let’s first compute ∂a[2] , taking the derivative of Eq. 6.37, repeated here:</p></blockquote>
 <p>h i LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2])</p>
 <p>∂L y∂log(a[2]) +(1−y)∂log(1−a[2])∂a[2] = − ∂a[2] ∂a[2] y 1  1 = − +(1−y) 1−a[2] (−1)</p>
-<div class="formula">$$a^{[2]}$$</div>
+<div class="formula">$$a ^{[ 2 ]}$$</div>
 <p>y a[2] + y−1 (6.42) = − 1−a[2]接下来，根据 sigmoid 函数的导数：</p>
 <blockquote><p>Next, by the derivative of the sigmoid:</p></blockquote>
 <p>∂a[2] = a[2](1−a[2])∂z最后，我们可以使用链式法则：</p>

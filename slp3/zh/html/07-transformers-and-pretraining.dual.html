@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/07-transformers-and-pretraining.md">Markdown 源文件</a></div>
@@ -152,7 +152,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">Figure 7.4 Information flow in causal self-attention. When processing each input xi, the model attends to all the inputs up to, and including xi.</p>
 <p>注意力的简化版本 就其核心而言，注意力实际上只是上下文向量的加权和，只是在权重如何计算以及求和的对象上增添了许多复杂之处。出于教学目的，我们先描述一种关于注意力的简化直觉：词元位置 i 处的注意力输出 ai 就是所有表示 x j（对所有 j ≤i）的加权和；我们用 αij 表示 xj 应对 ai 贡献多少：</p>
 <blockquote><p>Simplified version of attention At its heart, attention is really just a weighted sum of context vectors, with a lot of complications added to how the weights are computed and what gets summed. For pedagogical purposes let’s first describe a simplified intuition of attention, in which the attention output ai at token position i is simply the weighted sum of all the representations x j, for all j ≤i; we’ll use αij to mean how much xj should contribute to ai:</p></blockquote>
-<div class="formula">$$\sum_{j\lei}$$</div>
+<div class="formula">$$\sum_{j \le i}$$</div>
 <p>简化版本：(7.6)</p>
 <blockquote><p>Simplified version: (7.6)</p></blockquote>
 <p>ai = αijxj每个 αi j 都是一个标量，用于在求和时对输入 x j 的值进行加权</p>
@@ -164,7 +164,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>So the output of attention is a sum of the embeddings of prior tokens weighted by their similarity with the current token embedding. We compute similarity scores via dot product, which maps two vectors into a scalar value ranging from −∞to∞. The larger the score, the more similar the vectors that are being compared. We’ll normalize these scores with a softmax to create the vector of weights αij, j ≤i.</p></blockquote>
 <p>简化版本：score(xi,x j) = xi ·xj (7.7)</p>
 <blockquote><p>Simplified Version: score(xi,x j) = xi ·xj (7.7)</p></blockquote>
-<div class="formula">$$α_{\text{ij}}=\text{softmax}(\text{score}(x_{i},x_{j}))∀j\lei$$</div>
+<div class="formula">$$α _{\text{ij}} = \text{softmax} ( \text{score} ( x _{i} , x _{j} )) ∀ j \le i$$</div>
 <p>因此，在图 7.4 中，我们通过计算三个分数来得到 a3：x3 ·x1、x3 ·x2 和 x3 ·x3，用 softmax 对它们进行归一化，并把得到的概率作为权重，表示它们各自与当前位置 3 的相关程度。当然，softmax 权重很可能对 xi 最高，因为 xi 与自身非常相似，从而得到很高的点积。但其他上下文单词也可能与 i 相似，softmax 也会给这些单词分配一定的权重。然后我们把式 7.6 中的 α 值取为这些权重，计算加权和，即得到 a3。</p>
 <blockquote><p>Thus in Fig. 7.4 we compute a3 by computing three scores: x3 ·x1, x3 ·x2 and x3 ·x3, normalizing them by a softmax, and using the resulting probabilities as weights indicating each of their proportional relevance to the current position 3. Of course, the softmax weight will likely be highest for xi, since xi is very similar to itself, resulting in a high dot product. But other context words may also be similar to i, and the softmax will also assign some weight to those words. Then we use these weights as the α values in Eq. 7.6 to compute the weighted sum that is our a3.</p></blockquote>
 <p>式 7.6 – 7.8 中的简化注意力展示了这种基于注意力的</p>
@@ -193,18 +193,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>To capture these three different roles, transformers introduce weight matrices</p></blockquote>
 <p>WQ、WK 和 WV。这些权重会把每个输入向量 xi 投影成它作为查询、键或值的角色的表示：</p>
 <blockquote><p>WQ, WK, and WV. These weights will project each input vector xi into a representation of its role as a query, key, or value:</p></blockquote>
-<div class="formula">$$q_{i}=x_{i}W^{Q};k_{i}=x_{i}W^{K};v_{i}=x_{i}W^{V}$$</div>
+<div class="formula">$$q _{i} = x _{i} W ^{Q} ; k _{i} = x _{i} W ^{K} ; v _{i} = x _{i} W ^{V}$$</div>
 <p>有了这些投影，当我们要计算当前元素 xi 与某个先前元素 x j 的相似度时，我们将使用当前元素的查询向量 qi 与前一个元素的键向量 kj 之间的点积。此外，点积的结果可能是一个任意大的值（正或负），而对很大的值取指数会在训练中导致数值问题并造成梯度丢失。为避免这一点，我们通过与查询和键向量的维度（dk）的平方根相除，用一个与嵌入规模相关的因子来缩放点积。于是我们用式 7.11 取代简化的式 7.7。随后得到 αij 的 softmax 计算保持不变，但 headi 的输出计算现在基于对值向量 v 的加权求和（式 7.13）。</p>
 <blockquote><p>Given these projections, when we are computing the similarity of the current element xi with some prior element x j, we’ll use the dot product between the current element’s query vector qi and the preceding element’s key vector kj. Furthermore, the result of a dot product can be an arbitrarily large (positive or negative) value, and exponentiating large values can lead to numerical issues and loss of gradients during training. To avoid this, we scale the dot product by a factor related to the size of the embeddings, via dividing by the square root of the dimensionality of the query and key vectors (dk). We thus replace the simplified Eq. 7.7 with Eq. 7.11. The ensuing softmax calculation resulting in αij remains the same, but the output calculation for headi is now based on a weighted sum over the value vectors v (Eq. 7.13).</p></blockquote>
 <p>下面是最后一组方程，用于由单个输入向量 xi 计算单个自注意力输出向量 ai 的自注意力。这一版本的注意力通过把先前各元素的值相加来计算 ai，每一项值以其键与来自当前元素的查询之间的相似度作为权重：</p>
 <blockquote><p>Here’s a final set of equations for computing self-attention for a single selfattention output vector ai from a single input vector xi. This version of attention computes ai by summing the values of the prior elements, each weighted by the similarity of its key to the query from the current element:</p></blockquote>
-<div class="formula">$$q_{i}=x_{i}W^{Q};k_{j}=x_{j}W^{K};v_{j}=x^{j}W^{V}$$</div>
+<div class="formula">$$q _{i} = x _{i} W ^{Q} ; k _{j} = x _{j} W ^{K} ; v _{j} = x ^{j} W ^{V}$$</div>
 <p>score(xi,x j) = qi ·kj (7.11)√dk</p>
-<div class="formula">$$α_{\text{ij}}=\text{softmax}(\text{score}(x_{i},x_{j}))∀j\lei$$</div>
-<div class="formula">$$\sum_{j\lei}$$</div>
+<div class="formula">$$α _{\text{ij}} = \text{softmax} ( \text{score} ( x _{i} , x _{j} )) ∀ j \le i$$</div>
+<div class="formula">$$\sum_{j \le i}$$</div>
 <p>headi = αijvj (7.13)</p>
 <blockquote><p>j≤i</p></blockquote>
-<div class="formula">$$a_{i}=\text{head}_{i}W^{O}$$</div>
+<div class="formula">$$a _{i} = \text{head} _{i} W ^{O}$$</div>
 <p>我们在图 7.5 中以计算序列中第三个输出 a3 的值为例来说明这一点。</p>
 <blockquote><p>We illustrate this in Fig. 7.5 for the case of calculating the value of the third output a3 in a sequence.</p></blockquote>
 <p>注意我们还引入了另一个矩阵 WO，它被左乘</p>
@@ -235,18 +235,18 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Below are the equations for attention augmented with multiple heads; Fig. 7.6</p></blockquote>
 <p>给出了直观示意。</p>
 <blockquote><p>shows an intuition.</p></blockquote>
-<div class="formula">$$q^{c}_{i}=x_{i}W^{\text{Qc}};k^{c}_{j}=x_{j}W^{\text{Kc}};v^{c}_{j}=x_{\frac{j}{c}}W^{\text{Vc}}_{c};∀c1\lec\leA$$</div>
+<div class="formula">$$q ^{c} _{i} = x _{i} W ^{\text{Qc}} ; k ^{c} _{j} = x _{j} W ^{\text{Kc}} ; v ^{c} _{j} = x _{\frac{j}{c}} W ^{\text{Vc}} _{c} ; ∀ c 1 \le c \le A$$</div>
 <p>qc i ·kc</p>
 <blockquote><p>j</p></blockquote>
-<div class="formula">$$\text{score}^{c}(x_{i},x_{j})=$$</div>
+<div class="formula">$$\text{score} ^{c} ( x _{i} , x _{j} ) =$$</div>
 <p>√dk</p>
-<div class="formula">$$α_{\text{ij}}^{c}=\text{softmax}(\text{score}^{c}(x_{i},x_{j}))∀j\lei$$</div>
+<div class="formula">$$α _{\text{ij}} ^{c} = \text{softmax} ( \text{score} ^{c} ( x _{i} , x _{j} )) ∀ j \le i$$</div>
 <p>headc X αc ijvc</p>
-<div class="formula">$$^{c}_{i}=$$</div>
+<div class="formula">$$^{c} _{i} =$$</div>
 <blockquote><p>j</p></blockquote>
 <blockquote><p>j≤i</p></blockquote>
-<div class="formula">$$a_{i}=(\text{head}^{1}⊕\text{head}^{2}...⊕\text{head}^{A})W^{O}(7.19)$$</div>
-<div class="formula">$$\text{MultiHeadAttention}(x_{i},[x_{1},\cdot \cdot \cdot,x_{i-1}])=a_{i}$$</div>
+<div class="formula">$$a _{i} = ( \text{head} ^{1} ⊕ \text{head} ^{2} ... ⊕ \text{head} ^{A} ) W ^{O} (7.19)$$</div>
+<div class="formula">$$\text{MultiHeadAttention} ( x _{i} , [ x _{1} , \cdot \cdot \cdot , x _{i - 1} ]) = a _{i}$$</div>
 <p>注意式 7.20 中 MultiHeadAttention 是当前输入 xi 以及所有其他输入的函数。对于本章使用的因果注意力或从左到右注意力，其他输入只位于左侧；但我们还将在第 9 章看到一种注意力版本，其中的注意力同时也是右侧词元的函数。</p>
 <blockquote><p>Note in Eq. 7.20 that MultiHeadAttention is a function of the current input xi, as well as all the other inputs. For the causal or left-to-right attention that we use in this chapter, the other inputs are only to the left, but we’ll also see a version of attention in Chapter 9 where attention is a function of the tokens to the right as well.</p></blockquote>
 <p>我们将在引入掩蔽右侧上下文这一概念时，于式 7.35 回到这个关于因果输入的想法。</p>
@@ -299,7 +299,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>如今大多数大语言模型实际上都使用门控前馈层，即采用一种名为 SwiGLU 的激活函数（Shazeer, 2020），它比 ReLU 之类的更简单函数效果更好。SwiGLU 属于门控线性单元（GLU）函数族（Dauphin et al., 2017），这类函数对输入的两种线性变换做逐分量乘积（⊗）。其思想是，其中一个函数是值，另一个是门，门规定该值有多少能通过。SwiGLU 用 Swish 函数（Ramachandran et al., 2017）作为门：</p>
 <blockquote><p>Most LLMs now actually use gated feedforward layers, by employing an activation function called SwiGLU (Shazeer, 2020) that works better than simpler functions like ReLU. SwiGLU is in the family of Gated Linear Unit (GLU) functions(Dauphin et al., 2017), which do a component-wise product (⊗) of two linear transformations of the input. The idea is that one of the functions is a value, and the other is a gate that specifies how much of that value goes through. SwiGLU uses the Swish function (Ramachandran et al., 2017) as the gate:</p></blockquote>
 <aside class="term"><code>feedforward layers</code><span class="term-zh">前馈层</span><span class="term-explain">Transformer 块中逐位置独立作用的两层全连接网络，参数量占比最大，被认为编码了模型的大部分事实性知识。</span></aside>
-<div class="formula">$$\text{Swish}_{β}(x)=xσ(βx)$$</div>
+<div class="formula">$$\text{Swish} _{β} ( x ) = x σ ( β x )$$</div>
 <p>于是 SwiGLU 前馈的公式为：</p>
 <blockquote><p>The SwiGLU feedforward equation is then:</p></blockquote>
 <p>FFNSwiGLU(x,W1,W2,W3,b1,b2,b3,β) = Swishβ(xW1 +b1)⊗(xW2 +b2) W3 +b3 (7.22)由于门控激活函数为门控增加了额外参数，门控模型的维度 dff 通常被设定为略小于常规的 4d。</p>
@@ -319,7 +319,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>µ = 1 X x[j] (7.23) d v u u t1 X</p>
 <blockquote><p>j=1</p></blockquote>
 <blockquote><p>d</p></blockquote>
-<div class="formula">$$(x[j]-µ)^{2}$$</div>
+<div class="formula">$$( x [ j ] - µ ) ^{2}$$</div>
 <p>σ = d给定这些数值后，向量的各个分量通过减去均值并除以标准差完成归一化。该计算的结果是一个均值为零、标准差为一的新向量。</p>
 <blockquote><p>Given these values, the vector components are normalized by subtracting the mean from each and dividing by the standard deviation. The result of this computation is a new vector with zero mean and a standard deviation of one.</p></blockquote>
 <blockquote><p>j=1</p></blockquote>
@@ -334,20 +334,20 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>7.2.3 Putting it all together</p></blockquote>
 <p>Transformer 块所计算的函数，可以通过为每个分量的计算各写一个方程来分解表示，其中用 t（形状为 [1 × d]）代表 Transformer，并用上标标示块内的每一次计算：</p>
 <blockquote><p>The function computed by a transformer block can be expressed by breaking it down with one equation for each component computation, using t (of shape [1 × d]) to stand for transformer and superscripts to demarcate each computation inside the block:</p></blockquote>
-<div class="formula">$$t^{1}_{i}=\text{LayerNorm}(x_{i})$$</div>
+<div class="formula">$$t ^{1} _{i} = \text{LayerNorm} ( x _{i} )$$</div>
 <blockquote><p>i</p></blockquote>
 <p>t2 = MultiHeadAttention(t1 t1 1,··· ,t1 i , ) (7.28)</p>
 <blockquote><p>i i−1</p></blockquote>
-<div class="formula">$$t^{3}_{i}=t^{2}_{i}$$</div>
-<div class="formula">$$^{2}_{i}+x_{i}$$</div>
+<div class="formula">$$t ^{3} _{i} = t ^{2} _{i}$$</div>
+<div class="formula">$$^{2} _{i} + x _{i}$$</div>
 <blockquote><p>i</p></blockquote>
-<div class="formula">$$t^{4}_{i}=\text{LayerNorm}(t^{3}_{i}$$</div>
-<div class="formula">$$^{3}_{i})$$</div>
+<div class="formula">$$t ^{4} _{i} = \text{LayerNorm} ( t ^{3} _{i}$$</div>
+<div class="formula">$$^{3} _{i} )$$</div>
 <blockquote><p>i</p></blockquote>
-<div class="formula">$$t^{5}_{i}=\text{FFN}(t^{4}_{i}$$</div>
-<div class="formula">$$^{4}_{i})$$</div>
+<div class="formula">$$t ^{5} _{i} = \text{FFN} ( t ^{4} _{i}$$</div>
+<div class="formula">$$^{4} _{i} )$$</div>
 <blockquote><p>i</p></blockquote>
-<div class="formula">$$h_{i}=t^{5}_{i}+t_{i}^{3}$$</div>
+<div class="formula">$$h _{i} = t ^{5} _{i} + t _{i} ^{3}$$</div>
 <blockquote><p>i</p></blockquote>
 <p>注意，唯一以其他词元（其他残差流）的信息作为输入的组件就是多头注意力，正如式 7.28 所示，它会查看上下文中所有相邻的词元。不过，注意力的输出随后会被加回到当前词元的嵌入流中。事实上，Elhage et al. (2021) 表明，我们完全可以把注意力头看作是把信息从邻近词元的残差流搬移到当前流中。因此，每个位置上的高维嵌入空间既包含当前词元的信息，也包含邻近词元的信息，只不过它们处于向量空间的不同子空间中。</p>
 <blockquote><p>Notice that the only component that takes as input information from other tokens(other residual streams) is multi-head attention, which (as we see from Eq. 7.28) looks at all the neighboring tokens in the context. The output from attention, however, is then added into this token’s embedding stream. In fact, Elhage et al. (2021) show that we can view attention heads as literally moving information from the residual stream of a neighboring token into the current stream. The high-dimensional embedding space at each position thus contains information about the current token and about neighboring tokens, albeit in different subspaces of the vector space.</p></blockquote>
@@ -383,7 +383,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>在 Vaswani 等人（2017）中 Transformer 的定义使用了另一种架构，即 postnorm transformer，</p><p><em>of the transformer in Vaswani et al. (2017) used an alternative architecture, the postnorm transformer,</em></p></blockquote>
 <p>并行化注意力 我们先看单个注意力头的情况，再转向多头，然后加入 Transformer 块中的其余组件。对于单个头，我们把 X 分别乘以查询、键、值矩阵——形状为 [d × dk] 的 WQ、形状为 [d × dk] 的 WK 以及形状为 [d × dv] 的 WV——从而得到形状为 [N × dk] 的矩阵 Q、形状为 [N × dk] 的矩阵 K 和形状为 [N × dv] 的矩阵 V，其中包含所有的键、查询和值向量：</p>
 <blockquote><p>Parallelizing attention Let’s first see this for a single attention head and then turn to multiple heads, and then add in the rest of the components in the transformer block. For one head we multiply X by the query, key, and value matrices WQ of shape [d ×dk], WK of shape [d ×dk], and WV of shape [d ×dv], to produce matrices Q of shape [N ×dk], K of shape [N ×dk], and V of shape [N ×dv], containing all the key, query, and value vectors:</p></blockquote>
-<div class="formula">$$Q=\text{XW}^{Q};K=\text{XW}^{K};V=\text{XW}^{V}$$</div>
+<div class="formula">$$Q = \text{XW} ^{Q} ; K = \text{XW} ^{K} ; V = \text{XW} ^{V}$$</div>
 <p>有了这些矩阵，我们就可以在一次矩阵乘法中将 Q 与 K⊺ 相乘，从而同时计算出所有需要的查询–键比较。乘积的形状为 N × N，如图 7.9 所示。</p>
 <blockquote><p>Given these matrices we can compute all the requisite query-key comparisons simultaneously by multiplying Q and K⊺in a single matrix multiplication. The product is of shape N ×N, visualized in Fig. 7.9.</p></blockquote>
 <img src="../md/images/07-transformers-and-pretraining/fig_p13_0.png" alt="">
@@ -394,7 +394,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>取 softmax，然后把结果与 V 相乘，得到一个形状为 N × d 的矩阵：即输入中每个词元的向量嵌入表示。我们把单个头对长度为 N 的整个序列的整个自注意力步骤化简为如下计算：</p>
 <blockquote><p>the softmax, and then multiply the result by V resulting in a matrix of shape N ×d: a vector embedding representation for each token in the input. We’ve reduced the entire self-attention step for an entire sequence of N tokens for one head to the following computation:</p></blockquote>
 <p>QK⊺  (7.34) head = softmax mask√dk V</p>
-<div class="formula">$$A=\text{head W}^{O}$$</div>
+<div class="formula">$$A = \text{head W} ^{O}$$</div>
 <p>屏蔽未来 你可能已经注意到，我们在上面的式 7.34 中引入了一个 mask 函数。这是因为按我们所述方式进行的自注意力计算有一个问题：QK⊺ 的计算会为每个查询值对每一个键值产生一个分数，包括那些位于查询之后的键值。这在语言建模的场景中是不合适的：如果你已经知道下一个词，猜出它简直太简单了！为解决这个问题，矩阵上三角部分的元素被设为 −∞，softmax 会把它们变为零，从而消除对序列中后续词元的任何了解。实践中，这是通过加上一个掩码矩阵 M 来实现的，其中 Mij = −∞ ∀j &gt; i（即上三角部分），否则 Mij = 0。</p>
 <blockquote><p>Masking out the future You may have noticed that we introduced a mask function in Eq. 7.34 above. This is because the self-attention computation as we’ve described it has a problem: the calculation of QK⊺results in a score for each query value to every key value, including those that follow the query. This is inappropriate in the setting of language modeling: guessing the next word is pretty simple if you already know it! To fix this, the elements in the upper-triangular portion of the matrix are set to −∞, which the softmax will turn to zero, thus eliminating any knowledge of words that follow in the sequence. This is done in practice by adding a mask matrix M in which Mi j = −∞∀j &gt; i (i.e. for the upper-triangular portion) and Mij = 0 otherwise.</p></blockquote>
 <p class="caption">图 7.10 展示了由此得到的带掩码的 QK⊺ 矩阵。正如我们将在 7.7 节看到的，正是掩码的使用让窗口中的每个位置都能充当训练样本，使 Transformer 的训练非常高效。我们将在第 9 章看到如何调整掩码，以便在需要它的任务中利用未来的词。</p>
@@ -419,19 +419,19 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Parallelizing multi-head attention In multi-head attention, as with self-attention, the input and output have the model dimension d, the key and query embeddings have dimensionality dk, and the value embeddings are of dimensionality dv (again, in the original transformer paper dk = dv = 64, A = 8, and d = 512). Thus for each head c, we have weight layers WQc of shape [d ×dk], WKc of shape [d ×dk], and WVc of shape [d ×dv], and these get multiplied by the inputs packed into X to produce Q of shape [N × dk], K of shape [N × dk], and V of shape [N × dv]. The output of each of the A heads is of shape [N × dv], and so the output of the multihead layer with A heads consists of A matrices of shape [N × dv]. To make use of these matrices in further processing, they are concatenated to produce a single output with dimensionality [N × Adv]. Finally, we use a final linear projection WO of shape [Adv ×d], that reshapes it to the original output dimension for each token.</p></blockquote>
 <p>将拼接得到的 [N × Adv] 矩阵输出与形状为 [Adv × d] 的 WO 相乘，便得到形状为 [N × d] 的自注意力输出 A。</p>
 <blockquote><p>Multiplying the concatenated [N × Adv] matrix output by WO of shape [Adv × d] yields the self-attention output A of shape [N ×d].</p></blockquote>
-<div class="formula">$$Q^{i}=\text{XW}^{\text{Qi}};K^{i}=\text{XW}^{\text{Ki}};V^{i}=\text{XW}^{\text{Vi}}$$</div>
+<div class="formula">$$Q ^{i} = \text{XW} ^{\text{Qi}} ; K ^{i} = \text{XW} ^{\text{Ki}} ; V ^{i} = \text{XW} ^{\text{Vi}}$$</div>
 <p>QiKi⊺headi = SelfAttention(Qi,Ki,Vi) = softmax mask Vi (7.37)√dk</p>
-<div class="formula">$$\text{MultiHeadAttention}(X)=(\text{head}_{1}⊕\text{head}_{2}...⊕\text{head}_{A})W^{O}(7.38)$$</div>
+<div class="formula">$$\text{MultiHeadAttention} ( X ) = ( \text{head} _{1} ⊕ \text{head} _{2} ... ⊕ \text{head} _{A} ) W ^{O} (7.38)$$</div>
 <p>把这一切与并行输入矩阵 X 结合起来：由 N 个 Transformer 块组成的整个层——每个块处理 N 个输入词元中的一个——所并行计算的函数，可以表示为：</p>
 <blockquote><p>Putting it all together with the parallel input matrix X The function computed in parallel by an entire layer of N transformer blocks—each block over one of the N input tokens—can be expressed as:</p></blockquote>
 <p>O = X+MultiHeadAttention(LayerNorm(X)) (7.39) H = O+FFN(LayerNorm(O)) (7.40)注意，在式 7.39 中我们用 X 表示该层的输入，无论它来自何处。对于第一层，正如我们将在下一节看到的，该输入就是我们一直用 X 描述的初始词嵌入与位置嵌入向量。但对于后续的第 k 层，输入是上一层的输出 Hk−1。我们也可以把 Transformer 层中执行的计算拆解开，为每个组件的计算各给出一个等式。我们用 T（形状为 [N ×d]）表示 Transformer，用上标标出块内每一次计算，并再次用 X 表示来自上一层的块输入或初始嵌入：</p>
 <blockquote><p>Note that in Eq. 7.39 we are using X to mean the input to the layer, wherever it comes from. For the first layer, as we will see in the next section, that input is the initial word + positional embedding vectors that we have been describing by X. But for subsequent layers k, the input is the output from the previous layer Hk−1. We can also break down the computation performed in a transformer layer, showing one equation for each component computation. We’ll use T (of shape [N ×d]) to stand for transformer and superscripts to demarcate each computation inside the block, and again use X to mean the input to the block from the previous layer or the initial embedding:</p></blockquote>
-<div class="formula">$$T^{1}=\text{LayerNorm}(X)$$</div>
-<div class="formula">$$T^{2}=\text{MultiHeadAttention}(T^{1})$$</div>
-<div class="formula">$$T^{3}=T^{2}+X$$</div>
-<div class="formula">$$T^{4}=\text{LayerNorm}(T^{3})$$</div>
-<div class="formula">$$T^{5}=\text{FFN}(T^{4})$$</div>
-<div class="formula">$$H=T^{5}+T^{3}$$</div>
+<div class="formula">$$T ^{1} = \text{LayerNorm} ( X )$$</div>
+<div class="formula">$$T ^{2} = \text{MultiHeadAttention} ( T ^{1} )$$</div>
+<div class="formula">$$T ^{3} = T ^{2} + X$$</div>
+<div class="formula">$$T ^{4} = \text{LayerNorm} ( T ^{3} )$$</div>
+<div class="formula">$$T ^{5} = \text{FFN} ( T ^{4} )$$</div>
+<div class="formula">$$H = T ^{5} + T ^{3}$$</div>
 <p>这里，当我们使用像 FFN(T3) 这样的记号时，意思是同一个 FFN 被并行地施加于窗口中的 N 个嵌入向量中的每一个。类似地，N 个词元中的每一个都在 LayerNorm 中被并行归一化。关键在于，Transformer 块的输入维度与输出维度是匹配的，因此它们可以堆叠。由于块输入处的每个词元 xi 都由一个维度为 [1×d] 的嵌入表示，这意味着输入 X 和输出 H 的形状都是 [N ×d]。</p>
 <blockquote><p>Here when we use a notation like FFN(T3) we mean that the same FFN is applied in parallel to each of the N embedding vectors in the window. Similarly, each of the N tokens is normed in parallel in the LayerNorm. Crucially, the input and output dimensions of transformer blocks are matched so they can be stacked. Since each token xi at the input to the block is represented by an embedding of dimensionality[1×d], that means the input X and output H are both of shape [N ×d].</p></blockquote>
 <h2>7.4 输入：词元嵌入与位置嵌入</h2>
@@ -539,7 +539,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>unembedding</code><span class="term-zh">解嵌入</span><span class="term-explain">把最后一层得到的隐藏向量映射回词表上的得分向量，是输入端嵌入映射的逆过程。</span></aside>
 <p>一个 softmax 层把 logit u 转换为词表上的概率 y。</p>
 <blockquote><p>A softmax layer turns the logits u into the probabilities y over the vocabulary.</p></blockquote>
-<div class="formula">$$u=h^{L}_{N}E^{T}$$</div>
+<div class="formula">$$u = h ^{L} _{N} E ^{T}$$</div>
 <p>y = softmax(u)（7.48）</p>
 <blockquote><p>y = softmax(u) (7.48)</p></blockquote>
 <p>我们可以用这些概率来做诸如帮助为一个</p>
@@ -583,7 +583,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>decoding</code><span class="term-zh">解码</span><span class="term-explain">把模型输出的概率分布转换为实际生成词元的决策过程。</span></aside>
 <p>每一步都只做出局部最优的选择，无论事后回过头看它是否真的最优。因此在贪心解码中，在生成的每个时间步，我们都先把 logits 变成词元上的概率分布，然后选出词表中概率最高的词元作为输出 wt（即 argmax）：</p>
 <blockquote><p>tha_4t makes a choice that is locally optimal, whether or not it will turn out to have been the best choice with hindsight. Thus in greedy decoding, at each time step in generation, we turn the logits into a probability distribution over tokens and then we choose as the output wt the token in the vocabulary that has the highest probability(the argmax):</p></blockquote>
-<div class="formula">$$wˆ_{t}=\text{argmax}_{w\inV}P(w|w_{&lt;t})$$</div>
+<div class="formula">$$w ˆ _{t} = \text{argmax} _{w \in V} P ( w | w _{&lt; t} )$$</div>
 <blockquote><p>严格来说，自回归模型基于若干值的线性函数来预测 t 时刻的值</p><p><em>Technically an autoregressive model predicts a value at time t based on a linear function of the values</em></p></blockquote>
 <blockquote><p>这些值取自 t − 1、t − 2 等时刻。尽管语言模型并不是线性的（因为后文会看到，它们有许多层非线性），我们仍笼统地把这种生成技术称为自回归，因为每个时间步生成的词元都以其前一步网络所选的词元为条件。</p><p><em>at times t −1, t −2, and so on. Although language models are not linear (since, as we will see, they have many layers of non-linearities), we loosely refer to this generation technique as autoregressive since the token generated at each time step is conditioned on the token selected by the network from the previous</em></p></blockquote>
 <p>图 7.18 表明，在我们的例子中，模型选择生成 all。</p>
@@ -713,8 +713,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Given a distribution P(wt|w&lt;t), we sort the distribution from most probable, and</p></blockquote>
 <p>那么 top-p 词表 V(p) 是使下式成立的最小词集合：</p>
 <blockquote><p>then the top-p vocabulary V (p) is the smallest set of words such that</p></blockquote>
-<div class="formula">$$\sum_{\inV(p}$$</div>
-<div class="formula">$$P(w|w_{&lt;t})\gep.$$</div>
+<div class="formula">$$\sum_{\in V ( p}$$</div>
+<div class="formula">$$P ( w | w _{&lt; t} ) \ge p .$$</div>
 <blockquote><p>w∈V(p)</p><p><em>w∈V (p)</em></p></blockquote>
 <p>也许出乎意料的是，把 top-k 采样和 top-p 采样结合起来是很常见的做法，</p>
 <blockquote><p>Perhaps surprisingly, it is common to combine both top-k and top-p sampling,</p></blockquote>
@@ -726,7 +726,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>In pretraining, as we discussed in Chapter 1, we tokenize a large corpus of text as training material, usually by augmenting large crawls of the web with other high quality data. Then at each token t we ask the model to predict the next token, and train the parameters of the model (the embedding, feedforward, attention, and other weight matrices) via error backpropagation with gradient descent. We call such a model self-supervised because we don’t have to add any special gold labels to the data; the natural sequence of words is its own supervision! We simply train the model to minimize the error in predicting the true next word in the training sequence.</p></blockquote>
 <p>我们最小化并向网络回传的损失函数，正是我们已在第 4 章和第 6 章见过两次的交叉熵损失函数。回想一下，交叉熵损失衡量的是预测概率分布与正确分布之间的差异。该概率分布定义在词元词表之上，因此损失为：</p>
 <blockquote><p>The loss function we minimize and pass back through the network is the crossentropy loss function we’ve now seen twice, in Chapter 4 and Chapter 6. Recall that the cross-entropy loss measures the difference between a predicted probability distribution and the correct distribution. The probability distribution is over the token vocabulary, making the loss be:</p></blockquote>
-<div class="formula">$$\sum_{w\inV}$$</div>
+<div class="formula">$$\sum_{w \in V}$$</div>
 <p>LCE(ˆyt,yt) = − yt[w]log ˆyt[w] (7.53)在语言建模的情形下，正确分布 yt 来自对下一个词的已知信息。它表示为一个对应于词表的独热向量，其中真实下一个词对应的元素为 1，其余元素均为 0。因此，语言建模的交叉熵损失由模型赋予正确下一个词元的概率决定（其余词元都会在式 7.53 的第一项中被乘以零）。</p>
 <blockquote><p>In the case of language modeling, the correct distribution yt comes from knowing the next word. This is represented as a one-hot vector corresponding to the vocabulary where the entry for the actual next word is 1, and all the other entries are 0. Thus, the cross-entropy loss for language modeling is determined by the probability the model assigns to the correct next token (all other tokens get multiplied by zero by the first term in Eq. 7.53).</p></blockquote>
 <blockquote><p>w∈V</p></blockquote>
@@ -734,7 +734,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>So without loss of generality we can say that at time t the cross-entropy loss in</p></blockquote>
 <p>可以简化为模型赋予训练序列中下一个词的负对数概率 −log p(wt+1)，或者更形式化地，用 ˆy 表示语言模型给出的词元概率估计向量：</p>
 <blockquote><p>Eq. 7.53 can be simplified as the negative log probability the model assigns to the next word in the training sequence, −log p(wt+1), or more formally, using ˆy to mean the vector of estimated token probabilities from the language model:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ _{t} , y _{t} ) = - \text{log ˆ} y _{t} [ w _{t + 1} ]$$</div>
 <p>因此，在输入的每个词位置 t，模型以正确的词元序列 w1:t 作为输入，用它们计算可能的下一个词元上的概率分布，从而计算模型对下一个词元 wt+1 的损失。接着我们移到下一个词，忽略模型对下一个词所做的预测，转而使用正确的词元序列 w1:t+1，让模型估计词元 wt+2 的概率。这种总是把正确的历史序列交给模型去预测下一个词（而不是把模型在上一个时间步的最佳猜测再喂回模型）的做法，称为教师强制。</p>
 <blockquote><p>Thus at each word position t of the input, the model takes as input the correct sequence of tokens w1:t, and uses them to compute a probability distribution over possible next tokens so as to compute the model’s loss for the next token wt+1. Then we move to the next word, we ignore what the model predicted for the next word and instead use the correct sequence of tokens w1:t+1 to get the model to estimate the probability of token wt+2. This idea that we always give the model the correct history sequence to predict the next word (rather than feeding the model its best guess from the previous time step) is called teacher forcing.</p></blockquote>
 <p>图 7.22 展示了通用的训练方法。每一步中，给定所有</p>
@@ -760,7 +760,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>7.7.1 Evaluating Large Language Models: Perplexity</p></blockquote>
 <p>正如我们在第 3 章首次看到的，评估语言模型的一种方式是衡量它对未见文本的预测能力。更好的语言模型更擅长预测即将出现的词，因此当某个词出现在测试集中时，它对该词会感到不那么意外（即赋予更高的概率）。于是，我们可以通过将文本中每个词元的条件概率相乘来计算该文本的概率，并将其作为一种度量：</p>
 <blockquote><p>As we first saw in Chapter 3, one way to evaluate language models is to measure how well they predict unseen text. A better language model is better at predicting upcoming words, and so it will be less surprised by (i.e., assign a higher probability to) each word when it occurs in the test set. So we can compute the probability of a text by multiplying the conditional probabilities for each token in the text, and use that as a metric:</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{T}$$</div>
+<div class="formula">$$\prod_{i = 1}^{T}$$</div>
 <p>likelihood(w1:T) = P(wi|w&lt;i) (7.56)然而，测试集的概率取决于它的长度，并且越长就越小。（T 越大，我们相乘的概率个数越多，而由于每个概率都小于 1，乘积会越来越小。）因此，拥有一个按词元计算、并按长度归一化的度量是很有用的，这样我们就能在不同长度的文本之间进行比较。</p>
 <blockquote><p>However, the probability of a test set depends on its length, and gets smaller the longer it is. (The higher T is, the more probabilities we multiply, and since probabilities are each less than 1 the product will get smaller and smaller). So it’s useful to have a metric that is per-token, normalized by length, so we can compare across texts of different lengths.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -769,11 +769,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>perplexity</code><span class="term-zh">困惑度</span><span class="term-explain">评估语言模型的指标，等于模型赋予测试集概率的倒数并按词元数归一化，数值越低表示预测越准确。</span></aside>
 <p>对于由 T 个词元 w1:T 组成的测试集，其困惑度为</p>
 <blockquote><p>For a test set of T tokens w1:T, the perplexity is</p></blockquote>
-<div class="formula">$$\text{Perplexity}(w_{1:T})=P(w_{1:T})^{-\frac{1}{T}}$$</div>
+<div class="formula">$$\text{Perplexity} ( w _{1: T} ) = P ( w _{1: T} ) ^{- \frac{1}{T}}$$</div>
 <blockquote><p>T</p></blockquote>
 <p>TY ! 1</p>
 <blockquote><p>T</p></blockquote>
-<div class="formula">$$P(w_{t}|w_{&lt;t})^{-1}$$</div>
+<div class="formula">$$P ( w _{t} | w _{&lt; t} ) ^{- 1}$$</div>
 <p>= (7.57)但式 7.57 给出的困惑度公式应该会让人觉得眼熟，它在上一节出现过。它</p>
 <blockquote><p>But Eq. 7.57 for perplexity should look familiar from the previous section. It’s</p></blockquote>
 <p>与我们用于训练的平均交叉熵损失函数（式 7.55）几乎相同。我们把那个公式在这里重复一遍，只把记号稍作改动，用 P 代替 ˆyt：</p>

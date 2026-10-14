@@ -129,7 +129,7 @@ y = a = f(z)
 1
 y = σ(z) = (6.3)
 
-$$1+e^{-z}$$
+$$1 + e ^{- z}$$
 
 sigmoid 函数（如图 6.1 所示）有许多优点；它把输出
 
@@ -544,7 +544,7 @@ z = Uh
 
 > of Chapter 4. More generally for any vector z of dimensionality d, the softmax is defined as:
 
-$$\text{exp}(z_{i})$$
+$$\text{exp} ( z _{i} )$$
 
 softmax(zi) = 1 ≤i ≤d (6.9)
 Pd j=1 exp(z j)
@@ -625,11 +625,11 @@ z[1] = W[1]x+b[1] z[2] = W[2]z[1] +b[2]
 
 > We can rewrite the function that the network is computing as:
 
-$$z^{[2]}=W^{[2]}z^{[1]}+b^{[2]}$$
+$$z ^{[ 2 ]} = W ^{[ 2 ]} z ^{[ 1 ]} + b ^{[ 2 ]}$$
 
 = W[2](W[1]x+b[1])+b[2]= W[2]W[1]x+W[2]b[1] +b[2]
 
-$$=W^{′}x+b^{′}$$
+$$= W ^{′} x + b ^{′}$$
 
 这一点可推广到任意层数。因此，如果没有非线性激活函数，多层网络就只是一个权重集合不同的单层网络在记号上的变体，我们也就失去了多层网络的全部表示能力。
 
@@ -882,7 +882,7 @@ H = σ(XW⊺+b) Z = HU⊺ˆY = softmax(Z) (6.20)
 
 xmean = 1 X
 
-$$e(w_{i})$$
+$$e ( w _{i} )$$
 
 N
 下面是这个分类器在采用平均池化时的方程：
@@ -891,7 +891,7 @@ N
 
 > i=1
 
-$$x=\text{mean}(e(w_{1}),e(w_{2}),...,e(w_{n}))$$
+$$x = \text{mean} ( e ( w _{1} ) , e ( w _{2} ) ,..., e ( w _{n} ))$$
 
 h = σ(xW +b)
 z = hU
@@ -939,7 +939,7 @@ z = hU
 
 > input at time t a representation of some number of previous words (wt−1,wt−2, etc.) and outputs a probability distribution over possible next words. Thus—like the ngram LM—the feedforward neural LM approximates the probability of a word given the entire prior context P(wt|w1:t−1) by approximating based on the N −1 previous words:
 
-$$P(w_{t}|w_{1},...,w_{t-1})\approxP(w_{t}|w_{t-N+1},...,w_{t-1})$$
+$$P ( w _{t} | w _{1} ,..., w _{t - 1} ) \approx P ( w _{t} | w _{t - N + 1} ,..., w _{t - 1} )$$
 
 在下面的例子中我们使用一个 4-gram 的示例，因此我们将展示一个用于估计概率 P(wt = i|wt−3,wt−2,wt−1) 的神经网络。
 
@@ -1050,7 +1050,7 @@ z = Uh
 
 > logistic regression. If the neural network is being used as a binary classifier, with the sigmoid at the final layer, the loss function is the same logistic regression loss we saw in Eq. 4.19:
 
-$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$
 
 如果我们用该网络划分 3 个或更多类别，那么损失函数
 
@@ -1076,7 +1076,7 @@ $$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-y�
 
 > K
 
-$$\sum_{k=1}^{K}$$
+$$\sum_{k = 1}^{K}$$
 
 LCE(ˆy,y) = − yk log ˆyk (6.26)
 我们可以进一步简化这个等式；先用函数 1{} 重写该式，当括号中的条件成立时它取值为 1，否则取值为 0。这样就更容易看出，式 6.26 中求和各项除真实类别所对应的那一项（其 yk = 1）之外都为 0：
@@ -1087,7 +1087,7 @@ LCE(ˆy,y) = − yk log ˆyk (6.26)
 
 > K
 
-$$\sum_{k=1}^{K}$$
+$$\sum_{k = 1}^{K}$$
 
 LCE(ˆy,y) = − 1{yk = 1}log ˆyk
 换言之，交叉熵损失就是正确类别所对应的输出概率的负对数，因此我们也把它称为负
@@ -1111,7 +1111,7 @@ LCE(ˆy,y) = −log ˆyc （其中 c 为正确类别） (6.27)
 
 > Plugging in the softmax formula from Eq. 6.9, and with K the number of classes:
 
-$$\text{exp}(z_{c})$$
+$$\text{exp} ( z _{c} )$$
 
 LCE(ˆy,y) = −log （其中 c 为正确类别） (6.28)
 
@@ -1140,32 +1140,32 @@ PK j=1 exp(z j)
 
 > For a network with one weight layer and sigmoid output (which is what logistic regression is), we could simply use the derivative of the loss that we used for logistic regression in Eq. 6.29 (and derived in Section 4.15):
 
-$$\partialL_{\text{CE}}(yˆ,y)$$
+$$\partial L _{\text{CE}} ( y ˆ , y )$$
 
-$$=(yˆ-y)x_{j}$$
+$$= ( y ˆ - y ) x _{j}$$
 
-$$\partialw_{j}$$
+$$\partial w _{j}$$
 
-$$=(σ(w\cdotx+b)-y)x_{j}$$
+$$= ( σ ( w \cdot x + b ) - y ) x _{j}$$
 
 或者，对于只有一个权重层、输出为 softmax 的网络（即多项式逻辑回归），我们可以使用式 4.41 中 softmax 损失的导数，这里针对某个特定权重 wk 和输入 xi 给出
 
 > Or for a network with one weight layer and softmax output (=multinomial logistic regression), we could use the derivative of the softmax loss from Eq. 4.41, shown for a particular weight wk and input xi
 
-$$\partialL_{\text{CE}}(yˆ,y)$$
+$$\partial L _{\text{CE}} ( y ˆ , y )$$
 
-$$=-(y_{k}-yˆ_{k})x_{i}$$
+$$= - ( y _{k} - y ˆ _{k} ) x _{i}$$
 
-$$\partialw_{k,i}$$
+$$\partial w _{k , i}$$
 
-$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$
+$$= - ( y _{k} - p ( y _{k} = 1 | x )) x _{i}$$
 
 !
 
 exp(wk ·x+bk) (6.30)
 = − yk − PK xi
 
-$$^{K}_{j=1}\text{exp}(w^{j}\cdotx+b_{j})$$
+$$^{K} _{j = 1} \text{exp} ( w ^{j} \cdot x + b _{j} )$$
 
 但这些导数只能为某一个权重层给出正确的更新：最后一层！
 
@@ -1316,7 +1316,7 @@ z[1] = W[1]x+b[1] a[1] = ReLU(z[1]) z[2] = W[2]a[1] +b[2] a[2] = σ(z[2])ˆy = a
 
 > for binary sigmoid output from Eq. 6.25 is
 
-$$L_{\text{CE}}(yˆ,y)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$
+$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$
 
 我们的输出是 ˆy = a[2]，因此可以把它改写为
 
@@ -1356,7 +1356,7 @@ dz = 1 for z ≥0
 
 ∂L ∂z = ∂L ∂a[2] (6.41)
 
-$$\partiala^{[2]}\partialz$$
+$$\partial a ^{[ 2 ]} \partial z$$
 
 > ∂L
 
@@ -1372,7 +1372,7 @@ LCE(a[2],y) = − yloga[2] +(1−y)log(1−a[2])
 y 1  1
 = − +(1−y) 1−a[2] (−1)
 
-$$a^{[2]}$$
+$$a ^{[ 2 ]}$$
 
 y a[2] + y−1 (6.42)
 = − 1−a[2]

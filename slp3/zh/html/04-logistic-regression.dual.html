@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/04-logistic-regression.md">Markdown 源文件</a></div>
@@ -138,7 +138,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>prompting the model to give a label to some text. Prompting can be powerful, but again has weaknesses: language models often hallucinate, and may not be able to explain why they chose the class they did.</p></blockquote>
 <p>由于这些原因，进行分类最常见的方法是使用有监督机器学习。有监督机器学习是一种范式，其中除输入和输出类别集合之外，我们还有带标签的训练集和一个学习算法。我们在第 3 章讨论过训练集，当时它是用于计算 n-gram 统计量的载体。但在有监督机器学习中，训练集是带标签的，也就是说它包含一组输入观测样本，每个观测样本都关联着正确的输出（一个“监督信号”）。我们通常可以把训练集称为 m 个输入/输出对的集合，在文本分类的情形中，每个输入 x 是一段文本，并且每个都手工标注了关联的类别（正确标签）。</p>
 <blockquote><p>For these reasons the most common way to do classification is to use supervised machine learning. Supervised machine learning is a paradigm in which, in addition to the input and the set of output classes, we have a labeled training set and a learning algorithm. We talked about training sets in Chapter 3 as a locus for computing n-gram statistics. But in supervised machine learning the training set is labeled, meaning that it contains a set of input observations, each observation associated with the correct output (a ‘supervision signal’). We can generally refer to a training set of m input/output pairs, where each input x is a text, in the case of text classification, and each is hand-labeled with an associated class (the correct label).</p></blockquote>
-<div class="formula">$$\text{training set:}\{(x^{(1)},y^{(1)}),(x^{(2)},y^{(2)}),...,(x^{(m)},y^{(m)})\}$$</div>
+<div class="formula">$$\text{training set:} \{ ( x ^{( 1 )} , y ^{( 1 )} ) , ( x ^{( 2 )} , y ^{( 2 )} ) ,..., ( x ^{( m )} , y ^{( m )} ) \}$$</div>
 <p>我们将使用括号中的上标来指代训练集中的各个观测样本或实例。因此对于情感分类，训练集可能是一组句子或其他文本，每个都带有其正确的情感标签。</p>
 <blockquote><p>We’ll use superscripts in parentheses to refer to individual observations or instances in the training set. So for sentiment classification, a training set might be a set of sentences or other texts, each with their correct sentiment label.</p></blockquote>
 <p>我们的目标是从这个训练集中学习得到一个分类器，它能够将</p>
@@ -224,7 +224,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>函数是 sigmoid 的反函数。logit 函数是几率比的对数</p>
 <blockquote><p>function is the inverse of the sigmoid. The logit function is the log of the odds ratio</p></blockquote>
 <blockquote><p>p</p></blockquote>
-<div class="formula">$$_{1-}^{p}_{p}:$$</div>
+<div class="formula">$$_{1 - p} ^{p} :$$</div>
 <p>logit(p) = σ−1(p) = ln p (4.7) 1−p用 logit 一词来指代 z，是在提醒我们：借助 sigmoid 把 z（取值范围从 −∞ 到 ∞）转换为概率时，我们实际上是在把 z 隐含地解释为不只是任意一个实数值，而是具体地解释为对数几率。</p>
 <blockquote><p>Using the term logit for z is a way of reminding us that by using the sigmoid to turn z (which ranges from −∞to ∞) into a probability, we are implicitly interpreting z as not just any real-valued number, but as specifically a log odds.</p></blockquote>
 <p>其次，对于二分类而言，方便起见，我们把如下函数的输出</p>
@@ -310,12 +310,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>m m</p></blockquote>
 <blockquote><p>i i</p></blockquote>
 <blockquote><p>j=1 j=1</p></blockquote>
-<div class="formula">$$σ_{i}$$</div>
+<div class="formula">$$σ _{i}$$</div>
 <p>另一种做法是，把输入特征的取值归一化到 0 与 1 之间：</p>
 <blockquote><p>Alternatively, we can normalize the input features values to lie between 0 and 1:</p></blockquote>
 <blockquote><p><code>normalize</code>（归一化）</p></blockquote>
 <p>xi −min(xi)</p>
-<div class="formula">$$x_{i}^{′}$$</div>
+<div class="formula">$$x _{i} ^{′}$$</div>
 <p>i = max(xi)−min(xi)在跨特征比较取值时，具有可比取值范围的输入数据是很有用的。数据缩放在大规模神经网络中尤为重要，因为它有助于加快梯度下降。</p>
 <blockquote><p>Having input data with comparable range is useful when comparing values across features. Data scaling is especially important in large neural networks, since it helps speed up gradient descent.</p></blockquote>
 <p>自然语言数据中另一种非常常见的缩放方式是对数变换，</p>
@@ -328,8 +328,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>We’ve shown the equations for logistic regression for a single example. But in practice we’ll of course want to process an entire test set with many examples. Let’s suppose we have a test set consisting of m test examples each of which we’d like to classify. We’ll continue to use the notation from page 94, in which a superscript value in parentheses refers to the example index in some set of data (either for training or for test). So in this case each test example x(i) has a feature vector x(i), 1 ≤i ≤m. (As usual, we’ll represent vectors and matrices in bold.)</p></blockquote>
 <p>计算 ˆy(i)（我们用这个符号表示 P(y(i) = 1)，也就是输入 x(i) 的输出取值为 1 的概率）的一种方式，就是用 for 循环一次计算一个测试样本：</p>
 <blockquote><p>One way to compute ˆy(i) (which is how we refer to P(y(i) = 1), i.e., the probability that the output for input x(i) has the value 1), is just to have a for-loop and compute each test example one at a time:</p></blockquote>
-<div class="formula">$$\text{foreach}x^{(i)}\text{in input}[x^{(1)},x^{(2)},...,x^{(m)}]$$</div>
-<div class="formula">$$yˆ^{(i)}=P(y^{(i)}=1)=σ(w\cdotx^{(i)}+b)$$</div>
+<div class="formula">$$\text{foreach} x ^{( i )} \text{in input} [ x ^{( 1 )} , x ^{( 2 )} ,..., x ^{( m )} ]$$</div>
+<div class="formula">$$y ˆ ^{( i )} = P ( y ^{( i )} = 1 ) = σ ( w \cdot x ^{( i )} + b )$$</div>
 <p>那么，对于前 3 个测试样例，我们将按如下方式分别计算预测输出概率：</p>
 <blockquote><p>For the first 3 test examples, then, we would be separately computing the predicted output probability as follows:</p></blockquote>
 <p>ˆy(1) = P(y(1) = 1|x(1)) = σ(w ·x(1) +b)ˆy(2) = P(y(2) = 1|x(2)) = σ(w ·x(2) +b)ˆy(3) = P(y(3) = 1|x(3)) = σ(w ·x(3) +b) 但事实证明，我们可以对原方程 Eq. 4.5 稍作修改，从而更高效地完成这一计算。我们将使用矩阵运算，用一次矩阵操作就为所有样例分配类别！</p>
@@ -341,7 +341,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>x(1) x(1) ... x(1) x(2) x(2) ... x(2) X = (4.12)</p>
 <blockquote><p>1 2 f</p></blockquote>
 <blockquote><p>1 2 f</p></blockquote>
-<div class="formula">$$x_{1}^{(3)}x_{2}^{(3)}...x^{(}_{f}^{3)}$$</div>
+<div class="formula">$$x _{1} ^{( 3 )} x _{2} ^{( 3 )} ... x ^{( 3 )} _{f}$$</div>
 <blockquote><p>1 2 f</p></blockquote>
 <p>...</p>
 <p>现在，如果我们引入 b 作为长度为 m 的向量，它由标量偏置</p>
@@ -390,21 +390,21 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Let’s derive this loss function, applied to a single observation x. We’d like to</p></blockquote>
 <p>学习权重，使正确标签的概率 p(y|x) 最大化。由于只有两个离散结果（1 或 0），这是一个伯努利分布，我们可以把分类器对单个观测样本给出的概率 p(y|x) 表示如下（注意，若 y = 1，式 4.17 简化为 ˆy；若 y = 0，式 4.17 简化为 1−ˆy）：</p>
 <blockquote><p>learn weights that maximize the probability of the correct label p(y|x). Since there are only two discrete outcomes (1 or 0), this is a Bernoulli distribution, and we can express the probability p(y|x) that our classifier produces for one observation as the following (keeping in mind that if y = 1, Eq. 4.17 simplifies to ˆy; if y = 0, Eq. 4.17 simplifies to 1−ˆy):</p></blockquote>
-<div class="formula">$$p(y|x)=yˆ^{y}(1-yˆ)^{1-y}$$</div>
+<div class="formula">$$p ( y | x ) = y ˆ ^{y} ( 1 - y ˆ ) ^{1 - y}$$</div>
 <p>现在我们对两边取对数。这在数学上会很方便，而且不会带来任何损失；使概率最大化的取值，同样会使概率的对数最大化：</p>
 <blockquote><p>Now we take the log of both sides. This will turn out to be handy mathematically, and doesn’t hurt us; whatever values maximize a probability will also maximize the log of the probability:</p></blockquote>
 <p>ˆyy (1−ˆy)1−y log p(y|x) = log = ylog ˆy+(1−y)log(1−ˆy) 式 4.18 描述了一个应当被最大化的对数似然。为了把它变成损失函数（即我们需要最小化的东西），我们只需将式 4.18 的符号取反。结果就是交叉熵损失 LCE：</p>
 <blockquote><p>= ylog ˆy+(1−y)log(1−ˆy) Eq. 4.18 describes a log likelihood that should be maximized. In order to turn this into a loss function (something that we need to minimize), we’ll just flip the sign on Eq. 4.18. The result is the cross-entropy loss LCE:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$</div>
 <p>最后，我们可以代入 ˆy = σ(w ·x+b) 的定义：</p>
 <blockquote><p>Finally, we can plug in the definition of ˆy = σ(w ·x+b):</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y)=-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$</div>
 <p>让我们看看这个损失函数对图 4.2 中的例子是否表现正确。我们希望当模型的估计接近正确时损失更小，当模型感到困惑时损失更大。因此，先假设图 4.2 中情感示例的正确金标准标签为正面，即 y = 1。此时我们的模型表现良好，因为由式 4.8 可知，它确实给该示例为正面赋予了比负面更高的概率（.70 对 .30）。如果把 σ(w ·x+b) = .70 和 y = 1 代入式 4.20，等式右边会消失，从而得到如下损失（当未指定底数时，我们用 log 表示自然对数）：</p>
 <blockquote><p>Let’s see if this loss function does the right thing for our example from Fig. 4.2. We want the loss to be smaller if the model’s estimate is close to correct, and bigger if the model is confused. So first let’s suppose the correct gold label for the sentiment example in Fig. 4.2 is positive, i.e., y = 1. In this case our model is doing well, since from Eq. 4.8 it indeed gave the example a higher probability of being positive (.70) than negative (.30). If we plug σ(w ·x+b) = .70 and y = 1 into Eq. 4.20, the right side of the equation drops out, leading to the following loss (we’ll use log to mean natural log when the base is not specified):</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y) =-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$</div>
 <p>= −[logσ(w ·x+b)]= −log(.70)= .36相比之下，我们换一种假设，设想图 4.2 中的示例实际上是负面的，即 y = 0（也许评论者接着写道：“但归根结底，这部电影糟透了！我求你别去看！”）。此时我们的模型感到困惑，我们希望损失更高。现在，如果把 y = 0 以及由式 4.8 得到的 1−σ(w ·x+b) = .30 代入式 4.20，等式左边会消失：</p>
 <blockquote><p>By contrast, let’s pretend instead that the example in Fig. 4.2 was actually negative, i.e., y = 0 (perhaps the reviewer went on to say “But bottom line, the movie is terrible! I beg you not to see it!”). In this case our model is confused and we’d want the loss to be higher. Now if we plug y = 0 and 1−σ(w ·x+b) = .30 from Eq. 4.8 into Eq. 4.20, the left side of the equation drops out:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y) =-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$</div>
 <p>= −[log(1−σ(w ·x+b))]= −log(.30)= 1.2果不其然，预测正确标签的损失（.36）小于预测错误标签的损失（1.2）。</p>
 <blockquote><p>Sure enough, the loss for predicting the correct label (.36) is less than the loss for predicting the incorrect label (1.2).</p></blockquote>
 <p>为什么最小化这个负对数概率就能达到我们的目的？一个完美的</p>
@@ -421,7 +421,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Our goal with gradient descent is to find the optimal weights: minimize the loss function we’ve defined for the model. In Eq. 4.21 below, we’ll explicitly represent the fact that the cross-entropy loss function LCE is parameterized by the weights. In machine learning in general we refer to the parameters being learned as θ; in the case of logistic regression θ = {w,b}. So we’ll represent ˆy(i) as f(x(i);θ) to make the dependence on θ more obvious. The goal is to find the set of weights which minimizes the loss function, averaged over all examples:</p></blockquote>
 <blockquote><p>m</p></blockquote>
 <p>ˆθ = argmin 1 X</p>
-<div class="formula">$$L_{\text{CE}}(f(x^{(i)};θ),y^{(i)})$$</div>
+<div class="formula">$$L _{\text{CE}} ( f ( x ^{( i )} ; θ ) , y ^{( i )} )$$</div>
 <p>m我们该如何找到这个（或任意）损失函数的最小值？梯度下降是一种通过判断函数（在参数 θ 空间中）的斜率沿哪个方向上升最陡、然后朝相反方向移动来求函数最小值的方法。其直觉是：如果你在峡谷中徒步，想尽快下到谷底的河流，你可能会环顾四周各个方向，找到地面倾斜最陡的方向，然后朝那个方向下坡走去。</p>
 <blockquote><p>How shall we find the minimum of this (or any) loss function? Gradient descent is a method that finds a minimum of a function by figuring out in which direction (in the space of the parameters θ) the function’s slope is rising the most steeply, and moving in the opposite direction. The intuition is that if you are hiking in a canyon and trying to descend most quickly down to the river at the bottom, you might look around yourself in all directions, find the direction where the ground is sloping the steepest, and walk downhill in that direction.</p></blockquote>
 <blockquote><p>θ i=1</p></blockquote>
@@ -475,36 +475,36 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>∂w1 L(f(x;θ),y)∂w2 L(f(x;θ),y)∇L(f(x;θ),y) = ... (4.23)</p>
 <blockquote><p>∂</p></blockquote>
 <blockquote><p>∂</p></blockquote>
-<div class="formula">$$_{\partial}^{\partial}_{wn}L(f(x;θ),y)$$</div>
+<div class="formula">$$_{\partial w n} ^{\partial} L ( f ( x ; θ ) , y )$$</div>
 <blockquote><p>∂</p></blockquote>
-<div class="formula">$$_{\partial}^{\partial}_{b}L(f(x;θ),y)$$</div>
+<div class="formula">$$_{\partial b} ^{\partial} L ( f ( x ; θ ) , y )$$</div>
 <blockquote><p>∂</p></blockquote>
 <p>因此，基于梯度更新 θ 的最终方程为</p>
 <blockquote><p>The final equation for updating θ based on the gradient is thus</p></blockquote>
-<div class="formula">$$θ^{t+1}=θ^{t}-η∇L(f(x;θ),y)$$</div>
+<div class="formula">$$θ ^{t + 1} = θ ^{t} - η ∇ L ( f ( x ; θ ) , y )$$</div>
 <h3>4.6.1 逻辑回归的梯度</h3>
 <blockquote><p>4.6.1 The Gradient for Logistic Regression</p></blockquote>
 <p>为了更新 θ，我们需要给出梯度 ∇L(f(x;θ),y) 的定义。回忆一下，对于逻辑回归，交叉熵损失函数为：</p>
 <blockquote><p>In order to update θ, we need a definition for the gradient ∇L(f(x;θ),y). Recall that for logistic regression, the cross-entropy loss function is:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y)=-[y\text{log}σ(w\cdotx+b)+(1-y)\text{log}(1-σ(w\cdotx+b))]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - [ y \text{log} σ ( w \cdot x + b )+( 1 - y ) \text{log} ( 1 - σ ( w \cdot x + b ))]$$</div>
 <p>事实证明，该函数对单个观测向量 x 的导数就是式 4.26（感兴趣的读者可参阅第 4.15 节了解该公式的推导）：</p>
 <blockquote><p>It turns out that the derivative of this function for one observation vector x is Eq. 4.26(the interested reader can see Section 4.15 for the derivation of this equation):</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
-<div class="formula">$$=[σ(w\cdotx+b)-y]x_{j}$$</div>
-<div class="formula">$$\partialw_{j}$$</div>
-<div class="formula">$$=(yˆ-y)x_{j}$$</div>
+<div class="formula">$$\partial L _{\text{CE}} ( y ˆ , y )$$</div>
+<div class="formula">$$= [ σ ( w \cdot x + b ) - y ] x _{j}$$</div>
+<div class="formula">$$\partial w _{j}$$</div>
+<div class="formula">$$= ( y ˆ - y ) x _{j}$$</div>
 <p>你有时也会看到该方程写成下面这种等价形式：</p>
 <blockquote><p>You’ll also sometimes see this equation in the equivalent form:</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
-<div class="formula">$$=-(y-yˆ)x_{j}$$</div>
-<div class="formula">$$\partialw_{j}$$</div>
+<div class="formula">$$\partial L _{\text{CE}} ( y ˆ , y )$$</div>
+<div class="formula">$$= - ( y - y ˆ ) x _{j}$$</div>
+<div class="formula">$$\partial w _{j}$$</div>
 <p>请注意，在这些公式中，对单个权重 wj 的梯度表示一个非常直观的值：该观测样本的真实 y 与我们估计的 ŷ = σ(w · x + b) 之差，再乘以对应的输入值 x j。</p>
 <blockquote><p>Note in these equations that the gradient with respect to a single weight wj represents a very intuitive value: the difference between the true y and our estimatedˆy = σ(w · x + b) for that observation, multiplied by the corresponding input value x j.</p></blockquote>
 <p>顺便说一句，我们还需要一个关于 b 的偏导数的表达式。</p>
 <blockquote><p>By the way, we’ll also need a term for the partial derivative with respect to b.</p></blockquote>
 <p>结果如下：</p>
 <blockquote><p>That turns out to be:</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}(yˆ,y)$$</div>
+<div class="formula">$$\partial L _{\text{CE}} ( y ˆ , y )$$</div>
 <p>= σ(w ·x+b)−y∂b = ˆy−y (4.28)</p>
 <h3>4.6.2 随机梯度下降算法</h3>
 <blockquote><p>4.6.2 The Stochastic Gradient Descent Algorithm</p></blockquote>
@@ -530,7 +530,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>x1 = 3 (count of positive lexicon words) x2 = 2 (count of negative lexicon words)</p></blockquote>
 <p>假设 θ 0 中的初始权重和偏置都设为 0，初始学习率 η 为 0.1：</p>
 <blockquote><p>Let’s assume the initial weights and bias in θ 0 are all set to 0, and the initial learning rate η is 0.1:</p></blockquote>
-<div class="formula">$$w_{1}=w_{2}=b=0$$</div>
+<div class="formula">$$w _{1} = w _{2} = b = 0$$</div>
 <p>η = 0.1 单次更新步骤要求我们计算梯度，再乘以学习率 θt+1 = θt −η∇θL(f(x(i);θ),y(i)) 在我们的迷你示例中有三个参数，因此梯度向量有 3 个维度，分别对应 w1、w2 和 b。我们可以如下计算第一个梯度：</p>
 <blockquote><p>η = 0.1 The single update step requires that we compute the gradient, multiplied by the learning rate θt+1 = θt −η∇θL(f(x(i);θ),y(i)) In our mini example there are three parameters, so the gradient vector has 3 dimensions, for w1, w2, and b. We can compute the first gradient as follows:</p></blockquote>
 <blockquote><p>∂LCE(ˆy,y)</p></blockquote>
@@ -563,25 +563,25 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>我们在第 4.5 节中定义的交叉熵损失函数，以及第 4.6.1 节中的梯度。让我们把式 4.19 中单个样本的交叉熵损失扩展到大小为 m 的小批量。我们继续使用记号 x(i) 和 y(i)，它们分别表示第 i 个训练特征和训练标签。我们假设训练样本之间是相互独立的：</p>
 <blockquote><p>we defined in Section 4.5 and the gradient in Section 4.6.1. Let’s extend the crossentropy loss for one example from Eq. 4.19 to mini-batches of size m. We’ll continue to use the notation that x(i) and y(i) mean the ith training features and training label, respectively. We make the assumption that the training examples are independent:</p></blockquote>
 <blockquote><p>m</p></blockquote>
-<div class="formula">$$\prod_{i=1}^{m}$$</div>
+<div class="formula">$$\prod_{i = 1}^{m}$$</div>
 <p>log p(training labels) = log p(y(i)|x(i)) X= log p(y(i)|x(i))</p>
 <blockquote><p>i=1 m</p></blockquote>
 <blockquote><p>i=1 m</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{m}$$</div>
-<div class="formula">$$L_{\text{CE}}(yˆ^{(i)},y^{(i)})$$</div>
+<div class="formula">$$\sum_{i = 1}^{m}$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ ^{( i )} , y ^{( i )} )$$</div>
 <p>= −现在，包含 m 个样本的小批量的代价函数是每个样本损失的平均值：</p>
 <blockquote><p>Now the cost function for the mini-batch of m examples is the average loss for each example:</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>m</p></blockquote>
 <p>1 X Cost(ˆy,y) = LCE(ˆy(i),y(i)) m = −1 X y(i) logσ(w ·x(i) +b)+(1−y(i))log</p>
 <blockquote><p>i=1 m</p></blockquote>
-<div class="formula">$$1-σ(w\cdotx^{(i)}+b)$$</div>
+<div class="formula">$$1 - σ ( w \cdot x ^{( i )} + b )$$</div>
 <p>m小批量梯度是式 4.26 中各个梯度的平均值：</p>
 <blockquote><p>The mini-batch gradient is the average of the individual gradients from Eq. 4.26:</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
 <blockquote><p>m</p></blockquote>
 <p>∂Cost(ˆy,y) 1 X h σ(w ·x(i) +b)−y(i)i</p>
-<div class="formula">$$x^{(}_{j}^{i)}$$</div>
+<div class="formula">$$x ^{( i )} _{j}$$</div>
 <p>= (4.31)∂w j m我们可以不使用求和记号，而是更高效地计算梯度</p>
 <blockquote><p>Instead of using the sum notation, we can more efficiently compute the gradient</p></blockquote>
 <p>以其矩阵形式，按照我们在第 100 页看到的向量化方法，其中有一个大小为 [m × f] 的矩阵 X 表示该批中的 m 个输入，以及一个大小为 [m×1] 的向量 y 表示正确的输出：</p>
@@ -604,7 +604,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>z = [z1,z2,...,zK] of K arbitrary values and maps them to a probability distribution, with each value in the range [0,1], and all the values summing to 1. Like the sigmoid, it is an exponential function.</p></blockquote>
 <p>对于维度为 K 的向量 z，softmax 定义为：</p>
 <blockquote><p>For a vector z of dimensionality K, the softmax is defined as:</p></blockquote>
-<div class="formula">$$\text{exp}(z_{i})$$</div>
+<div class="formula">$$\text{exp} ( z _{i} )$$</div>
 <p>softmax(zi) = 1 ≤i ≤K (4.33) PK j=1 exp(z j)因此，输入向量 z = [z1,z2,...,zK] 的 softmax 本身就是一个向量：</p>
 <blockquote><p>The softmax of an input vector z = [z1,z2,...,zK] is thus a vector itself:</p></blockquote>
 <p>&quot; # exp(z1) exp(z2) exp(zK) softmax(z) = (4.34) PK , PK ,..., PK i=1 exp(zi) i=1 exp(zi) i=1 exp(zi)分母 PK i=1 exp(zi) 用于把所有值归一化为概率。</p>
@@ -625,11 +625,11 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>4.7.2 Applying softmax in logistic regression</p></blockquote>
 <p>当我们把 softmax 应用于逻辑回归时，其输入（与 sigmoid 一样）将是权重向量 w 与输入向量 x 之间的点积（再加上偏置）。但现在我们需要为 K 个类别中的每一个都准备单独的权重向量 wk 和偏置 bk。于是，每个输出类别 ˆyk 的概率可以计算为：</p>
 <blockquote><p>When we apply softmax for logistic regression, the input will (just as for the sigmoid) be the dot product between a weight vector w and an input vector x (plus a bias). But now we’ll need separate weight vectors wk and bias bk for each of the K classes. The probability of each of our output classes ˆyk can thus be computed as:</p></blockquote>
-<div class="formula">$$_{K}\text{exp}(w_{k}\cdotx+b_{k})$$</div>
-<div class="formula">$$P(y_{k}=1|x)=$$</div>
+<div class="formula">$$_{K} \text{exp} ( w _{k} \cdot x + b _{k} )$$</div>
+<div class="formula">$$P ( y _{k} = 1 | x ) =$$</div>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{j=1}^{K}$$</div>
-<div class="formula">$$\text{exp}(w^{j}\cdotx+b_{j})$$</div>
+<div class="formula">$$\sum_{j = 1}^{K}$$</div>
+<div class="formula">$$\text{exp} ( w ^{j} \cdot x + b _{j} )$$</div>
 <blockquote><p>j=1</p></blockquote>
 <p>式 4.35 的形式看起来像是要分别计算每个输出。然而，更常见的做法是按照现代向量处理硬件的高效计算方式来建立方程。为此，我们把 K 个权重向量的集合表示为一个权重矩阵 W 和一个偏置向量 b。W 的第 k 行对应于权重向量 wk。因此 W 的形状为 [K × f]，其中 K 是输出类别的数量，f 是输入特征的数量。偏置向量 b 为 K 个输出类别各有一个值。若以这种方式表示权重，我们就可以用一个简洁的方程来计算 ˆy，即 K 个类别各自输出概率构成的向量：</p>
 <blockquote><p>The form of Eq. 4.35 makes it seem that we would compute each output separately. Instead, it’s more common to set up the equation for more efficient computation by modern vector processing hardware. We’ll do this by representing the set of K weight vectors as a weight matrix W and a bias vector b. Each row k of W corresponds to the vector of weights wk. W thus has shape [K × f], for K the number of output classes and f the number of input features. The bias vector b has one value for each of the K output classes. If we represent the weights in this way, we can compute ˆy, the vector of output probabilities for each of the K classes, by a single elegant equation:</p></blockquote>
@@ -679,7 +679,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>4.8 Learning in Multinomial Logistic Regression</p></blockquote>
 <p>多项逻辑回归的损失函数把二分类逻辑回归的损失函数从 2 个类别推广到 K 个类别。回忆二分类逻辑回归的交叉熵损失（重录自式 4.19）为：</p>
 <blockquote><p>The loss function for multinomial logistic regression generalizes the loss function for binary logistic regression from 2 to K classes. Recall that the cross-entropy loss for binary logistic regression (repeated from Eq. 4.19) is:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ,y) =-\text{log}p(y|x)=-[y\text{log ˆ}y+(1-y)\text{log}(1-yˆ)]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ , y ) = - \text{log} p ( y | x ) = - [ y \text{log ˆ} y +( 1 - y ) \text{log} ( 1 - y ˆ )]$$</div>
 <p>多项逻辑回归的损失函数把式 4.37 中的两项（一项在 y = 1 时非零，另一项在 y = 0 时非零）推广为 K 项。如前所述，对于多项回归，我们将把 y 和 ˆy 都表示为向量。真实标签 y 是一个含 K 个元素的向量，每个元素对应一个类别，当正确类别为 c 时 yc = 1，y 的其余元素均为 0。</p>
 <blockquote><p>The loss function for multinomial logistic regression generalizes the two terms in Eq. 4.37 (one that is non-zero when y = 1 and one that is non-zero when y = 0) to K terms. As we mentioned above, for multinomial regression we’ll represent both y and ˆy as vectors. The true label y is a vector with K elements, each corresponding to a class, with yc = 1 if the correct class is c, with all other elements of y being 0.</p></blockquote>
 <p>而我们的分类器将产生一个含 K 个元素的估计向量 ˆy，其中每个元素 ˆyk 表示估计概率 p(yk = 1|x)。</p>
@@ -687,7 +687,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>单个样本 x 的损失函数由二分类逻辑回归推广而来，它是 K 个输出类别的对数之和，每一项由指示函数 yk 加权（式 4.38）。结果它恰好等于正确类别 c 的负对数概率（式 4.39）：</p>
 <blockquote><p>The loss function for a single example x, generalizing from binary logistic regression, is the sum of the logs of the K output classes, each weighted by the indicator function yk (Eq. 4.38). This turns out to be just the negative log probability of the correct class c (Eq. 4.39):</p></blockquote>
 <blockquote><p>K</p></blockquote>
-<div class="formula">$$\sum_{k=1}^{K}$$</div>
+<div class="formula">$$\sum_{k = 1}^{K}$$</div>
 <p>LCE(ˆy,y) = − yk log ˆyk (4.38) = −log ˆyc，（其中 c 是正确类别）(4.39)</p>
 <blockquote><p>= −log ˆyc, (where c is the correct class) (4.39)</p></blockquote>
 <p>= −log ˆp(yc = 1|x)（其中 c 是正确类别）</p>
@@ -704,12 +704,12 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>Of course for gradient descent we don’t need the loss, we need its gradient. The</p></blockquote>
 <p>单个样本的梯度结果与我们在式 4.26 中看到的二分类逻辑回归的梯度 (ˆy−y)x 非常相似。让我们考虑梯度的一个组成部分，即单个权重的导数。对于每个类别 k，输入 x 的第 i 个元素对应的权重是 wk,i。损失对 wk,i 的偏导数是什么？这个导数结果恰好是类别 k 的真实值（取值为 1 或 0）与分类器为类别 k 输出的概率之差，再乘以与类别 k 权重向量第 i 个元素对应的输入 xi 的值：</p>
 <blockquote><p>gradient for a single example turns out to be very similar to the gradient for binary logistic regression, (ˆy−y)x, that we saw in Eq. 4.26. Let’s consider one piece of the gradient, the derivative for a single weight. For each class k, the weight of the ith element of input x is wk,i. What is the partial derivative of the loss with respect to wk,i? This derivative turns out to be just the difference between the true value for the class k (which is either 1 or 0) and the probability the classifier outputs for class k, weighted by the value of the input xi corresponding to the ith element of the weight vector for class k:</p></blockquote>
-<div class="formula">$$\partialL_{\text{CE}}$$</div>
-<div class="formula">$$=-(y_{k}-yˆ_{k})x_{i}$$</div>
-<div class="formula">$$\partialw_{k,i}$$</div>
-<div class="formula">$$=-(y_{k}-p(y_{k}=1|x))x_{i}$$</div>
+<div class="formula">$$\partial L _{\text{CE}}$$</div>
+<div class="formula">$$= - ( y _{k} - y ˆ _{k} ) x _{i}$$</div>
+<div class="formula">$$\partial w _{k , i}$$</div>
+<div class="formula">$$= - ( y _{k} - p ( y _{k} = 1 | x )) x _{i}$$</div>
 <p>exp(wk ·x+bk) (4.41) yk − xi = − PK</p>
-<div class="formula">$$^{K}_{j=1}\text{exp}(w_{j}\cdotx+b_{j})$$</div>
+<div class="formula">$$^{K} _{j = 1} \text{exp} ( w _{j} \cdot x + b _{j} )$$</div>
 <h2>4.9 评估：精确率、召回率、F 值</h2>
 <blockquote><p>4.9 Evaluation: Precision, Recall, F-measure</p></blockquote>
 <p>为了介绍评估文本分类的方法，我们先来考虑一些简单的二元检测任务。例如，在垃圾邮件检测中，我们的目标是把每段文本标记为属于垃圾邮件类别（“正类”）或不属于垃圾邮件类别（“负类”）。因此，对于每一个项目（电子邮件文档），我们都需要知道我们的系统是否将其判为垃圾邮件。我们还需要知道该邮件实际上是否为垃圾邮件，也就是我们试图匹配的、由人工为每个文档定义的标签。我们将这些人工标签称为金标准标签。</p>
@@ -762,7 +762,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>Rijsbergen, 1975），定义为：</p>
 <blockquote><p>Rijsbergen, 1975), defined as:</p></blockquote>
 <p>Fβ = (β 2 +1)PR</p>
-<div class="formula">$$β^{2}P+R$$</div>
+<div class="formula">$$β ^{2} P + R$$</div>
 <p>β 参数以不同的方式为召回率和精确率的重要性加权，</p>
 <blockquote><p>The β parameter differentially weights the importance of recall and precision,</p></blockquote>
 <p>这或许取决于应用的需求。β &gt; 1 的取值偏向召回率，而 β &lt; 1 的取值偏向精确率。当 β = 1 时，精确率与召回率得到同等平衡；这是最常用的指标，称为 Fβ=1，或简称为 F1：</p>
@@ -774,8 +774,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>harmonic mean of a set of numbers is the reciprocal of the arithmetic mean of reciprocals:</p></blockquote>
 <p>n</p>
 <p>HarmonicMean(a1,a2,a3,a_14,...,an) = (4.43)</p>
-<div class="formula">$$_{a}^{1}_{1}+_{a}^{1}_{2}$$</div>
-<div class="formula">$$_{a}^{1}_{2}+_{a}^{1}_{3}+...+_{a}^{1}_{n}$$</div>
+<div class="formula">$$_{a 1} ^{1} + _{a 2} ^{1}$$</div>
+<div class="formula">$$_{a 2} ^{1} + _{a 3} ^{1} + ... + _{a n} ^{1}$$</div>
 <blockquote><p>an</p></blockquote>
 <p>因此 F 值为</p>
 <blockquote><p>and hence F-measure is</p></blockquote>
@@ -871,7 +871,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p><code>p-value</code>（p 值）</p></blockquote>
 <p>在零假设 H0 为真的前提下，看到我们所看到的 δ(x) 或更大值的概率</p>
 <blockquote><p>assuming the null hypothesis H0 is true, of seeing the δ(x) that we saw or one even greater</p></blockquote>
-<div class="formula">$$P(δ(X)\geδ(x)|H_{0}\text{is true})$$</div>
+<div class="formula">$$P ( δ ( X ) \ge δ ( x ) | H _{0} \text{is true} )$$</div>
 <p>所以在我们的例子中，这个 p 值就是假定 A 并不比 B 更好时我们会看到 δ(x) 的概率。如果 δ(x) 很大（比方说 A 在 x 上有非常可观的 F1，为 .9，而 B 的 F1 只有糟糕的 .2），我们可能会感到惊讶，因为如果 H0 实际上成立，这种情况极不可能出现，因此 p 值会很低（如果 A 实际上并不比 B 更好，就不太可能出现这么大的 δ）。但如果 δ(x) 非常小，那么即使 H0 成立、A 并不真的比 B 更好，我们可能也不会太惊讶，因此 p 值会更高。</p>
 <blockquote><p>So in our example, this p-value is the probability that we would see δ(x) assuming A is not better than B. If δ(x) is huge (let’s say A has a very respectable F1 of .9 and B has a terrible F1 of only .2 on x), we might be surprised, since that would be extremely unlikely to occur if H0 were in fact true, and so the p-value would be low(unlikely to have such a large δ if A is in fact not better than B). But if δ(x) is very small, it might be less surprising to us even if H0 were true and A is not really better than B, and so the p-value would be higher.</p></blockquote>
 <p>很小的 p 值意味着我们观察到的差异非常不可能</p>
@@ -996,7 +996,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>To avoid overfitting, a new regularization term R(θ) is added to the loss function in Eq. 4.21, resulting in the following loss for a batch of m examples (slightly rewritten from Eq. 4.21 to be maximizing log probability rather than minimizing loss, and removing the 1 m term which doesn’t affect the argmax):</p></blockquote>
 <blockquote><p>m</p></blockquote>
 <p>ˆθ = argmax X</p>
-<div class="formula">$$\text{log}P(y^{(i)}|x^{(i)})-αR(θ)$$</div>
+<div class="formula">$$\text{log} P ( y ^{( i )} | x ^{( i )} ) - α R ( θ )$$</div>
 <blockquote><p>θ i=1</p></blockquote>
 <p>新的正则化项 R(θ) 用于惩罚大的权重。因此，一个与训练数据完美匹配——但为此使用了许多取值很高的权重——的权重设置，会比一个与数据匹配程度稍差、但使用较小权重的设置受到更大的惩罚。正则化强度参数 α 越高，模型的权重就越低，从而减少对训练数据的依赖。注意，正则化通常不施加于偏置项，偏置项充当一种阈值，有助于处理未中心化的数据和类别先验。</p>
 <blockquote><p>The new regularization term R(θ) is used to penalize large weights. Thus a setting of the weights that matches the training data perfectly— but uses many weights with high values to do so—will be penalized more than a setting that matches the data a little less well, but does so using smaller weights. The higher the regularization strength parameter α, the lower the model’s weights will be, reducing its reliance on the training data. Note that regularization is not normally applied to the bias term, which acts as a kind of threshold that helps deal with uncentered data and class priors.</p></blockquote>
@@ -1007,9 +1007,9 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>权重值的 L2 范数的（平方）。L2 范数 ||θ||2 等同于向量 θ 到原点的欧氏距离。如果 θ 由 n 个权重构成，那么：</p>
 <blockquote><p>(square of the) L2 norm of the weight values. The L2 norm, ||θ||2, is the same as the Euclidean distance of the vector θ from the origin. If θ consists of n weights, then:</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\sum_{j=1}^{n}$$</div>
+<div class="formula">$$\sum_{j = 1}^{n}$$</div>
 <p>R(θ) = ||θ||2 θ 2</p>
-<div class="formula">$$_{2}^{2}=$$</div>
+<div class="formula">$$_{2} ^{2} =$$</div>
 <blockquote><p>j</p></blockquote>
 <blockquote><p>j=1</p></blockquote>
 <p>L2 正则化后的损失函数变为：</p>
@@ -1025,15 +1025,15 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <table><tr><th>W</th><th></th><th>1，即权重绝对值之和，或称曼哈顿距离（曼哈顿距离是指在像纽约这样有街道网格的城市中，两点之间必须步行的距离）：</th></tr></table>
 <blockquote><p>||W||1, the sum of the absolute values of the weights, or Manhattan distance (the Manhattan distance is the distance you’d have to walk between two points in a city with a street grid like New York):</p></blockquote>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\sum_{i=1}^{n}$$</div>
-<div class="formula">$$R(θ)=||θ||_{1}=$$</div>
-<div class="formula">$$|θ_{i}|$$</div>
+<div class="formula">$$\sum_{i = 1}^{n}$$</div>
+<div class="formula">$$R ( θ ) = || θ || _{1} =$$</div>
+<div class="formula">$$| θ _{i} |$$</div>
 <blockquote><p>i=1</p></blockquote>
 <p>L1 正则化后的损失函数变为：</p>
 <blockquote><p>The L1 regularized loss function becomes:</p></blockquote>
 <p>&quot; m #ˆθ = argmax X X</p>
 <blockquote><p>n</p></blockquote>
-<div class="formula">$$\text{log}P(y^{(i)}|x^{(i)};θ)$$</div>
+<div class="formula">$$\text{log} P ( y ^{( i )} | x ^{( i )} ; θ )$$</div>
 <p>−α |θj|这类正则化来自统计学，其中 L1 正则化被称为 lasso 回归（Tibshirani, 1996），L2 正则化被称为 ridge 回归，</p>
 <blockquote><p>These kinds of regularization come from statistics, where L1 regularization is called lasso regression (Tibshirani, 1996) and L2 regularization is called ridge regression,</p></blockquote>
 <blockquote><p>θ i=1 j=1</p></blockquote>

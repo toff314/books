@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/13-machine-translation.md">Markdown 源文件</a></div>
@@ -244,7 +244,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>MT uses supervised machine learning: at training time the system is given a</p></blockquote>
 <p>大量平行句对（源语言中的每个句子都与目标语言中的一个句子相配），并学会把源语言句子映射为目标语言句子。在实践中，我们并不是像上面的例子那样以词为单位，而是把句子切分成子词词元序列（词元可以是词、子词或单个字符）。然后训练系统，使其在给定源语言词元序列 x1,...,xn 的条件下，最大化目标语言词元序列 y1,...,ym 的概率：</p>
 <blockquote><p>large set of parallel sentences (each sentence in a source language matched with a sentence in the target language), and learns to map source sentences into target sentences. In practice, rather than using words (as in the example above), we split the sentences into a sequence of subword tokens (tokens can be words, or subwords, or individual characters). The systems are then trained to maximize the probability of the sequence of tokens in the target language y1,...,ym given the sequence of tokens in the source language x1,...,xn:</p></blockquote>
-<div class="formula">$$P(y_{1},...,y_{m}|x_{1},...,x_{n})$$</div>
+<div class="formula">$$P ( y _{1} ,..., y _{m} | x _{1} ,..., x _{n} )$$</div>
 <p>编码器-解码器架构并不直接使用输入词元，而是由两个组件构成：编码器和解码器。编码器接收输入词 x = [x1,...,xn]，产生一个中间上下文 h。在解码时，系统以 h 为输入，逐词生成输出 y：</p>
 <blockquote><p>Rather than use the input tokens directly, the encoder-decoder architecture consists of two components, an encoder and a decoder. The encoder takes the input words x = [x1,...,xn] and produces an intermediate context h. At decoding time, the system takes h and, word by word, generates the output y:</p></blockquote>
 <p>h = encoder(x) yt+1 = decoder(h,y1,...,yt) ∀t ∈[1,...,m] 接下来的两节中，我们将讨论子词分词，然后讨论如何获得用于训练的平行语料库，之后我们将介绍编码器-解码器架构的细节。</p>
@@ -327,7 +327,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">Figure 13.4 A sample alignment between sentences in English and French, with sentences extracted from Antoine de Saint-Exupery’s Le Petit Prince and a hypothetical translation. Sentence alignment takes sentences e1,...,en, and f1,..., fm and finds minimal sets of sentences that are translations of each other, including single sentence mappings like (e1,f1), (e4,f3), (e5,f4), (e6,f6) as well as 2-1 alignments (e2/e3,f2), (e7/e8,f7), and null alignments (f5).</p>
 <p>分别来自源文档和目标文档的句子或片段 x、y：</p>
 <blockquote><p>sentences or spans x,y from the source and target documents respectively:</p></blockquote>
-<div class="formula">$$(1-\text{cos}(x,y))\text{nSents}(_{S}x)\text{nSents}(y)$$</div>
+<div class="formula">$$( 1 - \text{cos} ( x , y )) \text{nSents} ( _{S} x ) \text{nSents} ( y )$$</div>
 <p>c(x,y) = (13.10) PS s=1 1−cos(x,ys)+PS s=1 1−cos(xs,y)其中 nSents() 给出句子的数量（这使该指标偏向于将大量单句相互对齐，而不是对齐非常大的片段）。分母有助于对相似度进行归一化，而 x1,...,xS,y1,...,yS 则是从各自文档中随机抽取的句子。</p>
 <blockquote><p>where nSents() gives the number of sentences (this biases the metric toward many alignments of single sentences instead of aligning very large spans). The denominator helps to normalize the similarities, and so x1,...,xS,y1,...,yS, are randomly selected sentences sampled from the respective documents.</p></blockquote>
 <p>通常使用动态规划作为对齐算法（Gale 和</p>
@@ -362,7 +362,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>is X, in cross attention the input is the final output of the encoder Henc = h1,...,hn.</p></blockquote>
 <p>Henc 的形状为 [n × d]，每一行代表一个输入词元。为了将来自编码器的 key 和 value 与来自解码器上一层的 query 相连接，我们将编码器输出 Henc 乘以交叉注意力层的 key 权重 WK 和 value 权重 WV。query 来自上一层解码器层的输出 Hdec[ℓ−1]，它乘以交叉注意力层的 query 权重 WQ：</p>
 <blockquote><p>Henc is of shape [n × d], each row representing one input token. To link the keys and values from the encoder with the query from the prior layer of the decoder, we multiply the encoder output Henc by the cross-attention layer’s key weights WK and value weights WV. The query comes from the output from the prior decoder layer Hdec[ℓ−1], which is multiplied by the cross-attention layer’s query weights WQ:</p></blockquote>
-<div class="formula">$$Q=H^{\text{dec}[ℓ-1]}W^{Q};K=H^{\text{enc}}W^{K};V=H^{\text{enc}}W^{V}$$</div>
+<div class="formula">$$Q = H ^{\text{dec} [ ℓ - 1 ]} W ^{Q} ; K = H ^{\text{enc}} W ^{K} ; V = H ^{\text{enc}} W ^{V}$$</div>
 <p>QK⊺  (13.12) CrossAttention(Q,K,V) = softmax√dk V因此，交叉注意力使解码器能够关注源语言的每个词，这些词被投影到编码器的整个最终输出表示中。每个解码器块中的另一个注意力层，即多头注意力层，与我们在第 7 章看到的因果（从左到右）注意力相同。不过，编码器中的多头注意力被允许向前查看整个源语言文本，因此它没有被掩码。</p>
 <blockquote><p>The cross attention thus allows the decoder to attend to each of the source language words as projected into the entire encoder final output representations. The other attention layer in each decoder block, the multi-head attention layer, is the same causal (left-to-right) attention that we saw in Chapter 7. The multi-head attention in the encoder, however, is allowed to look ahead at the entire source language text, so it is not masked.</p></blockquote>
 <p>要训练一个编码器-解码器模型，我们把源文本提供给网络，然后</p>
@@ -374,7 +374,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p class="caption">Figure 13.6 The transformer block for the encoder and the decoder, showing the residual stream view. The final output of the encoder Henc = h1,...,hn is the context used in the decoder. The decoder is a standard transformer except with one extra layer, the cross-attention layer, which takes that encoder output Henc and uses it to form its K and V inputs.</p>
 <p>由模型赋予正确的下一个词的概率决定。因此在时刻 t，CE 损失是模型赋予训练序列中下一个词的概率的负对数：</p>
 <blockquote><p>determined by the probability the model assigns to the correct next word. So at time t the CE loss is the negative log probability the model assigns to the next word in the training sequence:</p></blockquote>
-<div class="formula">$$L_{\text{CE}}(yˆ_{t},y_{t})=-\text{log ˆ}y_{t}[w_{t+1}]$$</div>
+<div class="formula">$$L _{\text{CE}} ( y ˆ _{t} , y _{t} ) = - \text{log ˆ} y _{t} [ w _{t + 1} ]$$</div>
 <p>与那种情况一样，我们在解码器中使用教师强制。回想一下，在教师强制中，解码的每个时间步我们都强制系统使用训练中的标准答案目标词元作为下一个输入 xt+1，而不是让它依赖（可能有误的）解码器输出 ˆyt。</p>
 <blockquote><p>As in that case, we use teacher forcing in the decoder. Recall that in teacher forcing, at each time step in decoding we force the system to use the gold target token from training as the next input xt+1, rather than allowing it to rely on the (possibly erroneous) decoder output ˆyt.</p></blockquote>
 <aside class="term"><code>teacher forcing</code><span class="term-zh">教师强制</span><span class="term-explain">训练解码器时，每个时间步都强制把训练数据中的正确目标词元作为下一输入，而非使用模型自己生成的输出。</span></aside>
@@ -382,7 +382,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>13.4 Decoding in MT: Beam Search</p></blockquote>
 <p>回想第 7 章中的贪心解码算法：在生成过程的每个时间步 t，输出 yt 的选定方式是计算词表中每个词的概率，然后选择概率最高的词（即 argmax）：</p>
 <blockquote><p>Recall the greedy decoding algorithm from Chapter 7: at each time step t in generation, the output yt is chosen by computing the probability for each word in the vocabulary and then choosing the highest probability word (the argmax):</p></blockquote>
-<div class="formula">$$wˆ_{t}=\text{argmax}_{w\inV}P(w|w_{&lt;t})$$</div>
+<div class="formula">$$w ˆ _{t} = \text{argmax} _{w \in V} P ( w | w _{&lt; t} )$$</div>
 <p>贪心解码的一个问题是：在词 t 处看起来概率很高的选择，到了词 t +1 时可能被证明是错误的选择。束搜索算法会保留多个选择，直到稍后我们能够看出哪一个最好。</p>
 <blockquote><p>A problem with greedy decoding is that what looks high probability at word t might turn out to have been the wrong choice once we get to word t +1. The beam search algorithm maintains multiple choices until later when we can see which one is best.</p></blockquote>
 <p>在束搜索中，我们把解码建模为在可能的生成结果空间中搜索，该空间表示为一棵搜索树，其分支表示动作（生成一个词元），节点表示状态（已经生成了某个特定的前缀）。我们搜索最佳的动作序列，即概率最高的字符串。</p>
@@ -424,7 +424,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>p(y|x) 分解为每个词在给定其先前上下文的条件下概率的乘积，我们可以把它转化为对数之和（对于一个长度为 t 的输出字符串）：</p>
 <blockquote><p>break down p(y|x) into the product of the probability of each word given its prior context, which we can turn into a sum of logs (for an output string of length t):</p></blockquote>
 <p>score(y) = logP(y|x) = log(P(y1|x)P(y2|y1,x)P(y3|y1,y2,x)...P(yt|y1,...,yt−1,x)) tX</p>
-<div class="formula">$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$</div>
+<div class="formula">$$\text{log} P ( y _{i} | y _{1} ,..., y _{i - 1} , x )$$</div>
 <p>= (13.15)因此，在每一步，为计算一个部分句子的概率，我们只需把迄今为止前缀句子的对数概率与生成下一个词元的对数概率相加。图 13.9 用一些简单虚构的概率展示了图 13.8 中示例句子的评分过程。对数概率为负数或 0，两个对数概率中较大者（更接近 0）即为最大值。</p>
 <blockquote><p>Thus at each step, to compute the probability of a partial sentence, we simply add the log probability of the prefix sentence so far to the log probability of generating the next token. Fig. 13.9 shows the scoring for the example sentence shown in Fig. 13.8, using some simple made-up probabilities. Log probabilities are negative or 0, and the max of two log probabilities is the one that is greater (closer to 0).</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -436,7 +436,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>即已完成的候选假设可能具有不同的长度。由于语言模型通常给较长的字符串分配较低的概率，一个朴素的算法会为 y 选择较短的字符串。（这在解码的较早步骤中不是问题；因为束搜索是广度优先的，所有被比较的候选假设长度都相同。）因此，我们常常采用长度归一化方法，例如将对数概率除以词数：</p>
 <blockquote><p>that the completed hypotheses may have different lengths. Because language models generally assign lower probabilities to longer strings, a naive algorithm would choose shorter strings for y. (This is not an issue during the earlier steps of decoding; since beam search is breadth-first, all the hypotheses being compared had the same length.) For this reason we often apply length normalization methods, like dividing the logprob by the number of words:</p></blockquote>
 <p>score(y) = 1 t logP(y|x) = 1 tX</p>
-<div class="formula">$$\text{log}P(y_{i}|y_{1},...,y_{i-1},x)$$</div>
+<div class="formula">$$\text{log} P ( y _{i} | y _{1} ,..., y _{i - 1} , x )$$</div>
 <p>t对于机器翻译，我们通常使用 5 到 10 之间的束宽 k，最终得到 k 个候选假设。我们可以把这 k 个候选假设连同它们各自的分数一起传给下游应用；如果只需要一个译文，就传概率最大的那个候选假设。</p>
 <blockquote><p>For MT we generally use beam widths k between 5 and 10, giving us k hypotheses at the end. We can pass all k to the downstream application with their respective scores, or if we just need a single translation we can pass the most probable hypothesis.</p></blockquote>
 <blockquote><p>i=1</p></blockquote>
@@ -464,7 +464,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>the standard simplification used in MBR decoding algorithms is to instead choose the candidate translation which is most similar (by some measure of goodness-offit) with some set of candidate translations. We’re essentially approximating the enormous space of all possible translations U with a smaller set of possible candidate translations Y.</p></blockquote>
 <p>给定这个可能候选译文的集合 Y，以及某个相似度或对齐函数 util，我们选择最佳译文 ŷ 为与所有其他候选译文最相似的那个译文：</p>
 <blockquote><p>Given this set of possible candidate translations Y, and some similarity or alignment function util, we choose the best translation ˆy as the translation which is most similar to all the other candidate translations:</p></blockquote>
-<div class="formula">$$\sum_{c\inY}$$</div>
+<div class="formula">$$\sum_{c \in Y}$$</div>
 <p>ˆy = argmax util(y,c) (13.17)可以使用各种 util 函数，例如 chrF、BERTscore 或 BLEU。我们可以通过采样获得候选译文集合，使用第 7.6 节中的某种基础采样算法，例如温度采样；即使候选只有 32 或 64 个，也能获得不错的结果。</p>
 <blockquote><p>Various util functions can be used, like chrF or BERTscore or BLEU. We can get the set of candidate translations by sampling using one of the basic sampling algorithms of Section 7.6 like temperature sampling; good results can be obtained with as few as 32 or 64 candidates.</p></blockquote>
 <blockquote><p>y∈Y c∈Y</p></blockquote>
@@ -509,8 +509,8 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>in many different pairs of languages. That means we need to tell the system which language to translate from and to! We tell the system which language is which by adding a special token ls to the encoder specifying the source language we’re translating from, and a special token lt to the decoder telling it the target language we’d like to translate into.</p></blockquote>
 <p>因此我们略微修改上面的式 13.9，以在式 13.19 中加入这些词元：</p>
 <blockquote><p>Thus we slightly update Eq. 13.9 above to add these tokens in Eq. 13.19:</p></blockquote>
-<div class="formula">$$h=\text{encoder}(x,l_{s})$$</div>
-<div class="formula">$$y_{i+1}=\text{decoder}(h,l_{t},y_{1},...,y_{i})∀i\in[1,...,m]$$</div>
+<div class="formula">$$h = \text{encoder} ( x , l _{s} )$$</div>
+<div class="formula">$$y _{i + 1} = \text{decoder} ( h , l _{t} , y _{1} ,..., y _{i} ) ∀ i \in [ 1 ,..., m ]$$</div>
 <p>多语言模型的一个优点是，它们可以通过利用训练数据中恰好资源更丰富的相似语言的信息，来改进</p>
 <blockquote><p>One advantage of a multilingual model is that they can improve the translation</p></blockquote>
 <p>低资源语言的翻译。也许我们不知道加利西亚语（Galician）中某个词的含义，但该词出现在与之相似且资源更丰富的语言西班牙语中。</p>
@@ -588,7 +588,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <p>随后，该指标使用一个权重参数 β 把 chrP 和 chrR 组合起来，计算出一个 F 值。通常设 β = 2，从而使召回率的权重是精确率的两倍：</p>
 <blockquote><p>The metric then computes an F-score by combining chrP and chrR using a weighting parameter β. It is common to set β = 2, thus weighing recall twice as much as precision:</p></blockquote>
 <p>chrFβ = (1+β 2) chrP·chrR (13.20)</p>
-<div class="formula">$$β^{2}\cdot\text{chrP}+\text{chrR}$$</div>
+<div class="formula">$$β ^{2} \cdot \text{chrP} + \text{chrR}$$</div>
 <p>当 β = 2 时，该式即为：</p>
 <blockquote><p>For β = 2, that would be:</p></blockquote>
 <p>chrF2 = 5·chrP·chrR 4·chrP+chrR例如，考虑我们想要对照参考译文 witness for the past 打分的两个候选假设。下面是这些候选假设以及使用参数 k = β = 2 计算得到的 chrF 值（在真实例子中，k 会是像 6 这样更大的数）：</p>

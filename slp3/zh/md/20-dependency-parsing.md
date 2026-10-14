@@ -584,9 +584,9 @@ Book the flight through Houston
 我们会像在情感分析和词性
 标注中那样使用特征模板。特征模板使我们能够从训练集中自动生成大量具体特征。例如，考察下列基于格局中单个位置的特征模板。
 
-$$⟨s_{1}.w,\text{op}⟩,⟨s_{2}.w,\text{op}⟩⟨s_{1}.t,\text{op}⟩,⟨s_{2}.t,\text{op}⟩$$
+$$⟨ s _{1} . w , \text{op} ⟩ , ⟨ s _{2} . w , \text{op} ⟩⟨ s _{1} . t , \text{op} ⟩ , ⟨ s _{2} . t , \text{op} ⟩$$
 
-$$⟨b_{1}.w,\text{op}⟩,⟨b_{1}.t,\text{op}⟩⟨s_{1}.\text{wt},\text{op}⟩$$
+$$⟨ b _{1} . w , \text{op} ⟩ , ⟨ b _{1} . t , \text{op} ⟩⟨ s _{1} . \text{wt} , \text{op} ⟩$$
 
 这里特征记作 location.property，其中 s = 栈，b = 词
 缓冲区，w = 词形，t = 词性，op = 操作符。因此，栈顶词形的特征就是 s1.w，缓冲区首词的词性标注就是 b1.t，而拼接特征 s1.wt 表示栈顶词的词形与其词性拼接在一起。下面考虑把这些模板应用于由 (20.2) 的训练神谕导出的下列中间格局。
@@ -594,19 +594,19 @@ $$⟨b_{1}.w,\text{op}⟩,⟨b_{1}.t,\text{op}⟩⟨s_{1}.\text{wt},\text{op}⟩
 栈 词 缓冲区 关系[root, canceled, flights] [to Houston] (canceled →United)
 (flights →morning)(flights →the) 这里正确的转移是 SHIFT（继续往下之前你应当先说服自己确信这一点）。把我们的那组特征模板应用于该格局，会得到下列这组实例化特征。
 
-$$⟨s_{1}.w=\text{flights},\text{op}=\text{shift}⟩$$
+$$⟨ s _{1} . w = \text{flights} , \text{op} = \text{shift} ⟩$$
 
-$$⟨s_{2}.w=\text{canceled},\text{op}=\text{shift}⟩$$
+$$⟨ s _{2} . w = \text{canceled} , \text{op} = \text{shift} ⟩$$
 
 ⟨s1.t = NNS,op = shift⟩⟨s2.t = VBD,op = shift⟩⟨b1.w = to,op = shift⟩⟨b1.t = TO,op = shift⟩
 
-$$⟨s_{1}.\text{wt}=\text{flightsNNS},\text{op}=\text{shift}⟩$$
+$$⟨ s _{1} . \text{wt} = \text{flightsNNS} , \text{op} = \text{shift} ⟩$$
 
 鉴于左弧和右弧转移都作用于栈顶的两个元素，结合这两个位置属性的特征就更为有用。
 
 例如，诸如 s1.t ◦s2.t 这样的特征会把栈顶词的词性标注与其下方词的词性标注拼接起来。
 
-$$⟨s_{1}.t◦s_{2}.t=\text{NNSVBD},\text{op}=\text{shift}⟩$$
+$$⟨ s _{1} . t ◦ s _{2} . t = \text{NNSVBD} , \text{op} = \text{shift} ⟩$$
 
 给定训练数据和特征，可以使用任何分类器，例如多项逻辑回归或支持向量机。
 
@@ -722,7 +722,7 @@ ConfigScore(c0) = 0.0 ConfigScore(ci) = ConfigScore(ci−1)+Score(ti,ci−1)
 >
 > 释义：指一棵树的总体分数可以分解为构成该树的各条边的分数之和这一性质。
 
-$$\sum_{e\int}$$
+$$\sum_{e \in t}$$
 
 Score(t,S) = Score(e)
 基于图的算法必须解决两个问题：（1）为
@@ -797,7 +797,7 @@ G 上的最大生成树。图 G 上的生成树是 G 的一个子集，
 
 回想一下，给定一个句子 S 和一个候选树 T，边因子化的句法分析模型做了这样的简化：树的分数等于构成该树的各条边的分数之和：
 
-$$\sum_{e\inT}$$
+$$\sum_{e \in T}$$
 
 score(S,T) = score(S,e)
 在基于特征的算法中，我们把边的分数计算为从该边提取出的特征的加权和：
@@ -806,7 +806,7 @@ score(S,T) = score(S,e)
 
 > N
 
-$$\sum_{i=1}^{N}$$
+$$\sum_{i = 1}^{N}$$
 
 score(S,e) = wi fi(S,e)
 或者写得更简洁一些。
@@ -849,11 +849,11 @@ score(S,e) = w· f
 这里我们将概述 Dozat 和 Manning（2017）以及 Dozat
 等人（2017）的算法，如图 20.14 所示，它借鉴了 Gr¨unewald 等人（2021）的工作，后者通过其 STEPS 系统测试了该算法的许多版本。该算法首先将句子 X = x1,...,xn 送入编码器，为每个词元生成上下文嵌入表示 R = r1,...,rn。每个词元的嵌入随后分别通过两个独立的前馈网络，一个用于生成该词元作为中心词的表示，另一个用于生成该词元作为依存词的表示：
 
-$$h^{\text{head}}_{i}=\text{FFN}^{\text{head}}(r_{i})$$
+$$h ^{\text{head}} _{i} = \text{FFN} ^{\text{head}} ( r _{i} )$$
 
 > i
 
-$$h^{\text{dep}}_{i}=\text{FFN}^{\text{dep}}(r_{i})$$
+$$h ^{\text{dep}} _{i} = \text{FFN} ^{\text{dep}} ( r _{i} )$$
 
 > i
 
@@ -864,7 +864,7 @@ $$h^{\text{dep}}_{i}=\text{FFN}^{\text{dep}}(r_{i})$$
 
 > j
 
-$$\text{Score}(i\toj)=\text{Biaff}_{⊺}(h_{i}^{\text{head}},h^{\text{dep}}_{j}$$
+$$\text{Score} ( i \to j ) = \text{Biaff} _{⊺} ( h _{i} ^{\text{head}} , h ^{\text{dep}} _{j}$$
 
 )
 Biaff(x,y) = x⊺Uy +W(x⊕y)+b，其中 U、W 和 b 是模型学习到的权重。使用双仿射函数的目的，是让系统能够学习向量 x 与 y 之间的乘性交互。

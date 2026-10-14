@@ -296,7 +296,7 @@ NP0 such as NP1{,NP2 ...,(and|or)NPi}，i ≥1 （21.2）
 
 > implies the following semantics
 
-$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$
+$$∀ \text{NP} _{i} , i \ge 1 , \text{hyponym} ( \text{NP} _{i} , \text{NP} _{0} ) (21.3)$$
 
 从而使我们能够推断出
 
@@ -592,7 +592,7 @@ Conf RlogF(p) = |hits(p)|（21.10）
 
 > that a given tuple is supported by a subset of the patterns in P, each with its own confidence assessed as above. In the noisy-or model, we make two basic assumptions. First, that for a proposed tuple to be false, all of its supporting patterns must have been in error, and second, that the sources of their individual failures are all independent. If we loosely treat our confidence measures as probabilities, then the probability of any individual pattern p failing is 1 −Conf(p); the probability of all of the supporting patterns for a tuple being wrong is the product of their individual failure probabilities, leaving us with the following equation for our confidence in a new tuple.
 
-$$\prod_{p\inP′}$$
+$$\prod_{p \in P ′}$$
 
 Conf(t) = 1− (1−Conf(p))（21.11）
 

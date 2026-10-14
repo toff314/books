@@ -41,7 +41,7 @@ hr { border:0; border-top:1px solid var(--line); margin:2em 0; }
 footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
   font-size:13px; color:var(--muted); }
 </style>
-<script>MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script>MathJax={tex:{displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
 <script id="MathJax-script" src="../../../vendor/mathjax/tex-svg.js"></script>
 </head><body><div class="wrap">
 <div class="nav"><a href="../../index.html">← 返回书目</a><a href="../md/21-information-extraction.md">Markdown 源文件</a></div>
@@ -183,7 +183,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <blockquote><p>NP0 such as NP1{,NP2 ...,(and|or)NPi},i ≥1 (21.2)</p></blockquote>
 <p>蕴含以下语义</p>
 <blockquote><p>implies the following semantics</p></blockquote>
-<div class="formula">$$∀\text{NP}_{i},i\ge1,\text{hyponym}(\text{NP}_{i},\text{NP}_{0})(21.3)$$</div>
+<div class="formula">$$∀ \text{NP} _{i} , i \ge 1 , \text{hyponym} ( \text{NP} _{i} , \text{NP} _{0} ) (21.3)$$</div>
 <p>从而使我们能够推断出</p>
 <blockquote><p>allowing us to infer</p></blockquote>
 <p>hyponym(Gelidium,red algae) （21.4）</p>
@@ -328,7 +328,7 @@ footer { margin-top:3em; padding-top:1em; border-top:1px solid var(--line);
 <aside class="term"><code>noisy-or</code><span class="term-zh">噪声或（noisy-or）</span><span class="term-explain">一种组合多个独立证据的模型，用 1 减去各来源失败概率之积，来估计新元组成立的置信度。</span></aside>
 <p>给定元组由 P 中模式的一个子集支持，其中每个模式都有按上述方法评估出的置信度。在噪声或模型中，我们做两个基本假设。第一，要让一个候选元组为假，它的所有支持模式都必须出错；第二，它们各自失败的来源相互独立。如果我们粗略地把置信度当作概率，那么任一模式 p 失败的概率为 1 −Conf(p)；一个元组的所有支持模式都出错的概率等于它们各自失败概率的乘积，由此就得到下面这个关于新元组置信度的公式。</p>
 <blockquote><p>that a given tuple is supported by a subset of the patterns in P, each with its own confidence assessed as above. In the noisy-or model, we make two basic assumptions. First, that for a proposed tuple to be false, all of its supporting patterns must have been in error, and second, that the sources of their individual failures are all independent. If we loosely treat our confidence measures as probabilities, then the probability of any individual pattern p failing is 1 −Conf(p); the probability of all of the supporting patterns for a tuple being wrong is the product of their individual failure probabilities, leaving us with the following equation for our confidence in a new tuple.</p></blockquote>
-<div class="formula">$$\prod_{p\inP′}$$</div>
+<div class="formula">$$\prod_{p \in P ′}$$</div>
 <p>Conf(t) = 1− (1−Conf(p))（21.11）</p>
 <blockquote><p>Conf(t) = 1− (1−Conf(p)) (21.11)</p></blockquote>
 <p>为新模式的接受设定保守的置信度阈值</p>

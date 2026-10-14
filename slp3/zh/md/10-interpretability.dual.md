@@ -196,7 +196,7 @@ WSD 可以成为人文与社会科学领域文本分析的一种有用工具，�
 
 vs = 1 X
 
-$$∀v_{i}\in\text{tokens}(s)$$
+$$∀ v _{i} \in \text{tokens} ( s )$$
 
 n vi (10.1)
 在测试时，给定语境中目标词 t 的一个词元，我们计算它的上下文嵌入 t，并从训练集中选择其最近邻义项，即其义项嵌入与 t 的余弦最高的义项：
@@ -205,7 +205,7 @@ n vi (10.1)
 
 > i
 
-$$\text{sense}(t) =\text{argmax}\text{cosine}(t,v_{s})$$
+$$\text{sense} ( t ) = \text{argmax} \text{cosine} ( t , v _{s} )$$
 
 > s∈senses(t)
 
@@ -259,7 +259,7 @@ Timkey 和 van Schijndel（2021）表明，我们可以让嵌入更加
 s (10.4)
 1 X
 
-$$(x-µ)^{2}$$
+$$( x - µ ) ^{2}$$
 
 σ = |C|
 然后，每个词向量 x 都被替换为其标准化版本 z：
