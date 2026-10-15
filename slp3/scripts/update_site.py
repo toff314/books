@@ -28,12 +28,9 @@ def status_of(num: str, name: str) -> dict:
     slug = f"{num}-{name}"
     md = BOOK / "zh" / "md" / f"{slug}.md"
     html_f = BOOK / "zh" / "html" / f"{slug}.html"
-    pdf = BOOK / "zh" / "pdf" / f"{slug}-zh.pdf"
-    dual = BOOK / "zh" / "dual" / f"{slug}-dual.pdf"
     return {
         "md": md.is_file(), "html": html_f.is_file(),
-        "pdf": pdf.is_file(), "dual": dual.is_file(),
-        "done": html_f.is_file() and pdf.is_file(),
+        "done": html_f.is_file(),
     }
 
 
@@ -45,6 +42,8 @@ def build_summary() -> str:
         "**Speech and Language Processing（第三版）** — Daniel Jurafsky & James H. Martin，2026 年 8 月版，646 页 / 26 章。",
         "",
         f"图例：✅ 已完成 · 🚧 进行中 · ⬜ 待翻译　　**进度：{done_cnt} / {len(CHAPTERS)} 章**",
+        "",
+        "**整本下载**：[中文 PDF](zh/pdf/slp3-zh.pdf) · [中英对照 PDF](zh/dual/slp3-dual.pdf)",
         "",
     ]
     for part_title, lo, hi in PARTS:
@@ -60,7 +59,6 @@ def build_summary() -> str:
             slug = f"{num}-{name}"
             if st["done"]:
                 zh = (f"[在线阅读](zh/html/{slug}.html) · [对照](zh/html/{slug}.dual.html) · "
-                      f"[PDF](zh/pdf/{slug}-zh.pdf) · [对照PDF](zh/dual/{slug}-dual.pdf) · "
                       f"[MD](zh/md/{slug}.md)")
                 mark = "✅"
             elif st["html"] or st["md"]:
@@ -97,9 +95,7 @@ def build_book_index() -> str:
             slug = f"{num}-{name}"
             if st["done"]:
                 cell = (f'<a href="zh/html/{slug}.html">在线阅读</a>'
-                        f'<a href="zh/html/{slug}.dual.html">对照</a>'
-                        f'<a href="zh/pdf/{slug}-zh.pdf">PDF</a>'
-                        f'<a href="zh/dual/{slug}-dual.pdf">对照PDF</a>')
+                        f'<a href="zh/html/{slug}.dual.html">对照</a>')
                 cls = "done"
             else:
                 cell, cls = "待翻译", "wait"
@@ -112,12 +108,12 @@ def build_book_index() -> str:
     first_done = next((f"{n}-{nm}" for n, nm, _t, _a, _b in CHAPTERS if status_of(n, nm)["done"]), None)
     leads = []
     if first_done:
-        leads = [
-            f'<a href="zh/html/{first_done}.html">中文在线阅读</a> ·',
-            f'<a href="zh/pdf/{first_done}-zh.pdf">中文 PDF</a> ·',
-            f'<a href="zh/dual/{first_done}-dual.pdf">中英对照 PDF</a> ·',
-        ]
-    leads.append('<a href="source/ed3book_aug26.pdf">英文原版 PDF</a>')
+        leads.append(f'<a href="zh/html/{first_done}.html">中文在线阅读</a> ·')
+    leads += [
+        '<a href="zh/pdf/slp3-zh.pdf">中文整本 PDF</a> ·',
+        '<a href="zh/dual/slp3-dual.pdf">中英对照整本 PDF</a> ·',
+        '<a href="source/ed3book_aug26.pdf">英文原版 PDF</a>',
+    ]
 
     css = """  :root { --ink:#1b1b1b; --muted:#6b7280; --line:#e5e7eb; --accent:#0b5fa5; }
   * { box-sizing:border-box; }

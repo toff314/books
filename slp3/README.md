@@ -18,8 +18,8 @@ slp3/
 ├── zh/
 │   ├── md/            中文 Markdown（按章）
 │   ├── html/          中文 HTML（在线直读）
-│   ├── pdf/           中文 PDF（按章 + 合订）
-│   └── dual/          中英对照 PDF
+│   ├── pdf/           中文整本 PDF（slp3-zh.pdf）
+│   └── dual/          中英对照整本 PDF（slp3-dual.pdf）
 ├── scripts/           本书的构建脚本
 └── build/             中间产物（不入库）
 ```
